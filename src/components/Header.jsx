@@ -1,10 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native';
+import RegularText from './fonts/RegularText';
+import BoldText from './fonts/BoldText';
 
 const Header = ({ title, text }) => {
   return (
     <View style={styles.headers}>
-      <Text style={styles.heading}>{title}</Text>
-      <Text>{text}</Text>
+      <BoldText style={styles.heading}>{title}</BoldText>
+      <RegularText>{text}</RegularText>
     </View>
   );
 };
@@ -15,7 +17,6 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 25,
-    fontWeight: '600',
   },
 });
 export default Header;

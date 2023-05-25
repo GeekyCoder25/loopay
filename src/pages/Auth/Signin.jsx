@@ -11,6 +11,9 @@ import { signInData } from '../../../utils/data.js';
 import Logo from '../../components/Logo';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
+import PageContainer from '../../components/PageContainer';
+import BoldText from '../../components/fonts/BoldText';
+import RegularText from '../../components/fonts/RegularText';
 
 const Signin = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -30,64 +33,72 @@ const Signin = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headers}>
-        <Logo />
-      </View>
-      <View style={styles.form}>
-        <Header
-          title={'Login Information'}
-          text={'To continue, kindly complete the following details'}
-        />
-        {signInData.map(inputForm => (
-          <FormField
-            key={inputForm.name}
-            inputForm={inputForm}
-            setFormData={setFormData}
-            editInput={editInput}
+    <PageContainer padding={true}>
+      <View style={styles.container}>
+        <View style={styles.headers}>
+          <Logo />
+        </View>
+        <View style={styles.form}>
+          <Header
+            title={'Login Information'}
+            text={'To continue, kindly complete the following details'}
           />
-        ))}
-        {errorMessage && (
-          <>
-            {/* <Icon name="warning" size={15} color={'red'} /> */}
-            <Text style={styles.errorMessageText}>{errorMessage}</Text>
-          </>
-        )}
-        {successMessage && (
-          <>
-            {/* <Icon name="check-circle" size={20} color="green" />{' '} */}
-            <Text style={styles.successMessageText}>{successMessage}</Text>
-          </>
-        )}
-        <View style={styles.forgetPressable}>
-          <Pressable onPress={() => navigation.navigate('ForgotPassword')}>
-            <Text style={styles.forget}>Forget Password?</Text>
-          </Pressable>
+          {signInData.map(inputForm => (
+            <FormField
+              key={inputForm.name}
+              inputForm={inputForm}
+              setFormData={setFormData}
+              editInput={editInput}
+            />
+          ))}
+          {errorMessage && (
+            <>
+              {/* <Icon name="warning" size={15} color={'red'} /> */}
+              <BoldText style={styles.errorMessageText}>
+                {errorMessage}
+              </BoldText>
+            </>
+          )}
+          {successMessage && (
+            <>
+              {/* <Icon name="check-circle" size={20} color="green" />{' '} */}
+              <BoldText style={styles.successMessageText}>
+                {successMessage}
+              </BoldText>
+            </>
+          )}
+          <View style={styles.forgetPressable}>
+            <Pressable onPress={() => navigation.navigate('ForgotPassword')}>
+              <BoldText style={styles.forget}>Forget Password?</BoldText>
+            </Pressable>
+          </View>
+        </View>
+        <View style={styles.actionButtons}>
+          <View style={styles.signInIcons}>
+            <Pressable onPress={() => console.log('apple was clicked')}>
+              <Apple />
+            </Pressable>
+            <Pressable onPress={() => console.log('google was clicked')}>
+              <Google />
+            </Pressable>
+          </View>
+          <View style={styles.already}>
+            <RegularText style={styles.alreadyText}>
+              Don&apos;t have an account?
+            </RegularText>
+            <Pressable onPress={() => navigation.navigate('Signup')}>
+              <BoldText style={styles.signIn}>Sign up</BoldText>
+            </Pressable>
+          </View>
+          <Button
+            text={'Log in'}
+            handlePress={() => {
+              navigation.navigate('BottomTabs');
+            }}
+          />
         </View>
       </View>
-      <View style={styles.actionButtons}>
-        <View style={styles.signInIcons}>
-          <Pressable onPress={() => console.log('apple was clicked')}>
-            <Apple />
-          </Pressable>
-          <Pressable onPress={() => console.log('google was clicked')}>
-            <Google />
-          </Pressable>
-        </View>
-        <View style={styles.already}>
-          <Text style={styles.alreadyText}>Don&apos;t have an account?</Text>
-          <Pressable onPress={() => navigation.navigate('Signup')}>
-            <Text style={styles.signIn}>Sign up</Text>
-          </Pressable>
-        </View>
-        <Button
-          text={'Log in'}
-          handlePress={() => {
-            navigation.navigate('Home');
-          }}
-        />
-      </View>
-    </View>
+    </PageContainer>
   );
 };
 
@@ -95,10 +106,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingTop: 50,
     paddingBottom: 5 + '%',
-    paddingHorizontal: 3 + '%',
-    backgroundColor: '#fff',
   },
   headers: {
     flex: 1,

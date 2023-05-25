@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, StyleSheet, useWindowDimensions } from 'react-native';
 import Logo from '../../assets/images/logoDark.svg';
 import CustomBackground from '../components/CustomBackground';
+import RegularText from './fonts/RegularText';
 
 const Splash = ({ navigation }) => {
   const vw = useWindowDimensions().width;
@@ -15,7 +16,9 @@ const Splash = ({ navigation }) => {
       <CustomBackground />
       <View>
         <Logo width={`${vw}`} />
-        <Text style={styles.subText}>...your favorite midnight pay pal</Text>
+        <RegularText style={styles.subText}>
+          ...your favorite midnight pay pal
+        </RegularText>
       </View>
     </View>
   );

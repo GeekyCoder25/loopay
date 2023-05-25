@@ -1,22 +1,18 @@
 import { useState } from 'react';
-import Logo from '../components/Logo';
-import {
-  KeyboardAvoidingView,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import Button from '../components/Button';
-import { accountType } from '../../utils/data';
-import EmptyCheckbox from '../../assets/images/emptyCheckbox.svg';
-import FilledCheckbox from '../../assets/images/filledCheckbox.svg';
-import Header from '../components/Header';
+import Logo from '../../components/Logo';
+import { Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import Button from '../../components/Button';
+import { accountType } from '../../../utils/data';
+import EmptyCheckbox from '../../../assets/images/emptyCheckbox.svg';
+import FilledCheckbox from '../../../assets/images/filledCheckbox.svg';
+import Header from '../../components/Header';
+import RegularText from '../../components/fonts/RegularText';
+import BoldText from '../../components/fonts/BoldText';
 
 const AccountType = ({ navigation }) => {
   return (
-    // <KeyboardAvoidingView behavior="padding">
-    <View style={styles.container}>
+    <View
+      style={{ ...styles.container, paddingTop: StatusBar.currentHeight + 10 }}>
       <View style={styles.logo}>
         <Logo />
       </View>
@@ -35,14 +31,13 @@ const AccountType = ({ navigation }) => {
             <Button
               text={'Continue'}
               handlePress={() => {
-                navigation.navigate('Home');
+                navigation.navigate('BottomTabs');
               }}
             />
           </View>
         </View>
       </View>
     </View>
-    // </KeyboardAvoidingView>
   );
 };
 
@@ -50,7 +45,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    paddingTop: 50,
     paddingBottom: 5 + '%',
     paddingHorizontal: 3 + '%',
     backgroundColor: '#fff',
@@ -102,9 +96,9 @@ const Form = ({ item }) => {
         ) : (
           <EmptyCheckbox width={20} height={20} />
         )}
-        <Text style={styles.checkTitle}>{item.title}</Text>
+        <BoldText style={styles.checkTitle}>{item.title}</BoldText>
       </Pressable>
-      <Text>{item.details}</Text>
+      <RegularText>{item.details}</RegularText>
     </View>
   );
 };

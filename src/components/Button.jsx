@@ -1,11 +1,22 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import BoldText from './fonts/BoldText';
 
-const Button = ({ text, handlePress, Icon }) => {
+const Button = ({ text, handlePress, Icon, disabled, flex }) => {
   return (
-    <TouchableOpacity onPress={handlePress} style={styles.activeButton}>
-      <Text style={styles.activeButtonText}>{text}</Text>
-      {Icon}
+    <TouchableOpacity
+      onPress={handlePress}
+      style={styles.activeButton}
+      disabled={disabled || false}>
+      <BoldText
+        style={{
+          ...styles.activeButtonText,
+          flex,
+          transform: [{ translateX: flex ? 10 : 0 }],
+        }}>
+        {text}
+      </BoldText>
+      <View>{Icon}</View>
     </TouchableOpacity>
   );
 };
@@ -18,6 +29,10 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     width: 90 + '%',
     alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 15,
   },
   activeButtonText: {
     color: '#fff',

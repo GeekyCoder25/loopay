@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TextInput,
   Pressable,
@@ -18,6 +17,9 @@ import { signUpData } from '../../../utils/data.js';
 import Logo from '../../components/Logo';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
+import PageContainer from '../../components/PageContainer';
+import BoldText from '../../components/fonts/BoldText';
+import RegularText from '../../components/fonts/RegularText';
 
 const Signup = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -46,7 +48,7 @@ const Signup = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <PageContainer>
       <ScrollView style={styles.scrollviewContainer}>
         <View style={styles.headers}>
           <Logo />
@@ -67,21 +69,27 @@ const Signup = ({ navigation }) => {
           {errorMessage && (
             <>
               {/* <Icon name="warning" size={15} color="red" /> */}
-              <Text style={styles.errorMessageText}>{errorMessage}</Text>
+              <BoldText style={styles.errorMessageBold}>
+                {errorMessage}
+              </BoldText>
             </>
           )}
           {successMessage && (
             <>
               {/* <Icon name="check-circle" size={20} color="green" />{' '} */}
-              <Text style={styles.successMessageText}>{successMessage}</Text>
+              <BoldText style={styles.successMessageText}>
+                {successMessage}
+              </BoldText>
             </>
           )}
         </View>
         <View style={styles.alreadyContainer}>
           <View style={styles.already}>
-            <Text style={styles.alreadyText}>Already have an account?</Text>
+            <RegularText style={styles.alreadyText}>
+              Already have an account?
+            </RegularText>
             <Pressable onPress={() => navigation.navigate('Signin')}>
-              <Text style={styles.signIn}>Sign in</Text>
+              <BoldText style={styles.signIn}>Sign in</BoldText>
             </Pressable>
           </View>
           <View style={styles.signInIcons}>
@@ -95,17 +103,11 @@ const Signup = ({ navigation }) => {
           <Button text={'Register'} handlePress={handleLogin} />
         </View>
       </ScrollView>
-    </View>
+    </PageContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-between',
-    paddingTop: 80,
-    backgroundColor: '#fff',
-  },
   scrollviewContainer: {
     flex: 1,
     paddingBottom: 5 + '%',
@@ -115,6 +117,7 @@ const styles = StyleSheet.create({
     gap: 10,
     flex: 1,
     justifyContent: 'flex-end',
+    minHeight: 100,
   },
   heading: {
     fontWeight: '600',
@@ -166,7 +169,7 @@ const styles = StyleSheet.create({
     color: 'green',
     textAlign: 'center',
   },
-  alreadyContainer: { flex: 1, paddingVertical: 50 },
+  alreadyContainer: { flex: 1, paddingBottom: 50 },
   already: {
     justifyContent: 'center',
     flexDirection: 'row',
