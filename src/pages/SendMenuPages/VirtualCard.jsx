@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    transform: [{ translateY: -8 }],
+    transform: [{ translateY: -5 }],
   },
   atmChevron: {
     transform: [{ rotateZ: '-45 deg' }],

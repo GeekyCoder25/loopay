@@ -1,16 +1,15 @@
-import React from 'react';
-import Splash from '../../src/components/Splash';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Splash from '../../src/components/Splash';
 import Signup from '../../src/pages/Auth/Signup';
 import Signin from '../../src/pages/Auth/Signin';
 import AccountType from '../../src/pages/Auth/AccountType';
 import ForgotPassword from '../../src/pages/Auth/ForgotPassword';
 import BottomTabs from '../../src/navigators/BottomTabs';
-// import VirtualCard from '../pages/SendMenuPages/VirtualCard';
 
-const AppNavigator = () => {
+const AppPagesNavigator = () => {
   const Stack = createNativeStackNavigator();
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -26,4 +25,4 @@ const AppNavigator = () => {
   );
 };
 
-export default AppNavigator;
+export default AppPagesNavigator;

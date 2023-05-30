@@ -13,7 +13,7 @@ import { AppContext } from './src/components/AppContext';
 import { useCallback, useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { allCurrencies } from './src/database/data';
-import AppNavigator from './src/navigators/AppNavigator';
+import AppPagesNavigator from './src/navigators/AppPagesNavigator';
 
 export default function App() {
   const [selectedCurrency, setSelectedCurrency] = useState('Dollar');
@@ -68,7 +68,7 @@ export default function App() {
           }}
           touchSoundDisabled={true}>
           <View style={styles.appContainer}>
-            <AppNavigator />
+            <AppPagesNavigator />
           </View>
         </TouchableWithoutFeedback>
       </SafeAreaView>
