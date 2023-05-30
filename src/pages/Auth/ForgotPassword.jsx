@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Logo from '../../components/Logo';
 import Button from '../../components/Button';
-import { signInData } from '../../../utils/data';
+import { signInData } from '../../database/data';
 import Header from '../../components/Header';
 import Email from '../../../assets/images/mail.svg';
 import Apple from '../../../assets/images/apple.svg';
@@ -10,6 +10,7 @@ import Google from '../../../assets/images/google.svg';
 import PageContainer from '../../components/PageContainer';
 import RegularText from '../../components/fonts/RegularText';
 import BoldText from '../../components/fonts/BoldText';
+import { AppContext } from '../../components/AppContext';
 
 const ForgotPassword = ({ navigation }) => {
   const [codeSent, setCodeSent] = useState(false);
@@ -23,11 +24,14 @@ const ForgotPassword = ({ navigation }) => {
     console.log(formData);
     setCodeSent(true);
   };
+  const { vh } = useContext(AppContext);
 
   useEffect(() => {
     setIsPinOkay(otpCode.length === 4);
   }, [otpCode.length]);
+
   const handleCofirm = () => {
+    console.log(otpCode);
     isPinOkay
       ? navigation.navigate('BottomTabs')
       : console.log(Number(otpCode));
@@ -37,73 +41,75 @@ const ForgotPassword = ({ navigation }) => {
   return (
     <PageContainer padding={true} justify={true}>
       <View style={styles.container}>
-        <View style={styles.logo}>
-          <Logo />
-        </View>
-        <View style={styles.form}>
-          <Header
-            title={'Forgot Password'}
-            text={'To continue, kindly enter your email address'}
-          />
-          {codeSent ? (
-            <>
-              <View style={styles.codeLengthsContainer}>
-                {codeLengths.map(codeLength => (
-                  <OTPInput
-                    key={codeLength}
-                    codeLength={codeLength}
-                    focusIndex={focusIndex}
-                    setFocusIndex={setFocusIndex}
-                    otpCode={otpCode}
-                    setOtpCode={setOtpCode}
-                  />
+        <View style={{ ...styles.container, minHeight: vh }}>
+          <View style={styles.logo}>
+            <Logo />
+          </View>
+          <View style={styles.form}>
+            <Header
+              title={'Forgot Password'}
+              text={'To continue, kindly enter your email address'}
+            />
+            {codeSent ? (
+              <>
+                <View style={styles.codeLengthsContainer}>
+                  {codeLengths.map(codeLength => (
+                    <OTPInput
+                      key={codeLength}
+                      codeLength={codeLength}
+                      focusIndex={focusIndex}
+                      setFocusIndex={setFocusIndex}
+                      otpCode={otpCode}
+                      setOtpCode={setOtpCode}
+                    />
+                  ))}
+                </View>
+                <View>
+                  <RegularText style={styles.enterCodeText}>
+                    Enter the Four Digit code sent to your email
+                  </RegularText>
+                </View>
+                <Button
+                  text={'Confirm One time password'}
+                  handlePress={handleCofirm}
+                  disabled={!isPinOkay}
+                />
+              </>
+            ) : (
+              <>
+                {signInData.slice(0, 1).map(item => (
+                  <Form item={item} setFormData={setFormData} key={item.name} />
                 ))}
-              </View>
-              <View>
-                <RegularText style={styles.enterCodeText}>
-                  Enter the Four Digit code sent to your email
+                <Button
+                  text={'Send One time password'}
+                  handlePress={handlePress}
+                />
+              </>
+            )}
+          </View>
+          {!codeSent ? (
+            <View style={styles.alreadyContainer}>
+              <View style={styles.already}>
+                <RegularText style={styles.alreadyText}>
+                  Already have an account?
                 </RegularText>
+                <Pressable onPress={() => navigation.navigate('Signin')}>
+                  <BoldText style={styles.signIn}>Sign in</BoldText>
+                </Pressable>
               </View>
-              <Button
-                text={'Confirm One time password'}
-                handlePress={handleCofirm}
-                disabled={!isPinOkay}
-              />
-            </>
+              <View style={styles.signInIcons}>
+                <Pressable onPress={() => console.log('apple was clicked')}>
+                  <Apple />
+                </Pressable>
+                <Pressable onPress={() => console.log('google was clicked')}>
+                  <Google />
+                </Pressable>
+              </View>
+            </View>
           ) : (
-            <>
-              {signInData.slice(0, 1).map(item => (
-                <Form item={item} setFormData={setFormData} key={item.name} />
-              ))}
-              <Button
-                text={'Send One time password'}
-                handlePress={handlePress}
-              />
-            </>
+            <View style={styles.alreadyContainer} />
           )}
         </View>
-        {!codeSent ? (
-          <View style={styles.alreadyContainer}>
-            <View style={styles.already}>
-              <RegularText style={styles.alreadyText}>
-                Already have an account?
-              </RegularText>
-              <Pressable onPress={() => navigation.navigate('Signin')}>
-                <BoldText style={styles.signIn}>Sign in</BoldText>
-              </Pressable>
-            </View>
-            <View style={styles.signInIcons}>
-              <Pressable onPress={() => console.log('apple was clicked')}>
-                <Apple />
-              </Pressable>
-              <Pressable onPress={() => console.log('google was clicked')}>
-                <Google />
-              </Pressable>
-            </View>
-          </View>
-        ) : (
-          <View style={styles.alreadyContainer} />
-        )}
       </View>
     </PageContainer>
   );
@@ -134,6 +140,7 @@ const styles = StyleSheet.create({
     width: 50,
     textAlign: 'center',
     fontSize: 35,
+    fontFamily: 'OpenSans-700',
   },
   codeLengthsContainer: {
     flexDirection: 'row',
@@ -157,7 +164,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'flex-start',
     borderRadius: 8,
-    // fontFamily: 'Poppins-Regular',
+    fontFamily: 'OpenSans-600',
   },
   enterCodeText: {
     color: '#7A7A7A',
@@ -225,18 +232,16 @@ const OTPInput = ({
   setOtpCode,
 }) => {
   const inputRef = useRef();
-  const [focused, setFocused] = useState(false);
   const [inputValue, setInputValue] = useState('');
+
   useEffect(() => {
     if (codeLength === focusIndex) {
-      setTimeout(() => {
-        inputRef.current.focus();
-      }, 100);
+      inputRef.current.focus();
       inputRef.current.clear();
       setInputValue('');
-      setFocused(true);
     }
   }, [focusIndex, codeLength]);
+
   const handleKeyPress = ({ nativeEvent }) => {
     if (nativeEvent.key !== 'Backspace') {
       focusIndex < 4
@@ -249,13 +254,14 @@ const OTPInput = ({
         : inputRef.current.clear();
     }
   };
+
   return (
     <TextInput
       style={styles.codeInput}
       value={inputValue}
       inputMode="numeric"
       maxLength={1}
-      autoFocus={focused}
+      autoFocus={codeLength === focusIndex}
       ref={inputRef}
       onChangeText={text => {
         setInputValue(text);

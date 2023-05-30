@@ -1,5 +1,11 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable } from 'react-native';
+import { useContext, useState } from 'react';
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  ScrollView,
+} from 'react-native';
 import User from '../../../assets/images/user.svg';
 import Email from '../../../assets/images/mail.svg';
 import Phone from '../../../assets/images/phone.svg';
@@ -7,13 +13,14 @@ import Lock from '../../../assets/images/lock.svg';
 import Eye from '../../../assets/images/eye.svg';
 import Apple from '../../../assets/images/apple.svg';
 import Google from '../../../assets/images/google.svg';
-import { signInData } from '../../../utils/data.js';
+import { signInData } from '../../database/data.js';
 import Logo from '../../components/Logo';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
+import { AppContext } from '../../components/AppContext';
 
 const Signin = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -24,6 +31,7 @@ const Signin = ({ navigation }) => {
   const [successMessage, setSuccessMessage] = useState();
 
   const handleLogin = () => {
+    navigation.navigate('BottomTabs');
     console.log(formData);
   };
 
@@ -31,73 +39,71 @@ const Signin = ({ navigation }) => {
     setErrorMessage('');
     setSuccessMessage('');
   };
+  const { vh } = useContext(AppContext);
 
   return (
-    <PageContainer padding={true}>
-      <View style={styles.container}>
-        <View style={styles.headers}>
-          <Logo />
-        </View>
-        <View style={styles.form}>
-          <Header
-            title={'Login Information'}
-            text={'To continue, kindly complete the following details'}
-          />
-          {signInData.map(inputForm => (
-            <FormField
-              key={inputForm.name}
-              inputForm={inputForm}
-              setFormData={setFormData}
-              editInput={editInput}
+    <PageContainer>
+      <ScrollView>
+        <View style={{ ...styles.container, minHeight: vh }}>
+          <View style={styles.headers}>
+            <Logo />
+          </View>
+          <View style={styles.form}>
+            <Header
+              title={'Login Information'}
+              text={'To continue, kindly complete the following details'}
             />
-          ))}
-          {errorMessage && (
-            <>
-              {/* <Icon name="warning" size={15} color={'red'} /> */}
-              <BoldText style={styles.errorMessageText}>
-                {errorMessage}
-              </BoldText>
-            </>
-          )}
-          {successMessage && (
-            <>
-              {/* <Icon name="check-circle" size={20} color="green" />{' '} */}
-              <BoldText style={styles.successMessageText}>
-                {successMessage}
-              </BoldText>
-            </>
-          )}
-          <View style={styles.forgetPressable}>
-            <Pressable onPress={() => navigation.navigate('ForgotPassword')}>
-              <BoldText style={styles.forget}>Forget Password?</BoldText>
-            </Pressable>
+            {signInData.map(inputForm => (
+              <FormField
+                key={inputForm.name}
+                inputForm={inputForm}
+                setFormData={setFormData}
+                editInput={editInput}
+              />
+            ))}
+            {errorMessage && (
+              <>
+                {/* <Icon name="warning" size={15} color={'red'} /> */}
+                <BoldText style={styles.errorMessageText}>
+                  {errorMessage}
+                </BoldText>
+              </>
+            )}
+            {successMessage && (
+              <>
+                {/* <Icon name="check-circle" size={20} color="green" />{' '} */}
+                <BoldText style={styles.successMessageText}>
+                  {successMessage}
+                </BoldText>
+              </>
+            )}
+            <View style={styles.forgetPressable}>
+              <Pressable onPress={() => navigation.navigate('ForgotPassword')}>
+                <BoldText style={styles.forget}>Forget Password?</BoldText>
+              </Pressable>
+            </View>
+          </View>
+          <View style={styles.actionButtons}>
+            <View style={styles.signInIcons}>
+              <Pressable onPress={() => console.log('apple was clicked')}>
+                <Apple />
+              </Pressable>
+              <Pressable onPress={() => console.log('google was clicked')}>
+                <Google />
+              </Pressable>
+            </View>
+            <View style={styles.already}>
+              <RegularText style={styles.alreadyText}>
+                Don&apos;t have an account?
+              </RegularText>
+              <Pressable onPress={() => navigation.navigate('Signup')}>
+                <BoldText style={styles.signIn}>Sign up</BoldText>
+              </Pressable>
+            </View>
+            <Button text={'Log in'} handlePress={handleLogin} />
           </View>
         </View>
-        <View style={styles.actionButtons}>
-          <View style={styles.signInIcons}>
-            <Pressable onPress={() => console.log('apple was clicked')}>
-              <Apple />
-            </Pressable>
-            <Pressable onPress={() => console.log('google was clicked')}>
-              <Google />
-            </Pressable>
-          </View>
-          <View style={styles.already}>
-            <RegularText style={styles.alreadyText}>
-              Don&apos;t have an account?
-            </RegularText>
-            <Pressable onPress={() => navigation.navigate('Signup')}>
-              <BoldText style={styles.signIn}>Sign up</BoldText>
-            </Pressable>
-          </View>
-          <Button
-            text={'Log in'}
-            handlePress={() => {
-              navigation.navigate('BottomTabs');
-            }}
-          />
-        </View>
-      </View>
+      </ScrollView>
     </PageContainer>
   );
 };
@@ -105,14 +111,14 @@ const Signin = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     paddingBottom: 5 + '%',
+    paddingHorizontal: 3 + '%',
   },
   headers: {
     flex: 1,
     gap: 10,
     justifyContent: 'flex-end',
-    marginBottom: 50,
+    marginBottom: 80,
   },
   heading: {
     fontWeight: '600',
@@ -136,7 +142,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'flex-start',
     borderRadius: 8,
-    // fontFamily: 'Poppins-Regular',
+    fontFamily: 'OpenSans-600',
   },
   eye: {
     height: 100 + '%',
@@ -153,14 +159,12 @@ const styles = StyleSheet.create({
   errorMessageText: {
     marginLeft: 5,
     fontSize: 13,
-    fontFamily: 'Poppins-Regular',
     textAlign: 'center',
   },
   successMessageText: {
     marginLeft: 5,
     fontSize: 13,
     marginTop: 2,
-    fontFamily: 'Poppins-Regular',
     color: 'green',
     textAlign: 'center',
   },
@@ -172,7 +176,6 @@ const styles = StyleSheet.create({
   },
   actionButtons: {
     flex: 1,
-    // justifyContent: 'center',
     paddingBottom: 5 + '%',
   },
   already: {

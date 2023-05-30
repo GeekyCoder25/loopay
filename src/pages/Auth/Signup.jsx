@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -13,13 +13,14 @@ import Lock from '../../../assets/images/lock.svg';
 import Eye from '../../../assets/images/eye.svg';
 import Apple from '../../../assets/images/apple.svg';
 import Google from '../../../assets/images/google.svg';
-import { signUpData } from '../../../utils/data.js';
+import { signUpData } from '../../database/data.js';
 import Logo from '../../components/Logo';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
+import { AppContext } from '../../components/AppContext';
 
 const Signup = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -46,61 +47,68 @@ const Signup = ({ navigation }) => {
     setErrorMessage('');
     setSuccessMessage('');
   };
+  const { vh } = useContext(AppContext);
 
   return (
     <PageContainer>
-      <ScrollView style={styles.scrollviewContainer}>
-        <View style={styles.headers}>
-          <Logo />
-        </View>
-        <View style={styles.form}>
-          <Header
-            title={'Personal Info'}
-            text={'To continue, kindly complete the following fields.'}
-          />
-          {signUpData.map(inputForm => (
-            <FormField
-              key={inputForm.name}
-              inputForm={inputForm}
-              setFormData={setFormData}
-              editInput={editInput}
+      <ScrollView>
+        <View
+          style={{
+            ...styles.container,
+            minHeight: vh,
+          }}>
+          <View style={styles.headers}>
+            <Logo />
+          </View>
+          <View style={styles.form}>
+            <Header
+              title={'Personal Info'}
+              text={'To continue, kindly complete the following fields.'}
             />
-          ))}
-          {errorMessage && (
-            <>
-              {/* <Icon name="warning" size={15} color="red" /> */}
-              <BoldText style={styles.errorMessageBold}>
-                {errorMessage}
-              </BoldText>
-            </>
-          )}
-          {successMessage && (
-            <>
-              {/* <Icon name="check-circle" size={20} color="green" />{' '} */}
-              <BoldText style={styles.successMessageText}>
-                {successMessage}
-              </BoldText>
-            </>
-          )}
-        </View>
-        <View style={styles.alreadyContainer}>
-          <View style={styles.already}>
-            <RegularText style={styles.alreadyText}>
-              Already have an account?
-            </RegularText>
-            <Pressable onPress={() => navigation.navigate('Signin')}>
-              <BoldText style={styles.signIn}>Sign in</BoldText>
-            </Pressable>
+            {signUpData.map(inputForm => (
+              <FormField
+                key={inputForm.name}
+                inputForm={inputForm}
+                setFormData={setFormData}
+                editInput={editInput}
+              />
+            ))}
+            {errorMessage && (
+              <>
+                {/* <Icon name="warning" size={15} color="red" /> */}
+                <BoldText style={styles.errorMessageBold}>
+                  {errorMessage}
+                </BoldText>
+              </>
+            )}
+            {successMessage && (
+              <>
+                {/* <Icon name="check-circle" size={20} color="green" />{' '} */}
+                <BoldText style={styles.successMessageText}>
+                  {successMessage}
+                </BoldText>
+              </>
+            )}
           </View>
-          <View style={styles.signInIcons}>
-            <Pressable onPress={() => console.log('apple was clicked')}>
-              <Apple />
-            </Pressable>
-            <Pressable onPress={() => console.log('google was clicked')}>
-              <Google />
-            </Pressable>
+          <View style={styles.alreadyContainer}>
+            <View style={styles.already}>
+              <RegularText style={styles.alreadyText}>
+                Already have an account?
+              </RegularText>
+              <Pressable onPress={() => navigation.navigate('Signin')}>
+                <BoldText style={styles.signIn}>Sign in</BoldText>
+              </Pressable>
+            </View>
+            <View style={styles.signInIcons}>
+              <Pressable onPress={() => console.log('apple was clicked')}>
+                <Apple />
+              </Pressable>
+              <Pressable onPress={() => console.log('google was clicked')}>
+                <Google />
+              </Pressable>
+            </View>
+            <Button text={'Register'} handlePress={handleLogin} />
           </View>
-          <Button text={'Register'} handlePress={handleLogin} />
         </View>
       </ScrollView>
     </PageContainer>
@@ -108,14 +116,14 @@ const Signup = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  scrollviewContainer: {
+  container: {
     flex: 1,
     paddingBottom: 5 + '%',
     paddingHorizontal: 3 + '%',
   },
   headers: {
-    gap: 10,
     flex: 1,
+    gap: 10,
     justifyContent: 'flex-end',
     minHeight: 100,
   },
@@ -141,7 +149,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'flex-start',
     borderRadius: 8,
-    // fontFamily: 'Poppins-Regular',
+    fontFamily: 'OpenSans-600',
   },
   eye: {
     height: 100 + '%',
@@ -158,14 +166,12 @@ const styles = StyleSheet.create({
   errorMessageText: {
     marginLeft: 5,
     fontSize: 13,
-    fontFamily: 'Poppins-Regular',
     textAlign: 'center',
   },
   successMessageText: {
     marginLeft: 5,
     fontSize: 13,
     marginTop: 2,
-    fontFamily: 'Poppins-Regular',
     color: 'green',
     textAlign: 'center',
   },

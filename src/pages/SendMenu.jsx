@@ -15,50 +15,22 @@ import StatementIcon from '../../assets/images/statementBeneficiary.svg';
 import PageContainer from '../components/PageContainer';
 import RegularText from '../components/fonts/RegularText';
 import BoldText from '../components/fonts/BoldText';
+import { sendMenuRoutes } from '../database/data';
+import { AppContext } from '../components/AppContext';
+import React, { useContext } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 
 const SendMenu = ({ navigation }) => {
+  const { setShowTabBar } = useContext(AppContext);
+  useFocusEffect(
+    React.useCallback(() => {
+      setShowTabBar(true);
+    }, [setShowTabBar]),
+  );
   const beneficiaries = [
     { phoneNo: 9073002599, accName: 'Toyyib Lawal' },
     { phoneNo: 802497515, accName: 'J. Maddison' },
     { phoneNo: 56625625115, accName: 'Milly James' },
-  ];
-  const sendMenuRoutes = [
-    {
-      routeName: 'Add Money',
-      routeDetails: 'Top your USD Account',
-      routeIcon: 'add',
-      routeNavigate: 'AddMoney',
-    },
-    {
-      routeName: 'Swap Funds',
-      routeDetails: 'Convert your USD to another currency',
-      routeIcon: 'swap',
-      routeNavigate: 'SwapFunds',
-    },
-    {
-      routeName: 'Card',
-      routeDetails: 'Virtual Debit Card',
-      routeIcon: 'card',
-      routeNavigate: 'VirtualCard',
-    },
-    {
-      routeName: 'Send Gift',
-      routeDetails: 'Send Gift to other LOOPAY users',
-      routeIcon: 'gift',
-      routeNavigate: 'SendGift',
-    },
-    {
-      routeName: 'Account Information',
-      routeDetails: 'See your virtual Account details ',
-      routeIcon: 'info',
-      routeNavigate: 'AccInfo',
-    },
-    {
-      routeName: 'Account Statement',
-      routeDetails: 'Generate account statement for USD  account',
-      routeIcon: 'statement',
-      routeNavigate: 'AccStatement',
-    },
   ];
   return (
     <PageContainer>
@@ -168,8 +140,8 @@ const RoutePage = ({ routePage, navigation }) => {
   };
   const handleNavigate = () => {
     navigation.navigate(routePage.routeNavigate);
-    console.log('yo');
   };
+
   return (
     <Pressable onPress={handleNavigate} style={styles.route}>
       <View style={styles.routeIcon}>{routeIcon()}</View>

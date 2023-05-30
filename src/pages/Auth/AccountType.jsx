@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Logo from '../../components/Logo';
 import { Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
 import Button from '../../components/Button';
-import { accountType } from '../../../utils/data';
+import { accountType } from '../../database/data';
 import EmptyCheckbox from '../../../assets/images/emptyCheckbox.svg';
 import FilledCheckbox from '../../../assets/images/filledCheckbox.svg';
 import Header from '../../components/Header';

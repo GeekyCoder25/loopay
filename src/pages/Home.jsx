@@ -16,7 +16,7 @@ import Wallet from '../../assets/images/wallet.svg';
 import UpAndDownArrow from '../../assets/images/up-down-arrow.svg';
 import Bg from '../../assets/images/bg1.svg';
 import { AppContext } from '../components/AppContext';
-import { historyData } from '../../utils/data';
+import { historyData } from '../database/data';
 import SelectCurrencyModal from '../components/SelectCurrencyModal';
 import PageContainer from '../components/PageContainer';
 import RegularText from '../components/fonts/RegularText';
@@ -28,8 +28,6 @@ const Home = () => {
 
   const fullName = 'James Sussy';
   const walletAmount = 124.67;
-  const currrencyType = selectedCurrency;
-  const currencySymbol = '$';
 
   return (
     <>
@@ -55,7 +53,7 @@ const Home = () => {
                 <View>
                   <BoldText style={styles.amount}>{walletAmount}</BoldText>
                   <RegularText style={styles.currrencyType}>
-                    {currrencyType}
+                    {selectedCurrency.currency}
                   </RegularText>
                 </View>
               </View>
@@ -89,7 +87,7 @@ const Home = () => {
               <History
                 key={history.id}
                 history={history}
-                currencySymbol={currencySymbol}
+                currencySymbol={selectedCurrency.symbol}
               />
             ))}
           </ScrollView>

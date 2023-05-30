@@ -70,8 +70,9 @@ const Menu = ({ navigation }) => {
       routeIcon: 'dualUser',
     },
   ];
+  const { vh } = useContext(AppContext);
   return (
-    <PageContainer>
+    <PageContainer paddingTop={0}>
       <View style={styles.header}>
         <BoldText style={styles.headerText}>My details</BoldText>
         <Image
@@ -80,7 +81,7 @@ const Menu = ({ navigation }) => {
         />
       </View>
       <ScrollView>
-        <View style={styles.routesContainer}>
+        <View style={{ ...styles.routesContainer, minHeight: vh * 0.7 }}>
           {menuRoutes.map(routePage => (
             <RoutePage key={routePage.routeName} routePage={routePage} />
           ))}

@@ -11,7 +11,7 @@ import {
 import Search from '../../assets/images/search.svg';
 import Plus from '../../assets/images/plus.svg';
 import Button from './Button';
-import { allCurrencies } from '../../utils/data';
+import { allCurrencies } from '../database/data';
 import { AppContext } from './AppContext';
 import RegularText from './fonts/RegularText';
 import BoldText from './fonts/BoldText';
@@ -65,11 +65,11 @@ const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
                   style={{
                     ...styles.currency,
                     backgroundColor:
-                      selectedCurrency === currency.currency
+                      selectedCurrency.currency === currency.currency
                         ? '#e4e2e2'
                         : 'transparent',
                   }}
-                  onPress={() => handlecurrencyChange(currency.currency)}>
+                  onPress={() => handlecurrencyChange(currency)}>
                   <View style={styles.currencyIcon}>
                     <Image
                       source={require('../../assets/images/us-flag.png')}
@@ -151,6 +151,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 15,
     height: 50,
+    fontFamily: 'OpenSans-600',
   },
   currencies: {
     flex: 1,
