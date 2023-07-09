@@ -1,11 +1,11 @@
 import BackArrow from '../../../assets/images/backArrrow.svg';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import HideTabBar from '../../../utils/HideTabBar';
+import { hideTabRoutes } from '../../config/config';
 
 const SendMenuHeader = ({ goBack, onPress, route }) => {
   const decision = () => {
-    const hideTabRoutes = ['AddMoney', 'AddMoneyConfirm'];
-    if (hideTabRoutes.includes(route.name)) return false;
+    if (hideTabRoutes.includes(route?.name)) return false;
   };
 
   HideTabBar(decision());

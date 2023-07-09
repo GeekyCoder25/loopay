@@ -6,7 +6,14 @@ import CardIcon from '../../../assets/images/cardBeneficiary.svg';
 import AtmScratch from '../../../assets/images/atmScratch.svg';
 import AtmChevron from '../../../assets/images/atmArrow.svg';
 import RegularText from '../../components/fonts/RegularText';
+import { useContext } from 'react';
+import { AppContext } from '../../components/AppContext';
+
 const VirtualCard = () => {
+  const { appData } = useContext(AppContext);
+
+  const { firstName, lastName } = appData?.userProfile;
+  const fullName = `${firstName} ${lastName}`;
   return (
     <PageContainer paddingTop={10}>
       <View style={styles.body}>
@@ -31,7 +38,7 @@ const VirtualCard = () => {
               source={require('../../../assets/images/cardBg.png')}
               style={styles.atmCard}>
               <Image
-                source={require('../../../assets/icon.png')}
+                source={require('../../../assets/icon2.png')}
                 style={styles.logo}
                 resizeMode="contain"
               />
@@ -43,7 +50,7 @@ const VirtualCard = () => {
                   <AtmScratch width={50} height={50} />
                 </View>
               </View>
-              <BoldText style={styles.atmName}>userName</BoldText>
+              <BoldText style={styles.atmName}>{fullName}</BoldText>
             </ImageBackground>
           </View>
         </ImageBackground>
@@ -142,6 +149,7 @@ const styles = StyleSheet.create({
   atmName: {
     color: '#fdfdfd',
     marginBottom: 10,
+    fontSize: 12,
   },
   button: {
     marginTop: 50,

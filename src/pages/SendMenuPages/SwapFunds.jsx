@@ -1,11 +1,10 @@
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
 import Button from '../../components/Button';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../components/AppContext';
 import RegularText from '../../components/fonts/RegularText';
 import {
-  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -15,54 +14,60 @@ import {
 } from 'react-native';
 import ChevronDown from '../../../assets/images/chevron-down-fill.svg';
 import { addingDecimal } from '../../../utils/AddingZero';
+import FlagSelect from '../../components/FlagSelect';
+import {
+  allCurrencies,
+  swapFromObject,
+  swapToObject,
+} from '../../database/data';
 
 const SwapFunds = ({ navigation }) => {
+  const { vh, selectedCurrency, isLoading, setIsLoading } =
+    useContext(AppContext);
   const [errorMessage, setErrorMessage] = useState(false);
   const [value, setValue] = useState('');
-  const { vh } = useContext(AppContext);
   const [swapData, setSwapData] = useState({});
   const [toReceive, setToReceive] = useState('Amount to receive');
   const [fee, setFee] = useState(0);
-  const dollarToNaira = {
-    rate: 730,
-    percentageFee: 2,
-  };
+  const [swapFrom, setSwapFrom] = useState(swapFromObject);
+  const [swapTo, setSwapTo] = useState(swapToObject);
+  const [swapToCurrency, setSwapToCurrncy] = useState(
+    selectedCurrency.currency === 'Naira' ? 'Dollar' : 'Naira',
+  );
+  const currencyRateAPI = [
+    {
+      name: 'DollarToNaira',
+      rate: 730,
+      percentageFee: 2,
+    },
+    {
+      name: 'NairaToDollar',
+      rate: 1 / 780,
+      percentageFee: 2,
+    },
+  ];
 
-  const swapFrom = {
-    currency: 'Dollar',
-    acronym: 'USD',
-    amount: 0.0,
-    symbol: '$',
-    minimumAmountToAdd: 1,
-    fee: 1,
-    balance: 1320,
-  };
-  const swapTo = {
-    currency: 'Naira',
-    acronym: 'NGN',
-    amount: 0.0,
-    symbol: '₦',
-    minimumAmountToAdd: 100,
-    fee: 1,
-  };
+  useEffect(() => {
+    const selectedCurrencyFunc = index =>
+      allCurrencies.find(currency => currency.currency === index);
+    setSwapFrom({ ...selectedCurrency, balance: 1320 });
+    setSwapTo({ ...selectedCurrencyFunc(swapToCurrency), balance: 50 });
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  }, [selectedCurrency, setIsLoading, swapToCurrency]);
 
   const currencyToCurrencyDetector = `${swapFrom.currency}To${swapTo.currency}`;
 
   const currencyRate = () => {
-    switch (currencyToCurrencyDetector) {
-      case 'DollarToNaira':
-        return dollarToNaira.rate;
-      default:
-        break;
-    }
+    return currencyRateAPI
+      .find(rate => rate.name === currencyToCurrencyDetector)
+      ?.rate.toFixed(2);
   };
   const currencyFee = () => {
-    switch (currencyToCurrencyDetector) {
-      case 'DollarToNaira':
-        return dollarToNaira.percentageFee;
-      default:
-        break;
-    }
+    return currencyRateAPI.find(
+      percentageFee => percentageFee.name === currencyToCurrencyDetector,
+    ).percentageFee;
   };
 
   const handlePriceInput = text => {
@@ -125,104 +130,106 @@ const SwapFunds = ({ navigation }) => {
   return (
     <PageContainer paddingTop={10}>
       <ScrollView>
-        <View style={{ ...styles.body, minHeight: vh * 0.88 }}>
-          <BoldText style={styles.headerText}>Swap Funds</BoldText>
-          <View style={styles.swapContainer}>
-            <View style={styles.swap}>
-              <RegularText style={styles.swapTitle}>
-                Account to swap from
-              </RegularText>
-              <Pressable
-                style={{ ...styles.swapBox, ...styles.from }}
-                onPress={() => {}}>
-                <Image
-                  source={require('../../../assets/images/us-flag.png')}
-                  style={styles.flagIcon}
-                />
-                <View style={styles.swapText}>
-                  <BoldText>{swapFrom.acronym} Balance</BoldText>
-                  <RegularText style={styles.swapBalance}>
-                    {swapFrom.symbol}{' '}
-                    {Number(swapFrom.balance.toFixed(2)).toLocaleString()}
-                  </RegularText>
-                </View>
-                <ChevronDown />
-              </Pressable>
+        {!isLoading && (
+          <View style={{ ...styles.body, minHeight: vh * 0.88 }}>
+            <BoldText style={styles.headerText}>Swap Funds</BoldText>
+            <View style={styles.swapContainer}>
+              <View style={styles.swap}>
+                <RegularText style={styles.swapTitle}>
+                  Account to swap from
+                </RegularText>
+                <Pressable
+                  style={{ ...styles.swapBox, ...styles.from }}
+                  onPress={() => {}}>
+                  <FlagSelect
+                    country={swapFrom.currency}
+                    style={styles.flagIcon}
+                  />
+                  <View style={styles.swapText}>
+                    <BoldText>{swapFrom.acronym} Balance</BoldText>
+                    <RegularText style={styles.swapBalance}>
+                      {swapFrom.symbol}{' '}
+                      {Number(swapFrom.balance.toFixed(2)).toLocaleString()}
+                    </RegularText>
+                  </View>
+                  <ChevronDown />
+                </Pressable>
+              </View>
+              <View style={styles.swap}>
+                <RegularText style={styles.swapTitle}>
+                  Account to swap to
+                </RegularText>
+                <Pressable
+                  style={{ ...styles.swapBox, ...styles.to }}
+                  onPress={() => {}}>
+                  <FlagSelect
+                    country={swapTo.currency}
+                    style={styles.flagIcon}
+                  />
+                  <View style={styles.swapText}>
+                    <BoldText>{swapTo.acronym} Balance</BoldText>
+                    <RegularText style={styles.swapBalance}>
+                      {swapTo.symbol}{' '}
+                      {Number(swapTo.balance.toFixed(2)).toLocaleString()}
+                    </RegularText>
+                  </View>
+                  <ChevronDown />
+                </Pressable>
+              </View>
             </View>
-            <View style={styles.swap}>
-              <RegularText style={styles.swapTitle}>
-                Account to swap to
+            <View style={styles.rate}>
+              <BoldText>Current Rate:</BoldText>
+              <RegularText>
+                1{swapFrom.symbol} = {swapTo.symbol}
+                {currencyRate()}
               </RegularText>
-              <Pressable
-                style={{ ...styles.swapBox, ...styles.to }}
-                onPress={() => {}}>
-                <Image
-                  source={require('../../../assets/images/ng-flag.png')}
-                  style={styles.flagIcon}
-                />
-                <View style={styles.swapText}>
-                  <BoldText>{swapTo.acronym} Balance</BoldText>
-                  <RegularText style={styles.swapBalance}>
-                    {swapTo.symbol}{' '}
-                    {Number(
-                      (swapFrom.balance * currencyRate()).toFixed(2),
-                    ).toLocaleString()}
-                  </RegularText>
-                </View>
-                <ChevronDown />
-              </Pressable>
             </View>
-          </View>
-          <View style={styles.rate}>
-            <BoldText>Current Rate:</BoldText>
-            <RegularText>
-              1{swapFrom.symbol} = {swapTo.symbol}
-              {currencyRate()}
-            </RegularText>
-          </View>
-          <View style={styles.swapInputContainer}>
-            <View>
-              <Text style={styles.topUp}>Amount to top up</Text>
+            <View style={styles.swapInputContainer}>
+              <View>
+                <RegularText style={styles.topUp}>Amount to top up</RegularText>
+                <View style={styles.textInputContainer}>
+                  <BoldText style={styles.symbol}>{swapFrom.symbol}</BoldText>
+                  <TextInput
+                    style={styles.textInput}
+                    inputMode="numeric"
+                    onChangeText={text => handlePriceInput(text)}
+                    onBlur={handleAutoFill}
+                    value={value}
+                    placeholder="Amount to swap"
+                    placeholderTextColor={'#525252'}
+                  />
+                </View>
+                {errorMessage && (
+                  <RegularText style={styles.errorMessage}>
+                    The minimum amount required is {swapFrom.symbol}
+                    {swapFrom.minimumAmountToAdd}
+                  </RegularText>
+                )}
+              </View>
+              <RegularText style={styles.topUp}>
+                Amount you will recieve
+              </RegularText>
               <View style={styles.textInputContainer}>
-                <BoldText style={styles.symbol}>{swapFrom.symbol}</BoldText>
-                <TextInput
-                  style={styles.textInput}
-                  inputMode="numeric"
-                  onChangeText={text => handlePriceInput(text)}
-                  onBlur={handleAutoFill}
-                  value={value}
-                  placeholder="Amount to swap"
-                  placeholderTextColor={'#525252'}
-                />
-              </View>
-              {errorMessage && (
-                <RegularText style={styles.errorMessage}>
-                  The minimum amount required is {swapFrom.symbol}
-                  {swapFrom.minimumAmountToAdd}
-                </RegularText>
-              )}
-            </View>
-            <Text style={styles.topUp}>Amount you will recieve</Text>
-            <View style={styles.textInputContainer}>
-              <BoldText style={styles.symbol}>{swapTo.symbol}</BoldText>
-              <View style={{ ...styles.textInput, ...styles.toReceive }}>
-                <RegularText>{toReceive}</RegularText>
-              </View>
-              <View style={styles.fee}>
-                <RegularText style={styles.feeText}>
-                  Service Charged
-                </RegularText>
-                <RegularText style={styles.feeText}>
-                  {swapTo.symbol}
-                  {fee}
-                </RegularText>
+                <BoldText style={styles.symbol}>{swapTo.symbol}</BoldText>
+                <View style={{ ...styles.textInput, ...styles.toReceive }}>
+                  <RegularText>{toReceive}</RegularText>
+                </View>
+                <View style={styles.fee}>
+                  <RegularText style={styles.feeText}>
+                    Service Charged
+                  </RegularText>
+                  <RegularText style={styles.feeText}>
+                    {swapTo.symbol}
+                    {fee}
+                  </RegularText>
+                </View>
               </View>
             </View>
+            <View style={styles.button}>
+              <Button text="Continue" handlePress={handleContine} />
+            </View>
           </View>
-          <View style={styles.button}>
-            <Button text="Continue" handlePress={handleContine} />
-          </View>
-        </View>
+        )}
       </ScrollView>
     </PageContainer>
   );

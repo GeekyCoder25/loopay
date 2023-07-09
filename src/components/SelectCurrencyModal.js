@@ -15,6 +15,7 @@ import { allCurrencies } from '../database/data';
 import { AppContext } from './AppContext';
 import RegularText from './fonts/RegularText';
 import BoldText from './fonts/BoldText';
+import FlagSelect from './FlagSelect';
 
 const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
   const { selectedCurrency, setSelectedCurrency } = useContext(AppContext);
@@ -71,12 +72,12 @@ const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
                   }}
                   onPress={() => handlecurrencyChange(currency)}>
                   <View style={styles.currencyIcon}>
-                    <Image
-                      source={require('../../assets/images/us-flag.png')}
-                    />
+                    <FlagSelect country={currency.currency} />
                     <View>
                       <BoldText>{currency.acronym}</BoldText>
-                      <RegularText>{currency.currency}</RegularText>
+                      <RegularText style={styles.currencyName}>
+                        {currency.currency}
+                      </RegularText>
                     </View>
                   </View>
                   <RegularText style={styles.currencyAmount}>
@@ -167,6 +168,9 @@ const styles = StyleSheet.create({
     gap: 20,
     flexDirection: 'row',
     flex: 1,
+  },
+  currencyName: {
+    textTransform: 'capitalize',
   },
   currencyAmount: {
     fontSize: 22,

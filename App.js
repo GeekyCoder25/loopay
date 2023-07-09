@@ -7,18 +7,24 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import { useFonts } from 'expo-font';
 
 import { AppContext } from './src/components/AppContext';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { allCurrencies } from './src/database/data';
-import AppPagesNavigator from './src/navigators/AppPagesNavigator';
+import AppStart from './src/components/AppStart';
+import LoadingModal from './src/components/LoadingModal';
+
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const [selectedCurrency, setSelectedCurrency] = useState('Dollar');
+  const [selectedCurrency, setSelectedCurrency] = useState(null);
   const [verified, setVerified] = useState(false);
   const [showTabBar, setShowTabBar] = useState(true);
+  const [internetStatus, setInternetStatus] = useState('true');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [appData, setAppData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const vw = useWindowDimensions().width;
   const vh = useWindowDimensions().height;
 
@@ -30,8 +36,15 @@ export default function App() {
     vh,
     showTabBar,
     setShowTabBar,
+    internetStatus,
+    setInternetStatus,
+    isLoggedIn,
+    setIsLoggedIn,
+    isLoading,
+    setIsLoading,
+    appData,
+    setAppData,
   };
-
   const defaultCurrency = allCurrencies.find(
     currency => currency.currency === 'Naira',
   );
@@ -39,36 +52,18 @@ export default function App() {
     setSelectedCurrency(defaultCurrency);
   }, [defaultCurrency]);
 
-  const [fontsLoaded] = useFonts({
-    'OpenSans-300': require('./assets/fonts/OpenSans-Light.ttf'),
-    'OpenSans-400': require('./assets/fonts/OpenSans-Regular.ttf'),
-    'OpenSans-500': require('./assets/fonts/OpenSans-Medium.ttf'),
-    'OpenSans-600': require('./assets/fonts/OpenSans-SemiBold.ttf'),
-    'OpenSans-700': require('./assets/fonts/OpenSans-Bold.ttf'),
-    'OpenSans-800': require('./assets/fonts/OpenSans-ExtraBold.ttf'),
-  });
-
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
   return (
     <AppContext.Provider value={contextValue}>
       <StatusBar style="auto" translucent={false} backgroundColor="#fff" />
-      <SafeAreaView style={styles.appContainer} onLayout={onLayoutRootView}>
+      <SafeAreaView style={styles.appContainer}>
         <TouchableWithoutFeedback
           onPress={() => {
             Keyboard.dismiss();
           }}
           touchSoundDisabled={true}>
           <View style={styles.appContainer}>
-            <AppPagesNavigator />
+            <AppStart />
+            <LoadingModal isLoading={isLoading} />
           </View>
         </TouchableWithoutFeedback>
       </SafeAreaView>

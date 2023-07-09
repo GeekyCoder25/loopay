@@ -1,25 +1,72 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, useWindowDimensions } from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import {
+  View,
+  StyleSheet,
+  useWindowDimensions,
+  ActivityIndicator,
+} from 'react-native';
 import Logo from '../../assets/images/logoDark.svg';
 import CustomBackground from '../components/CustomBackground';
 import RegularText from './fonts/RegularText';
-
+import { getIsLoggedIn, getToken } from '../../utils/storage';
+import { AppContext } from './AppContext';
+import { apiUrl } from '../../utils/fetchAPI';
 const Splash = ({ navigation }) => {
+  const { internetStatus, isLoggedIn, setIsLoggedIn, setAppData } =
+    useContext(AppContext);
   const vw = useWindowDimensions().width;
   useEffect(() => {
-    setTimeout(() => {
-      navigation.replace('Signup');
-    }, 1000);
-  }, [navigation]);
+    console.log('splash');
+  }, []);
+  useEffect(() => {
+    if (internetStatus === true) {
+      const getDataFromStorage = async () => {
+        setIsLoggedIn((await getIsLoggedIn()) === 'true');
+        if (isLoggedIn) {
+          const data = await getFetchData('user');
+          await setAppData(data);
+        }
+        await navigation.replace('FirstPage');
+      };
+      getDataFromStorage();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [internetStatus, isLoggedIn, navigation]);
+
+  const getFetchData = async apiEndpoint => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    const API_URL = `${apiUrl}/${apiEndpoint}`;
+    const token = await getToken();
+
+    try {
+      const response = await fetch(API_URL, {
+        signal: controller.signal,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      clearTimeout(timeout);
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      return "Couldn't connect to server";
+    }
+  };
   return (
     <View style={styles.container}>
       <CustomBackground />
-      <View>
+      <View style={styles.logo}>
         <Logo width={`${vw}`} />
         <RegularText style={styles.subText}>
           ...your favorite midnight pay pal
         </RegularText>
       </View>
+      <ActivityIndicator
+        color={'#1e1e1e'}
+        style={styles.activity}
+        size="large"
+      />
     </View>
   );
 };
@@ -31,6 +78,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  logo: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
   subText: {
     color: '#fff',
     fontStyle: 'italic',
@@ -38,6 +89,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     paddingRight: 25 + '%',
     paddingTop: 5,
+  },
+  activity: {
+    flex: 1,
   },
 });
 export default Splash;

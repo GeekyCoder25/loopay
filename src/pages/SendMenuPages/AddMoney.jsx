@@ -16,8 +16,9 @@ import ChevronDown from '../../../assets/images/chevron-down-fill.svg';
 import { allCurrencies } from '../../database/data';
 import SendMenuHeader from './Header';
 import Button from '../../components/Button';
+import FlagSelect from '../../components/FlagSelect';
 
-const AddMoney = ({ navigation }) => {
+const AddMoney = ({ navigation, route }) => {
   const { selectedCurrency, setSelectedCurrency } = useContext(AppContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [addBalanceData, setAddBalanceData] = useState({
@@ -104,7 +105,6 @@ const AddMoney = ({ navigation }) => {
   const handleContinue = params => {
     navigation.navigate('AddMoneyConfirm', { ...params, ...addBalanceData });
   };
-
   return (
     <PageContainer paddingTop={10} padding={true}>
       <View style={styles.body}>
@@ -116,8 +116,10 @@ const AddMoney = ({ navigation }) => {
             style={styles.textInputContainer}>
             <View style={styles.textInput}>
               <View style={styles.flagContainer}>
-                <Image source={require('../../../assets/images/us-flag.png')} />
-                <RegularText>{selectedCurrency.currency} Balance</RegularText>
+                <FlagSelect country={selectedCurrency.currency} />
+                <RegularText style={styles.currencyName}>
+                  {selectedCurrency.currency} Balance
+                </RegularText>
               </View>
               <ChevronDown />
             </View>
@@ -128,7 +130,10 @@ const AddMoney = ({ navigation }) => {
             transparent
             onRequestClose={handleModal}>
             <View style={styles.modal}>
-              <SendMenuHeader onPress={() => setModalOpen(false)} />
+              <SendMenuHeader
+                route={route}
+                onPress={() => setModalOpen(false)}
+              />
               <BoldText style={styles.modalHeader}>
                 Select account to top up
               </BoldText>
@@ -145,12 +150,12 @@ const AddMoney = ({ navigation }) => {
                       setModalOpen(false);
                     }}>
                     <View style={styles.currencyIcon}>
-                      <Image
-                        source={require('../../../assets/images/us-flag.png')}
-                      />
+                      <FlagSelect country={currency.currency} />
                       <View>
                         <BoldText>{currency.acronym}</BoldText>
-                        <RegularText>{currency.currency}</RegularText>
+                        <RegularText style={styles.currencyName}>
+                          {currency.currency}
+                        </RegularText>
                       </View>
                     </View>
                   </Pressable>
@@ -256,6 +261,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+  },
+  currencyName: {
+    textTransform: 'capitalize',
   },
   overlay: {
     backgroundColor: '#000',

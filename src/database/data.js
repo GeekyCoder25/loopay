@@ -1,7 +1,13 @@
 export const signUpData = [
   {
-    name: 'fullName',
-    placeholder: 'Full name',
+    name: 'firstName',
+    placeholder: 'First name',
+    type: 'name',
+    inputMode: 'text',
+  },
+  {
+    name: 'lastName',
+    placeholder: 'Last name',
     type: 'name',
     inputMode: 'text',
   },
@@ -66,51 +72,51 @@ export const accountType = [
 ];
 
 export const historyData = [
-  {
-    id: 1,
-    transactionType: 'received',
-    transactionAmount: 200,
-  },
-  {
-    id: 2,
-    transactionType: 'sent',
-    transactionAmount: 40,
-  },
-  {
-    id: 3,
-    transactionType: 'sent',
-    transactionAmount: 40,
-  },
-  {
-    id: 4,
-    transactionType: 'sent',
-    transactionAmount: 40,
-  },
-  {
-    id: 5,
-    transactionType: 'sent',
-    transactionAmount: 40,
-  },
-  {
-    id: 6,
-    transactionType: 'sent',
-    transactionAmount: 40,
-  },
-  {
-    id: 7,
-    transactionType: 'sent',
-    transactionAmount: 40,
-  },
-  {
-    id: 8,
-    transactionType: 'received',
-    transactionAmount: 90,
-  },
-  {
-    id: 9,
-    transactionType: 'sent',
-    transactionAmount: 40,
-  },
+  // {
+  //   id: 1,
+  //   transactionType: 'received',
+  //   transactionAmount: 200,
+  // },
+  // {
+  //   id: 2,
+  //   transactionType: 'sent',
+  //   transactionAmount: 40,
+  // },
+  // {
+  //   id: 3,
+  //   transactionType: 'sent',
+  //   transactionAmount: 40,
+  // },
+  // {
+  //   id: 4,
+  //   transactionType: 'sent',
+  //   transactionAmount: 40,
+  // },
+  // {
+  //   id: 5,
+  //   transactionType: 'sent',
+  //   transactionAmount: 40,
+  // },
+  // {
+  //   id: 6,
+  //   transactionType: 'sent',
+  //   transactionAmount: 40,
+  // },
+  // {
+  //   id: 7,
+  //   transactionType: 'sent',
+  //   transactionAmount: 40,
+  // },
+  // {
+  //   id: 8,
+  //   transactionType: 'received',
+  //   transactionAmount: 90,
+  // },
+  // {
+  //   id: 9,
+  //   transactionType: 'sent',
+  //   transactionAmount: 40,
+  // },
 ];
 
 export const allCurrencies = [
@@ -136,7 +142,7 @@ export const allCurrencies = [
     amount: 0.0,
     symbol: '₦',
     minimumAmountToAdd: 100,
-    fee: 1,
+    fee: 5,
   },
   {
     currency: 'Pound',
@@ -156,10 +162,28 @@ export const sendMenuRoutes = [
     routeNavigate: 'AddMoney',
   },
   {
+    routeName: 'Send Money',
+    routeDetails: 'Send Funds to Family and Friends',
+    routeIcon: 'send',
+    routeNavigate: 'SendMoney',
+  },
+  {
     routeName: 'Swap Funds',
     routeDetails: 'Convert your USD to another currency',
     routeIcon: 'swap',
     routeNavigate: 'SwapFunds',
+  },
+  {
+    routeName: 'Airtime Top up',
+    routeDetails: 'Buy airtime via VTU',
+    routeIcon: 'airtime',
+    routeNavigate: 'BuyAirtime',
+  },
+  {
+    routeName: 'Pay a Bill',
+    routeDetails: 'Cable, Electricity and School fees',
+    routeIcon: 'bill',
+    routeNavigate: 'PayABill',
   },
   {
     routeName: 'Card',
@@ -168,21 +192,50 @@ export const sendMenuRoutes = [
     routeNavigate: 'VirtualCard',
   },
   {
-    routeName: 'Send Gift',
-    routeDetails: 'Send Gift to other LOOPAY users',
-    routeIcon: 'gift',
-    routeNavigate: 'SendGift',
-  },
-  {
-    routeName: 'Account Information',
-    routeDetails: 'See your virtual Account details ',
-    routeIcon: 'info',
-    routeNavigate: 'AccInfo',
-  },
-  {
     routeName: 'Account Statement',
     routeDetails: 'Generate account statement for USD  account',
     routeIcon: 'statement',
     routeNavigate: 'AccStatement',
   },
 ];
+
+export const SendMoneyRoutes = [
+  {
+    routeName: 'Send Fund using Loopay Tag',
+    routeDetails: 'Send money instantly to friends and family using Loopay tag',
+    routeIcon: 'add',
+    routeNavigate: 'AddMoney',
+  },
+  {
+    routeName: 'Send to a Beneficiary',
+    routeDetails: 'Choose from one of your saved beneficiaries to send money',
+    routeIcon: 'beneficiary',
+    routeNavigate: 'SendMoney',
+  },
+  {
+    routeName: 'Send to a new recipient',
+    routeDetails:
+      'Enter details of an account you haven’t previously saved to make a withdrawal',
+    routeIcon: 'recipient',
+    routeNavigate: 'BuyAirtime',
+  },
+];
+
+export const swapFromObject = {
+  currency: '',
+  acronym: '',
+  amount: '*',
+  symbol: '$',
+  minimumAmountToAdd: 1,
+  fee: 1,
+  balance: 100,
+};
+export const swapToObject = {
+  currency: '',
+  acronym: '',
+  amount: 0.0,
+  symbol: '',
+  minimumAmountToAdd: 100,
+  fee: 1,
+  balance: 100,
+};

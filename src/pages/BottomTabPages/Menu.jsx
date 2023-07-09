@@ -1,37 +1,40 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import PageContainer from '../components/PageContainer';
-import UserIcon from '../../assets/images/userMenu.svg';
-import HistoryIcon from '../../assets/images/history.svg';
-import CardIcon from '../../assets/images/cardMenu.svg';
-import ShieldIcon from '../../assets/images/shield.svg';
-import LockIcon from '../../assets/images/lockMenu.svg';
-import DevicesIcon from '../../assets/images/devices.svg';
-import KeyIcon from '../../assets/images/key.svg';
-import DualUSerIcon from '../../assets/images/dualUser.svg';
-import LogOut from '../../assets/images/logOut.svg';
-import { AppContext } from '../components/AppContext';
-import Button from '../components/Button';
-import BoldText from '../components/fonts/BoldText';
-import RegularText from '../components/fonts/RegularText';
+import PageContainer from '../../components/PageContainer';
+import UserIconSVG from '../../../assets/images/userMenu.svg';
+import HistoryIcon from '../../../assets/images/history.svg';
+import CardIcon from '../../../assets/images/cardMenu.svg';
+import ShieldIcon from '../../../assets/images/shield.svg';
+import LockIcon from '../../../assets/images/lockMenu.svg';
+import DevicesIcon from '../../../assets/images/devices.svg';
+import KeyIcon from '../../../assets/images/key.svg';
+import DualUSerIcon from '../../../assets/images/dualUser.svg';
+import LogOut from '../../../assets/images/logOut.svg';
+import { AppContext } from '../../components/AppContext';
+import Button from '../../components/Button';
+import BoldText from '../../components/fonts/BoldText';
+import RegularText from '../../components/fonts/RegularText';
+import { logoutUser } from '../../../utils/storage';
+import UserIcon from '../../components/UserIcon';
 
 const Menu = ({ navigation }) => {
+  const { setIsLoggedIn, vh, setAppData } = useContext(AppContext);
   const menuRoutes = [
     {
       routeName: 'My Info',
-      routeNavigate: 'Info',
+      routeNavigate: 'MyInfo',
       routeIcon: 'user',
     },
     {
       routeName: 'Verification Status',
-      routeNavigate: 'Verified',
+      routeNavigate: 'VerificationStatus',
       routeIcon: 'user',
       routeEnd: true,
     },
     {
       routeName: 'Transaction History',
-      routeNavigate: 'History',
+      routeNavigate: 'TransactionHistory',
       routeIcon: 'history',
     },
     {
@@ -39,11 +42,11 @@ const Menu = ({ navigation }) => {
       routeNavigate: 'VirtualCard',
       routeIcon: 'card',
     },
-    {
-      routeName: 'Two-Factor Authentication',
-      routeNavigate: 'TwoAuth',
-      routeIcon: 'shield',
-    },
+    // {
+    //   routeName: 'Two-Factor Authentication',
+    //   routeNavigate: 'TwoAuth',
+    //   routeIcon: 'shield',
+    // },
     {
       routeName: 'Change Password',
       routeNavigate: 'ChangePassword',
@@ -51,12 +54,12 @@ const Menu = ({ navigation }) => {
     },
     {
       routeName: 'Devices and Session',
-      routeNavigate: 'Devices',
+      routeNavigate: 'DevicesAndSessions',
       routeIcon: 'devices',
     },
     {
-      routeName: 'Change Login Pin',
-      routeNavigate: 'ChangePin',
+      routeName: 'Change Transaction Pin',
+      routeNavigate: 'TransactionPin',
       routeIcon: 'key',
     },
     {
@@ -70,20 +73,32 @@ const Menu = ({ navigation }) => {
       routeIcon: 'dualUser',
     },
   ];
-  const { vh } = useContext(AppContext);
+  const handleLogout = () => {
+    logoutUser();
+    setIsLoggedIn(false);
+    setAppData({});
+  };
   return (
     <PageContainer paddingTop={0}>
       <View style={styles.header}>
         <BoldText style={styles.headerText}>My details</BoldText>
-        <Image
-          source={require('../../assets/images/userImage.jpg')}
-          style={styles.headerImage}
-        />
+        <Pressable
+          onPress={() =>
+            setAppData(prev => {
+              return { ...prev, pin: prev.pin ? undefined : 1578 };
+            })
+          }>
+          <UserIcon />
+        </Pressable>
       </View>
       <ScrollView>
         <View style={{ ...styles.routesContainer, minHeight: vh * 0.7 }}>
           {menuRoutes.map(routePage => (
-            <RoutePage key={routePage.routeName} routePage={routePage} />
+            <RoutePage
+              key={routePage.routeName}
+              routePage={routePage}
+              navigation={navigation}
+            />
           ))}
         </View>
         <View style={styles.button}>
@@ -91,7 +106,7 @@ const Menu = ({ navigation }) => {
             text={'Log Out'}
             Icon={<LogOut />}
             flex={1}
-            handlePress={() => navigation.navigate('Signin')}
+            handlePress={handleLogout}
           />
         </View>
       </ScrollView>
@@ -110,10 +125,6 @@ const styles = StyleSheet.create({
   headerText: {
     color: '#fff',
     fontSize: 25,
-  },
-  headerImage: {
-    width: 50,
-    borderRadius: 25,
   },
   routesContainer: {
     gap: 20,
@@ -149,12 +160,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const RoutePage = ({ routePage }) => {
+const RoutePage = ({ routePage, navigation }) => {
   const { verified } = useContext(AppContext);
   const routeIcon = () => {
     switch (routePage.routeIcon) {
       case 'user':
-        return <UserIcon />;
+        return <UserIconSVG />;
       case 'history':
         return <HistoryIcon />;
       case 'card':
@@ -175,6 +186,7 @@ const RoutePage = ({ routePage }) => {
   };
   const handleNavigate = () => {
     console.log(routePage.routeNavigate);
+    navigation.navigate(routePage.routeNavigate);
   };
   return (
     <Pressable onPress={handleNavigate} style={styles.route}>

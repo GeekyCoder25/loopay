@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Home from '../pages/Home';
+import Home from '../pages/BottomTabPages/Home';
 import TabBar from '../components/TabBar';
 import SendMenuNavigator from './SendMenuNavigator';
 import MenuNavigator from './MenuNavigator';

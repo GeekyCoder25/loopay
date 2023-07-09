@@ -1,5 +1,6 @@
+/* eslint-disable react-native/no-inline-styles */
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Logo from '../../components/Logo';
 import Button from '../../components/Button';
 import { signInData } from '../../database/data';
@@ -11,6 +12,9 @@ import PageContainer from '../../components/PageContainer';
 import RegularText from '../../components/fonts/RegularText';
 import BoldText from '../../components/fonts/BoldText';
 import { AppContext } from '../../components/AppContext';
+import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
+import { loginUser } from '../../../utils/storage';
+import ErrorMessage from '../../components/ErrorMessage';
 
 const ForgotPassword = ({ navigation }) => {
   const [codeSent, setCodeSent] = useState(false);
@@ -20,24 +24,80 @@ const ForgotPassword = ({ navigation }) => {
   });
   const [otpCode, setOtpCode] = useState('');
   const [isPinOkay, setIsPinOkay] = useState(false);
-  const handlePress = () => {
-    console.log(formData);
-    setCodeSent(true);
-  };
-  const { vh } = useContext(AppContext);
+  const [errorMessage, setErrorMessage] = useState();
+  const [errorKey, setErrorKey] = useState('');
+  const [otpTimeout, setOtpTimeout] = useState(60);
+  const [otpResend, setOtpResend] = useState(otpTimeout);
+  const { setIsLoading, setIsLoggedIn, vh, setAppData } =
+    useContext(AppContext);
+  const codeLengths = [1, 2, 3, 4];
 
   useEffect(() => {
-    setIsPinOkay(otpCode.length === 4);
-  }, [otpCode.length]);
+    setIsPinOkay(otpCode.length === codeLengths.length);
+  }, [codeLengths.length, otpCode.length]);
 
-  const handleCofirm = () => {
-    console.log(otpCode);
-    isPinOkay
-      ? navigation.navigate('BottomTabs')
-      : console.log(Number(otpCode));
+  const handlePress = () => {
+    if (Object.values(formData).includes('')) {
+      setErrorMessage('Please input you email');
+      setErrorKey('email');
+    } else {
+      setIsLoading(true);
+      setOtpResend(otpTimeout);
+      setErrorMessage('');
+      postFetchData('auth/forget-password', formData).then(result => {
+        result = result.data;
+        if (result?.email === formData.email) {
+          setCodeSent(true);
+        } else {
+          setErrorKey('email');
+          setErrorMessage(result.email);
+        }
+        setIsLoading(false);
+      });
+    }
   };
 
-  const codeLengths = [1, 2, 3, 4];
+  const handleCofirm = async () => {
+    try {
+      setIsLoading(true);
+      console.log(otpCode);
+      const fetchResult = await postFetchData(
+        `auth/forget-password/${otpCode || 'fake'}`,
+        formData,
+      );
+      const { data: result } = fetchResult;
+      if (result === "Couldn't connect to server") {
+        return setErrorMessage(result);
+      } else if (Object.keys(result).includes('error')) {
+        setErrorKey('otpCode');
+        return setErrorMessage(result.error);
+      }
+      loginUser(result.data).then(() => {
+        getFetchData('user').then(data => {
+          try {
+            setAppData(data);
+            setIsLoggedIn(true);
+          } catch {
+            err => console.log(err);
+          }
+        });
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const editInput = () => {
+    setErrorMessage('');
+  };
+
+  useEffect(() => {
+    codeSent &&
+      setTimeout(() => {
+        otpResend > 1 ? setOtpResend(prev => prev - 1) : setOtpResend('now');
+        otpResend === 1 && setOtpTimeout(prev => prev * 2);
+      }, 1000);
+  }, [codeSent, otpResend]);
   return (
     <PageContainer padding={true} justify={true}>
       <View style={styles.container}>
@@ -61,6 +121,9 @@ const ForgotPassword = ({ navigation }) => {
                       setFocusIndex={setFocusIndex}
                       otpCode={otpCode}
                       setOtpCode={setOtpCode}
+                      setErrorMessage={setErrorMessage}
+                      errorKey={errorKey}
+                      setErrorKey={setErrorKey}
                     />
                   ))}
                 </View>
@@ -69,17 +132,47 @@ const ForgotPassword = ({ navigation }) => {
                     Enter the Four Digit code sent to your email
                   </RegularText>
                 </View>
+                <ErrorMessage errorMessage={errorMessage} />
+                <View style={styles.didnt}>
+                  <BoldText>Didn&apos;t receive the code? Resend </BoldText>
+                  {typeof otpResend === 'number' ? (
+                    <BoldText>
+                      in{' '}
+                      <BoldText style={styles.now}>
+                        {otpResend > 59 && Math.floor(otpResend / 60) + 'm '}
+                        {otpResend % 60}s
+                      </BoldText>
+                    </BoldText>
+                  ) : (
+                    <Pressable onPress={handlePress}>
+                      <BoldText style={styles.now}>{otpResend}</BoldText>
+                    </Pressable>
+                  )}
+                </View>
                 <Button
                   text={'Confirm One time password'}
                   handlePress={handleCofirm}
+                  style={{
+                    backgroundColor: isPinOkay
+                      ? '#1E1E1E'
+                      : 'rgba(30, 30, 30, 0.7)',
+                  }}
                   disabled={!isPinOkay}
                 />
               </>
             ) : (
               <>
                 {signInData.slice(0, 1).map(item => (
-                  <Form item={item} setFormData={setFormData} key={item.name} />
+                  <Form
+                    item={item}
+                    setFormData={setFormData}
+                    key={item.name}
+                    errorKey={errorKey}
+                    setErrorKey={setErrorKey}
+                    editInput={editInput}
+                  />
                 ))}
+                <ErrorMessage errorMessage={errorMessage} />
                 <Button
                   text={'Send One time password'}
                   handlePress={handlePress}
@@ -133,7 +226,11 @@ const styles = StyleSheet.create({
   checkTitle: {
     fontWeight: '600',
   },
-  form: { flex: 1, paddingVertical: 30 },
+  form: {
+    flex: 1,
+    paddingVertical: 30,
+    minHeight: 150,
+  },
   codeInput: {
     borderBottomWidth: 1,
     borderBottomColor: '#000',
@@ -169,7 +266,25 @@ const styles = StyleSheet.create({
   enterCodeText: {
     color: '#7A7A7A',
     marginTop: 20,
+    marginBottom: 10,
     textAlign: 'center',
+  },
+  errorMessageText: {
+    fontSize: 14,
+    marginBottom: 5,
+    paddingHorizontal: 5,
+    color: 'red',
+    textAlign: 'center',
+  },
+  didnt: {
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  now: {
+    color: 'orange',
+    textDecorationLine: 'underline',
   },
   alreadyContainer: {
     flex: 1,
@@ -196,7 +311,7 @@ const styles = StyleSheet.create({
 
 export default ForgotPassword;
 
-const Form = ({ item, setFormData }) => {
+const Form = ({ item, setFormData, errorKey, setErrorKey, editInput }) => {
   const [inputFocus, setInputFocus] = useState(false);
 
   return (
@@ -207,11 +322,14 @@ const Form = ({ item, setFormData }) => {
       <TextInput
         style={{
           ...styles.textInput,
-          borderColor: inputFocus ? '#000' : '#B1B1B1',
+          borderColor:
+            errorKey === 'email' ? 'red' : inputFocus ? '#000' : '#B1B1B1',
         }}
         placeholder={item.placeholder}
         placeholderTextColor={inputFocus ? '#000' : '#80808080'}
         onChangeText={text => {
+          setErrorKey('');
+          editInput();
           setFormData({ [item.name]: text });
         }}
         name={item.name}
@@ -230,6 +348,9 @@ const OTPInput = ({
   setFocusIndex,
   otpCode,
   setOtpCode,
+  setErrorMessage,
+  errorKey,
+  setErrorKey,
 }) => {
   const inputRef = useRef();
   const [inputValue, setInputValue] = useState('');
@@ -244,9 +365,12 @@ const OTPInput = ({
 
   const handleKeyPress = ({ nativeEvent }) => {
     if (nativeEvent.key !== 'Backspace') {
-      focusIndex < 4
-        ? setFocusIndex(prev => prev + 1)
-        : inputRef.current.blur();
+      if (focusIndex < 4) {
+        setFocusIndex(prev => prev + 1);
+      } else {
+        Keyboard.dismiss();
+        inputRef.current.blur();
+      }
     } else {
       setOtpCode(prev => prev.slice(0, otpCode.length - 1));
       inputValue === ''
@@ -257,7 +381,11 @@ const OTPInput = ({
 
   return (
     <TextInput
-      style={styles.codeInput}
+      style={{
+        ...styles.codeInput,
+        borderBottomColor: errorKey === 'otpCode' ? 'red' : '#000',
+        color: errorKey === 'otpCode' ? 'red' : '#000',
+      }}
       value={inputValue}
       inputMode="numeric"
       maxLength={1}
@@ -268,7 +396,12 @@ const OTPInput = ({
         setOtpCode(prev => `${prev}${text}`);
       }}
       onKeyPress={handleKeyPress}
-      onFocus={() => setFocusIndex(codeLength)}
+      onFocus={() => {
+        setFocusIndex(codeLength);
+        setErrorMessage('');
+        setErrorKey('');
+      }}
+      name="otpCode"
     />
   );
 };

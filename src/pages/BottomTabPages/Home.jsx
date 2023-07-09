@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
-  Image,
   ImageBackground,
   Pressable,
   ScrollView,
@@ -8,27 +7,30 @@ import {
   Text,
   View,
 } from 'react-native';
-import Bell from '../../assets/images/bell.svg';
-import BellActive from '../../assets/images/bellActive.svg';
-import Dollar from '../../assets/images/dollar.svg';
-import ChevronDown from '../../assets/images/chevron-down.svg';
-import Wallet from '../../assets/images/wallet.svg';
-import UpAndDownArrow from '../../assets/images/up-down-arrow.svg';
-import Bg from '../../assets/images/bg1.svg';
-import { AppContext } from '../components/AppContext';
-import { historyData } from '../database/data';
-import SelectCurrencyModal from '../components/SelectCurrencyModal';
-import PageContainer from '../components/PageContainer';
-import RegularText from '../components/fonts/RegularText';
-import BoldText from '../components/fonts/BoldText';
+import Bell from '../../../assets/images/bell.svg';
+import BellActive from '../../../assets/images/bellActive.svg';
+import ChevronDown from '../../../assets/images/chevron-down.svg';
+import Wallet from '../../../assets/images/wallet.svg';
+import UpAndDownArrow from '../../../assets/images/up-down-arrow.svg';
+import Bg from '../../../assets/images/bg1.svg';
+import { AppContext } from '../../components/AppContext';
+import { historyData } from '../../database/data';
+import SelectCurrencyModal from '../../components/SelectCurrencyModal';
+import PageContainer from '../../components/PageContainer';
+import RegularText from '../../components/fonts/RegularText';
+import BoldText from '../../components/fonts/BoldText';
+import FlagSelect from '../../components/FlagSelect';
+import UserIcon from '../../components/UserIcon';
 
-const Home = () => {
+const Home = ({ navigation }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const { selectedCurrency } = useContext(AppContext);
+  const { selectedCurrency, appData } = useContext(AppContext);
+  const fullName = `${appData?.userProfile?.firstName} ${appData?.userProfile?.lastName}`;
+  const walletAmount = 0;
 
-  const fullName = 'James Sussy';
-  const walletAmount = 124.67;
-
+  useEffect(() => {
+    console.log('red', appData);
+  }, [appData]);
   return (
     <>
       <PageContainer>
@@ -37,24 +39,31 @@ const Home = () => {
             <Bg />
           </View>
           <View style={styles.header}>
-            <View style={styles.userImageContainer}>
-              <Image source={require('../../assets/images/userImage.jpg')} />
+            <Pressable
+              onPress={() => navigation.navigate('Profile')}
+              style={styles.userImageContainer}>
+              <UserIcon />
               <RegularText>{fullName}</RegularText>
-            </View>
+            </Pressable>
             {<Bell /> || <BellActive />}
           </View>
           <ImageBackground
-            source={require('../../assets/images/cardBg.png')}
+            source={require('../../../assets/images/cardBg.png')}
             resizeMode="contain"
             style={styles.card}>
             <View style={styles.cardHeader}>
               <View style={styles.amountContainer}>
-                <Dollar />
+                <View style={styles.symbolContainer}>
+                  <Text style={styles.symbol}>{selectedCurrency.symbol}</Text>
+                </View>
                 <View>
                   <BoldText style={styles.amount}>{walletAmount}</BoldText>
-                  <RegularText style={styles.currrencyType}>
-                    {selectedCurrency.currency}
-                  </RegularText>
+                  <View style={styles.flagContainer}>
+                    <RegularText style={styles.currrencyType}>
+                      {selectedCurrency.acronym}
+                    </RegularText>
+                    <FlagSelect country={selectedCurrency.currency} />
+                  </View>
                 </View>
               </View>
               <Pressable
@@ -82,15 +91,23 @@ const Home = () => {
         </View>
         <View style={styles.body}>
           <RegularText style={styles.historyText}>History</RegularText>
-          <ScrollView style={styles.histories}>
-            {historyData.map(history => (
-              <History
-                key={history.id}
-                history={history}
-                currencySymbol={selectedCurrency.symbol}
-              />
-            ))}
-          </ScrollView>
+          {historyData.length > 0 ? (
+            <ScrollView style={styles.histories}>
+              {historyData.map(history => (
+                <History
+                  key={history.id}
+                  history={history}
+                  currencySymbol={selectedCurrency.symbol}
+                />
+              ))}
+            </ScrollView>
+          ) : (
+            <View style={styles.historyEmpty}>
+              <BoldText style={styles.historyEmptyText}>
+                Your transaction histories will appear here
+              </BoldText>
+            </View>
+          )}
         </View>
       </PageContainer>
       <SelectCurrencyModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
@@ -140,12 +157,30 @@ const styles = StyleSheet.create({
   },
   amountContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
     gap: 10,
+  },
+  symbolContainer: {
+    backgroundColor: '#fff',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  symbol: {
+    fontSize: 28,
+    fontFamily: 'AlfaSlabOne-Regular',
+    transform: [{ translateY: -3.5 }, { translateX: -0.5 }],
   },
   amount: {
     color: '#ccc',
     fontSize: 50,
+  },
+  flagContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   currrencyType: {
     color: '#fff',
@@ -171,6 +206,16 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderBottomWidth: 0,
     marginTop: 10,
+  },
+  historyEmpty: {
+    backgroundColor: '#eee',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+    paddingHorizontal: 15 + '%',
+  },
+  historyEmptyText: {
+    textAlign: 'center',
   },
   history: {
     paddingHorizontal: 2.5 + '%',

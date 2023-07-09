@@ -1,4 +1,5 @@
-import { useContext, useState } from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import { useContext, useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,9 +7,7 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
-import User from '../../../assets/images/user.svg';
 import Email from '../../../assets/images/mail.svg';
-import Phone from '../../../assets/images/phone.svg';
 import Lock from '../../../assets/images/lock.svg';
 import Eye from '../../../assets/images/eye.svg';
 import Apple from '../../../assets/images/apple.svg';
@@ -21,6 +20,11 @@ import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import { AppContext } from '../../components/AppContext';
+import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
+import LoadingModal from '../../components/LoadingModal';
+import { loginUser } from '../../../utils/storage';
+import ErrorMessage from '../../components/ErrorMessage';
+import SuccessMessage from '../../components/SuccessMessage';
 
 const Signin = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -29,17 +33,51 @@ const Signin = ({ navigation }) => {
   });
   const [errorMessage, setErrorMessage] = useState();
   const [successMessage, setSuccessMessage] = useState();
+  const [errorKey, setErrorKey] = useState('');
+  const { vh, setIsLoggedIn, setAppData, isLoading, setIsLoading } =
+    useContext(AppContext);
 
   const handleLogin = () => {
-    navigation.navigate('BottomTabs');
-    console.log(formData);
+    setIsLoading(true);
+    if (Object.values(formData).includes('')) {
+      setErrorMessage('Please input all fields');
+      setIsLoading(false);
+    } else {
+      postFetchData('auth/login', formData)
+        .then(result => {
+          result = result.data;
+
+          setErrorKey(Object.keys(result)[0]);
+          if (result?.data?.email === formData.email) {
+            setSuccessMessage('Login Successful');
+            loginUser(result.data).then(() => {
+              getFetchData('user').then(data => {
+                try {
+                  setAppData(data);
+                  setIsLoggedIn(true);
+                  setIsLoading(false);
+                  setSuccessMessage('');
+                } catch {
+                  err => console.log(err);
+                }
+              });
+            });
+          } else {
+            setErrorMessage(Object.values(result)[0]);
+            setIsLoading(false);
+          }
+        })
+        .catch(err => {
+          setErrorMessage(err);
+          setIsLoading(false);
+        });
+    }
   };
 
   const editInput = () => {
     setErrorMessage('');
     setSuccessMessage('');
   };
-  const { vh } = useContext(AppContext);
 
   return (
     <PageContainer>
@@ -57,26 +95,16 @@ const Signin = ({ navigation }) => {
               <FormField
                 key={inputForm.name}
                 inputForm={inputForm}
+                formData={formData}
                 setFormData={setFormData}
                 editInput={editInput}
+                errorKey={errorKey}
+                setErrorKey={setErrorKey}
+                showRedBorder={errorMessage}
               />
             ))}
-            {errorMessage && (
-              <>
-                {/* <Icon name="warning" size={15} color={'red'} /> */}
-                <BoldText style={styles.errorMessageText}>
-                  {errorMessage}
-                </BoldText>
-              </>
-            )}
-            {successMessage && (
-              <>
-                {/* <Icon name="check-circle" size={20} color="green" />{' '} */}
-                <BoldText style={styles.successMessageText}>
-                  {successMessage}
-                </BoldText>
-              </>
-            )}
+            <ErrorMessage errorMessage={errorMessage} />
+            <SuccessMessage successMessage={successMessage} />
             <View style={styles.forgetPressable}>
               <Pressable onPress={() => navigation.navigate('ForgotPassword')}>
                 <BoldText style={styles.forget}>Forget Password?</BoldText>
@@ -96,13 +124,14 @@ const Signin = ({ navigation }) => {
               <RegularText style={styles.alreadyText}>
                 Don&apos;t have an account?
               </RegularText>
-              <Pressable onPress={() => navigation.navigate('Signup')}>
+              <Pressable onPress={() => navigation.replace('Signup')}>
                 <BoldText style={styles.signIn}>Sign up</BoldText>
               </Pressable>
             </View>
             <Button text={'Log in'} handlePress={handleLogin} />
           </View>
         </View>
+        <LoadingModal isLoading={isLoading} />
       </ScrollView>
     </PageContainer>
   );
@@ -157,13 +186,17 @@ const styles = StyleSheet.create({
     top: -20,
   },
   errorMessageText: {
-    marginLeft: 5,
-    fontSize: 13,
+    fontSize: 14,
+    marginTop: 2,
+    paddingHorizontal: 5,
+    paddingBottom: 20,
+    color: 'red',
     textAlign: 'center',
   },
   successMessageText: {
     marginLeft: 5,
     fontSize: 13,
+    paddingBottom: 20,
     marginTop: 2,
     color: 'green',
     textAlign: 'center',
@@ -198,27 +231,35 @@ const styles = StyleSheet.create({
 });
 export default Signin;
 
-const FormField = ({ inputForm, setFormData }) => {
+const FormField = ({
+  inputForm,
+  formData,
+  setFormData,
+  editInput,
+  errorKey,
+  setErrorKey,
+  showRedBorder,
+}) => {
   const [showPassword, setShowPassword] = useState(true);
   const [inputFocus, setInputFocus] = useState(false);
+  const [redBorder, setRedBorder] = useState(showRedBorder);
 
   const selectIcon = fill => {
     switch (inputForm.type) {
-      case 'name':
-        return <User fill={fill} />;
-      case 'username':
-        return <User fill={fill} />;
       case 'email':
         return <Email fill={fill} />;
-      case 'tel':
-        return <Phone fill={fill} />;
       case 'password':
         return <Lock fill={fill} />;
       default:
         break;
     }
   };
-
+  useEffect(() => {
+    (showRedBorder && formData[inputForm.name] === '') || errorKey === 'error'
+      ? setRedBorder(true)
+      : setRedBorder(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showRedBorder]);
   const fillColor = inputFocus ? '#000' : '#868585';
   return (
     <View style={styles.textInputContainer}>
@@ -226,15 +267,24 @@ const FormField = ({ inputForm, setFormData }) => {
       <TextInput
         style={{
           ...styles.textInput,
-          borderColor: inputFocus ? '#000' : '#B1B1B1',
+          borderColor:
+            errorKey === inputForm.name || redBorder
+              ? 'red'
+              : inputFocus
+              ? '#000'
+              : '#B1B1B1',
         }}
         placeholder={inputForm.placeholder}
         placeholderTextColor={inputFocus ? '#000' : '#80808080'}
         secureTextEntry={inputForm.eye ? showPassword : false}
         onChangeText={text => {
+          setErrorKey('');
+          editInput();
           setFormData(prev => {
             return { ...prev, [inputForm.name]: text };
           });
+          // setRedBorder(formData[inputForm.name] === '');
+          // setTempRedBorder(false);
         }}
         name={inputForm.name}
         autoComplete={inputForm.eye ? 'off' : inputForm.type}

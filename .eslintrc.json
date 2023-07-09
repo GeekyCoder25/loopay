@@ -23,7 +23,7 @@
       }
     ],
     "react/react-in-jsx-scope": "off",
-    "semi": "off"
-  
+    "semi": "off",
+    "no-console": 1
   }
 }

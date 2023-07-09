@@ -1,4 +1,5 @@
-import { useContext, useState } from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import { useContext, useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -21,33 +22,86 @@ import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import { AppContext } from '../../components/AppContext';
+import { postFetchData } from '../../../utils/fetchAPI';
+import LoadingModal from '../../components/LoadingModal';
+import { loginUser } from '../../../utils/storage';
+// import ErrorMessage from '../../components/ErrorMessage';
+// import SuccessMessage from '../../components/SuccessMessage';
 
 const Signup = ({ navigation }) => {
   const [formData, setFormData] = useState({
-    fullName: '',
-    userName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phoneNumber: '',
+    // firstName: '',
+    // lastName: '',
+    // userName: '',
+    // email: '',
+    // password: '',
+    // confirmPassword: '',
+    // phoneNumber: '',
+    firstName: 'Toyyib',
+    lastName: 'Lawal',
+    userName: 'Geeky Coder',
+    email: 'toyibe25@gmail.com',
+    phoneNumber: '9073002599',
+    password: '251101t',
+    confirmPassword: '251101t',
   });
-  const [errorMessage, setErrorMessage] = useState();
-  const [successMessage, setSuccessMessage] = useState();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorKey, setErrorKey] = useState('');
+  const { vh, setAppData, isLoading, setIsLoading } = useContext(AppContext);
 
-  const handleLogin = () => {
-    console.log(formData);
-    if (formData.password !== formData.confirmPassword) {
+  const handleSignup = () => {
+    setIsLoading(true);
+    if (Object.values(formData).includes('')) {
+      setErrorMessage('Please input all fields');
+      setIsLoading(false);
+    } else if (formData.password !== formData.confirmPassword) {
       setErrorMessage("Passwords doesn't match");
-      // setLoading(false);
+      setErrorKey('password');
+      setIsLoading(false);
+    } else {
+      const { email, firstName, lastName, userName, phoneNumber } = formData;
+      postFetchData('auth/register', formData)
+        .then(result => {
+          result = result.data;
+          setErrorKey(Object.keys(result)[0]);
+          if (Object.values(result)[0].includes('Successfully')) {
+            setSuccessMessage(Object.values(result)[0]);
+            loginUser(result.data).then(() => {
+              const data = {
+                email,
+                accountType: '',
+                userProfile: {
+                  lastName,
+                  firstName,
+                  userName,
+                  phoneNumber,
+                },
+              };
+              setAppData(data);
+              setIsLoading(false);
+              setErrorMessage('');
+              setSuccessMessage('');
+              navigation.replace('AccountType');
+            });
+          } else {
+            typeof result === 'string'
+              ? setErrorMessage(result)
+              : setErrorMessage(Object.values(result)[0]);
+            setIsLoading(false);
+          }
+        })
+        .catch(err => {
+          setErrorMessage(err);
+          setIsLoading(false);
+        });
     }
-    navigation.navigate('AccountType');
   };
 
   const editInput = () => {
     setErrorMessage('');
     setSuccessMessage('');
   };
-  const { vh } = useContext(AppContext);
 
   return (
     <PageContainer>
@@ -69,33 +123,23 @@ const Signup = ({ navigation }) => {
               <FormField
                 key={inputForm.name}
                 inputForm={inputForm}
+                formData={formData}
                 setFormData={setFormData}
                 editInput={editInput}
+                errorKey={errorKey}
+                setErrorKey={setErrorKey}
+                showRedBorder={errorMessage}
               />
             ))}
-            {errorMessage && (
-              <>
-                {/* <Icon name="warning" size={15} color="red" /> */}
-                <BoldText style={styles.errorMessageBold}>
-                  {errorMessage}
-                </BoldText>
-              </>
-            )}
-            {successMessage && (
-              <>
-                {/* <Icon name="check-circle" size={20} color="green" />{' '} */}
-                <BoldText style={styles.successMessageText}>
-                  {successMessage}
-                </BoldText>
-              </>
-            )}
+            {/* <ErrorMessage errorMessage={errorMessage} />
+            <SuccessMessage successMessage={successMessage} /> */}
           </View>
           <View style={styles.alreadyContainer}>
             <View style={styles.already}>
               <RegularText style={styles.alreadyText}>
                 Already have an account?
               </RegularText>
-              <Pressable onPress={() => navigation.navigate('Signin')}>
+              <Pressable onPress={() => navigation.replace('Signin')}>
                 <BoldText style={styles.signIn}>Sign in</BoldText>
               </Pressable>
             </View>
@@ -107,9 +151,10 @@ const Signup = ({ navigation }) => {
                 <Google />
               </Pressable>
             </View>
-            <Button text={'Register'} handlePress={handleLogin} />
+            <Button text={'Register'} handlePress={handleSignup} />
           </View>
         </View>
+        <LoadingModal isLoading={isLoading} />
       </ScrollView>
     </PageContainer>
   );
@@ -164,8 +209,10 @@ const styles = StyleSheet.create({
     top: -20,
   },
   errorMessageText: {
-    marginLeft: 5,
-    fontSize: 13,
+    fontSize: 14,
+    marginTop: 2,
+    paddingHorizontal: 5,
+    color: 'red',
     textAlign: 'center',
   },
   successMessageText: {
@@ -196,9 +243,25 @@ const styles = StyleSheet.create({
 });
 export default Signup;
 
-const FormField = ({ inputForm, setFormData }) => {
+const FormField = ({
+  inputForm,
+  formData,
+  setFormData,
+  editInput,
+  errorKey,
+  setErrorKey,
+  showRedBorder,
+}) => {
   const [showPassword, setShowPassword] = useState(true);
   const [inputFocus, setInputFocus] = useState(false);
+  const [redBorder, setRedBorder] = useState(showRedBorder);
+
+  useEffect(() => {
+    showRedBorder && formData[inputForm.name] === ''
+      ? setRedBorder(true)
+      : setRedBorder(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showRedBorder]);
 
   const selectIcon = fill => {
     switch (inputForm.type) {
@@ -224,12 +287,21 @@ const FormField = ({ inputForm, setFormData }) => {
       <TextInput
         style={{
           ...styles.textInput,
-          borderColor: inputFocus ? '#000' : '#B1B1B1',
+          borderColor:
+            errorKey === inputForm.name ||
+            (errorKey === 'password' && inputForm.name === 'confirmPassword') ||
+            redBorder
+              ? 'red'
+              : inputFocus
+              ? '#000'
+              : '#B1B1B1',
         }}
         placeholder={inputForm.placeholder}
         placeholderTextColor={inputFocus ? '#000' : '#80808080'}
         secureTextEntry={inputForm.eye ? showPassword : false}
         onChangeText={text => {
+          setErrorKey('');
+          editInput();
           setFormData(prev => {
             return { ...prev, [inputForm.name]: text };
           });

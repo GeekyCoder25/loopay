@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import Logo from '../../components/Logo';
-import { Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StatusBar, StyleSheet, View } from 'react-native';
 import Button from '../../components/Button';
 import { accountType } from '../../database/data';
 import EmptyCheckbox from '../../../assets/images/emptyCheckbox.svg';
@@ -8,8 +8,34 @@ import FilledCheckbox from '../../../assets/images/filledCheckbox.svg';
 import Header from '../../components/Header';
 import RegularText from '../../components/fonts/RegularText';
 import BoldText from '../../components/fonts/BoldText';
+import { AppContext } from '../../components/AppContext';
+import { putFetchData } from '../../../utils/fetchAPI';
+import FaIcon from '@expo/vector-icons/FontAwesome';
 
-const AccountType = ({ navigation }) => {
+const AccountType = () => {
+  const { setIsLoggedIn, setAppData, isLoading, setIsLoading } =
+    useContext(AppContext);
+  const [accountTypeState, setAccountTypeState] = useState('');
+  const [isError, setIsError] = useState(false);
+
+  const handlePress = async () => {
+    if (accountTypeState === '') {
+      setIsError(true);
+    } else {
+      setIsLoading(true);
+      putFetchData('user', { accountType: accountTypeState })
+        .then(updateResult => {
+          if (updateResult?.updateData?.accountType) {
+            console.log(updateResult);
+            setIsLoggedIn(true);
+            setAppData(prev => {
+              return { ...prev, accountType: accountTypeState };
+            });
+          }
+        })
+        .finally(() => setIsLoading(false));
+    }
+  };
   return (
     <View
       style={{ ...styles.container, paddingTop: StatusBar.currentHeight + 10 }}>
@@ -24,16 +50,23 @@ const AccountType = ({ navigation }) => {
         <View style={styles.form}>
           <View>
             {accountType.map(item => (
-              <Form item={item} key={item.title} />
+              <Form
+                item={item}
+                key={item.title}
+                accountTypeState={accountTypeState}
+                setAccountTypeState={setAccountTypeState}
+                setIsError={setIsError}
+              />
             ))}
           </View>
+          {isError && (
+            <RegularText style={styles.errorMessage}>
+              <FaIcon name="check-circle" size={20} color="green" />
+              Please select an account type
+            </RegularText>
+          )}
           <View style={styles.button}>
-            <Button
-              text={'Continue'}
-              handlePress={() => {
-                navigation.navigate('BottomTabs');
-              }}
-            />
+            <Button text={'Continue'} handlePress={handlePress} />
           </View>
         </View>
       </View>
@@ -76,22 +109,26 @@ const styles = StyleSheet.create({
   checkTitle: {
     fontWeight: '600',
   },
+  errorMessage: {
+    marginTop: 2,
+    paddingHorizontal: 5,
+    color: 'red',
+    textAlign: 'center',
+  },
   button: { paddingBottom: 50 + '%' },
 });
 
 export default AccountType;
 
-const Form = ({ item }) => {
-  const [clicked, setClicked] = useState(false);
-
+const Form = ({ item, accountTypeState, setAccountTypeState, setIsError }) => {
+  const handlePress = () => {
+    setAccountTypeState(item.title);
+    setIsError(false);
+  };
   return (
     <View style={styles.checkbox}>
-      <Pressable
-        onPress={() => {
-          setClicked(prev => !prev);
-        }}
-        style={styles.checkContainer}>
-        {clicked ? (
+      <Pressable onPress={handlePress} style={styles.checkContainer}>
+        {accountTypeState === item.title ? (
           <FilledCheckbox width={20} height={20} />
         ) : (
           <EmptyCheckbox width={20} height={20} />
