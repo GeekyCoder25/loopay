@@ -52,7 +52,7 @@ const MyInfo = () => {
       setIsLoading(true);
       const fetchedResult = await postFetchData('user/profile', userProfile);
       const { data: result } = fetchedResult;
-      if (fetchedResult.status < 400) {
+      if (fetchedResult.status >= 400) {
         return ToastAndroid.show('Error updating profile', ToastAndroid.SHORT);
       }
       ToastAndroid.show('Profile updated successfully', ToastAndroid.SHORT);
@@ -174,7 +174,7 @@ const MyInfo = () => {
         </View>
         {isEditable ? (
           <Button
-            handlePress={handleSave}
+            onPress={handleSave}
             text={'Save Changes'}
             style={styles.button}
           />

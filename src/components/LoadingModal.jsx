@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -6,12 +6,15 @@ import {
   View,
   StyleSheet,
 } from 'react-native';
+import { AppContext } from './AppContext';
 
 const LoadingModal = ({ isLoading }) => {
+  const { loadingModalBg } = useContext(AppContext);
   return (
     <Modal visible={isLoading} animationType="fade" transparent>
       <Pressable style={styles.overlay} />
-      <View style={styles.modalContainer}>
+      <View
+        style={{ ...styles.modalContainer, backgroundColor: loadingModalBg }}>
         <ActivityIndicator
           size={'large'}
           color={'#1e1e1e'}

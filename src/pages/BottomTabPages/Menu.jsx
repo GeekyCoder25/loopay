@@ -1,6 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  ToastAndroid,
+  View,
+} from 'react-native';
 import PageContainer from '../../components/PageContainer';
 import UserIconSVG from '../../../assets/images/userMenu.svg';
 import HistoryIcon from '../../../assets/images/history.svg';
@@ -15,11 +22,13 @@ import { AppContext } from '../../components/AppContext';
 import Button from '../../components/Button';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
-import { logoutUser } from '../../../utils/storage';
+import { getSessionID, logoutUser } from '../../../utils/storage';
 import UserIcon from '../../components/UserIcon';
+import { deleteFetchData } from '../../../utils/fetchAPI';
 
 const Menu = ({ navigation }) => {
-  const { setIsLoggedIn, vh, setAppData } = useContext(AppContext);
+  const { setIsLoading, setIsLoggedIn, vh, appData, setAppData } =
+    useContext(AppContext);
   const menuRoutes = [
     {
       routeName: 'My Info',
@@ -58,7 +67,7 @@ const Menu = ({ navigation }) => {
       routeIcon: 'devices',
     },
     {
-      routeName: 'Change Transaction Pin',
+      routeName: `${appData.pin ? 'Change' : 'Create'} Transaction Pin`,
       routeNavigate: 'TransactionPin',
       routeIcon: 'key',
     },
@@ -73,21 +82,24 @@ const Menu = ({ navigation }) => {
       routeIcon: 'dualUser',
     },
   ];
-  const handleLogout = () => {
-    logoutUser();
-    setIsLoggedIn(false);
-    setAppData({});
+  const handleLogout = async () => {
+    try {
+      setIsLoading(true);
+      const sessionID = await getSessionID();
+      await deleteFetchData(`user/session/${sessionID}`);
+      logoutUser();
+      ToastAndroid.show('Logged Out successfully', ToastAndroid.SHORT);
+      setIsLoggedIn(false);
+      setAppData({});
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <PageContainer paddingTop={0}>
       <View style={styles.header}>
         <BoldText style={styles.headerText}>My details</BoldText>
-        <Pressable
-          onPress={() =>
-            setAppData(prev => {
-              return { ...prev, pin: prev.pin ? undefined : 1578 };
-            })
-          }>
+        <Pressable onPress={() => navigation.navigate('Profile')}>
           <UserIcon />
         </Pressable>
       </View>
@@ -106,7 +118,7 @@ const Menu = ({ navigation }) => {
             text={'Log Out'}
             Icon={<LogOut />}
             flex={1}
-            handlePress={handleLogout}
+            onPress={handleLogout}
           />
         </View>
       </ScrollView>
@@ -185,7 +197,6 @@ const RoutePage = ({ routePage, navigation }) => {
     }
   };
   const handleNavigate = () => {
-    console.log(routePage.routeNavigate);
     navigation.navigate(routePage.routeNavigate);
   };
   return (

@@ -25,52 +25,58 @@ import LoadingModal from '../../components/LoadingModal';
 import { loginUser } from '../../../utils/storage';
 import ErrorMessage from '../../components/ErrorMessage';
 import SuccessMessage from '../../components/SuccessMessage';
+import saveSessionOptions from '../../services/Savesession';
 
 const Signin = ({ navigation }) => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    // email: '',
+    // password: '',
+    email: 'toyibe25@gmail.com',
+    password: '251101t',
   });
-  const [errorMessage, setErrorMessage] = useState();
-  const [successMessage, setSuccessMessage] = useState();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
   const { vh, setIsLoggedIn, setAppData, isLoading, setIsLoading } =
     useContext(AppContext);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setIsLoading(true);
     if (Object.values(formData).includes('')) {
       setErrorMessage('Please input all fields');
       setIsLoading(false);
     } else {
-      postFetchData('auth/login', formData)
-        .then(result => {
-          result = result.data;
+      try {
+        const sessionData = saveSessionOptions();
+        const fetchedResult = await postFetchData('auth/login', formData);
+        const result = fetchedResult.data;
 
-          setErrorKey(Object.keys(result)[0]);
-          if (result?.data?.email === formData.email) {
-            setSuccessMessage('Login Successful');
-            loginUser(result.data).then(() => {
-              getFetchData('user').then(data => {
-                try {
-                  setAppData(data);
-                  setIsLoggedIn(true);
-                  setIsLoading(false);
-                  setSuccessMessage('');
-                } catch {
-                  err => console.log(err);
-                }
-              });
-            });
-          } else {
-            setErrorMessage(Object.values(result)[0]);
+        if (result?.data?.email === formData.email) {
+          await postFetchData('user/session', sessionData, result.data.token);
+          await loginUser(result.data, sessionData.deviceID);
+          setSuccessMessage('Login Successful');
+          const data = await getFetchData('user');
+          try {
+            setAppData(data.data);
+            setIsLoggedIn(true);
             setIsLoading(false);
+            setSuccessMessage('');
+          } catch {
+            err => console.log(err);
           }
-        })
-        .catch(err => {
-          setErrorMessage(err);
+        } else {
+          if (typeof fetchedResult === 'string') {
+            setErrorMessage(fetchedResult);
+          } else {
+            setErrorKey(Object.keys(result)[0]);
+            setErrorMessage(Object.values(result)[0]);
+          }
           setIsLoading(false);
-        });
+        }
+      } catch (err) {
+        setErrorMessage(err.message);
+        setIsLoading(false);
+      }
     }
   };
 
@@ -128,7 +134,7 @@ const Signin = ({ navigation }) => {
                 <BoldText style={styles.signIn}>Sign up</BoldText>
               </Pressable>
             </View>
-            <Button text={'Log in'} handlePress={handleLogin} />
+            <Button text={'Log in'} onPress={handleLogin} />
           </View>
         </View>
         <LoadingModal isLoading={isLoading} />
@@ -225,7 +231,7 @@ const styles = StyleSheet.create({
   signInIcons: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginVertical: 20,
+    marginVertical:  20,
     gap: 15,
   },
 });

@@ -19,16 +19,16 @@ export const getFetchData = async apiEndpoint => {
     });
     clearTimeout(timeout);
     const data = await response.json();
-    return data;
+    return { data, status: response.status };
   } catch (err) {
     return "Couldn't connect to server";
   }
 };
-export const postFetchData = async (apiEndpoint, bodyData) => {
+export const postFetchData = async (apiEndpoint, bodyData, token) => {
   const API_URL = `${apiUrl}/${apiEndpoint}`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
-  const token = await getToken();
+  token = token || (await getToken());
 
   try {
     const response = await fetch(API_URL, {
@@ -48,6 +48,7 @@ export const postFetchData = async (apiEndpoint, bodyData) => {
     return "Couldn't connect to server";
   }
 };
+
 export const putFetchData = async (apiEndpoint, bodyData) => {
   const API_URL = `${apiUrl}/${apiEndpoint}`;
   const controller = new AbortController();
@@ -66,7 +67,32 @@ export const putFetchData = async (apiEndpoint, bodyData) => {
     });
     clearTimeout(timeout);
     const data = await response.json();
-    return data;
+    return { data, status: response.status };
+  } catch (err) {
+    console.log(err);
+    return "Couldn't connect to server";
+  }
+};
+
+export const deleteFetchData = async (apiEndpoint, bodyData) => {
+  const API_URL = `${apiUrl}/${apiEndpoint}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  const token = await getToken();
+
+  try {
+    const response = await fetch(API_URL, {
+      signal: controller.signal,
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(bodyData),
+    });
+    clearTimeout(timeout);
+    const data = await response.json();
+    return { data, status: response.status };
   } catch (err) {
     console.log(err);
     return "Couldn't connect to server";

@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   headerText: {
-    marginVertical: 30,
+    marginVertical:  30,
     fontSize: 20,
   },
   headerSubText: { color: '#868585' },

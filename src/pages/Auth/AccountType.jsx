@@ -13,8 +13,7 @@ import { putFetchData } from '../../../utils/fetchAPI';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 
 const AccountType = () => {
-  const { setIsLoggedIn, setAppData, isLoading, setIsLoading } =
-    useContext(AppContext);
+  const { setIsLoggedIn, setAppData, setIsLoading } = useContext(AppContext);
   const [accountTypeState, setAccountTypeState] = useState('');
   const [isError, setIsError] = useState(false);
 
@@ -25,8 +24,7 @@ const AccountType = () => {
       setIsLoading(true);
       putFetchData('user', { accountType: accountTypeState })
         .then(updateResult => {
-          if (updateResult?.updateData?.accountType) {
-            console.log(updateResult);
+          if (updateResult.data?.updateData?.accountType) {
             setIsLoggedIn(true);
             setAppData(prev => {
               return { ...prev, accountType: accountTypeState };
@@ -61,12 +59,12 @@ const AccountType = () => {
           </View>
           {isError && (
             <RegularText style={styles.errorMessage}>
-              <FaIcon name="check-circle" size={20} color="green" />
-              Please select an account type
+              <FaIcon name="warning" size={20} color="red" /> Please select an
+              account type
             </RegularText>
           )}
           <View style={styles.button}>
-            <Button text={'Continue'} handlePress={handlePress} />
+            <Button text={'Continue'} onPress={handlePress} />
           </View>
         </View>
       </View>

@@ -60,7 +60,7 @@ const NoInternet = ({ modalOpen }) => {
               size="large"
             />
           ) : (
-            <Button text={'Try Again'} handlePress={handlePress} />
+            <Button text={'Try Again'} onPress={handlePress} />
           )}
         </View>
       </View>

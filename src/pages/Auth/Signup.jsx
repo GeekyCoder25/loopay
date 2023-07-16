@@ -25,8 +25,9 @@ import { AppContext } from '../../components/AppContext';
 import { postFetchData } from '../../../utils/fetchAPI';
 import LoadingModal from '../../components/LoadingModal';
 import { loginUser } from '../../../utils/storage';
-// import ErrorMessage from '../../components/ErrorMessage';
-// import SuccessMessage from '../../components/SuccessMessage';
+import ErrorMessage from '../../components/ErrorMessage';
+import SuccessMessage from '../../components/SuccessMessage';
+import saveSessionOptions from '../../services/Savesession';
 
 const Signup = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -50,7 +51,7 @@ const Signup = ({ navigation }) => {
   const [errorKey, setErrorKey] = useState('');
   const { vh, setAppData, isLoading, setIsLoading } = useContext(AppContext);
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     setIsLoading(true);
     if (Object.values(formData).includes('')) {
       setErrorMessage('Please input all fields');
@@ -60,41 +61,45 @@ const Signup = ({ navigation }) => {
       setErrorKey('password');
       setIsLoading(false);
     } else {
-      const { email, firstName, lastName, userName, phoneNumber } = formData;
-      postFetchData('auth/register', formData)
-        .then(result => {
-          result = result.data;
-          setErrorKey(Object.keys(result)[0]);
-          if (Object.values(result)[0].includes('Successfully')) {
-            setSuccessMessage(Object.values(result)[0]);
-            loginUser(result.data).then(() => {
-              const data = {
-                email,
-                accountType: '',
-                userProfile: {
-                  lastName,
-                  firstName,
-                  userName,
-                  phoneNumber,
-                },
-              };
-              setAppData(data);
-              setIsLoading(false);
-              setErrorMessage('');
-              setSuccessMessage('');
-              navigation.replace('AccountType');
-            });
-          } else {
-            typeof result === 'string'
-              ? setErrorMessage(result)
-              : setErrorMessage(Object.values(result)[0]);
-            setIsLoading(false);
-          }
-        })
-        .catch(err => {
-          setErrorMessage(err);
-          setIsLoading(false);
+      editInput();
+      try {
+        const sessionData = saveSessionOptions();
+        const { email, firstName, lastName, userName, phoneNumber } = formData;
+        const fetchedResult = await postFetchData('auth/register', {
+          formData,
+          sessionData,
         });
+        const result = fetchedResult.data;
+        if (fetchedResult.status === 201) {
+          setSuccessMessage(Object.values(result)[0]);
+          await loginUser(result.data, sessionData.deviceID);
+          const data = {
+            email,
+            userProfile: {
+              lastName,
+              firstName,
+              userName,
+              phoneNumber,
+            },
+          };
+          setAppData(data);
+          setIsLoading(false);
+          setErrorMessage('');
+          setSuccessMessage('');
+          navigation.replace('AccountType');
+        } else {
+          if (typeof fetchedResult === 'string') {
+            setErrorMessage(fetchedResult);
+          } else {
+            setErrorKey(Object.keys(result)[0]);
+            setErrorMessage(Object.values(result)[0]);
+          }
+          setIsLoading(false);
+        }
+      } catch (err) {
+        setErrorMessage(err);
+        setIsLoading(false);
+      }
     }
   };
 
@@ -131,8 +136,8 @@ const Signup = ({ navigation }) => {
                 showRedBorder={errorMessage}
               />
             ))}
-            {/* <ErrorMessage errorMessage={errorMessage} />
-            <SuccessMessage successMessage={successMessage} /> */}
+            <ErrorMessage errorMessage={errorMessage} />
+            <SuccessMessage successMessage={successMessage} />
           </View>
           <View style={styles.alreadyContainer}>
             <View style={styles.already}>
@@ -151,7 +156,7 @@ const Signup = ({ navigation }) => {
                 <Google />
               </Pressable>
             </View>
-            <Button text={'Register'} handlePress={handleSignup} />
+            <Button text={'Register'} onPress={handleSignup} />
           </View>
         </View>
         <LoadingModal isLoading={isLoading} />

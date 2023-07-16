@@ -11,6 +11,8 @@ import SendMoney from '../pages/SendMenuPages/SendMoney';
 import BuyAirtime from '../pages/SendMenuPages/BuyAirtime';
 import PayABill from '../pages/SendMenuPages/PayABill';
 import BillTv from '../pages/SendMenuPages/BillTv';
+import SendLoopay from '../pages/SendMenuPages/SendMoney/SendLoopay';
+import TransaferFunds from '../pages/SendMenuPages/SendMoney/TransaferFunds';
 
 const SendMenuNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -33,6 +35,8 @@ const SendMenuNavigator = () => {
       <Stack.Screen name="AddMoney" component={AddMoney} />
       <Stack.Screen name="AddMoneyConfirm" component={AddMoneyConfirm} />
       <Stack.Screen name="SendMoney" component={SendMoney} />
+      <Stack.Screen name="SendLoopay" component={SendLoopay} />
+      <Stack.Screen name="TransferFunds" component={TransaferFunds} />
       <Stack.Screen name="SwapFunds" component={SwapFunds} />
       <Stack.Screen name="BuyAirtime" component={BuyAirtime} />
       <Stack.Screen name="PayABill" component={PayABill} />

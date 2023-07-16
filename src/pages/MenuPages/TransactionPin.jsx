@@ -1,13 +1,18 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { Keyboard, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Keyboard,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import Logo from '../../components/Logo';
 import { AppContext } from '../../components/AppContext';
 import Header from '../../components/Header';
 import CheckPassword from '../../components/CheckPassword';
 import LoggedInForgetPassword from '../../components/LoggedInForgetPassword';
-import { TextInput } from 'react-native-gesture-handler';
 import ErrorMessage from '../../components/ErrorMessage';
 import Button from '../../components/Button';
 import { postFetchData } from '../../../utils/fetchAPI';
@@ -189,7 +194,7 @@ const InputPin = ({ setCanEditPin, setReload }) => {
       <ErrorMessage errorMessage={errorMessage} />
       <Button
         text={'Continue'}
-        handlePress={handlePress}
+        onPress={handlePress}
         style={{
           backgroundColor: isPinOkay ? '#1E1E1E' : 'rgba(30, 30, 30, 0.7)',
         }}
@@ -199,7 +204,7 @@ const InputPin = ({ setCanEditPin, setReload }) => {
   );
 };
 
-const PINInput = ({
+export const PINInput = ({
   codeLength,
   focusIndex,
   setFocusIndex,
@@ -273,7 +278,7 @@ const PINInput = ({
 };
 
 const ChangePin = ({ navigation, setReload }) => {
-  const { appData, setIsLoading } = useContext(AppContext);
+  const { appData, setAppData, setIsLoading } = useContext(AppContext);
   const [focusIndex, setFocusIndex] = useState(1);
   const [pinCode, setPinCode] = useState('');
   const [pinCode2, setPinCode2] = useState('');
@@ -318,6 +323,12 @@ const ChangePin = ({ navigation, setReload }) => {
 
       if (result.status === 200) {
         setSuccessMessage(result.data);
+        setAppData(prev => {
+          return {
+            ...prev,
+            pin: true,
+          };
+        });
         setTimeout(() => {
           navigation.goBack();
         }, 1000);
@@ -393,7 +404,7 @@ const ChangePin = ({ navigation, setReload }) => {
       </View>
       <Button
         text={appData.pin ? 'Change Pin' : 'Create Pin'}
-        handlePress={handleChangePin}
+        onPress={handleChangePin}
         disabled={!isPinOkay}
         style={{
           ...styles.changePinButton,

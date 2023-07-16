@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import PageContainer from '../../components/PageContainer';
 import {
   Image,
@@ -90,15 +90,14 @@ const Profile = ({ navigation, children }) => {
       aspect: [1, 1],
       quality: 0.5,
     });
-    console.log(result);
     if (!result.canceled) {
       uploadImage(result.assets[0].uri);
     }
   };
 
   return (
-    <PageContainer padding={true}>
-      <ScrollView>
+    <PageContainer>
+      <ScrollView style={{ paddingHorizontal: 5 + '%' }}>
         <View style={styles.body}>
           <UserIcon style={styles.userIcon} />
           <Pressable onPress={selectImage} style={styles.userIconContainer}>
@@ -125,27 +124,57 @@ const Profile = ({ navigation, children }) => {
           <View style={styles.modalBorder} />
           <RegularText style={styles.textHeader}>Loopay Tag</RegularText>
           <View style={styles.tagContainer}>
-            <BoldText>Loopay Tags</BoldText>
-            <View style={styles.textContainer}>
-              <RegularText style={styles.text}>
-                Create a unique username to send and receive funds
-              </RegularText>
-              <View style={styles.tagIcon}>
-                <Image
-                  source={require('../../../assets/images/pageBg.png')}
-                  resizeMode="cover"
-                  style={styles.bg}
-                />
-                <Tag />
-              </View>
-            </View>
-            <View style={styles.button}>
-              <Button
-                text={'Create Loopay Tag'}
-                handlePress={() => navigation.navigate('LoopayTag')}
-              />
-            </View>
+            {appData.tagName ? (
+              <>
+                <View style={styles.textContainer}>
+                  <View style={styles.tagNameContainer}>
+                    <View style={styles.tagName}>
+                      <BoldText>#{appData.tagName}</BoldText>
+                      <Pressable
+                        onPress={() => navigation.navigate('LoopayTag')}>
+                        <FaIcon name="edit" size={15} color={'#868585'} />
+                      </Pressable>
+                    </View>
+                    <RegularText style={styles.text}>
+                      Your unique Loopay tag
+                    </RegularText>
+                  </View>
+                  <View style={styles.tagIcon}>
+                    <Image
+                      source={require('../../../assets/images/pageBg.png')}
+                      resizeMode="cover"
+                      style={styles.bg}
+                    />
+                    <Tag />
+                  </View>
+                </View>
+              </>
+            ) : (
+              <>
+                <BoldText>Loopay Tags</BoldText>
+                <View style={styles.textContainer}>
+                  <RegularText style={styles.text}>
+                    Create a unique username to send and receive funds
+                  </RegularText>
+                  <View style={styles.tagIcon}>
+                    <Image
+                      source={require('../../../assets/images/pageBg.png')}
+                      resizeMode="cover"
+                      style={styles.bg2}
+                    />
+                    <Tag />
+                  </View>
+                </View>
+                <View style={styles.button}>
+                  <Button
+                    text={'Create Loopay Tag'}
+                    onPress={() => navigation.navigate('LoopayTag')}
+                  />
+                </View>
+              </>
+            )}
           </View>
+
           <View style={styles.childComponent}>{children}</View>
         </View>
       </ScrollView>
@@ -202,6 +231,13 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     color: '#525252',
   },
+  tagNameContainer: {
+    marginTop: 15,
+  },
+  tagName: {
+    flexDirection: 'row',
+    gap: 3,
+  },
   textContainer: {
     flexDirection: 'row',
     gap: 15,
@@ -213,6 +249,12 @@ const styles = StyleSheet.create({
     color: '#868685',
   },
   bg: {
+    width: 150,
+    height: 100,
+    position: 'absolute',
+    transform: [{ translateY: -20 }],
+  },
+  bg2: {
     width: 200,
     height: 200,
     position: 'absolute',
@@ -227,7 +269,7 @@ const styles = StyleSheet.create({
   },
   childComponent: {
     width: 100 + '%',
-    marginVertical: 15,
+    marginVertical:  15,
   },
 });
 export default Profile;

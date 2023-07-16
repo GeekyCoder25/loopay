@@ -33,7 +33,7 @@ const LoggedInForgetPassword = ({ setPassowrdIsValid }) => {
     try {
       setIsLoading(true);
       const result = await postFetchData(
-        `auth/forget-password/${otpCode || 'fake'}`,
+        `auth/confirm-otp/${otpCode || 'fake'}`,
         formData,
       );
       if (result === "Couldn't connect to server") {
@@ -95,7 +95,7 @@ const LoggedInForgetPassword = ({ setPassowrdIsValid }) => {
       <ErrorMessage errorMessage={errorMessage} />
       <Button
         text={'Confirm One time password'}
-        handlePress={handleCofirm}
+        onPress={handleCofirm}
         style={{
           backgroundColor: isPinOkay ? '#1E1E1E' : 'rgba(30, 30, 30, 0.7)',
         }}
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
 });
 export default LoggedInForgetPassword;
 
-const OTPInput = ({
+export const OTPInput = ({
   codeLength,
   focusIndex,
   setFocusIndex,

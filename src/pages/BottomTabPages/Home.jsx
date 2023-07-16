@@ -80,12 +80,14 @@ const Home = ({ navigation }) => {
                   Account Details
                 </RegularText>
               </View>
-              <View style={styles.cardDetails}>
+              <Pressable
+                style={styles.cardDetails}
+                onPress={() => navigation.navigate('SendMoney')}>
                 <UpAndDownArrow />
                 <RegularText style={styles.currrencyType}>
                   Send Money
                 </RegularText>
-              </View>
+              </Pressable>
             </View>
           </ImageBackground>
         </View>

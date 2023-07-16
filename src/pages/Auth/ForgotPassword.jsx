@@ -62,7 +62,7 @@ const ForgotPassword = ({ navigation }) => {
       setIsLoading(true);
       console.log(otpCode);
       const fetchResult = await postFetchData(
-        `auth/forget-password/${otpCode || 'fake'}`,
+        `auth/confirm-otp/${otpCode || 'fake'}`,
         formData,
       );
       const { data: result } = fetchResult;
@@ -75,7 +75,7 @@ const ForgotPassword = ({ navigation }) => {
       loginUser(result.data).then(() => {
         getFetchData('user').then(data => {
           try {
-            setAppData(data);
+            setAppData(data.data);
             setIsLoggedIn(true);
           } catch {
             err => console.log(err);
@@ -151,7 +151,7 @@ const ForgotPassword = ({ navigation }) => {
                 </View>
                 <Button
                   text={'Confirm One time password'}
-                  handlePress={handleCofirm}
+                  onPress={handleCofirm}
                   style={{
                     backgroundColor: isPinOkay
                       ? '#1E1E1E'
@@ -173,10 +173,7 @@ const ForgotPassword = ({ navigation }) => {
                   />
                 ))}
                 <ErrorMessage errorMessage={errorMessage} />
-                <Button
-                  text={'Send One time password'}
-                  handlePress={handlePress}
-                />
+                <Button text={'Send One time password'} onPress={handlePress} />
               </>
             )}
           </View>

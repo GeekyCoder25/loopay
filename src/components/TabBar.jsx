@@ -4,7 +4,7 @@ import SendIcon from '../../assets/images/send.svg';
 import MenuIcon from '../../assets/images/menu.svg';
 const tabRoutes = [
   {
-    route: 'Home',
+    route: 'HomeNavigator',
   },
   {
     route: 'SendMenuNavigator',
@@ -49,7 +49,7 @@ const TabRoute = ({ routePage, navigation, state, index }) => {
   const isFocused = state.index === index;
   const routeIcon = fill => {
     switch (routePage.route) {
-      case 'Home':
+      case 'HomeNavigator':
         return <HomeIcon fill={fill} />;
       case 'SendMenuNavigator':
         return <SendIcon fill={fill} />;

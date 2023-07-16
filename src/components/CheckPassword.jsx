@@ -109,7 +109,7 @@ const CheckPassword = ({
         </Pressable>
       </View>
       <ErrorMessage errorMessage={errorMessage} />
-      <Button text={'Continue'} handlePress={handlePress} />
+      <Button text={'Continue'} onPress={handlePress} />
     </View>
   );
 };

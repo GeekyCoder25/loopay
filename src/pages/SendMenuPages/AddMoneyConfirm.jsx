@@ -72,7 +72,7 @@ const AddMoneyConfirm = ({ route }) => {
           <View style={styles.button}>
             <Button
               text="Make Payment"
-              // handlePress={() => handleContinue(selectedCurrency)}
+              // onPress={() => handleContinue(selectedCurrency)}
             />
           </View>
         </View>
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     maxWidth: 120,
     alignSelf: 'center',
-    marginVertical: 30,
+    marginVertical:  30,
   },
   detail: {
     flexDirection: 'row',

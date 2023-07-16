@@ -5,18 +5,21 @@ const StorageKeys = {
   NOT_FIRST_TIME: 'NOT_FIRST_TIME',
   LOGGED_IN: 'LOGGED_IN',
   TOKEN: 'TOKEN',
+  SESSION: 'SESSION',
 };
 
-export const loginUser = async data => {
+export const loginUser = async (data, session) => {
   await AsyncStorage.setItem(StorageKeys.USER, JSON.stringify(data));
   await AsyncStorage.setItem(StorageKeys.NOT_FIRST_TIME, 'true');
   await AsyncStorage.setItem(StorageKeys.LOGGED_IN, 'true');
   await AsyncStorage.setItem(StorageKeys.TOKEN, data.token);
+  await AsyncStorage.setItem(StorageKeys.SESSION, session);
 };
 
 export const logoutUser = async () => {
   await AsyncStorage.removeItem(StorageKeys.USER);
   await AsyncStorage.removeItem(StorageKeys.TOKEN);
+  await AsyncStorage.removeItem(StorageKeys.SESSION);
   await AsyncStorage.setItem(StorageKeys.LOGGED_IN, 'false');
 };
 
@@ -40,6 +43,10 @@ export const getToken = async () => {
   return await AsyncStorage.getItem(StorageKeys.TOKEN);
 };
 
+export const getSessionID = async () => {
+  return await AsyncStorage.getItem(StorageKeys.SESSION);
+};
+
 const getAllKeys = async () => {
   const data = await AsyncStorage.getAllKeys();
   console.log(data);
@@ -57,4 +64,4 @@ const deleteStorage = async key => {
 // getAllKeys();
 // clearAllKeys();
 // deleteStorage('USER');
-getStorage(StorageKeys.USER);
+// getStorage(StorageKeys.SESSION);

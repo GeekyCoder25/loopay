@@ -107,7 +107,7 @@ const ChangePassword = ({ navigation }) => {
               ))}
               <ErrorMessage errorMessage={errorMessage} />
               <SuccessMessage successMessage={successMessage} />
-              <Button text={'Change Password'} handlePress={handleChange} />
+              <Button text={'Change Password'} onPress={handleChange} />
             </View>
           )}
           <View style={{ flex: 1 }} />

@@ -25,6 +25,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [appData, setAppData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingModalBg, setLoadingModalBg] = useState(null);
   const vw = useWindowDimensions().width;
   const vh = useWindowDimensions().height;
 
@@ -44,6 +45,8 @@ export default function App() {
     setIsLoading,
     appData,
     setAppData,
+    loadingModalBg,
+    setLoadingModalBg,
   };
   const defaultCurrency = allCurrencies.find(
     currency => currency.currency === 'Naira',

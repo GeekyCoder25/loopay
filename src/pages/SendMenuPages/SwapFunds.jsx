@@ -226,7 +226,7 @@ const SwapFunds = ({ navigation }) => {
               </View>
             </View>
             <View style={styles.button}>
-              <Button text="Continue" handlePress={handleContine} />
+              <Button text="Continue" onPress={handleContine} />
             </View>
           </View>
         )}

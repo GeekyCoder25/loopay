@@ -1,10 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import {
-  View,
-  StyleSheet,
-  useWindowDimensions,
-  ActivityIndicator,
-} from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import Logo from '../../assets/images/logoDark.svg';
 import CustomBackground from '../components/CustomBackground';
 import RegularText from './fonts/RegularText';
@@ -12,26 +7,38 @@ import { getIsLoggedIn, getToken } from '../../utils/storage';
 import { AppContext } from './AppContext';
 import { apiUrl } from '../../utils/fetchAPI';
 const Splash = ({ navigation }) => {
-  const { internetStatus, isLoggedIn, setIsLoggedIn, setAppData } =
-    useContext(AppContext);
-  const vw = useWindowDimensions().width;
+  const {
+    internetStatus,
+    setIsLoggedIn,
+    setAppData,
+    vw,
+    setIsLoading,
+    setLoadingModalBg,
+  } = useContext(AppContext);
+
   useEffect(() => {
     console.log('splash');
   }, []);
+
   useEffect(() => {
     if (internetStatus === true) {
       const getDataFromStorage = async () => {
         setIsLoggedIn((await getIsLoggedIn()) === 'true');
-        if (isLoggedIn) {
+        if ((await getIsLoggedIn()) === 'true') {
           const data = await getFetchData('user');
           await setAppData(data);
+          if (!data || Object.entries(data).length === 0) {
+            return setIsLoggedIn(false);
+          }
         }
+        setIsLoading(true);
+        setLoadingModalBg('#fff');
         await navigation.replace('FirstPage');
       };
       getDataFromStorage();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [internetStatus, isLoggedIn, navigation]);
+  }, [internetStatus, navigation]);
 
   const getFetchData = async apiEndpoint => {
     const controller = new AbortController();
@@ -47,6 +54,9 @@ const Splash = ({ navigation }) => {
         },
       });
       clearTimeout(timeout);
+      if (response.status >= 400) {
+        return setAppData(false);
+      }
       const data = await response.json();
       return data;
     } catch (err) {

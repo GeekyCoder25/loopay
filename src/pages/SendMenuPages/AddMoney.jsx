@@ -210,11 +210,11 @@ const AddMoney = ({ navigation, route }) => {
         </View>
         <View style={styles.button}>
           {!isOkay ? (
-            <Button text="Continue" handlePress={handleIsOkay} />
+            <Button text="Continue" onPress={handleIsOkay} />
           ) : (
             <Button
               text="Continue"
-              handlePress={() => handleContinue(selectedCurrency)}
+              onPress={() => handleContinue(selectedCurrency)}
             />
           )}
         </View>

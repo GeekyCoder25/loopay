@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import { apiUrl } from '../../utils/fetchAPI';
 import AppPagesNavigator from '../navigators/AppPagesNavigator';
 import NoInternet from './NoInternet';
