@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     color: '#525252',
   },
   button: {
-    marginVertical:  50,
+    marginVertical: 50,
   },
 });
 export default LoopayTag;

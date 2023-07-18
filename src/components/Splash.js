@@ -7,14 +7,8 @@ import { getIsLoggedIn, getToken } from '../../utils/storage';
 import { AppContext } from './AppContext';
 import { apiUrl } from '../../utils/fetchAPI';
 const Splash = ({ navigation }) => {
-  const {
-    internetStatus,
-    setIsLoggedIn,
-    setAppData,
-    vw,
-    setIsLoading,
-    setLoadingModalBg,
-  } = useContext(AppContext);
+  const { internetStatus, setIsLoggedIn, setAppData, vw } =
+    useContext(AppContext);
 
   useEffect(() => {
     console.log('splash');
@@ -31,8 +25,6 @@ const Splash = ({ navigation }) => {
             return setIsLoggedIn(false);
           }
         }
-        setIsLoading(true);
-        setLoadingModalBg('#fff');
         await navigation.replace('FirstPage');
       };
       getDataFromStorage();

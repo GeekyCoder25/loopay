@@ -31,20 +31,20 @@ import saveSessionOptions from '../../services/Savesession';
 
 const Signup = ({ navigation }) => {
   const [formData, setFormData] = useState({
-    // firstName: '',
-    // lastName: '',
-    // userName: '',
-    // email: '',
-    // password: '',
-    // confirmPassword: '',
-    // phoneNumber: '',
-    firstName: 'Toyyib',
-    lastName: 'Lawal',
-    userName: 'Geeky Coder',
-    email: 'toyibe25@gmail.com',
-    phoneNumber: '9073002599',
-    password: '251101t',
-    confirmPassword: '251101t',
+    firstName: '',
+    lastName: '',
+    userName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    phoneNumber: '',
+    // firstName: 'Toyyib',
+    // lastName: 'Lawal',
+    // userName: 'Geeky Coder',
+    // email: 'toyibe25@gmail.com',
+    // phoneNumber: '9073002599',
+    // password: '251101t',
+    // confirmPassword: '251101t',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');

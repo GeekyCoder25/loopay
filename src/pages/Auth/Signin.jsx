@@ -29,10 +29,10 @@ import saveSessionOptions from '../../services/Savesession';
 
 const Signin = ({ navigation }) => {
   const [formData, setFormData] = useState({
-    // email: '',
-    // password: '',
-    email: 'toyibe25@gmail.com',
-    password: '251101t',
+    email: '',
+    password: '',
+    // email: 'toyibe25@gmail.com',
+    // password: '251101t',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   signInIcons: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginVertical:  20,
+    marginVertical: 20,
     gap: 15,
   },
 });

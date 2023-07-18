@@ -92,7 +92,6 @@ const SendLoopay = ({ navigation, route }) => {
     // Make Api Request with Paystack
     if (saveAsBeneficiary) {
       const response = await postFetchData('user/beneficiary', userFound);
-      console.log(response);
     }
     navigation.navigate('TransferFunds', userFound);
   };
@@ -251,7 +250,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   userFound: {
-    marginVertical:  20,
+    marginVertical: 20,
     backgroundColor: '#EEEEEE',
     padding: 15,
     flexDirection: 'row',

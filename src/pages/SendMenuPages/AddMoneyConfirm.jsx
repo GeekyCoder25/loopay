@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     maxWidth: 120,
     alignSelf: 'center',
-    marginVertical:  30,
+    marginVertical: 30,
   },
   detail: {
     flexDirection: 'row',

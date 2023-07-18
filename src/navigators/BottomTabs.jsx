@@ -1,5 +1,4 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Home from '../pages/BottomTabPages/Home';
 import TabBar from '../components/TabBar';
 import SendMenuNavigator from './SendMenuNavigator';
 import MenuNavigator from './MenuNavigator';
@@ -7,13 +6,10 @@ import { useContext, useEffect } from 'react';
 import { AppContext } from '../components/AppContext';
 import HomeNavigator from './HomeNavigator';
 const BottomTabs = () => {
-  const { showTabBar, setIsLoading, setLoadingModalBg, appData, setAppData } =
-    useContext(AppContext);
+  const { showTabBar, appData, setAppData } = useContext(AppContext);
   const Tab = createBottomTabNavigator();
 
   useEffect(() => {
-    setIsLoading(false);
-    setLoadingModalBg(null);
     setAppData(prev => {
       return {
         ...prev,

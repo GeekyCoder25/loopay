@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 100,
     position: 'absolute',
-    transform: [{ translateY: -20 }],
+    transform: [{ translateX: 10 }, { translateY: -20 }],
   },
   bg2: {
     width: 200,
@@ -262,14 +262,14 @@ const styles = StyleSheet.create({
   },
   tagIcon: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   button: {
     marginTop: 10,
   },
   childComponent: {
     width: 100 + '%',
-    marginVertical:  15,
+    marginVertical: 15,
   },
 });
 export default Profile;

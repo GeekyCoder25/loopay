@@ -51,24 +51,26 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#eee',
-    marginVertical:  20,
+    marginVertical: 20,
     borderRadius: 10,
-    paddingVertical: 20,
+    // paddingVertical: 20,
   },
   session: {
-    height: 80,
+    height: 100,
     justifyContent: 'center',
     paddingHorizontal: 20,
     gap: 5,
-    paddingBottom: 15,
     borderBottomWidth: 1,
+    paddingTop: 25,
+    paddingBottom: 25,
   },
   sessionLast: {
-    height: 80,
+    height: 100,
     justifyContent: 'center',
     paddingHorizontal: 20,
     gap: 5,
-    paddingTop: 15,
+    paddingTop: 25,
+    paddingBottom: 25,
   },
   lastSeen: {
     color: '#868585',
@@ -106,8 +108,6 @@ export const Session = ({ session, activeSessions }) => {
       style={
         activeSessions.indexOf(session) + 1 !== activeSessions.length
           ? styles.session
-          : activeSessions.length === 1
-          ? { ...styles.sessionLast, paddingTop: 0 }
           : styles.sessionLast
       }>
       <BoldText>
