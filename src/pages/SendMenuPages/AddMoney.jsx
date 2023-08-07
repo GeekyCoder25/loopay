@@ -1,10 +1,9 @@
 import {
-  Image,
+  Clipboard,
   Modal,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import PageContainer from '../../components/PageContainer';
@@ -17,9 +16,14 @@ import { allCurrencies } from '../../database/data';
 import SendMenuHeader from './Header';
 import Button from '../../components/Button';
 import FlagSelect from '../../components/FlagSelect';
+import { useWalletContext } from '../../../context/WalletContext';
+import Paste from '../../../assets/images/paste.svg';
 
 const AddMoney = ({ navigation, route }) => {
   const { selectedCurrency, setSelectedCurrency } = useContext(AppContext);
+  const wallet = useWalletContext();
+  const [accNo] = useState(wallet.accNo);
+  const [bankName] = useState(wallet.bank);
   const [modalOpen, setModalOpen] = useState(false);
   const [addBalanceData, setAddBalanceData] = useState({
     toBeCredited: 0,
@@ -105,6 +109,9 @@ const AddMoney = ({ navigation, route }) => {
   const handleContinue = params => {
     navigation.navigate('AddMoneyConfirm', { ...params, ...addBalanceData });
   };
+  const handleCopy = () => {
+    Clipboard.setString(accNo);
+  };
   return (
     <PageContainer paddingTop={10} padding={true}>
       <View style={styles.body}>
@@ -171,7 +178,17 @@ const AddMoney = ({ navigation, route }) => {
               <ChevronDown />
             </View>
           </Pressable>
-          <Text style={styles.topUp}>Amount to be credited</Text>
+          <RegularText>Bank Name</RegularText>
+          <BoldText style={styles.bankName}>{bankName}</BoldText>
+          <RegularText>Bank Account Number</RegularText>
+          <View style={styles.accNoContainer}>
+            <BoldText style={styles.accNo}>{accNo}</BoldText>
+            <Pressable onPress={handleCopy} style={styles.paste}>
+              <RegularText style={styles.pasteText}>Copy</RegularText>
+              <Paste />
+            </Pressable>
+          </View>
+          {/* <Text style={styles.topUp}>Amount to be credited</Text>
           <View style={styles.textInputContainer}>
             <BoldText style={styles.symbol}>{selectedCurrency.symbol}</BoldText>
             <TextInput
@@ -206,7 +223,7 @@ const AddMoney = ({ navigation, route }) => {
               Fee: {selectedCurrency.symbol}
               {fee < 0 ? '0.00' : fee}
             </RegularText>
-          </View>
+          </View> */}
         </View>
         <View style={styles.button}>
           {!isOkay ? (
@@ -320,6 +337,33 @@ const styles = StyleSheet.create({
     fontSize: 12,
     paddingVertical: 5,
     paddingHorizontal: 8,
+  },
+  accNoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  bankName: {
+    fontSize: 22,
+    marginVertical: 10,
+  },
+  accNo: {
+    fontSize: 28,
+    marginBottom: 20,
+  },
+  paste: {
+    backgroundColor: '#006E53',
+    borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    gap: 5,
+  },
+  pasteText: {
+    color: '#fff',
+    fontSize: 14,
   },
   button: {
     flex: 1,

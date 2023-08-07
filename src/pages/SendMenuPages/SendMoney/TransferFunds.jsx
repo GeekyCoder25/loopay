@@ -6,6 +6,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Text,
   TextInput,
   ToastAndroid,
   View,
@@ -23,9 +24,18 @@ import ErrorMessage from '../../../components/ErrorMessage';
 import { PINInput } from '../../MenuPages/TransactionPin';
 import { postFetchData } from '../../../../utils/fetchAPI';
 import { OTPInput } from '../../../components/LoggedInForgetPassword';
+import BackArrow from '../../../../assets/images/backArrrowWhite.svg';
+import FooterCard from '../../../components/FooterCard';
 
-const TransaferFunds = ({ route }) => {
+const TransferFunds = ({ navigation, route }) => {
   const { selectedCurrency, appData, setIsLoading } = useContext(AppContext);
+  // const [userToSendTo] = useState({
+  //   email: 'toyibe255@gmail.com',
+  //   fullName: 'Toyyib Lawal',
+  //   tagName: 'iamgeeky_coder',
+  //   phoneNumber: '+2349073002599',
+  //   photo: '',
+  // });
   const [userToSendTo] = useState(route.params);
   const [amountInput, setAmountInput] = useState(null);
   const [desc, setDesc] = useState('');
@@ -38,14 +48,13 @@ const TransaferFunds = ({ route }) => {
   const [haveSetPin] = useState(appData.pin);
   const [otpCode, setOtpCode] = useState('');
   const [reload, setReload] = useState(false);
-  const [isPinOkay, setIsPinOkay] = useState(false);
+  // const [isPinOkay, setIsPinOkay] = useState(false);
   const [formData] = useState({
     email: appData.email,
     otpCodeLength: 6,
   });
 
   const codeLengths = [1, 2, 3, 4];
-  //   console.log(route.params);
 
   const editInput = () => {
     setErrorMessage('');
@@ -99,7 +108,7 @@ const TransaferFunds = ({ route }) => {
           return setErrorMessage(result);
         }
         if (result.status === 200) {
-          return payStackIntegrate();
+          return initiateTransfer();
         }
         setErrorMessage(result.data);
         setErrorKey('pinCode');
@@ -111,8 +120,8 @@ const TransaferFunds = ({ route }) => {
         if (result === "Couldn't connect to server") {
           return setErrorMessage(result);
         }
-        if (result.status === 200) {
-          return payStackIntegrate();
+        if (result.status !== 200) {
+          return initiateTransfer();
         }
         setErrorMessage('Incorrect OTP Code');
         setErrorKey('otpCode');
@@ -127,205 +136,165 @@ const TransaferFunds = ({ route }) => {
     }
   };
 
-  const payStackIntegrate = () => {
-    ToastAndroid.show(
-      'Paystack integration in development',
-      ToastAndroid.SHORT,
-    );
-    console.log('paysatck ');
+  const initiateTransfer = async () => {
+    try {
+      const response = await postFetchData('user/loopay/transfer', {
+        ...userToSendTo,
+        reason: desc,
+        amount: amountInput,
+      });
+      ToastAndroid.show(response.data, ToastAndroid.SHORT);
+      console.log(response.data);
+      if (response.status !== 200) {
+        // navigation.navigate('Success', { userToSendTo, amountInput });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
-  const fee = 2.75;
   return (
     <>
       <PageContainer paddingTop={0}>
+        <View style={styles.backContainer}>
+          <Pressable
+            onPress={() => navigation.goBack()}
+            style={styles.backContainer}>
+            <BackArrow />
+            <Text style={styles.backText}>Back</Text>
+          </Pressable>
+        </View>
         <ScrollView style={styles.body}>
-          <BoldText style={styles.header}>Transfer Funds</BoldText>
-
-          <View style={styles.userIconContainer}>
-            {userToSendTo.photo ? (
-              <Image
-                source={{ uri: userToSendTo.photo }}
-                style={styles.userIconStyle}
-              />
-            ) : (
-              <View style={styles.nonUserIconStyle}>
-                <UserIconSVG width={50} height={50} />
+          <View style={styles.headerContainer}>
+            <BoldText style={styles.header}>Transfer Funds</BoldText>
+            <View style={styles.userIconContainer}>
+              {userToSendTo.photo ? (
+                <Image
+                  source={{ uri: userToSendTo.photo }}
+                  style={styles.userIconStyle}
+                />
+              ) : (
+                <View style={styles.nonUserIconStyle}>
+                  <UserIconSVG width={50} height={50} />
+                </View>
+              )}
+              <View>
+                <BoldText style={styles.fullName}>
+                  {userToSendTo.fullName}
+                </BoldText>
+                <RegularText style={styles.tagName}>
+                  {userToSendTo.tagName || userToSendTo.userName}
+                </RegularText>
               </View>
-            )}
-            <View>
-              <BoldText>{userToSendTo.fullName}</BoldText>
-              <RegularText style={styles.tagName}>
-                {userToSendTo.tagName}
-              </RegularText>
+              <View style={styles.modalBorder} />
             </View>
-            <View style={styles.modalBorder} />
           </View>
-          {!canContinue ? (
-            <>
-              <View style={styles.form}>
-                <View>
-                  <BoldText>Amount</BoldText>
-                  <View style={styles.textInputContainer}>
-                    <Pressable
-                      onPress={() => setModalOpen(true)}
-                      style={styles.symbolContainer}>
-                      <FlagSelect
-                        country={selectedCurrency.currency}
-                        style={styles.flag}
-                      />
-                      <BoldText style={styles.symbol}>
-                        {selectedCurrency.acronym}
-                      </BoldText>
-                      <FaIcon name="chevron-down" color={'#868585'} />
-                    </Pressable>
-                    <TextInput
-                      style={{
-                        ...styles.textInput,
-                        borderColor:
-                          errorKey === 'amountInput' ? 'red' : '#ccc',
-                      }}
-                      inputMode="numeric"
-                      value={amountInput}
-                      onChangeText={text => handleChange(text)}
-                      onBlur={handleBlur}
-                    />
-                  </View>
-                </View>
-                <View>
-                  <BoldText>Description</BoldText>
-                  <View style={styles.textInputContainer}>
-                    <TextInput
-                      style={{
-                        ...styles.textInput,
-                        ...styles.descTextInput,
-                        borderColor: errorKey === 'desc' ? 'red' : '#ccc',
-                      }}
-                      inputMode="text"
-                      onChangeText={text => {
-                        setDesc(text);
-                        editInput();
-                      }}
-                      value={desc}
-                      maxLength={16}
-                    />
-                  </View>
-                </View>
-                <ErrorMessage errorMessage={errorMessage} />
-                <View style={styles.feeTextInputContainer}>
-                  <BoldText style={styles.feeSymbol}>
-                    {selectedCurrency.symbol}
-                  </BoldText>
-                  <View
-                    style={{ ...styles.feeTextInput, ...styles.feeToReceive }}>
-                    <RegularText>
-                      {amountInput > 0 && amountInput - fee} to be received
-                    </RegularText>
-                  </View>
-                  <View style={styles.fee}>
-                    <RegularText style={styles.feeText}>
-                      Service Charged
-                    </RegularText>
-                    <RegularText style={styles.feeText}>
-                      {selectedCurrency.symbol}:{fee}
-                    </RegularText>
-                  </View>
-                </View>
-              </View>
-              <Button
-                text={'Continue'}
-                style={styles.button}
-                onPress={handleContinue}
-              />
-            </>
-          ) : (
-            <View>
-              <View style={styles.pinContainer} key={reload}>
-                {haveSetPin ? (
-                  <>
-                    <RegularText>Enter your transaction pin</RegularText>
-                    <View style={styles.changePinCodeLengthsContainer}>
-                      {codeLengths.map(input => (
-                        <PINInput
-                          key={input}
-                          codeLength={input}
-                          focusIndex={focusIndex}
-                          setFocusIndex={setFocusIndex}
-                          pinCode={pinCode}
-                          setPinCode={setPinCode}
-                          setErrorMessage={setErrorMessage}
-                          errorKey={errorKey}
-                          setErrorKey={setErrorKey}
-                          codeLengths={codeLengths.length}
+          <View style={styles.content}>
+            {!canContinue ? (
+              <>
+                <View style={styles.form}>
+                  <View>
+                    <BoldText>Amount</BoldText>
+                    <View style={styles.textInputContainer}>
+                      <Pressable
+                        onPress={() => setModalOpen(true)}
+                        style={styles.symbolContainer}>
+                        <FlagSelect
+                          country={selectedCurrency.currency}
+                          style={styles.flag}
                         />
-                      ))}
-                    </View>
-                  </>
-                ) : (
-                  <NoPInSet
-                    otpCode={otpCode}
-                    setOtpCode={setOtpCode}
-                    setErrorMessage={setErrorMessage}
-                    errorKey={errorKey}
-                    setErrorKey={setErrorKey}
-                  />
-                )}
-              </View>
-              <ErrorMessage errorMessage={errorMessage} />
-              <View style={styles.footer}>
-                <View style={styles.footerCard}>
-                  <BoldText style={styles.cardAmount}>
-                    {selectedCurrency.symbol}
-                    {amountInput}
-                  </BoldText>
-                  <View style={styles.footerCardDetails}>
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>
-                        Account Number
-                      </RegularText>
-                      <BoldText style={styles.cardValue}>
-                        {userToSendTo.tagName}
-                      </BoldText>
-                    </View>
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>
-                        Account Name
-                      </RegularText>
-                      <BoldText style={styles.cardValue}>
-                        {userToSendTo.fullName}
-                      </BoldText>
-                    </View>
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>Amount</RegularText>
-                      <BoldText style={styles.cardValue}>
-                        {selectedCurrency.symbol}
-                        {amountInput}
-                      </BoldText>
-                    </View>
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>
-                        Payment Method
-                      </RegularText>
-                      <BoldText
-                        style={{ ...styles.cardValue, color: '#006E53' }}>
-                        Balance
-                      </BoldText>
-                    </View>
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>
-                        Transaction Fees
-                      </RegularText>
-                      <BoldText style={styles.cardValue}>{fee}</BoldText>
+                        <BoldText style={styles.symbol}>
+                          {selectedCurrency.acronym}
+                        </BoldText>
+                        <FaIcon name="chevron-down" color={'#868585'} />
+                      </Pressable>
+                      <TextInput
+                        style={{
+                          ...styles.textInput,
+                          borderColor:
+                            errorKey === 'amountInput' ? 'red' : '#ccc',
+                        }}
+                        inputMode="numeric"
+                        value={amountInput}
+                        onChangeText={text => handleChange(text)}
+                        onBlur={handleBlur}
+                      />
                     </View>
                   </View>
+                  <View>
+                    <BoldText>Description</BoldText>
+                    <View style={styles.textInputContainer}>
+                      <TextInput
+                        style={{
+                          ...styles.textInput,
+                          ...styles.descTextInput,
+                          borderColor: errorKey === 'desc' ? 'red' : '#ccc',
+                        }}
+                        inputMode="text"
+                        onChangeText={text => {
+                          setDesc(text);
+                          editInput();
+                        }}
+                        value={desc}
+                        maxLength={16}
+                      />
+                    </View>
+                  </View>
+                  <ErrorMessage errorMessage={errorMessage} />
                 </View>
                 <Button
-                  text={'Pay now'}
-                  onPress={handlePay}
+                  text={'Continue'}
                   style={styles.button}
+                  onPress={handleContinue}
                 />
+              </>
+            ) : (
+              <View>
+                <View style={styles.pinContainer} key={reload}>
+                  {haveSetPin ? (
+                    <>
+                      <RegularText>Enter your transaction pin</RegularText>
+                      <View style={styles.changePinCodeLengthsContainer}>
+                        {codeLengths.map(input => (
+                          <PINInput
+                            key={input}
+                            codeLength={input}
+                            focusIndex={focusIndex}
+                            setFocusIndex={setFocusIndex}
+                            pinCode={pinCode}
+                            setPinCode={setPinCode}
+                            setErrorMessage={setErrorMessage}
+                            errorKey={errorKey}
+                            setErrorKey={setErrorKey}
+                            codeLengths={codeLengths.length}
+                          />
+                        ))}
+                      </View>
+                    </>
+                  ) : (
+                    <NoPInSet
+                      otpCode={otpCode}
+                      setOtpCode={setOtpCode}
+                      setErrorMessage={setErrorMessage}
+                      errorKey={errorKey}
+                      setErrorKey={setErrorKey}
+                    />
+                  )}
+                </View>
+                <ErrorMessage errorMessage={errorMessage} />
+                <View style={styles.footer}>
+                  <FooterCard
+                    userToSendTo={userToSendTo}
+                    amountInput={amountInput}
+                  />
+                  <Button
+                    text={'Pay now'}
+                    onPress={handlePay}
+                    style={styles.button}
+                  />
+                </View>
               </View>
-            </View>
-          )}
+            )}
+          </View>
         </ScrollView>
       </PageContainer>
       <SelectCurrencyModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
@@ -334,12 +303,31 @@ const TransaferFunds = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-  body: {
+  backContainer: {
+    backgroundColor: '#1e1e1e',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 15,
+    paddingLeft: 2 + '%',
+    width: 100 + '%',
+    paddingVertical: 5,
+  },
+  backText: {
+    fontFamily: 'OpenSans-600',
+    color: '#fff',
+    fontSize: 18,
+  },
+  headerContainer: {
     paddingHorizontal: 5 + '%',
+    backgroundColor: '#1e1e1e',
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
+    marginBottom: 30,
   },
   header: {
     fontSize: 18,
     marginTop: 10,
+    color: '#fff',
   },
   userIconContainer: {
     marginVertical: 40,
@@ -361,9 +349,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  fullName: {
+    color: '#fff',
+  },
   tagName: {
     textAlign: 'center',
     marginTop: 5,
+    color: '#fff',
   },
   modalBorder: {
     backgroundColor: '#ddd',
@@ -371,6 +363,9 @@ const styles = StyleSheet.create({
     width: 30 + '%',
     borderRadius: 3,
     maxWidth: 120,
+  },
+  content: {
+    paddingHorizontal: 5 + '%',
   },
   form: {
     gap: 30,
@@ -478,38 +473,8 @@ const styles = StyleSheet.create({
   footer: {
     marginTop: 50,
   },
-  footerCard: {
-    backgroundColor: '#efe2e2',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    paddingVertical: 30,
-    borderRadius: 5,
-    marginBottom: 30,
-  },
-  footerCardDetails: {
-    gap: 10,
-  },
-  cardAmount: {
-    fontSize: 24,
-    marginBottom: 30,
-  },
-  cardLine: {
-    flexDirection: 'row',
-    width: 100 + '%',
-  },
-  cardKey: {
-    flex: 1,
-    color: '#525252',
-    fontFamily: 'OpenSans-600',
-  },
-  cardValue: {
-    flex: 1,
-    textAlign: 'right',
-    color: '#525252',
-  },
 });
-export default TransaferFunds;
+export default TransferFunds;
 
 const NoPInSet = ({
   otpCode,

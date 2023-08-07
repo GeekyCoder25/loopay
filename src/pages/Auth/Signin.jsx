@@ -10,6 +10,7 @@ import {
 import Email from '../../../assets/images/mail.svg';
 import Lock from '../../../assets/images/lock.svg';
 import Eye from '../../../assets/images/eye.svg';
+import EyeClosed from '../../../assets/images/eye-slash.svg';
 import Apple from '../../../assets/images/apple.svg';
 import Google from '../../../assets/images/google.svg';
 import { signInData } from '../../database/data.js';
@@ -304,7 +305,7 @@ const FormField = ({
         <Pressable
           style={styles.eye}
           onPress={() => setShowPassword(prev => !prev)}>
-          <Eye />
+          {showPassword ? <Eye /> : <EyeClosed />}
         </Pressable>
       )}
     </View>

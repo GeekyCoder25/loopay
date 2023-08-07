@@ -1,5 +1,4 @@
-/* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import AccInfoCard from '../../../components/AccInfoCard';
 import PageContainer from '../../../components/PageContainer';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -20,12 +19,10 @@ import UserIconSVG from '../../../../assets/images/userMenu.svg';
 import SwitchOn from '../../../../assets/images/switch.svg';
 import SwitchOff from '../../../../assets/images/switchOff.svg';
 import { postFetchData } from '../../../../utils/fetchAPI';
-import { tagNameRules } from '../../../database/data';
 import { AppContext } from '../../../components/AppContext';
 import { useBenefifciaryContext } from '../../../../context/BenefiaciariesContext';
-// import { Paystack } from 'react-native-paystack-webview';
 
-const SendLoopay = ({ navigation, route }) => {
+const SendNew = ({ navigation, route }) => {
   const { appData } = useContext(AppContext);
   const { beneficiaryState } = useBenefifciaryContext();
   const [showPaste, setShowPaste] = useState(false);
@@ -34,15 +31,13 @@ const SendLoopay = ({ navigation, route }) => {
   const [saveAsBeneficiary, setSaveAsBeneficiary] = useState(true);
   const [userFound, setUserFound] = useState(null);
   const [newBeneficiary, setNewBeneficiary] = useState(true);
-  const { minimun, maximum } = tagNameRules;
 
   useEffect(() => {
     const getClipboard = async () => {
       const copiedText = await Clipboard.getString();
-      // copiedText.includes('#') &&
+      //   copiedText.includes('#') &&
       setShowPaste(copiedText);
     };
-    getClipboard();
 
     if (route.params) {
       setinputValue(route.params.tagName);
@@ -57,36 +52,35 @@ const SendLoopay = ({ navigation, route }) => {
         }
       }
     }
+    getClipboard();
   }, [beneficiaryState, route.params]);
 
   const handlePaste = async () => {
     setinputValue(showPaste);
-    handleChange(showPaste);
   };
 
   const handleChange = async text => {
     try {
       setinputValue(text);
-      if (text.length >= minimun && text.length <= maximum) {
+      if (text.length === 10) {
         setIsSearching(true);
-        const senderTagName = appData.tagName;
-        const result = await postFetchData(`user/get-tag/${senderTagName}`, {
-          tagName: text,
+        const { phoneNumber } = appData.userProfile;
+        const result = await postFetchData(`user/get-phone/${phoneNumber}`, {
+          phoneNumber: text,
         });
         if (result.status === 200) {
-          const beneficiariesTagName = beneficiaryState?.map(
-            beneficiary => beneficiary.tagName,
-          );
-          if (beneficiariesTagName) {
-            beneficiariesTagName.includes(result.data.tagName)
-              ? setNewBeneficiary(false)
-              : setNewBeneficiary(true);
-          }
+          // const beneficiariesTagName = beneficiaryState?.map(
+          //   beneficiary => beneficiary.tagName || beneficiary.userName,
+          // );
+          // if (beneficiariesTagName) {
+          //   beneficiariesTagName.includes(
+          //     result.data.tagName || result.data.userName,
+          //   )
+          //     ? setNewBeneficiary(false)
+          //     : setNewBeneficiary(true);
+          // }
           return setUserFound(result.data);
         }
-        return setUserFound(null);
-      } else {
-        return setUserFound(null);
       }
     } finally {
       setIsSearching(false);
@@ -95,9 +89,9 @@ const SendLoopay = ({ navigation, route }) => {
 
   const handleContinue = async () => {
     // Make Api Request with Paystack
-    if (saveAsBeneficiary) {
-      const response = await postFetchData('user/beneficiary', userFound);
-    }
+    // if (saveAsBeneficiary) {
+    //   const response = await postFetchData('user/beneficiary', userFound);
+    // }
     navigation.navigate('TransferFunds', userFound);
   };
 
@@ -106,26 +100,24 @@ const SendLoopay = ({ navigation, route }) => {
       <ScrollView style={styles.body}>
         <View style={styles.top}>
           <AccInfoCard />
-          <RegularText style={styles.header}>Send to Loopay</RegularText>
+          <RegularText style={styles.header}>Send to new recipient</RegularText>
           <View style={styles.textInputContainer}>
             <View style={styles.symbolContainer}>
-              <BoldText style={styles.symbol}>To:</BoldText>
+              <BoldText style={styles.symbol}>Acc No:</BoldText>
             </View>
             <TextInput
               style={styles.textInput}
               inputMode="text"
               onChangeText={text => handleChange(text)}
               value={inputValue}
-              placeholder="#username"
+              placeholder="9073002599"
               placeholderTextColor={'#525252'}
-              maxLength={maximum}
+              maxLength={10}
             />
-            {showPaste && (
-              <Pressable onPress={handlePaste} style={styles.paste}>
-                <RegularText style={styles.pasteText}>Paste</RegularText>
-                <Paste />
-              </Pressable>
-            )}
+            <Pressable onPress={handlePaste} style={styles.paste}>
+              <RegularText style={styles.pasteText}>Paste</RegularText>
+              <Paste />
+            </Pressable>
           </View>
         </View>
         {isSearching && (
@@ -149,10 +141,10 @@ const SendLoopay = ({ navigation, route }) => {
               )}
               <View style={styles.userFoundDetails}>
                 <BoldText>{userFound.fullName}</BoldText>
-                <BoldText>{userFound.tagName}</BoldText>
+                <BoldText>{userFound.tagName || userFound.userName}</BoldText>
               </View>
             </View>
-            {newBeneficiary && (
+            {/* {newBeneficiary && (
               <View style={styles.beneficiary}>
                 <RegularText style={styles.save}>
                   Save as beneficiary
@@ -165,7 +157,7 @@ const SendLoopay = ({ navigation, route }) => {
                   )}
                 </Pressable>
               </View>
-            )}
+            )} */}
           </View>
         )}
         {/* <Paystack
@@ -210,7 +202,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 10,
     fontFamily: 'OpenSans-600',
-    paddingLeft: 65,
+    paddingLeft: 85,
     paddingRight: 15,
     paddingVertical: 10,
     borderWidth: 1,
@@ -219,16 +211,16 @@ const styles = StyleSheet.create({
   symbolContainer: {
     position: 'absolute',
     zIndex: 9,
-    left: 15,
+    left: 10,
     borderRightWidth: 1,
     borderRightColor: '#868585',
-    paddingRight: 10,
+    paddingRight: 5,
     height: 100 + '%',
     justifyContent: 'center',
   },
   symbol: {
     color: '#000',
-    fontSize: 18,
+    fontSize: 16,
   },
   paste: {
     position: 'absolute',
@@ -294,4 +286,5 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
 });
-export default SendLoopay;
+
+export default SendNew;

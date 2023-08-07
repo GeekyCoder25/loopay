@@ -7,12 +7,14 @@ import AccInfo from '../pages/SendMenuPages/AccInfo';
 import AccStatement from '../pages/SendMenuPages/AccStatement';
 import SendMenuHeader from '../pages/SendMenuPages/Header';
 import AddMoneyConfirm from '../pages/SendMenuPages/AddMoneyConfirm';
-import SendMoney from '../pages/SendMenuPages/SendMoney';
-import BuyAirtime from '../pages/SendMenuPages/BuyAirtime';
+import BuyAirtime from '../pages/SendMenuPages/AirtimeTopUp/BuyAirtime';
 import PayABill from '../pages/SendMenuPages/PayABill';
 import BillTv from '../pages/SendMenuPages/BillTv';
-import SendLoopay from '../pages/SendMenuPages/SendMoney/SendLoopay';
-import TransaferFunds from '../pages/SendMenuPages/SendMoney/TransaferFunds';
+import AirtimeTopUp from '../pages/SendMenuPages/AirtimeTopUp';
+import BuyData from '../pages/SendMenuPages/AirtimeTopUp/BuyData';
+import Success from '../pages/SendMenuPages/Success';
+import SendMoneyNavigator from './SendMoneyNavigator';
+import TransferFunds from '../pages/SendMenuPages/SendMoney/TransferFunds';
 
 const SendMenuNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -20,10 +22,9 @@ const SendMenuNavigator = () => {
   return (
     <Stack.Navigator
       screenOptions={({ navigation, route }) => ({
-        headerTitle: () => <SendMenuHeader {...navigation} route={route} />,
-        headerBackVisible: false,
-        headerBackTitleVisible: false,
-        headerShadowVisible: false,
+        header: () => (
+          <SendMenuHeader goBack={navigation.goBack} route={route} />
+        ),
       })}>
       <Stack.Screen
         name="SendMenu"
@@ -34,11 +35,25 @@ const SendMenuNavigator = () => {
       />
       <Stack.Screen name="AddMoney" component={AddMoney} />
       <Stack.Screen name="AddMoneyConfirm" component={AddMoneyConfirm} />
-      <Stack.Screen name="SendMoney" component={SendMoney} />
-      <Stack.Screen name="SendLoopay" component={SendLoopay} />
-      <Stack.Screen name="TransferFunds" component={TransaferFunds} />
+      <Stack.Screen
+        name="SendMoneyNavigator"
+        component={SendMoneyNavigator}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="TransferFunds"
+        component={TransferFunds}
+        options={{
+          headerShown: false,
+        }}
+      />
       <Stack.Screen name="SwapFunds" component={SwapFunds} />
+      <Stack.Screen name="AirtimeTopup" component={AirtimeTopUp} />
       <Stack.Screen name="BuyAirtime" component={BuyAirtime} />
+      <Stack.Screen name="BuyData" component={BuyData} />
+      <Stack.Screen name="AirtimeHistory" component={AccStatement} />
       <Stack.Screen name="PayABill" component={PayABill} />
       <Stack.Screen name="VirtualCard" component={VirtualCard} />
       <Stack.Screen name="billTV" component={BillTv} />
@@ -46,6 +61,13 @@ const SendMenuNavigator = () => {
       <Stack.Screen name="billschool" component={PayABill} />
       <Stack.Screen name="billelectricity" component={PayABill} />
       <Stack.Screen name="AccStatement" component={AccStatement} />
+      <Stack.Screen
+        name="Success"
+        component={Success}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 };

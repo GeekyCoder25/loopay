@@ -6,6 +6,7 @@ const StorageKeys = {
   LOGGED_IN: 'LOGGED_IN',
   TOKEN: 'TOKEN',
   SESSION: 'SESSION',
+  SHOW_AMOUNT: 'SHOW_AMOUNT',
 };
 
 export const loginUser = async (data, session) => {
@@ -29,7 +30,8 @@ export const getUser = async () => {
 };
 
 export const getIsLoggedIn = async () => {
-  return await AsyncStorage.getItem(StorageKeys.LOGGED_IN);
+  const stringifiedState = await AsyncStorage.getItem(StorageKeys.LOGGED_IN);
+  return JSON.parse(stringifiedState);
 };
 
 export const getNotFirstTime = async () => {

@@ -21,16 +21,13 @@ import RegularText from '../../components/fonts/RegularText';
 import BoldText from '../../components/fonts/BoldText';
 import FlagSelect from '../../components/FlagSelect';
 import UserIcon from '../../components/UserIcon';
+import WalletAmount from '../../components/WalletAmount';
 
 const Home = ({ navigation }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const { selectedCurrency, appData } = useContext(AppContext);
-  const fullName = `${appData?.userProfile?.firstName} ${appData?.userProfile?.lastName}`;
-  const walletAmount = 0;
+  const fullName = appData.userProfile.fullName;
 
-  useEffect(() => {
-    console.log('red', appData);
-  }, [appData]);
   return (
     <>
       <PageContainer>
@@ -57,7 +54,7 @@ const Home = ({ navigation }) => {
                   <Text style={styles.symbol}>{selectedCurrency.symbol}</Text>
                 </View>
                 <View>
-                  <BoldText style={styles.amount}>{walletAmount}</BoldText>
+                  <WalletAmount />
                   <View style={styles.flagContainer}>
                     <RegularText style={styles.currrencyType}>
                       {selectedCurrency.acronym}
@@ -82,7 +79,9 @@ const Home = ({ navigation }) => {
               </View>
               <Pressable
                 style={styles.cardDetails}
-                onPress={() => navigation.navigate('SendMoney')}>
+                onPress={() =>
+                  navigation.navigate('SendMoneyNavigatorFromHome')
+                }>
                 <UpAndDownArrow />
                 <RegularText style={styles.currrencyType}>
                   Send Money
@@ -175,14 +174,11 @@ const styles = StyleSheet.create({
     fontFamily: 'AlfaSlabOne-Regular',
     transform: [{ translateY: -3.5 }, { translateX: -0.5 }],
   },
-  amount: {
-    color: '#ccc',
-    fontSize: 50,
-  },
   flagContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    marginLeft: -5,
   },
   currrencyType: {
     color: '#fff',

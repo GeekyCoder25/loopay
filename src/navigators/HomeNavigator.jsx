@@ -4,17 +4,14 @@ import Home from '../pages/BottomTabPages/Home';
 import SendMenuHeader from '../pages/SendMenuPages/Header';
 import Profile from '../pages/HomePages/Profile';
 import LoopayTag from '../pages/HomePages/LoopayTag';
-import SendMoney from '../pages/SendMenuPages/SendMoney';
+import SendMoneyNavigator from './SendMoneyNavigator';
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
   const screenHeader = (navigation, route) => {
     return {
       headerShown: true,
-      headerTitle: () => <SendMenuHeader {...navigation} route={route} />,
-      headerBackVisible: false,
-      headerBackTitleVisible: false,
-      headerShadowVisible: false,
+      header: () => <SendMenuHeader goBack={navigation.goBack} route={route} />,
     };
   };
 
@@ -32,9 +29,11 @@ const HomeNavigator = () => {
         options={({ navigation, route }) => screenHeader(navigation, route)}
       />
       <Stack.Screen
-        name="SendMoney"
-        component={SendMoney}
-        options={({ navigation, route }) => screenHeader(navigation, route)}
+        name="SendMoneyNavigatorFromHome"
+        component={SendMoneyNavigator}
+        options={{
+          headerShown: false,
+        }}
       />
     </Stack.Navigator>
   );

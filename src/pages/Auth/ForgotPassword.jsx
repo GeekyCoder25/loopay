@@ -15,6 +15,7 @@ import { AppContext } from '../../components/AppContext';
 import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import { loginUser } from '../../../utils/storage';
 import ErrorMessage from '../../components/ErrorMessage';
+import saveSessionOptions from '../../services/Savesession';
 
 const ForgotPassword = ({ navigation }) => {
   const [codeSent, setCodeSent] = useState(false);
@@ -60,7 +61,6 @@ const ForgotPassword = ({ navigation }) => {
   const handleCofirm = async () => {
     try {
       setIsLoading(true);
-      console.log(otpCode);
       const fetchResult = await postFetchData(
         `auth/confirm-otp/${otpCode || 'fake'}`,
         formData,
@@ -72,16 +72,13 @@ const ForgotPassword = ({ navigation }) => {
         setErrorKey('otpCode');
         return setErrorMessage(result.error);
       }
-      loginUser(result.data).then(() => {
-        getFetchData('user').then(data => {
-          try {
-            setAppData(data.data);
-            setIsLoggedIn(true);
-          } catch {
-            err => console.log(err);
-          }
-        });
-      });
+      const sessionData = saveSessionOptions();
+      await loginUser(result.data, sessionData.deviceID);
+      const data = await getFetchData('user');
+      setAppData(data.data);
+      setIsLoggedIn(true);
+    } catch (err) {
+      setErrorMessage(err.message);
     } finally {
       setIsLoading(false);
     }

@@ -12,7 +12,7 @@ import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import Button from '../../components/Button';
 import { AppContext } from '../../components/AppContext';
-import { putFetchData } from '../../../utils/fetchAPI';
+import { postFetchData, putFetchData } from '../../../utils/fetchAPI';
 import ErrorMessage from '../../components/ErrorMessage';
 import { tagNameRules } from '../../database/data';
 
@@ -42,10 +42,10 @@ const LoopayTag = ({ navigation }) => {
           `Your tag name must be at least ${minimun}-${maximum} characters long`,
         );
       }
-      const fetchedResult = await putFetchData('user', {
+      const fetchedResult = await postFetchData('user/tag-name', {
         tagName: inputValue,
       });
-      console.log(fetchedResult);
+      if (!fetchedResult.status) throw new Error(fetchedResult);
       if (
         fetchedResult.status === 400 &&
         fetchedResult.data.tagName.includes(
@@ -54,13 +54,13 @@ const LoopayTag = ({ navigation }) => {
       ) {
         throw new Error('This loopay tag has been used by another user');
       }
-      if (fetchedResult.status !== 200) throw new Error();
       ToastAndroid.show('LoopayTag updated successfully', ToastAndroid.SHORT);
       setAppData(prev => {
         return { ...prev, tagName: inputValue };
       });
       navigation.goBack();
     } catch (err) {
+      ToastAndroid.show(err.message, ToastAndroid.SHORT);
       setErrorMessage(err.message);
     } finally {
       setIsLoading(false);
@@ -95,7 +95,13 @@ const LoopayTag = ({ navigation }) => {
         <Button
           text={'Help Suggest LoopayTag'}
           onPress={() =>
-            setInputValue(`iam${userName.split(' ').join('').toLowerCase()}`)
+            setInputValue(
+              `iam${userName
+                .split(' ')
+                .join('')
+                .toLowerCase()
+                .replace('_', '')}`,
+            )
           }
         />
       </View>

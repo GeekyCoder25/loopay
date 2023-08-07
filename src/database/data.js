@@ -165,7 +165,7 @@ export const sendMenuRoutes = [
     routeName: 'Send Money',
     routeDetails: 'Send Funds to Family and Friends',
     routeIcon: 'send',
-    routeNavigate: 'SendMoney',
+    routeNavigate: 'SendMoneyNavigator',
   },
   {
     routeName: 'Swap Funds',
@@ -177,7 +177,7 @@ export const sendMenuRoutes = [
     routeName: 'Airtime Top up',
     routeDetails: 'Buy airtime via VTU',
     routeIcon: 'airtime',
-    routeNavigate: 'BuyAirtime',
+    routeNavigate: 'AirtimeTopup',
   },
   {
     routeName: 'Pay a Bill',

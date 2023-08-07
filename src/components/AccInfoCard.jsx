@@ -12,10 +12,10 @@ import ChevronDown from '../../assets/images/chevron-down.svg';
 import BoldText from './fonts/BoldText';
 import RegularText from './fonts/RegularText';
 import FlagSelect from './FlagSelect';
+import WalletAmount from './WalletAmount';
 
 const AccInfoCard = () => {
   const { selectedCurrency } = useContext(AppContext);
-  const walletAmount = 0;
   const pendingBalance = 0;
 
   return (
@@ -29,7 +29,7 @@ const AccInfoCard = () => {
             <Text style={styles.symbol}>{selectedCurrency.symbol}</Text>
           </View>
           <View>
-            <BoldText style={styles.amount}>{walletAmount}</BoldText>
+            <WalletAmount />
             <View style={styles.flagContainer}>
               <RegularText style={styles.currrencyType}>
                 {selectedCurrency.currency}

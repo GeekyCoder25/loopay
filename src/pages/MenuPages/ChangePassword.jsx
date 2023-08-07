@@ -15,7 +15,7 @@ import SuccessMessage from '../../components/SuccessMessage';
 import CheckPassword from '../../components/CheckPassword';
 
 const ChangePassword = ({ navigation }) => {
-  const { vh, appData, setIsLoading } = useContext(AppContext);
+  const { vh, setIsLoading } = useContext(AppContext);
   const [remembersPassword, setRemembersPassword] = useState(true);
 
   const [newFormData, setNewFormData] = useState({
@@ -26,7 +26,6 @@ const ChangePassword = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [passowrdIsValid, setPassowrdIsValid] = useState(false);
-  const { email } = appData;
 
   const editInput = () => {
     setErrorMessage('');
@@ -56,7 +55,7 @@ const ChangePassword = ({ navigation }) => {
       }
 
       const fetchResult = await postFetchData(
-        `auth/change-password/${email}`,
+        'auth/change-password',
         newFormData,
       );
       const { data: result } = fetchResult;

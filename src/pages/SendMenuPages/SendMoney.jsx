@@ -21,14 +21,14 @@ const SendMoney = ({ navigation }) => {
       routeName: 'Send to a Beneficiary',
       routeDetails: 'Choose from one of your saved beneficiaries to send money',
       routeIcon: 'beneficiary',
-      routeNavigate: 'SendMoney',
+      routeNavigate: appData.tagName ? 'SendBeneficiary' : 'Profile',
     },
     {
       routeName: 'Send to a new recipient',
       routeDetails:
         'Enter details of an account you haven’t previously saved to make a withdrawal',
       routeIcon: 'recipient',
-      routeNavigate: 'SendMoney',
+      routeNavigate: 'SendNew',
     },
   ];
   return (

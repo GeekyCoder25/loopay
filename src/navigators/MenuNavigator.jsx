@@ -16,10 +16,9 @@ const MenuNavigator = () => {
   return (
     <Stack.Navigator
       screenOptions={({ navigation, route }) => ({
-        headerTitle: () => <SendMenuHeader {...navigation} route={route} />,
-        headerBackVisible: false,
-        headerBackTitleVisible: false,
-        headerShadowVisible: false,
+        header: () => (
+          <SendMenuHeader goBack={navigation.goBack} route={route} />
+        ),
       })}>
       <Stack.Screen
         name="SendMenu"

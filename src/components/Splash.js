@@ -3,9 +3,14 @@ import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import Logo from '../../assets/images/logoDark.svg';
 import CustomBackground from '../components/CustomBackground';
 import RegularText from './fonts/RegularText';
-import { getIsLoggedIn, getToken } from '../../utils/storage';
+import {
+  getIsLoggedIn,
+  getSessionID,
+  getToken,
+  logoutUser,
+} from '../../utils/storage';
 import { AppContext } from './AppContext';
-import { apiUrl } from '../../utils/fetchAPI';
+import { apiUrl, deleteFetchData } from '../../utils/fetchAPI';
 const Splash = ({ navigation }) => {
   const { internetStatus, setIsLoggedIn, setAppData, vw } =
     useContext(AppContext);
@@ -17,12 +22,16 @@ const Splash = ({ navigation }) => {
   useEffect(() => {
     if (internetStatus === true) {
       const getDataFromStorage = async () => {
-        setIsLoggedIn((await getIsLoggedIn()) === 'true');
-        if ((await getIsLoggedIn()) === 'true') {
+        setIsLoggedIn(await getIsLoggedIn());
+        if (await getIsLoggedIn()) {
           const data = await getFetchData('user');
           await setAppData(data);
           if (!data || Object.entries(data).length === 0) {
-            return setIsLoggedIn(false);
+            setIsLoggedIn(false);
+            const sessionID = await getSessionID();
+            await deleteFetchData(`user/session/${sessionID}`);
+            logoutUser();
+            setIsLoggedIn(false);
           }
         }
         await navigation.replace('FirstPage');
@@ -30,7 +39,7 @@ const Splash = ({ navigation }) => {
       getDataFromStorage();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [internetStatus, navigation]);
+  }, [internetStatus]);
 
   const getFetchData = async apiEndpoint => {
     const controller = new AbortController();

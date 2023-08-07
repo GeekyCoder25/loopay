@@ -1,3 +1,4 @@
+import React, { useContext } from 'react';
 import {
   Image,
   ImageBackground,
@@ -21,15 +22,14 @@ import RegularText from '../../components/fonts/RegularText';
 import BoldText from '../../components/fonts/BoldText';
 import { sendMenuRoutes } from '../../database/data';
 import { AppContext } from '../../components/AppContext';
-import React, { useContext, useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { getFetchData } from '../../../utils/fetchAPI';
 import UserIconSVG from '../../../assets/images/userMenu.svg';
+import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';
 
 const SendMenu = ({ navigation }) => {
-  const { setAppData } = useContext(AppContext);
   const { setShowTabBar } = useContext(AppContext);
-  const [beneficiaries, setBeneficiaries] = useState(null);
+  const { beneficiaryState, setBeneficiaryState } = useBenefifciaryContext();
   useFocusEffect(
     React.useCallback(() => {
       setShowTabBar(true);
@@ -41,18 +41,15 @@ const SendMenu = ({ navigation }) => {
       const getBeneficiaires = async () => {
         const response = await getFetchData('user/beneficiary');
         if (response.status === 200) {
-          setBeneficiaries(response.data.beneficiaries);
-          setAppData(prev => {
-            return { ...prev, beneficiaries: response.data.beneficiaries };
-          });
+          setBeneficiaryState(response.data.beneficiaries);
         }
       };
       getBeneficiaires();
-    }, [setAppData]),
+    }, [setBeneficiaryState]),
   );
 
   const handleBeneficiaryPress = beneficiary => {
-    navigation.navigate('SendLoopay', beneficiary);
+    navigation.navigate('TransferFunds', beneficiary);
   };
 
   return (
@@ -61,9 +58,9 @@ const SendMenu = ({ navigation }) => {
         <RegularText>Beneficiaries</RegularText>
         <RegularText>View all</RegularText>
       </View>
-      {beneficiaries ? (
+      {beneficiaryState ? (
         <ScrollView horizontal={true} style={styles.beneficiaries}>
-          {beneficiaries.map(beneficiary => (
+          {beneficiaryState.map(beneficiary => (
             <Pressable
               key={beneficiary.tagName}
               style={styles.beneficiary}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PageContainer from '../../components/PageContainer';
+import PageContainer from '../../../components/PageContainer';
 import {
   Modal,
   Pressable,
@@ -9,14 +9,14 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import RegularText from '../../components/fonts/RegularText';
-import BoldText from '../../components/fonts/BoldText';
-import GLOIcon from '../../../assets/images/glo.svg';
-import MTNIcon from '../../../assets/images/mtn.svg';
-import AirtelIcon from '../../../assets/images/airtel.svg';
-import NineMobileIcon from '../../../assets/images/9mobile.svg';
-import ChevronDown from '../../../assets/images/chevron-down-fill.svg';
-import Button from '../../components/Button';
+import RegularText from '../../../components/fonts/RegularText';
+import BoldText from '../../../components/fonts/BoldText';
+import GLOIcon from '../../../../assets/images/glo.svg';
+import MTNIcon from '../../../../assets/images/mtn.svg';
+import AirtelIcon from '../../../../assets/images/airtel.svg';
+import NineMobileIcon from '../../../../assets/images/9mobile.svg';
+import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
+import Button from '../../../components/Button';
 
 const BuyAirtime = () => {
   const [modalOpen, setModalOpen] = useState(false);
