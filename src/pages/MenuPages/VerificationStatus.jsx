@@ -4,45 +4,83 @@ import { View, StyleSheet } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import Button from '../../components/Button';
 import { AppContext } from '../../components/AppContext';
+import RegularText from '../../components/fonts/RegularText';
 
-const VerificationStatus = () => {
-  const { vh } = useContext(AppContext);
+const VerificationStatus = ({ navigation }) => {
   return (
     <PageContainer padding={true} justify={true}>
-      <View
-        style={{
-          ...styles.container,
-          minHeight: vh * 0.65,
-        }}>
+      <View style={styles.container}>
         <View>
           <BoldText style={styles.headerText}>Identity Verification</BoldText>
           <View style={styles.card}>
-            <BoldText style={styles.cardHeaderText}>Requirements</BoldText>
+            <View style={styles.rowContainer}>
+              <BoldText style={styles.cardHeaderText}>Requirements</BoldText>
+              <View style={styles.row}>
+                <RegularText>Deposit</RegularText>
+                <RegularText>Unlimited</RegularText>
+              </View>
+              <View style={styles.row}>
+                <RegularText>Withdrawal</RegularText>
+                <RegularText>Unlimited</RegularText>
+              </View>
+            </View>
+            <View style={{ ...styles.rowContainer, ...styles.border }}>
+              <BoldText style={styles.cardHeaderText}>Requirements</BoldText>
+              <View style={styles.row}>
+                <RegularText>Personal Info</RegularText>
+              </View>
+              <View style={styles.row}>
+                <RegularText>Residential address</RegularText>
+              </View>
+            </View>
           </View>
         </View>
-        <Button text={'Verify now'} style={styles.button} />
+        <Button
+          text={'Verify now'}
+          style={styles.button}
+          onPress={() => navigation.navigate('IdentityVerification')}
+        />
       </View>
     </PageContainer>
   );
 };
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 2 + '%',
     justifyContent: 'space-between',
+    flex: 1,
   },
   headerText: {
     fontSize: 20,
+    color: '#525252',
   },
   card: {
     backgroundColor: '#eee',
     minHeight: 250,
-    marginVertical:  30,
+    marginVertical: 30,
     borderRadius: 30,
-    padding: 20,
+    marginHorizontal: 2 + '%',
+  },
+  border: {
+    borderTopWidth: 1,
+    borderColor: '#868585',
   },
   cardHeaderText: {
     fontSize: 18,
+    color: '#525252',
+    marginBottom: 5,
+    paddingHorizontal: 5 + '%',
   },
-  button: {},
+  row: {
+    paddingHorizontal: 5 + '%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  rowContainer: {
+    paddingVertical: 20,
+  },
+  button: {
+    marginBottom: 15 + '%',
+  },
 });
 export default VerificationStatus;

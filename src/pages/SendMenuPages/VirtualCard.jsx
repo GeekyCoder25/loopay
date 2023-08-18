@@ -1,23 +1,84 @@
-import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
+/* eslint-disable react-native/no-inline-styles */
+import {
+  Image,
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
 import Button from '../../components/Button';
 import CardIcon from '../../../assets/images/cardBeneficiary.svg';
 import AtmScratch from '../../../assets/images/atmScratch.svg';
 import AtmChevron from '../../../assets/images/atmArrow.svg';
+import AtmChevronRight from '../../../assets/images/atmChevronRight.svg';
 import RegularText from '../../components/fonts/RegularText';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../components/AppContext';
+import { getFetchData } from '../../../utils/fetchAPI';
 
-const VirtualCard = () => {
+const VirtualCard = ({ navigation }) => {
   const { appData } = useContext(AppContext);
+  const { fullName } = appData?.userProfile;
+  const [activeCards, setActiveCards] = useState([
+    {
+      id: 1,
+      fullName,
+      exp_month: '04',
+      exp_year: '2027',
+    },
+  ]);
 
-  const { firstName, lastName } = appData?.userProfile;
-  const fullName = `${firstName} ${lastName}`;
+  useEffect(() => {
+    const getCards = async () => {
+      const response = await getFetchData('user/wallet');
+      if (response.status === 200) {
+        setActiveCards(response.data);
+      }
+    };
+  }, []);
   return (
     <PageContainer paddingTop={10}>
       <View style={styles.body}>
         <BoldText style={styles.headerText}>Cards</BoldText>
+        {activeCards.length > 0 && (
+          <View style={styles.activeCards}>
+            <BoldText>Active card{activeCards.length > 1 ? 's' : ''}</BoldText>
+            {activeCards.map(card => (
+              <Pressable
+                key={card.id}
+                style={styles.activeCard}
+                onPress={() => navigation.navigate('VirtualCardDetails', card)}>
+                <View style={{ zIndex: 9 }}>
+                  <BoldText style={styles.activeCardName}>
+                    {card.fullName}
+                  </BoldText>
+                  <BoldText
+                    style={
+                      styles.activeCardDate
+                    }>{`${card.exp_month}/${card.exp_year}`}</BoldText>
+                </View>
+                <View style={styles.activeCardBgLeft}>
+                  <Image
+                    source={require('../../../assets/images/activeCardBgLeft.png')}
+                    style={{ width: 100, height: 100, marginBottom: -8 }}
+                    resizeMode="contain"
+                  />
+                </View>
+                <AtmChevronRight />
+                <View style={styles.activeCardBg}>
+                  <Image
+                    source={require('../../../assets/images/activeCardBg.png')}
+                    style={{ width: 73, marginBottom: -8 }}
+                    resizeMode="contain"
+                  />
+                </View>
+              </Pressable>
+            ))}
+          </View>
+        )}
         <ImageBackground
           source={require('../../../assets/images/cardBg.png')}
           style={styles.card}>
@@ -68,7 +129,11 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 20,
+    marginBottom: 20,
+  },
+  activeCards: {
     marginBottom: 50,
+    gap: 25,
   },
   card: {
     width: 350,
@@ -80,6 +145,44 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: 15,
+  },
+  activeCard: {
+    backgroundColor: '#1E1E1E',
+    width: 100 + '%',
+    height: 85,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    paddingLeft: 5 + '%',
+    paddingRight: 2 + '%',
+  },
+  activeCardBgLeft: {
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    overflow: 'hidden',
+    maxHeight: 75,
+    justifyContent: 'center',
+  },
+  activeCardBg: {
+    position: 'absolute',
+    right: 30,
+    overflow: 'hidden',
+    maxHeight: 75,
+    justifyContent: 'center',
+  },
+  activeCardName: {
+    color: '#fff',
+    fontSize: 18,
+    textTransform: 'uppercase',
+    fontFamily: 'OpenSans-600',
+    letterSpacing: 1,
+    marginBottom: 3,
+  },
+  activeCardDate: {
+    color: '#BBBBBB',
+    fontSize: 16,
   },
   cardLeft: {
     flex: 1,

@@ -71,54 +71,6 @@ export const accountType = [
   },
 ];
 
-export const historyData = [
-  // {
-  //   id: 1,
-  //   transactionType: 'received',
-  //   transactionAmount: 200,
-  // },
-  // {
-  //   id: 2,
-  //   transactionType: 'sent',
-  //   transactionAmount: 40,
-  // },
-  // {
-  //   id: 3,
-  //   transactionType: 'sent',
-  //   transactionAmount: 40,
-  // },
-  // {
-  //   id: 4,
-  //   transactionType: 'sent',
-  //   transactionAmount: 40,
-  // },
-  // {
-  //   id: 5,
-  //   transactionType: 'sent',
-  //   transactionAmount: 40,
-  // },
-  // {
-  //   id: 6,
-  //   transactionType: 'sent',
-  //   transactionAmount: 40,
-  // },
-  // {
-  //   id: 7,
-  //   transactionType: 'sent',
-  //   transactionAmount: 40,
-  // },
-  // {
-  //   id: 8,
-  //   transactionType: 'received',
-  //   transactionAmount: 90,
-  // },
-  // {
-  //   id: 9,
-  //   transactionType: 'sent',
-  //   transactionAmount: 40,
-  // },
-];
-
 export const allCurrencies = [
   {
     currency: 'Dollar',
@@ -199,6 +151,59 @@ export const sendMenuRoutes = [
   },
 ];
 
+export const menuRoutes = [
+  {
+    routeName: 'My Info',
+    routeNavigate: 'MyInfo',
+    routeIcon: 'user',
+  },
+  {
+    routeName: 'Verification Status',
+    routeNavigate: 'VerificationStatus',
+    routeIcon: 'user',
+    routeEnd: true,
+  },
+  {
+    routeName: 'Transaction History',
+    routeNavigate: 'TransactionHistory',
+    routeIcon: 'history',
+  },
+  {
+    routeName: 'Virtual Card',
+    routeNavigate: 'VirtualCard',
+    routeIcon: 'card',
+  },
+  // {
+  //   routeName: 'Two-Factor Authentication',
+  //   routeNavigate: 'TwoAuth',
+  //   routeIcon: 'shield',
+  // },
+  {
+    routeName: 'Change Password',
+    routeNavigate: 'ChangePassword',
+    routeIcon: 'lock',
+  },
+  {
+    routeName: 'Devices and Session',
+    routeNavigate: 'DevicesAndSessions',
+    routeIcon: 'devices',
+  },
+  {
+    // routeName: `${appData.pin ? 'Change' : 'Create'} Transaction Pin`,
+    routeNavigate: 'TransactionPin',
+    routeIcon: 'key',
+  },
+  {
+    routeName: 'Referrals',
+    routeNavigate: 'Referrals',
+    routeIcon: 'dualUser',
+  },
+  {
+    routeName: 'Support',
+    routeNavigate: 'Support',
+    routeIcon: 'dualUser',
+  },
+];
 export const swapFromObject = {
   currency: '',
   acronym: '',

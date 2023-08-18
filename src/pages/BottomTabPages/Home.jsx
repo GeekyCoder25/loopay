@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
+  BackHandler,
   ImageBackground,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
   View,
 } from 'react-native';
 import Bell from '../../../assets/images/bell.svg';
@@ -14,7 +16,6 @@ import Wallet from '../../../assets/images/wallet.svg';
 import UpAndDownArrow from '../../../assets/images/up-down-arrow.svg';
 import Bg from '../../../assets/images/bg1.svg';
 import { AppContext } from '../../components/AppContext';
-import { historyData } from '../../database/data';
 import SelectCurrencyModal from '../../components/SelectCurrencyModal';
 import PageContainer from '../../components/PageContainer';
 import RegularText from '../../components/fonts/RegularText';
@@ -22,11 +23,55 @@ import BoldText from '../../components/fonts/BoldText';
 import FlagSelect from '../../components/FlagSelect';
 import UserIcon from '../../components/UserIcon';
 import WalletAmount from '../../components/WalletAmount';
+import { getFetchData } from '../../../utils/fetchAPI';
+import { useFocusEffect } from '@react-navigation/native';
 
-const Home = ({ navigation }) => {
+const Home = ({ navigation, route }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const { selectedCurrency, appData } = useContext(AppContext);
+  const { selectedCurrency, appData, setShowTabBar } = useContext(AppContext);
   const fullName = appData.userProfile.fullName;
+  const [transactionHistory, setTransactionHistory] = useState([]);
+  const [isExiting, setIsExiting] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setShowTabBar(true);
+      const getHistories = async () => {
+        const response = await getFetchData('user/transaction');
+        if (response.status >= 400) {
+          return setTransactionHistory("Couldn't connect to server");
+        } else if (response.status === 204) return;
+        if (response.status === 200) {
+          return setTransactionHistory(response.data.transactions);
+        }
+      };
+      getHistories();
+    }, [setShowTabBar]),
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (isExiting) {
+          return false;
+        } else {
+          ToastAndroid.show('Press back again to exit app', ToastAndroid.SHORT);
+          setIsExiting(true);
+          return true;
+        }
+      };
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress,
+      );
+      return () => {
+        subscription.remove();
+        setTimeout(() => {
+          setIsExiting(false);
+        }, 5000);
+      };
+    }, [isExiting]),
+  );
 
   return (
     <>
@@ -37,12 +82,14 @@ const Home = ({ navigation }) => {
           </View>
           <View style={styles.header}>
             <Pressable
-              onPress={() => navigation.navigate('Profile')}
+              onPress={() => navigation.navigate('ProfileNavigator')}
               style={styles.userImageContainer}>
               <UserIcon />
               <RegularText>{fullName}</RegularText>
             </Pressable>
-            {<Bell /> || <BellActive />}
+            <Pressable onPress={() => navigation.navigate('Notification')}>
+              {<Bell /> || <BellActive />}
+            </Pressable>
           </View>
           <ImageBackground
             source={require('../../../assets/images/cardBg.png')}
@@ -92,16 +139,25 @@ const Home = ({ navigation }) => {
         </View>
         <View style={styles.body}>
           <RegularText style={styles.historyText}>History</RegularText>
-          {historyData.length > 0 ? (
-            <ScrollView style={styles.histories}>
-              {historyData.map(history => (
-                <History
-                  key={history.id}
-                  history={history}
-                  currencySymbol={selectedCurrency.symbol}
-                />
-              ))}
-            </ScrollView>
+          {transactionHistory.length > 0 ? (
+            typeof transactionHistory === 'string' ? (
+              <View style={styles.historyEmpty}>
+                <BoldText style={styles.historyEmptyText}>
+                  {transactionHistory}
+                </BoldText>
+              </View>
+            ) : (
+              <ScrollView style={styles.histories}>
+                {transactionHistory.map(history => (
+                  <History
+                    key={history.id}
+                    history={history}
+                    currencySymbol={selectedCurrency.symbol}
+                    navigation={navigation}
+                  />
+                ))}
+              </ScrollView>
+            )
           ) : (
             <View style={styles.historyEmpty}>
               <BoldText style={styles.historyEmptyText}>
@@ -247,32 +303,44 @@ const styles = StyleSheet.create({
 });
 export default Home;
 
-const History = ({ history, currencySymbol }) => {
+const History = ({ history, currencySymbol, navigation }) => {
   const [transactionTypeIcon, setTransactionTypeIcon] = useState('');
   const [transactionTypeTitle, setTransactionTypeTitle] = useState('');
   const [transactionDate, setTransactionDate] = useState('');
 
   useEffect(() => {
-    const date = new Date();
+    const date = new Date(history.createdAt);
+
     setTransactionDate(
-      `${date.toDateString()} ${date.getHours()}:${date.getMinutes()}`,
+      `${date.toDateString()} ${
+        date.getHours().toString().length === 1
+          ? '0' + date.getHours()
+          : date.getHours()
+      }:${
+        date.getMinutes().toString().length === 1
+          ? '0' + date.getMinutes()
+          : date.getMinutes()
+      }`,
     );
-    switch (history.transactionType) {
-      case 'received':
+
+    switch (history.transactionType?.toLowerCase()) {
+      case 'credit':
         setTransactionTypeIcon('RE');
         setTransactionTypeTitle('Received');
         break;
-      case 'sent':
+      case 'debit':
         setTransactionTypeIcon('SO');
         setTransactionTypeTitle('Sent Out');
         break;
       default:
-        setTransactionTypeIcon('$');
+        setTransactionTypeIcon(currencySymbol);
         break;
     }
-  }, [history.transactionType]);
+  }, [currencySymbol, history.createdAt, history.transactionType]);
   return (
-    <View style={styles.history}>
+    <Pressable
+      onPress={() => navigation.navigate('TransactionHistoryDetails', history)}
+      style={styles.history}>
       <View style={styles.historyIcon}>
         <Text style={styles.historyIconText}>{transactionTypeIcon}</Text>
       </View>
@@ -282,9 +350,9 @@ const History = ({ history, currencySymbol }) => {
       </View>
       <View>
         <BoldText style={styles.transactionAmountText}>{`${currencySymbol} ${
-          history.transactionType === 'sent' ? '-' : '+'
-        }${history.transactionAmount}`}</BoldText>
+          history.transactionType?.toLowerCase() === 'credit' ? '+' : '-'
+        }${history.amount}`}</BoldText>
       </View>
-    </View>
+    </Pressable>
   );
 };

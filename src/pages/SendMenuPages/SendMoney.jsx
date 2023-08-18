@@ -3,7 +3,7 @@ import AccInfoCard from '../../components/AccInfoCard';
 import PageContainer from '../../components/PageContainer';
 import { StyleSheet, View } from 'react-native';
 import RegularText from '../../components/fonts/RegularText';
-import { RoutePage } from '../BottomTabPages/SendMenu';
+import { RouteLink } from '../BottomTabPages/SendMenu';
 import { AppContext } from '../../components/AppContext';
 
 const SendMoney = ({ navigation }) => {
@@ -15,13 +15,13 @@ const SendMoney = ({ navigation }) => {
       routeDetails:
         'Send money instantly to friends and family using Loopay tag',
       routeIcon: 'add',
-      routeNavigate: appData.tagName ? 'SendLoopay' : 'Profile',
+      routeNavigate: appData.tagName ? 'SendLoopay' : 'SendProfile',
     },
     {
       routeName: 'Send to a Beneficiary',
       routeDetails: 'Choose from one of your saved beneficiaries to send money',
       routeIcon: 'beneficiary',
-      routeNavigate: appData.tagName ? 'SendBeneficiary' : 'Profile',
+      routeNavigate: appData.tagName ? 'SendBeneficiary' : 'SendProfile',
     },
     {
       routeName: 'Send to a new recipient',
@@ -37,10 +37,10 @@ const SendMoney = ({ navigation }) => {
         <AccInfoCard />
         <RegularText style={styles.headerText}>Send Money</RegularText>
         <View>
-          {SendMoneyRoutes.map(routePage => (
-            <RoutePage
-              key={routePage.routeIcon}
-              routePage={routePage}
+          {SendMoneyRoutes.map(route => (
+            <RouteLink
+              key={route.routeIcon}
+              route={route}
               navigation={navigation}
             />
           ))}

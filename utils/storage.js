@@ -6,7 +6,7 @@ const StorageKeys = {
   LOGGED_IN: 'LOGGED_IN',
   TOKEN: 'TOKEN',
   SESSION: 'SESSION',
-  SHOW_AMOUNT: 'SHOW_AMOUNT',
+  SHOW_BALANCE: 'SHOW_BALANCE',
 };
 
 export const loginUser = async (data, session) => {
@@ -48,6 +48,13 @@ export const getToken = async () => {
 export const getSessionID = async () => {
   return await AsyncStorage.getItem(StorageKeys.SESSION);
 };
+export const setShowBalance = async prev => {
+  return await AsyncStorage.setItem(StorageKeys.SHOW_BALANCE, `${prev}`);
+};
+export const getShowBalance = async () => {
+  const stringifiedState = await AsyncStorage.getItem(StorageKeys.SHOW_BALANCE);
+  return JSON.parse(stringifiedState);
+};
 
 const getAllKeys = async () => {
   const data = await AsyncStorage.getAllKeys();
@@ -66,4 +73,4 @@ const deleteStorage = async key => {
 // getAllKeys();
 // clearAllKeys();
 // deleteStorage('USER');
-// getStorage(StorageKeys.SESSION);
+// getStorage(StorageKeys.SHOW_BALANCE);

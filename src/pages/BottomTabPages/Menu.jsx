@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   Image,
   Pressable,
@@ -25,63 +25,19 @@ import RegularText from '../../components/fonts/RegularText';
 import { getSessionID, logoutUser } from '../../../utils/storage';
 import UserIcon from '../../components/UserIcon';
 import { deleteFetchData } from '../../../utils/fetchAPI';
+import { menuRoutes } from '../../database/data';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Menu = ({ navigation }) => {
-  const { setIsLoading, setIsLoggedIn, vh, appData, setAppData } =
-    useContext(AppContext);
-  const menuRoutes = [
-    {
-      routeName: 'My Info',
-      routeNavigate: 'MyInfo',
-      routeIcon: 'user',
-    },
-    {
-      routeName: 'Verification Status',
-      routeNavigate: 'VerificationStatus',
-      routeIcon: 'user',
-      routeEnd: true,
-    },
-    {
-      routeName: 'Transaction History',
-      routeNavigate: 'TransactionHistory',
-      routeIcon: 'history',
-    },
-    {
-      routeName: 'Virtual Card',
-      routeNavigate: 'VirtualCard',
-      routeIcon: 'card',
-    },
-    // {
-    //   routeName: 'Two-Factor Authentication',
-    //   routeNavigate: 'TwoAuth',
-    //   routeIcon: 'shield',
-    // },
-    {
-      routeName: 'Change Password',
-      routeNavigate: 'ChangePassword',
-      routeIcon: 'lock',
-    },
-    {
-      routeName: 'Devices and Session',
-      routeNavigate: 'DevicesAndSessions',
-      routeIcon: 'devices',
-    },
-    {
-      routeName: `${appData.pin ? 'Change' : 'Create'} Transaction Pin`,
-      routeNavigate: 'TransactionPin',
-      routeIcon: 'key',
-    },
-    {
-      routeName: 'Referrals',
-      routeNavigate: 'Referrals',
-      routeIcon: 'dualUser',
-    },
-    {
-      routeName: 'Support',
-      routeNavigate: 'Support',
-      routeIcon: 'dualUser',
-    },
-  ];
+  const {
+    setIsLoading,
+    setIsLoggedIn,
+    vh,
+    appData,
+    setAppData,
+    setShowTabBar,
+  } = useContext(AppContext);
+
   const handleLogout = async () => {
     try {
       setIsLoading(true);
@@ -95,6 +51,19 @@ const Menu = ({ navigation }) => {
       setIsLoading(false);
     }
   };
+
+  const transationPin = menuRoutes.find(
+    route => route.routeNavigate === 'TransactionPin',
+  );
+  transationPin.routeName = `${
+    appData.pin ? 'Change' : 'Create'
+  } Transaction Pin`;
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setShowTabBar(true);
+    }, [setShowTabBar]),
+  );
   return (
     <PageContainer paddingTop={0}>
       <View style={styles.header}>
@@ -105,10 +74,10 @@ const Menu = ({ navigation }) => {
       </View>
       <ScrollView>
         <View style={{ ...styles.routesContainer, minHeight: vh * 0.7 }}>
-          {menuRoutes.map(routePage => (
-            <RoutePage
-              key={routePage.routeName}
-              routePage={routePage}
+          {menuRoutes.map(route => (
+            <RouteLink
+              key={route.routeName}
+              route={route}
               navigation={navigation}
             />
           ))}
@@ -172,10 +141,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const RoutePage = ({ routePage, navigation }) => {
+const RouteLink = ({ route, navigation }) => {
   const { verified } = useContext(AppContext);
   const routeIcon = () => {
-    switch (routePage.routeIcon) {
+    switch (route.routeIcon) {
       case 'user':
         return <UserIconSVG />;
       case 'history':
@@ -197,15 +166,15 @@ const RoutePage = ({ routePage, navigation }) => {
     }
   };
   const handleNavigate = () => {
-    navigation.navigate(routePage.routeNavigate);
+    navigation.navigate(route.routeNavigate);
   };
   return (
     <Pressable onPress={handleNavigate} style={styles.route}>
       <View style={styles.routeIcon}>{routeIcon()}</View>
       <View style={styles.routeTexts}>
-        <RegularText>{routePage.routeName}</RegularText>
+        <RegularText>{route.routeName}</RegularText>
       </View>
-      {routePage.routeEnd && (
+      {route.routeEnd && (
         <View
           style={{
             ...styles.verified,

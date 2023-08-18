@@ -17,6 +17,7 @@ const CheckPassword = ({
   setErrorMessage,
   errorKey,
   setErrorKey,
+  header,
 }) => {
   const { appData, setIsLoading } = useContext(AppContext);
   const [hidePassword, setHidePassword] = useState(true);
@@ -70,12 +71,14 @@ const CheckPassword = ({
 
   return (
     <View style={styles.form}>
-      <Header
-        title={'Change Password'}
-        text={
-          'To change your password, kindly input your current password below to continue.'
-        }
-      />
+      {header || (
+        <Header
+          title={'Change Password'}
+          text={
+            'To change your password, kindly input your current password below to continue.'
+          }
+        />
+      )}
       <View style={styles.textInputContainer}>
         <View style={styles.icon}>
           <Lock fill={inputFocus ? '#000' : '#868585'} />

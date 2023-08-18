@@ -1,18 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import {
-  Pressable,
-  StyleSheet,
-  TextInput,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import { StyleSheet, TextInput, ToastAndroid, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import Button from '../../components/Button';
 import { AppContext } from '../../components/AppContext';
-import { postFetchData, putFetchData } from '../../../utils/fetchAPI';
+import { postFetchData } from '../../../utils/fetchAPI';
 import ErrorMessage from '../../components/ErrorMessage';
 import { tagNameRules } from '../../database/data';
 

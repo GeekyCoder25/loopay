@@ -24,7 +24,6 @@ const AccountType = () => {
       setIsLoading(true);
       putFetchData('user', { accountType: accountTypeState })
         .then(updateResult => {
-          console.log(updateResult);
           if (updateResult.data?.updateData?.accountType) {
             setIsLoggedIn(true);
             setAppData(prev => {

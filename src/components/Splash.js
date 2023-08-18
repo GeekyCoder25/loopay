@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Pressable } from 'react-native';
 import Logo from '../../assets/images/logoDark.svg';
 import CustomBackground from '../components/CustomBackground';
 import RegularText from './fonts/RegularText';
@@ -10,10 +10,19 @@ import {
   logoutUser,
 } from '../../utils/storage';
 import { AppContext } from './AppContext';
-import { apiUrl, deleteFetchData } from '../../utils/fetchAPI';
+import { apiUrl, deleteFetchData, putFetchData } from '../../utils/fetchAPI';
+import FaIcon from '@expo/vector-icons/FontAwesome';
+
 const Splash = ({ navigation }) => {
-  const { internetStatus, setIsLoggedIn, setAppData, vw } =
-    useContext(AppContext);
+  const {
+    internetStatus,
+    setInternetStatus,
+    isChecking,
+    setIsChecking,
+    setIsLoggedIn,
+    setAppData,
+    vw,
+  } = useContext(AppContext);
 
   useEffect(() => {
     console.log('splash');
@@ -23,12 +32,15 @@ const Splash = ({ navigation }) => {
     if (internetStatus === true) {
       const getDataFromStorage = async () => {
         setIsLoggedIn(await getIsLoggedIn());
+        const sessionID = await getSessionID();
+        await putFetchData(`user/session/${sessionID}`, {
+          lastSeen: new Date(),
+        });
         if (await getIsLoggedIn()) {
           const data = await getFetchData('user');
           await setAppData(data);
           if (!data || Object.entries(data).length === 0) {
             setIsLoggedIn(false);
-            const sessionID = await getSessionID();
             await deleteFetchData(`user/session/${sessionID}`);
             logoutUser();
             setIsLoggedIn(false);
@@ -64,20 +76,42 @@ const Splash = ({ navigation }) => {
       return "Couldn't connect to server";
     }
   };
+
+  const handleReload = async () => {
+    try {
+      setIsChecking(true);
+      getFetchData('network').then(data => {
+        if (data.network === true) {
+          setInternetStatus(true);
+        }
+        setIsChecking(false);
+      });
+    } catch {
+      setIsChecking(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <CustomBackground />
       <View style={styles.logo}>
-        <Logo width={`${vw}`} />
-        <RegularText style={styles.subText}>
+        <Logo width={vw * 0.7} height={vw * 0.14} />
+        <RegularText
+          style={{ ...styles.subText, fontSize: Math.round(vw * 0.035) }}>
           ...your favorite midnight pay pal
         </RegularText>
       </View>
-      <ActivityIndicator
-        color={'#1e1e1e'}
-        style={styles.activity}
-        size="large"
-      />
+      {internetStatus || isChecking ? (
+        <ActivityIndicator
+          color={'#1e1e1e'}
+          style={styles.activity}
+          size="large"
+        />
+      ) : (
+        <Pressable style={styles.reload} onPress={handleReload}>
+          <FaIcon name="refresh" size={35} color={'#1e1e1e'} />
+        </Pressable>
+      )}
     </View>
   );
 };
@@ -90,19 +124,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    flex: 1,
+    flex: 1.3,
     justifyContent: 'flex-end',
   },
   subText: {
     color: '#fff',
     fontStyle: 'italic',
     textAlign: 'right',
-    fontSize: 12,
-    paddingRight: 25 + '%',
+    fontSize: 14,
+    paddingRight: 20,
     paddingTop: 5,
   },
   activity: {
     flex: 1,
+  },
+  reload: {
+    flex: 1,
+    justifyContent: 'center',
   },
 });
 export default Splash;

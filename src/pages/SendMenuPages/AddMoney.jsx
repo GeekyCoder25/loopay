@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ToastAndroid,
 } from 'react-native';
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
@@ -16,12 +17,12 @@ import { allCurrencies } from '../../database/data';
 import SendMenuHeader from './Header';
 import Button from '../../components/Button';
 import FlagSelect from '../../components/FlagSelect';
-import { useWalletContext } from '../../../context/WalletContext';
+import { useWalletContext } from '../../context/WalletContext';
 import Paste from '../../../assets/images/paste.svg';
 
 const AddMoney = ({ navigation, route }) => {
   const { selectedCurrency, setSelectedCurrency } = useContext(AppContext);
-  const wallet = useWalletContext();
+  const { wallet } = useWalletContext();
   const [accNo] = useState(wallet.accNo);
   const [bankName] = useState(wallet.bank);
   const [modalOpen, setModalOpen] = useState(false);
@@ -111,7 +112,9 @@ const AddMoney = ({ navigation, route }) => {
   };
   const handleCopy = () => {
     Clipboard.setString(accNo);
+    ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);
   };
+
   return (
     <PageContainer paddingTop={10} padding={true}>
       <View style={styles.body}>

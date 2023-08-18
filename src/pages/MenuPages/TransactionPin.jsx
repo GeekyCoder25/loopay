@@ -12,7 +12,7 @@ import Button from '../../components/Button';
 import { postFetchData } from '../../../utils/fetchAPI';
 import SuccessMessage from '../../components/SuccessMessage';
 import RegularText from '../../components/fonts/RegularText';
-import InputPinPage, { PINInputFields } from '../../components/InputPin';
+import InputPinPage, { PINInputFields } from '../../components/InputPinPage';
 
 const TransactionPin = ({ navigation }) => {
   const { vh, appData } = useContext(AppContext);
@@ -53,6 +53,14 @@ const TransactionPin = ({ navigation }) => {
                 errorKey={errorKey}
                 setErrorKey={setErrorKey}
                 setRemembersPassword={setRemembersPassword}
+                header={
+                  <Header
+                    title={`${appData.pin ? 'Change' : 'Create'} PIN`}
+                    text={`To ${
+                      appData.pin ? 'change' : 'create'
+                    } your PIN, kindly input your current password below to continue.`}
+                  />
+                }
               />
             ) : (
               <LoggedInForgetPassword setPassowrdIsValid={setInputOldPin} />
@@ -102,15 +110,6 @@ const styles = StyleSheet.create({
     gap: 30,
     justifyContent: 'center',
     marginVertical: 10,
-  },
-  codeInput: {
-    borderBottomWidth: 3,
-    borderBottomColor: '#000',
-    textAlign: 'center',
-    fontSize: 35,
-    fontFamily: 'OpenSans-700',
-    width: 50,
-    maxWidth: 8 + '%',
   },
   formBodyContainer: {
     gap: 50,

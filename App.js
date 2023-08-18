@@ -22,23 +22,28 @@ export default function App() {
   const [verified, setVerified] = useState(false);
   const [showTabBar, setShowTabBar] = useState(true);
   const [internetStatus, setInternetStatus] = useState('true');
+  const [isChecking, setIsChecking] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [appData, setAppData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [loadingModalBg, setLoadingModalBg] = useState(null);
+  const [amountRefresh, setAmountRefresh] = useState(false);
   const vw = useWindowDimensions().width;
   const vh = useWindowDimensions().height;
 
   const contextValue = {
+    vw,
+    vh,
     selectedCurrency,
     setSelectedCurrency,
     verified,
-    vw,
-    vh,
+    setVerified,
     showTabBar,
     setShowTabBar,
     internetStatus,
     setInternetStatus,
+    isChecking,
+    setIsChecking,
     isLoggedIn,
     setIsLoggedIn,
     isLoading,
@@ -47,6 +52,8 @@ export default function App() {
     setAppData,
     loadingModalBg,
     setLoadingModalBg,
+    amountRefresh,
+    setAmountRefresh,
   };
   const defaultCurrency = allCurrencies.find(
     currency => currency.currency === 'Naira',

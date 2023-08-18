@@ -39,6 +39,13 @@ const AppStart = () => {
     'OpenSans-600': require('../../assets/fonts/OpenSans-SemiBold.ttf'),
     'OpenSans-700': require('../../assets/fonts/OpenSans-Bold.ttf'),
     'OpenSans-800': require('../../assets/fonts/OpenSans-ExtraBold.ttf'),
+    'Karla-200': require('../../assets/fonts/Karla-ExtraLight.ttf'),
+    'Karla-300': require('../../assets/fonts/Karla-Light.ttf'),
+    'Karla-400': require('../../assets/fonts/Karla-Regular.ttf'),
+    'Karla-500': require('../../assets/fonts/Karla-Medium.ttf'),
+    'Karla-600': require('../../assets/fonts/Karla-SemiBold.ttf'),
+    'Karla-700': require('../../assets/fonts/Karla-Bold.ttf'),
+    'Karla-800': require('../../assets/fonts/Karla-ExtraBold.ttf'),
     'AlfaSlabOne-Regular': require('../../assets/fonts/AlfaSlabOne.ttf'),
   });
   const onLayoutRootView = useCallback(async () => {

@@ -2,7 +2,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import PageContainer from '../../components/PageContainer';
 
 import { accInfoRoutes } from '../../database/data';
-import { RoutePage } from '../BottomTabPages/SendMenu';
+import { RouteLink } from '../BottomTabPages/SendMenu';
 import AccInfoCard from '../../components/AccInfoCard';
 const AccInfo = ({ navigation }) => {
   return (
@@ -10,10 +10,10 @@ const AccInfo = ({ navigation }) => {
       <View style={styles.body}>
         <AccInfoCard />
         <ScrollView>
-          {accInfoRoutes.map(routePage => (
-            <RoutePage
-              key={routePage.routeIcon}
-              routePage={routePage}
+          {accInfoRoutes.map(route => (
+            <RouteLink
+              key={route.routeIcon}
+              route={route}
               navigation={navigation}
             />
           ))}

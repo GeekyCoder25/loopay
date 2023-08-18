@@ -5,8 +5,8 @@ import MenuNavigator from './MenuNavigator';
 import { useContext, useEffect } from 'react';
 import { AppContext } from '../components/AppContext';
 import HomeNavigator from './HomeNavigator';
-import WalletContextProvider from '../../context/WalletContext';
-import BeneficiaryProvider from '../../context/BenefiaciariesContext';
+import WalletContextProvider from '../context/WalletContext';
+import BeneficiaryProvider from '../context/BenefiaciariesContext';
 const BottomTabs = () => {
   const { showTabBar, appData, setAppData } = useContext(AppContext);
   const Tab = createBottomTabNavigator();

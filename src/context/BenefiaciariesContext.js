@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getFetchData } from '../utils/fetchAPI';
+import { getFetchData } from '../../utils/fetchAPI';
 
 export const BeneficiaryContext = createContext();
 

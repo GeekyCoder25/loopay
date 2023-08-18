@@ -4,7 +4,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
 import UserIconSVG from '../../../../assets/images/userMenu.svg';
-import { useBenefifciaryContext } from '../../../../context/BenefiaciariesContext';
+import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';
 
 const SendBeneficiary = ({ navigation }) => {
   const { beneficiaryState } = useBenefifciaryContext();

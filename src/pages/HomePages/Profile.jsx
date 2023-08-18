@@ -18,8 +18,16 @@ import FaIcon from '@expo/vector-icons/FontAwesome';
 import * as ImagePicker from 'expo-image-picker';
 import { apiUrl } from '../../../utils/fetchAPI';
 import { getToken } from '../../../utils/storage';
+import WithdrawIcon from '../../../assets/images/withdraw.svg';
+import PassowrdIcon from '../../../assets/images/password.svg';
+import PinIcon from '../../../assets/images/pin.svg';
+import SettingsIcon from '../../../assets/images/settings.svg';
+import QuestionsIcon from '../../../assets/images/questions.svg';
+import ProfileIcon from '../../../assets/images/profile.svg';
+import ChevronLeft from '../../../assets/images/chevron-right.svg';
+import BiometircIcon from '../../../assets/images/biometric.svg';
 
-const Profile = ({ navigation, children }) => {
+const Profile = ({ navigation, children, route }) => {
   const { appData, setAppData } = useContext(AppContext);
   const { email } = appData;
   const { firstName, lastName } = appData.userProfile;
@@ -94,6 +102,53 @@ const Profile = ({ navigation, children }) => {
       uploadImage(result.assets[0].uri);
     }
   };
+
+  const profileRoutes = [
+    {
+      routeName: 'Withdraw',
+      routeNavigate: 'Withdraw',
+      routeIcon: 'withdraw',
+      routeDetails: 'Withdraw funds to you NGN account',
+    },
+    {
+      routeName: 'Change Password',
+      routeNavigate: 'Password',
+      routeIcon: 'password',
+      routeDetails: 'Change your online banking password',
+    },
+    {
+      routeName: `${appData.pin ? 'Change' : 'Create'} PIN`,
+      routeNavigate: 'Pin',
+      routeIcon: 'pin',
+      routeDetails: `${
+        appData.pin ? 'Change' : 'Create'
+      } your 4-digit transaction PIN`,
+    },
+    {
+      routeName: 'Limit Settings',
+      routeNavigate: 'Limit',
+      routeIcon: 'settings',
+      routeDetails: 'Manage your transaction limits',
+    },
+    {
+      routeName: 'Secret Questions',
+      routeNavigate: 'Questions',
+      routeIcon: 'questions',
+      routeDetails: 'Set up your secret questions',
+    },
+    {
+      routeName: 'Profile',
+      routeNavigate: 'Myinfo',
+      routeIcon: 'info',
+      routeDetails: 'View/Modify your profile information',
+    },
+    {
+      routeName: 'Biometric Authentication',
+      routeNavigate: 'Biometric',
+      routeIcon: 'biometric',
+      routeDetails: 'Delete your biometric authentication method',
+    },
+  ];
 
   return (
     <PageContainer>
@@ -176,6 +231,14 @@ const Profile = ({ navigation, children }) => {
           </View>
 
           <View style={styles.childComponent}>{children}</View>
+          {route?.name === 'Profile' &&
+            profileRoutes.map(routePage => (
+              <RouteLink
+                key={routePage.routeIcon}
+                route={routePage}
+                navigation={navigation}
+              />
+            ))}
         </View>
       </ScrollView>
     </PageContainer>
@@ -271,5 +334,73 @@ const styles = StyleSheet.create({
     width: 100 + '%',
     marginVertical: 15,
   },
+  route: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#c4c4c4',
+    paddingRight: 10,
+  },
+  routeIcon: {
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 25,
+  },
+  routeTexts: {
+    flex: 1,
+  },
+  routeName: {
+    fontFamily: 'Karla-600',
+    color: '#585555',
+    fontSize: 16,
+  },
+  routeDetails: {
+    fontFamily: 'Karla-400',
+    color: '#585555',
+  },
+  routeArrow: {
+    marginTop: 15,
+    marginLeft: -25,
+  },
 });
 export default Profile;
+
+const RouteLink = ({ route, navigation }) => {
+  const routeIcon = () => {
+    switch (route.routeIcon) {
+      case 'withdraw':
+        return <WithdrawIcon />;
+      case 'password':
+        return <PassowrdIcon />;
+      case 'pin':
+        return <PinIcon />;
+      case 'settings':
+        return <SettingsIcon />;
+      case 'questions':
+        return <QuestionsIcon />;
+      case 'info':
+        return <ProfileIcon />;
+      case 'biometric':
+        return <BiometircIcon />;
+    }
+  };
+  const handleNavigate = () => {
+    navigation.navigate(route.routeNavigate);
+  };
+  return (
+    <Pressable onPress={handleNavigate} style={styles.route}>
+      <View style={styles.routeIcon}>{routeIcon()}</View>
+      <View style={styles.routeTexts}>
+        <BoldText style={styles.routeName}>{route.routeName}</BoldText>
+        <RegularText style={styles.routeDetails}>
+          {route.routeDetails}
+        </RegularText>
+      </View>
+      <ChevronLeft style={styles.routeArrow} />
+    </Pressable>
+  );
+};

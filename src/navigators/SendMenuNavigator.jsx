@@ -3,18 +3,20 @@ import AddMoney from '../pages/SendMenuPages/AddMoney';
 import SendMenu from '../pages/BottomTabPages/SendMenu';
 import SwapFunds from '../pages/SendMenuPages/SwapFunds';
 import VirtualCard from '../pages/SendMenuPages/VirtualCard';
-import AccInfo from '../pages/SendMenuPages/AccInfo';
 import AccStatement from '../pages/SendMenuPages/AccStatement';
 import SendMenuHeader from '../pages/SendMenuPages/Header';
 import AddMoneyConfirm from '../pages/SendMenuPages/AddMoneyConfirm';
 import BuyAirtime from '../pages/SendMenuPages/AirtimeTopUp/BuyAirtime';
 import PayABill from '../pages/SendMenuPages/PayABill';
-import BillTv from '../pages/SendMenuPages/BillTv';
+import PayABillParams from '../pages/SendMenuPages/PayABill/PayABillParams';
 import AirtimeTopUp from '../pages/SendMenuPages/AirtimeTopUp';
 import BuyData from '../pages/SendMenuPages/AirtimeTopUp/BuyData';
 import Success from '../pages/SendMenuPages/Success';
 import SendMoneyNavigator from './SendMoneyNavigator';
 import TransferFunds from '../pages/SendMenuPages/SendMoney/TransferFunds';
+import VirtualCardDetails from '../pages/SendMenuPages/VirtualCardDetails';
+import TransactionPin from '../pages/MenuPages/TransactionPin';
+import TransferAirtime from '../pages/SendMenuPages/AirtimeTopUp/TransferAirtime';
 
 const SendMenuNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -49,18 +51,6 @@ const SendMenuNavigator = () => {
           headerShown: false,
         }}
       />
-      <Stack.Screen name="SwapFunds" component={SwapFunds} />
-      <Stack.Screen name="AirtimeTopup" component={AirtimeTopUp} />
-      <Stack.Screen name="BuyAirtime" component={BuyAirtime} />
-      <Stack.Screen name="BuyData" component={BuyData} />
-      <Stack.Screen name="AirtimeHistory" component={AccStatement} />
-      <Stack.Screen name="PayABill" component={PayABill} />
-      <Stack.Screen name="VirtualCard" component={VirtualCard} />
-      <Stack.Screen name="billTV" component={BillTv} />
-      <Stack.Screen name="billinternet" component={PayABill} />
-      <Stack.Screen name="billschool" component={PayABill} />
-      <Stack.Screen name="billelectricity" component={PayABill} />
-      <Stack.Screen name="AccStatement" component={AccStatement} />
       <Stack.Screen
         name="Success"
         component={Success}
@@ -68,6 +58,24 @@ const SendMenuNavigator = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen name="SwapFunds" component={SwapFunds} />
+      <Stack.Screen name="AirtimeTopup" component={AirtimeTopUp} />
+      <Stack.Screen name="BuyAirtime" component={BuyAirtime} />
+      <Stack.Screen name="BuyData" component={BuyData} />
+      <Stack.Screen
+        name="TransferAirtime"
+        component={TransferAirtime}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen name="AirtimeHistory" component={AccStatement} />
+      <Stack.Screen name="PayABill" component={PayABill} />
+      <Stack.Screen name="VirtualCard" component={VirtualCard} />
+      <Stack.Screen name="VirtualCardDetails" component={VirtualCardDetails} />
+      <Stack.Screen name="PayABillParams" component={PayABillParams} />
+      <Stack.Screen name="AccStatement" component={AccStatement} />
+      <Stack.Screen name="TransactionPin" component={TransactionPin} />
     </Stack.Navigator>
   );
 };

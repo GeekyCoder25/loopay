@@ -1,168 +1,132 @@
-/* eslint-disable react-native/no-inline-styles */
-import { Keyboard, StyleSheet, View } from 'react-native';
-import ErrorMessage from './ErrorMessage';
-import Header from './Header';
-import { postFetchData } from '../../utils/fetchAPI';
-import { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
+import NoPInSet from './NoPinSet';
+import { PINInputFields } from './InputPinPage';
+import RegularText from './fonts/RegularText';
+import { StyleSheet, View } from 'react-native';
 import { AppContext } from './AppContext';
+import { postFetchData } from '../../utils/fetchAPI';
+import ErrorMessage from './ErrorMessage';
 import Button from './Button';
-import { TextInput } from 'react-native-gesture-handler';
 
-const InputPinPage = ({ setCanContinue, setReload }) => {
-  const codeLengths = [1, 2, 3, 4];
-  const [focusIndex, setFocusIndex] = useState(1);
-  const [pinCode, setPinCode] = useState('');
-  const [errorMessage, setErrorMessage] = useState();
+const InputPin = ({ children, buttonText, setIsValidPin, customFunc }) => {
+  const { appData, setIsLoading } = useContext(AppContext);
+  const [otpTimeout, setOtpTimeout] = useState(60);
+  const [otpResend, setOtpResend] = useState(otpTimeout);
   const [errorKey, setErrorKey] = useState('');
-  const [isPinOkay, setIsPinOkay] = useState(false);
-  const { setIsLoading } = useContext(AppContext);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [focusIndex, setFocusIndex] = useState(1);
+  const [otpCode, setOtpCode] = useState('');
+  const [haveSetPin] = useState(appData.pin);
+  const [reload, setReload] = useState(false);
+  const [pinCode, setPinCode] = useState('');
+  const [formData] = useState({
+    email: appData.email,
+    otpCodeLength: 6,
+  });
 
-  useEffect(() => {
-    setIsPinOkay(pinCode.length === codeLengths.length);
-  }, [codeLengths.length, pinCode.length]);
+  const codeLengths = [1, 2, 3, 4];
 
-  const handlePress = async () => {
+  const handlePay = async () => {
     try {
       setIsLoading(true);
-      const result = await postFetchData('user/check-pin', { pin: pinCode });
-
-      if (result === "Couldn't connect to server") {
-        return setErrorMessage(result);
-      } else if (result.status >= 400) {
-        setErrorKey('pinCode');
-        return setErrorMessage(result.data);
-      }
-      if (result.status < 400) {
-        if (result.data === false) {
-          return setErrorMessage('Invalid Pin');
+      if (haveSetPin) {
+        const result = await postFetchData('user/check-pin', {
+          pin: pinCode,
+        });
+        if (result === "Couldn't connect to server") {
+          return setErrorMessage(result);
         }
-        setCanContinue(true);
+        if (result.status === 200) {
+          setIsValidPin && setIsValidPin(true);
+          return customFunc(true);
+        }
+        setErrorMessage(result.data);
+        setErrorKey('pinCode');
+      } else {
+        const result = await postFetchData(
+          `auth/confirm-otp/${otpCode || 'fake'}`,
+          formData,
+        );
+        if (result === "Couldn't connect to server") {
+          return setErrorMessage(result);
+        }
+        if (result.status === 200) {
+          setIsValidPin && setIsValidPin(true);
+          return await customFunc();
+        }
+        setErrorMessage('Incorrect OTP Code');
+        setErrorKey('otpCode');
       }
+      setTimeout(() => {
+        setPinCode('');
+        setOtpCode('');
+        setReload(prev => !prev);
+      }, 1500);
     } finally {
       setIsLoading(false);
-      setTimeout(() => {
-        setReload(prev => !prev);
-      }, 1000);
+      setTimeout(() => {}, 1000);
     }
   };
-
   return (
-    <View style={styles.form}>
-      <Header title={'Input PIN'} text={'Enter your current transaction PIN'} />
-      <View style={styles.codeLengthsContainer}>
-        {codeLengths.map(codeLength => (
-          <PINInputFields
-            key={codeLength}
-            codeLength={codeLength}
-            focusIndex={focusIndex}
-            setFocusIndex={setFocusIndex}
-            pinCode={pinCode}
-            setPinCode={setPinCode}
+    <View>
+      <View style={styles.pinContainer} key={reload}>
+        {haveSetPin ? (
+          <>
+            <RegularText>Enter your transaction pin</RegularText>
+            <View style={styles.changePinCodeLengthsContainer}>
+              {codeLengths.map(input => (
+                <PINInputFields
+                  key={input}
+                  codeLength={input}
+                  focusIndex={focusIndex}
+                  setFocusIndex={setFocusIndex}
+                  pinCode={pinCode}
+                  setPinCode={setPinCode}
+                  setErrorMessage={setErrorMessage}
+                  errorKey={errorKey}
+                  setErrorKey={setErrorKey}
+                  codeLengths={codeLengths.length}
+                />
+              ))}
+            </View>
+          </>
+        ) : (
+          <NoPInSet
+            otpCode={otpCode}
+            setOtpCode={setOtpCode}
             setErrorMessage={setErrorMessage}
             errorKey={errorKey}
             setErrorKey={setErrorKey}
-            codeLengths={codeLengths.length}
+            otpResend={otpResend}
+            setOtpResend={setOtpResend}
+            otpTimeout={otpTimeout}
+            setOtpTimeout={setOtpTimeout}
+            formData={formData}
           />
-        ))}
+        )}
       </View>
       <ErrorMessage errorMessage={errorMessage} />
+      {children}
       <Button
-        text={'Continue'}
-        onPress={handlePress}
-        style={{
-          backgroundColor: isPinOkay ? '#1E1E1E' : 'rgba(30, 30, 30, 0.7)',
-        }}
-        disabled={!isPinOkay}
+        text={buttonText || 'Pay now'}
+        onPress={handlePay}
+        style={styles.button}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  form: {
-    flex: 3,
-    paddingVertical: 30,
-    minHeight: 150,
+  pinContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
   },
-  codeLengthsContainer: {
+  changePinCodeLengthsContainer: {
     flexDirection: 'row',
     gap: 30,
     justifyContent: 'center',
-    marginVertical: 40,
+    marginTop: 10,
   },
 });
 
-export default InputPinPage;
-
-export const PINInputFields = ({
-  codeLength,
-  focusIndex,
-  setFocusIndex,
-  pinCode,
-  setPinCode,
-  setErrorMessage,
-  errorKey,
-  setErrorKey,
-  codeLengths,
-  noFocus,
-  setNoFocus,
-}) => {
-  const inputRef = useRef();
-  const [inputValue, setInputValue] = useState('');
-
-  useEffect(() => {
-    if (!noFocus) {
-      if (codeLength === focusIndex) {
-        inputRef.current.focus();
-        inputRef.current.clear();
-        setInputValue('');
-      }
-    }
-  }, [focusIndex, codeLength, noFocus]);
-
-  const handleKeyPress = ({ nativeEvent }) => {
-    if (nativeEvent.key !== 'Backspace') {
-      if (focusIndex < codeLengths + 1) {
-        setFocusIndex(prev => prev + 1);
-      } else {
-        Keyboard.dismiss();
-        inputRef.current.blur();
-      }
-    } else {
-      setPinCode(prev => prev.slice(0, pinCode.length - 1));
-      inputValue === ''
-        ? focusIndex > 1 && setFocusIndex(prev => prev - 1)
-        : inputRef.current.clear();
-    }
-  };
-
-  return (
-    <TextInput
-      style={{
-        ...styles.codeInput,
-        borderBottomColor: errorKey === 'pinCode' ? 'red' : '#000',
-        color: errorKey === 'pinCode' ? 'red' : '#000',
-      }}
-      value={inputValue}
-      inputMode="numeric"
-      maxLength={1}
-      autoFocus={!noFocus && codeLength === focusIndex}
-      ref={inputRef}
-      onChangeText={text => {
-        setInputValue(text);
-        setPinCode(prev => `${prev}${text}`);
-        codeLengths + 1 === focusIndex &&
-          setNoFocus &&
-          setNoFocus(prev => !prev) &&
-          setFocusIndex(1);
-      }}
-      onKeyPress={handleKeyPress}
-      onFocus={() => {
-        setFocusIndex(codeLength);
-        setErrorMessage('');
-        setErrorKey('');
-      }}
-      name="pin"
-    />
-  );
-};
+export default InputPin;

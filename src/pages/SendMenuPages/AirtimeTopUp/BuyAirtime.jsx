@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
 import {
   Modal,
@@ -17,28 +18,49 @@ import AirtelIcon from '../../../../assets/images/airtel.svg';
 import NineMobileIcon from '../../../../assets/images/9mobile.svg';
 import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
 import Button from '../../../components/Button';
+import { useWalletContext } from '../../../context/WalletContext';
+import { addingDecimal } from '../../../../utils/AddingZero';
+import { AppContext } from '../../../components/AppContext';
+import ErrorMessage from '../../../components/ErrorMessage';
+import { postFetchData } from '../../../../utils/fetchAPI';
 
-const BuyAirtime = () => {
+const BuyAirtime = ({ navigation }) => {
+  const { selectedCurrency, appData } = useContext(AppContext);
+  const { wallet } = useWalletContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [networkToBuy, setNetworkToBuy] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage2, setErrorMessage2] = useState('');
+  const [errorKey, setErrorKey] = useState('');
+  const [amountInput, setAmountInput] = useState('');
+  const [formData, setFormData] = useState({
+    network: '',
+    amount: '',
+    phoneNo: '',
+  });
+  const { balance } = wallet;
   const airtimeBeneficiaries = [
-    {
-      phoneNo: '09073002599',
-      network: 'airtel',
-    },
-    {
-      phoneNo: '+2349054343663',
-      network: '9mobile',
-    },
-    {
-      phoneNo: '09066487855',
-      network: 'mtn',
-    },
-    {
-      phoneNo: '09063555855',
-      network: 'glo',
-    },
+    // {
+    //   phoneNo: '09073002599',
+    //   network: 'airtel',
+    // },
+    // {
+    //   phoneNo: '+2349054343663',
+    //   network: '9mobile',
+    // },
+    // {
+    //   phoneNo: '09066487855',
+    //   network: 'mtn',
+    // },
+    // {
+    //   phoneNo: '09063555855',
+    //   network: 'glo',
+    // },
   ];
+
+  useEffect(() => {
+    setErrorMessage2('');
+  }, [formData]);
 
   const networkProviders = [
     { network: 'mtn', locale: 'ng' },
@@ -50,9 +72,59 @@ const BuyAirtime = () => {
   const handleModal = () => {
     setModalOpen(prev => !prev);
   };
+
   const handleNetworkSelect = provider => {
     handleModal();
-    setNetworkToBuy(`${provider.network}-${provider.locale}`);
+    setNetworkToBuy({ network: provider.network, locale: provider.locale });
+    setFormData(prev => {
+      return { ...prev, network: provider.network };
+    });
+  };
+
+  const handleAmountInput = amount => {
+    setAmountInput(amount);
+    if (amount > balance) {
+      setErrorMessage('Insufficient Funds');
+      setErrorKey('amountInput');
+    } else {
+      setErrorMessage('');
+      setErrorKey('');
+      setFormData(prev => {
+        return { ...prev, amount };
+      });
+    }
+  };
+
+  const handleBlur = () => {
+    amountInput && setAmountInput(addingDecimal(amountInput));
+    if (amountInput < 50) {
+      setErrorMessage(
+        `Minimum recharge amount is ${selectedCurrency.symbol}${50}`,
+      );
+      setErrorKey('amountInput');
+    }
+  };
+
+  const handlePhoneInput = phoneNo => {
+    setFormData(prev => {
+      return { ...prev, phoneNo };
+    });
+  };
+
+  const handleInputPin = async () => {
+    if (Object.values(formData).includes('')) {
+      return setErrorMessage2(
+        'Please provide all required fields before progressing',
+      );
+    }
+
+    if (!appData.pin) {
+      await postFetchData('auth/forget-password', {
+        email: appData.email,
+        otpCodeLength: 6,
+      });
+    }
+    navigation.navigate('TransferAirtime', { formData });
   };
 
   const networkProvidersIcon = network => {
@@ -69,12 +141,15 @@ const BuyAirtime = () => {
         break;
     }
   };
+
   return (
     <PageContainer padding={true} paddingTop={0}>
       <ScrollView style={styles.body}>
         <View style={styles.header}>
           <RegularText>Beneficiaries</RegularText>
-          <RegularText>View all</RegularText>
+          {airtimeBeneficiaries.length > 3 && (
+            <RegularText>View all</RegularText>
+          )}
         </View>
         <ScrollView
           horizontal={true}
@@ -93,11 +168,14 @@ const BuyAirtime = () => {
         <Pressable
           onPress={() => setModalOpen(true)}
           style={styles.textInputContainer}>
-          <View style={styles.textInput}>
+          <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
             {networkToBuy ? (
-              <BoldText style={styles.networkToBuySelected}>
-                {networkToBuy}
-              </BoldText>
+              <View style={styles.networkToBuySelected}>
+                {networkToBuy && networkProvidersIcon(networkToBuy.network)}
+                <BoldText style={styles.networkToBuySelected}>
+                  {networkToBuy.network} - {networkToBuy.locale}
+                </BoldText>
+              </View>
             ) : (
               <RegularText style={styles.networkToBuy}>
                 Choose Network
@@ -116,16 +194,14 @@ const BuyAirtime = () => {
             <View style={styles.modal}>
               <View style={styles.modalBorder} />
               <ScrollView style={{ width: 100 + '%' }}>
-                <View style={styles.currencies}>
+                <View style={styles.modalLists}>
                   {networkProviders.map(provider => (
                     <Pressable
                       key={provider.network}
-                      // eslint-disable-next-line react-native/no-inline-styles
                       style={{
-                        ...styles.currency,
+                        ...styles.modalList,
                         backgroundColor:
-                          networkToBuy ===
-                          `${provider.network}-${provider.locale}`
+                          networkToBuy?.network === provider.network
                             ? '#e4e2e2'
                             : 'transparent',
                       }}
@@ -145,27 +221,43 @@ const BuyAirtime = () => {
         </Modal>
         <View style={styles.topUpContainer}>
           <Text style={styles.topUp}>Amount to be credited</Text>
-          <Text style={styles.topUp}>Balance: </Text>
+          <Text style={styles.topUp}>
+            Balance:{' '}
+            {selectedCurrency.symbol +
+              addingDecimal(`${balance.toLocaleString()}`)}
+          </Text>
         </View>
         <View style={styles.textInputContainer}>
           <TextInput
-            style={{ ...styles.textInput, ...styles.textInputStyles }}
+            style={{
+              ...styles.textInput,
+              ...styles.textInputStyles,
+              borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
+            }}
             inputMode="numeric"
-            // onChangeText={text => handlePriceInput(text)}
-            // value={value}
+            onChangeText={text => handleAmountInput(text)}
+            onBlur={handleBlur}
+            value={amountInput}
           />
+          {errorMessage && (
+            <View style={{ marginTop: 15 }}>
+              <ErrorMessage errorMessage={errorMessage} />
+            </View>
+          )}
         </View>
+
         <Text style={styles.topUp}>Phone Number</Text>
         <View style={styles.textInputContainer}>
           <TextInput
             style={{ ...styles.textInput, ...styles.textInputStyles }}
             inputMode="tel"
-            // onChangeText={text => handlePriceInput(text)}
-            // value={value}
+            onChangeText={text => handlePhoneInput(text)}
+            value={formData.phoneNo}
           />
         </View>
+        <ErrorMessage errorMessage={errorMessage2} />
 
-        <Button text={'Buy Airtime'} />
+        <Button text={'Buy Airtime'} onPress={handleInputPin} />
       </ScrollView>
     </PageContainer>
   );
@@ -229,6 +321,9 @@ const styles = StyleSheet.create({
   },
   networkToBuySelected: {
     textTransform: 'uppercase',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   networkToBuy: {
     color: '#525252',
@@ -275,11 +370,11 @@ const styles = StyleSheet.create({
     width: 100 + '%',
     height: 100 + '%',
   },
-  currencies: {
+  modalLists: {
     flex: 1,
     gap: 20,
   },
-  currency: {
+  modalList: {
     width: 100 + '%',
     flexDirection: 'row',
     alignItems: 'center',
@@ -287,7 +382,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5 + '%',
     gap: 20,
   },
-  networkIcon: {
+  modalListIcon: {
     gap: 20,
     flexDirection: 'row',
   },

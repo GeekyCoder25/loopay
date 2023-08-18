@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
 import {
@@ -17,34 +18,40 @@ import AirtelIcon from '../../../../assets/images/airtel.svg';
 import NineMobileIcon from '../../../../assets/images/9mobile.svg';
 import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
 import Button from '../../../components/Button';
-import InputPin from '../../../components/InputPin';
+import ErrorMessage from '../../../components/ErrorMessage';
+import { postFetchData } from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
 
-const BuyData = () => {
-  const { vh, appData } = useContext(AppContext);
+const BuyData = ({ navigation }) => {
+  const { appData } = useContext(AppContext);
   const [modalOpen, setModalOpen] = useState(false);
-  const [networkToBuy, setNetworkToBuy] = useState('');
-  const [isReadyToInputPin, setIsReadyToInputPin] = useState(false);
-  const [reload, setReload] = useState(false);
-  const [canContinue, setCanContinue] = useState(false);
-
+  const [planModalOpen, setPlanModalOpen] = useState(false);
+  const [networkToBuy, setNetworkToBuy] = useState(null);
+  const [dataPlans, setDataPlans] = useState([]);
+  const [planToBuy, setPlanToBuy] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [formData, setFormData] = useState({
+    network: '',
+    phoneNo: '',
+    plan: '30gb',
+  });
   const dataBeneficiaries = [
-    {
-      phoneNo: '09073002599',
-      network: 'airtel',
-    },
-    {
-      phoneNo: '+2349054343663',
-      network: '9mobile',
-    },
-    {
-      phoneNo: '09066487855',
-      network: 'mtn',
-    },
-    {
-      phoneNo: '09063555855',
-      network: 'glo',
-    },
+    // {
+    //   phoneNo: '09073002599',
+    //   network: 'airtel',
+    // },
+    // {
+    //   phoneNo: '+2349054343663',
+    //   network: '9mobile',
+    // },
+    // {
+    //   phoneNo: '09066487855',
+    //   network: 'mtn',
+    // },
+    // {
+    //   phoneNo: '09063555855',
+    //   network: 'glo',
+    // },
   ];
 
   const networkProviders = [
@@ -55,11 +62,38 @@ const BuyData = () => {
   ];
 
   const handleModal = () => {
-    setModalOpen(prev => !prev);
+    setModalOpen(false);
+    setPlanModalOpen(false);
   };
   const handleNetworkSelect = provider => {
     handleModal();
-    setNetworkToBuy(`${provider.network}-${provider.locale}`);
+    setNetworkToBuy({ network: provider.network, locale: provider.locale });
+    setFormData(prev => {
+      return { ...prev, network: provider.network };
+    });
+  };
+
+  const handlePhoneInput = phoneNo => {
+    setFormData(prev => {
+      return { ...prev, phoneNo };
+    });
+  };
+
+  const handleInputPin = async () => {
+    if (Object.values(formData).includes('')) {
+      return setErrorMessage(
+        'Please provide all required fields before progressing',
+      );
+    }
+    if (!appData.pin) {
+      await postFetchData('auth/forget-password', {
+        email: appData.email,
+        otpCodeLength: 6,
+      });
+    }
+    navigation.navigate('TransferAirtime', { formData });
+
+    // isValidPin ? customPinFunc() : setNeedPin(true);
   };
 
   const networkProvidersIcon = network => {
@@ -79,64 +113,62 @@ const BuyData = () => {
   return (
     <PageContainer padding={true} paddingTop={0}>
       <ScrollView style={styles.body}>
-        {!isReadyToInputPin ? (
-          <>
-            <View style={styles.header}>
-              <RegularText>Beneficiaries</RegularText>
-              <RegularText>View all</RegularText>
-            </View>
-            <ScrollView
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              style={styles.beneficiaries}>
-              {dataBeneficiaries.map(beneficiary => (
-                <Beneficiary
-                  beneficiary={beneficiary}
-                  key={beneficiary.phoneNo}
-                  networkProvidersIcon={networkProvidersIcon}
-                />
-              ))}
-            </ScrollView>
-            <BoldText style={styles.headerText}>Buy Data Bundle</BoldText>
-            <RegularText style={styles.headerSubText}>
-              Select a Network
-            </RegularText>
-            <Pressable
-              onPress={() => setModalOpen(true)}
-              style={styles.textInputContainer}>
-              <View style={styles.textInput}>
-                {networkToBuy ? (
-                  <BoldText style={styles.networkToBuySelected}>
-                    {networkToBuy}
-                  </BoldText>
-                ) : (
-                  <RegularText style={styles.networkToBuy}>
-                    Choose Network
-                  </RegularText>
-                )}
-                <ChevronDown />
+        <View style={styles.header}>
+          <RegularText>Beneficiaries</RegularText>
+          {dataBeneficiaries.length > 3 && <RegularText>View all</RegularText>}
+        </View>
+        <ScrollView
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          style={styles.beneficiaries}>
+          {dataBeneficiaries.map(beneficiary => (
+            <Beneficiary
+              beneficiary={beneficiary}
+              key={beneficiary.phoneNo}
+              networkProvidersIcon={networkProvidersIcon}
+            />
+          ))}
+        </ScrollView>
+        <BoldText style={styles.headerText}>Buy Data Bundle</BoldText>
+        <RegularText style={styles.headerSubText}>Select a Network</RegularText>
+        <Pressable
+          onPress={() => setModalOpen(true)}
+          style={styles.textInputContainer}>
+          <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
+            {networkToBuy ? (
+              <View style={styles.networkToBuySelected}>
+                {networkToBuy && networkProvidersIcon(networkToBuy.network)}
+                <BoldText style={styles.networkToBuySelected}>
+                  {networkToBuy.network} - {networkToBuy.locale}
+                </BoldText>
               </View>
-            </Pressable>
-            <Modal
-              visible={modalOpen}
-              animationType="slide"
-              transparent
-              onRequestClose={handleModal}>
-              <Pressable style={styles.overlay} onPress={handleModal} />
-              <View style={styles.modalContainer}>
-                <View style={styles.modal}>
-                  <View style={styles.modalBorder} />
-                  <ScrollView style={{ width: 100 + '%' }}>
-                    <View style={styles.currencies}>
-                      {networkProviders.map(provider => (
+            ) : (
+              <RegularText style={styles.networkToBuy}>
+                Choose Network
+              </RegularText>
+            )}
+            <ChevronDown />
+          </View>
+        </Pressable>
+        <Modal
+          visible={modalOpen || planModalOpen}
+          animationType="slide"
+          transparent
+          onRequestClose={handleModal}>
+          <Pressable style={styles.overlay} onPress={handleModal} />
+          <View style={styles.modalContainer}>
+            <View style={styles.modal}>
+              <View style={styles.modalBorder} />
+              <ScrollView style={{ width: 100 + '%' }}>
+                <View style={styles.modalLists}>
+                  {modalOpen
+                    ? networkProviders.map(provider => (
                         <Pressable
                           key={provider.network}
-                          // eslint-disable-next-line react-native/no-inline-styles
                           style={{
-                            ...styles.currency,
+                            ...styles.modalList,
                             backgroundColor:
-                              networkToBuy ===
-                              `${provider.network}-${provider.locale}`
+                              networkToBuy?.network === provider.network
                                 ? '#e4e2e2'
                                 : 'transparent',
                           }}
@@ -148,60 +180,66 @@ const BuyData = () => {
                             {`${provider.network}-${provider.locale}`}
                           </BoldText>
                         </Pressable>
+                      ))
+                    : dataPlans.map(plan => (
+                        <Pressable
+                          key={plan.id}
+                          style={{
+                            ...styles.modalList,
+                            backgroundColor:
+                              planToBuy === plan ? '#e4e2e2' : 'transparent',
+                          }}
+                          onPress={() =>
+                            setFormData(prev => {
+                              return { ...prev, plan };
+                            })
+                          }>
+                          <BoldText style={styles.networkToBuySelected}>
+                            {plan}
+                          </BoldText>
+                        </Pressable>
                       ))}
-                    </View>
-                  </ScrollView>
                 </View>
-              </View>
-            </Modal>
-            <Text style={styles.topUp}>Enter Phone Number</Text>
-            <View style={styles.textInputContainer}>
-              <TextInput
-                style={{ ...styles.textInput, ...styles.textInputStyles }}
-                inputMode="tel"
-                // onChangeText={text => handlePriceInput(text)}
-                // value={value}
-              />
+              </ScrollView>
             </View>
-            <View style={styles.topUpContainer}>
-              <Text style={styles.topUp}>Choose a Plan</Text>
-            </View>
-            <View style={styles.textInputContainer}>
-              <Pressable
-                onPress={() => setModalOpen(true)}
-                style={styles.textInputContainer}>
-                <View style={styles.textInput}>
-                  {networkToBuy ? (
-                    <BoldText style={styles.networkToBuySelected}>
-                      {networkToBuy}
-                    </BoldText>
-                  ) : (
-                    <RegularText style={styles.networkToBuy}></RegularText>
-                  )}
-                  <ChevronDown />
-                </View>
-              </Pressable>
-            </View>
-
-            <Button
-              text={'Buy Airtime'}
-              onPress={() => setIsReadyToInputPin(true)}
-            />
-          </>
-        ) : (
-          <View
-            style={{
-              ...styles.container,
-              marginTop: vh * 0.15,
-              minHeight: vh * 0.8,
-            }}>
-            <InputPin
-              setCanContinue={setCanContinue}
-              key={reload}
-              setReload={setReload}
-            />
           </View>
-        )}
+        </Modal>
+        <Text style={styles.label}>Enter Phone Number</Text>
+        <View style={styles.textInputContainer}>
+          <TextInput
+            style={{ ...styles.textInput, ...styles.textInputStyles }}
+            inputMode="tel"
+            onChangeText={text => handlePhoneInput(text)}
+            value={formData.phoneNo}
+          />
+        </View>
+        <View style={styles.labelContainer}>
+          <Text style={styles.label}>Choose a Plan</Text>
+        </View>
+        <View style={styles.textInputContainer}>
+          <Pressable
+            onPress={() => setPlanModalOpen(true)}
+            style={styles.textInputContainer}>
+            <View style={styles.textInput}>
+              {planToBuy ? (
+                <BoldText style={styles.networkToBuySelected}>
+                  {planToBuy}
+                </BoldText>
+              ) : (
+                <RegularText style={styles.networkToBuy}>
+                  Choose a Plan
+                </RegularText>
+              )}
+              <ChevronDown />
+            </View>
+          </Pressable>
+          {errorMessage && (
+            <View style={{ marginTop: 15 }}>
+              <ErrorMessage errorMessage={errorMessage} />
+            </View>
+          )}
+        </View>
+        <Button text={'Buy Data'} onPress={handleInputPin} />
       </ScrollView>
     </PageContainer>
   );
@@ -237,11 +275,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   headerSubText: { color: '#868585' },
-  topUpContainer: {
+  labelContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  topUp: {
+  label: {
     fontFamily: 'OpenSans-600',
     color: '#868585',
   },
@@ -268,6 +306,9 @@ const styles = StyleSheet.create({
   },
   networkToBuySelected: {
     textTransform: 'uppercase',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   networkToBuy: {
     color: '#525252',
@@ -314,11 +355,11 @@ const styles = StyleSheet.create({
     width: 100 + '%',
     height: 100 + '%',
   },
-  currencies: {
+  modalLists: {
     flex: 1,
     gap: 20,
   },
-  currency: {
+  modalList: {
     width: 100 + '%',
     flexDirection: 'row',
     alignItems: 'center',

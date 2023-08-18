@@ -1,7 +1,7 @@
 import AccInfoCard from '../../components/AccInfoCard';
 import PageContainer from '../../components/PageContainer';
 import { StyleSheet, View } from 'react-native';
-import { RoutePage } from '../BottomTabPages/SendMenu';
+import { RouteLink } from '../BottomTabPages/SendMenu';
 import { AppContext } from '../../components/AppContext';
 import { useContext } from 'react';
 
@@ -33,10 +33,10 @@ const AirtimeTopUp = ({ navigation }) => {
       <View style={styles.body}>
         <AccInfoCard />
         <View>
-          {AirtimeTopUpRoutes.map(routePage => (
-            <RoutePage
-              key={routePage.routeIcon}
-              routePage={routePage}
+          {AirtimeTopUpRoutes.map(route => (
+            <RouteLink
+              key={route.routeIcon}
+              route={route}
               navigation={navigation}
             />
           ))}

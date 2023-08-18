@@ -20,7 +20,7 @@ import SwitchOn from '../../../../assets/images/switch.svg';
 import SwitchOff from '../../../../assets/images/switchOff.svg';
 import { postFetchData } from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
-import { useBenefifciaryContext } from '../../../../context/BenefiaciariesContext';
+import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';
 
 const SendNew = ({ navigation, route }) => {
   const { appData } = useContext(AppContext);
@@ -56,7 +56,9 @@ const SendNew = ({ navigation, route }) => {
   }, [beneficiaryState, route.params]);
 
   const handlePaste = async () => {
-    setinputValue(showPaste);
+    const copiedText = await Clipboard.getString();
+    setinputValue(copiedText);
+    handleChange(copiedText);
   };
 
   const handleChange = async text => {
@@ -64,10 +66,10 @@ const SendNew = ({ navigation, route }) => {
       setinputValue(text);
       if (text.length === 10) {
         setIsSearching(true);
-        const { phoneNumber } = appData.userProfile;
-        const result = await postFetchData(`user/get-phone/${phoneNumber}`, {
+        const result = await postFetchData('user/get-phone', {
           phoneNumber: text,
         });
+        9030582706;
         if (result.status === 200) {
           // const beneficiariesTagName = beneficiaryState?.map(
           //   beneficiary => beneficiary.tagName || beneficiary.userName,
@@ -81,6 +83,8 @@ const SendNew = ({ navigation, route }) => {
           // }
           return setUserFound(result.data);
         }
+      } else {
+        return setUserFound(null);
       }
     } finally {
       setIsSearching(false);
@@ -160,20 +164,6 @@ const SendNew = ({ navigation, route }) => {
             )} */}
           </View>
         )}
-        {/* <Paystack
-          paystackKey={'pk_test_06a8106b8d1d1200d5a4e49dac462e614a3cce42'}
-          amount={100}
-          billingEmail={appData.email}
-          activityIndicatorColor="green"
-          onCancel={e => {
-            // handle response here
-            console.log(e);
-          }}
-          onSuccess={res => {
-            console.log(res);
-          }}
-          autoStart={true}
-        /> */}
         <Button
           text={'Continue'}
           disabled={!userFound}

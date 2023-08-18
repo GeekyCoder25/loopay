@@ -25,10 +25,10 @@ import { AppContext } from '../../components/AppContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { getFetchData } from '../../../utils/fetchAPI';
 import UserIconSVG from '../../../assets/images/userMenu.svg';
-import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';
+import { useBenefifciaryContext } from '../../context/BenefiaciariesContext';
 
 const SendMenu = ({ navigation }) => {
-  const { setShowTabBar } = useContext(AppContext);
+  const { showTabBar, setShowTabBar } = useContext(AppContext);
   const { beneficiaryState, setBeneficiaryState } = useBenefifciaryContext();
   useFocusEffect(
     React.useCallback(() => {
@@ -36,17 +36,17 @@ const SendMenu = ({ navigation }) => {
     }, [setShowTabBar]),
   );
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const getBeneficiaires = async () => {
-        const response = await getFetchData('user/beneficiary');
-        if (response.status === 200) {
-          setBeneficiaryState(response.data.beneficiaries);
-        }
-      };
-      getBeneficiaires();
-    }, [setBeneficiaryState]),
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const getBeneficiaires = async () => {
+  //       const response = await getFetchData('user/beneficiary');
+  //       if (response.status === 200) {
+  //         setBeneficiaryState(response.data.beneficiaries);
+  //       }
+  //     };
+  //     getBeneficiaires();
+  //   }, [setBeneficiaryState]),
+  // );
 
   const handleBeneficiaryPress = beneficiary => {
     navigation.navigate('TransferFunds', beneficiary);
@@ -89,10 +89,10 @@ const SendMenu = ({ navigation }) => {
         source={require('../../../assets/images/pageBg.png')}
         style={styles.bg}>
         <ScrollView style={styles.routesContainer}>
-          {sendMenuRoutes.map(routePage => (
-            <RoutePage
-              key={routePage.routeIcon}
-              routePage={routePage}
+          {sendMenuRoutes.map(route => (
+            <RouteLink
+              key={route.routeIcon}
+              route={route}
               navigation={navigation}
             />
           ))}
@@ -182,10 +182,10 @@ const styles = StyleSheet.create({
 });
 export default SendMenu;
 
-export const RoutePage = ({ routePage, navigation }) => {
+export const RouteLink = ({ route, navigation }) => {
   const { setIsLoading } = useContext(AppContext);
   const routeIcon = () => {
-    switch (routePage.routeIcon) {
+    switch (route.routeIcon) {
       case 'add':
         return <AddIcon />;
       case 'swap':
@@ -211,16 +211,16 @@ export const RoutePage = ({ routePage, navigation }) => {
     }
   };
   const handleNavigate = () => {
-    routePage.routeNavigate === 'SwapFunds' && setIsLoading(true);
-    navigation.navigate(routePage.routeNavigate);
+    route.routeNavigate === 'SwapFunds' && setIsLoading(true);
+    navigation.navigate(route.routeNavigate);
   };
 
   return (
     <Pressable onPress={handleNavigate} style={styles.route}>
       <View style={styles.routeIcon}>{routeIcon()}</View>
       <View style={styles.routeTexts}>
-        <BoldText>{routePage.routeName}</BoldText>
-        <RegularText>{routePage.routeDetails}</RegularText>
+        <BoldText>{route.routeName}</BoldText>
+        <RegularText>{route.routeDetails}</RegularText>
       </View>
     </Pressable>
   );

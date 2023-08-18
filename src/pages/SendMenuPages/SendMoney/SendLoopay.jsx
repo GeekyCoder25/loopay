@@ -22,7 +22,7 @@ import SwitchOff from '../../../../assets/images/switchOff.svg';
 import { postFetchData } from '../../../../utils/fetchAPI';
 import { tagNameRules } from '../../../database/data';
 import { AppContext } from '../../../components/AppContext';
-import { useBenefifciaryContext } from '../../../../context/BenefiaciariesContext';
+import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';
 // import { Paystack } from 'react-native-paystack-webview';
 
 const SendLoopay = ({ navigation, route }) => {
@@ -60,8 +60,9 @@ const SendLoopay = ({ navigation, route }) => {
   }, [beneficiaryState, route.params]);
 
   const handlePaste = async () => {
-    setinputValue(showPaste);
-    handleChange(showPaste);
+    const copiedText = await Clipboard.getString();
+    setinputValue(copiedText);
+    handleChange(copiedText);
   };
 
   const handleChange = async text => {

@@ -1,1 +1,7 @@
-export const hideTabRoutes = ['AddMoney', 'AddMoneyConfirm', 'ChangePassword'];
+export const hideTabRoutes = [
+  'AddMoney',
+  'AddMoneyConfirm',
+  'ChangePassword',
+  'TransactionHistory',
+  'Notification',
+];

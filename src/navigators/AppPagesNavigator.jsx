@@ -11,7 +11,7 @@ import { AppContext } from '../components/AppContext';
 import { getNotFirstTime } from '../../utils/storage';
 
 const AppPagesNavigator = () => {
-  const { isLoggedIn, setIsLoggedIn, appData } = useContext(AppContext);
+  const { isLoggedIn, appData } = useContext(AppContext);
   const [notFirstTime, setNotFirstTime] = useState(false);
   const Stack = createNativeStackNavigator();
 
@@ -20,6 +20,7 @@ const AppPagesNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {/* <Stack.Screen name="Ssplash" component={BuyData} /> */}
         <Stack.Screen name="Splash" component={Splash} />
         {!isLoggedIn ? (
           <Stack.Group>

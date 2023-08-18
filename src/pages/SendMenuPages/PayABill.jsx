@@ -10,22 +10,160 @@ import { useContext } from 'react';
 import { AppContext } from '../../components/AppContext';
 
 const PayABill = ({ navigation }) => {
+  function VerifyCardNumber(stateFields, setErrorMessage) {
+    if (Object.values(stateFields).includes('')) {
+      return setErrorMessage('Please provide all required fields');
+    }
+    navigation.push('PayABillParams', {
+      headerText: 'Cable TV',
+      data: [
+        {
+          title: 'User Info',
+          type: 'select',
+          placeholder: 'User Info',
+          id: 'userInfo',
+        },
+        {
+          title: 'Package',
+          type: 'select',
+          placeholder: 'Select Pacakage',
+          id: 'package',
+        },
+        {
+          title: 'Duration',
+          type: 'select',
+          placeholder: 'Duration',
+          id: 'duration',
+        },
+      ],
+      buttonText: 'Pay',
+      buttonFunc: PayCableTv,
+    });
+  }
+  const PayCableTv = () => {
+    console.log('shit');
+  };
+
   const bills = [
     {
       title: 'TV',
       desc: 'TV Cable',
+      headerText: 'Cable TV',
+      buttonText: 'Verify Card Number',
+      buttonFunc: VerifyCardNumber,
+      data: [
+        {
+          title: 'Select a Provider',
+          type: 'select',
+          placeholder: 'Select a Provider',
+          id: 'provider',
+          apiUrl: 'https://jsonplaceholder.typicode.com/todos',
+        },
+        {
+          title: 'Enter Card Number',
+          type: 'input',
+          id: 'cardNumber',
+        },
+      ],
     },
     {
       title: 'internet',
       desc: 'Internet',
+      headerText: 'Internet',
+      buttonText: 'Make Payment',
+      data: [
+        {
+          title: 'Select Provider',
+          type: 'select',
+          placeholder: 'Select Provider',
+          id: 'provider',
+          apiUrl: 'https://jsonplaceholder.typicode.com/todos',
+        },
+        {
+          title: 'Package',
+          type: 'select',
+          placeholder: 'Select Pacakage',
+          id: 'package',
+        },
+        {
+          title: 'Customer ID',
+          type: 'input',
+          id: 'customerID',
+        },
+        {
+          title: 'Amount',
+          type: 'input',
+          id: 'amount',
+          balance: true,
+        },
+      ],
     },
     {
       title: 'school',
       desc: 'School payment',
+      headerText: 'School Payment',
+      buttonText: 'Verify Matric Number',
+      data: [
+        {
+          title: 'Select School',
+          type: 'select',
+          placeholder: 'Select School',
+          id: 'school',
+          apiUrl: '',
+        },
+        {
+          title: 'Select Locality',
+          type: 'select',
+          placeholder: 'Select Locality',
+          id: 'locality',
+          apiUrl: '',
+        },
+        {
+          title: 'Enter Matric Number',
+          type: 'input',
+          placeholder: 'Matric Number',
+          id: 'matricNo',
+        },
+      ],
     },
     {
       title: 'electricity',
       desc: 'Electricity',
+      headerText: 'Electricity',
+      buttonText: 'Make Payment',
+      data: [
+        {
+          title: 'Select Provider',
+          type: 'select',
+          placeholder: 'Select Provider',
+          id: 'provider',
+          apiUrl: '',
+        },
+        {
+          title: 'Package',
+          type: 'select',
+          placeholder: 'Select Pacakage',
+          id: 'package',
+        },
+        {
+          title: 'Meter number',
+          type: 'input',
+          placeholder: 'Enter Meter number',
+          id: 'meterNo',
+        },
+        {
+          title: 'User',
+          type: 'select',
+          placeholder: 'Select User',
+          id: 'user',
+        },
+        {
+          title: 'Amount',
+          type: 'input',
+          id: 'amount',
+          balance: true,
+        },
+      ],
     },
   ];
 
@@ -89,9 +227,15 @@ const Bill = ({ bill, navigation }) => {
         break;
     }
   };
+  const { headerText, data, buttonText, buttonFunc } = bill;
 
   const handleNavigate = () => {
-    navigation.navigate(`bill${bill.title}`);
+    navigation.navigate('PayABillParams', {
+      headerText,
+      data,
+      buttonText,
+      buttonFunc,
+    });
   };
   return (
     <Pressable

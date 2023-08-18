@@ -21,40 +21,28 @@ import SelectCurrencyModal from '../../../components/SelectCurrencyModal';
 import { AppContext } from '../../../components/AppContext';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import ErrorMessage from '../../../components/ErrorMessage';
-import { PINInput } from '../../MenuPages/TransactionPin';
 import { postFetchData } from '../../../../utils/fetchAPI';
-import { OTPInput } from '../../../components/LoggedInForgetPassword';
 import BackArrow from '../../../../assets/images/backArrrowWhite.svg';
 import FooterCard from '../../../components/FooterCard';
+import { useWalletContext } from '../../../context/WalletContext';
+import { randomUUID } from 'expo-crypto';
+import InputPin from '../../../components/InputPin';
 
 const TransferFunds = ({ navigation, route }) => {
-  const { selectedCurrency, appData, setIsLoading } = useContext(AppContext);
-  // const [userToSendTo] = useState({
-  //   email: 'toyibe255@gmail.com',
-  //   fullName: 'Toyyib Lawal',
-  //   tagName: 'iamgeeky_coder',
-  //   phoneNumber: '+2349073002599',
-  //   photo: '',
-  // });
+  const { selectedCurrency, appData } = useContext(AppContext);
+  const { wallet, setWallet } = useWalletContext();
   const [userToSendTo] = useState(route.params);
   const [amountInput, setAmountInput] = useState(null);
-  const [desc, setDesc] = useState('');
+  const [description, setDescription] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
   const [canContinue, setCanContinue] = useState(false);
-  const [focusIndex, setFocusIndex] = useState(1);
-  const [pinCode, setPinCode] = useState('');
   const [haveSetPin] = useState(appData.pin);
-  const [otpCode, setOtpCode] = useState('');
-  const [reload, setReload] = useState(false);
-  // const [isPinOkay, setIsPinOkay] = useState(false);
   const [formData] = useState({
     email: appData.email,
     otpCodeLength: 6,
   });
-
-  const codeLengths = [1, 2, 3, 4];
 
   const editInput = () => {
     setErrorMessage('');
@@ -78,7 +66,7 @@ const TransferFunds = ({ navigation, route }) => {
 
   const handleContinue = async () => {
     if (!amountInput) {
-      setErrorMessage('Please provide the anount to be transferred');
+      setErrorMessage('Please provide the amount to be transferred');
       setErrorKey('amountInput');
     } else if (!Number(amountInput)) {
       setErrorMessage('Please provide a valid amount');
@@ -88,9 +76,12 @@ const TransferFunds = ({ navigation, route }) => {
         `Minimum transfer amount is ${selectedCurrency.symbol}${selectedCurrency.minimumAmountToAdd}`,
       );
       setErrorKey('amountInput');
-    } else if (!desc) {
+    } else if (!description) {
       setErrorMessage('Please provide transaction description');
       setErrorKey('desc');
+    } else if (amountInput > wallet.balance) {
+      setErrorKey('amountInput');
+      setErrorMessage('Insufficient funds');
     } else {
       setCanContinue(true);
       if (!haveSetPin) {
@@ -99,55 +90,23 @@ const TransferFunds = ({ navigation, route }) => {
     }
   };
 
-  const handlePay = async () => {
-    try {
-      setIsLoading(true);
-      if (haveSetPin) {
-        const result = await postFetchData('user/check-pin', { pin: pinCode });
-        if (result === "Couldn't connect to server") {
-          return setErrorMessage(result);
-        }
-        if (result.status === 200) {
-          return initiateTransfer();
-        }
-        setErrorMessage(result.data);
-        setErrorKey('pinCode');
-      } else {
-        const result = await postFetchData(
-          `auth/confirm-otp/${otpCode || 'fake'}`,
-          formData,
-        );
-        if (result === "Couldn't connect to server") {
-          return setErrorMessage(result);
-        }
-        if (result.status !== 200) {
-          return initiateTransfer();
-        }
-        setErrorMessage('Incorrect OTP Code');
-        setErrorKey('otpCode');
-      }
-      setTimeout(() => {
-        setPinCode('');
-        setReload(prev => !prev);
-      }, 1500);
-    } finally {
-      setIsLoading(false);
-      setTimeout(() => {}, 1000);
-    }
-  };
-
   const initiateTransfer = async () => {
     try {
       const response = await postFetchData('user/loopay/transfer', {
         ...userToSendTo,
-        reason: desc,
+        description,
         amount: amountInput,
+        senderPhoto: appData.photoURL,
+        id: randomUUID(),
       });
-      ToastAndroid.show(response.data, ToastAndroid.SHORT);
-      console.log(response.data);
-      if (response.status !== 200) {
-        // navigation.navigate('Success', { userToSendTo, amountInput });
+      if (response.status === 200) {
+        const balance = response.data.data.amount;
+        setWallet(prev => {
+          return { ...prev, balance: prev.balance - Number(balance) };
+        });
+        return navigation.navigate('Success', { userToSendTo, amountInput });
       }
+      ToastAndroid.show(response.data, ToastAndroid.SHORT);
     } catch (error) {
       console.log(error);
     }
@@ -231,11 +190,11 @@ const TransferFunds = ({ navigation, route }) => {
                         }}
                         inputMode="text"
                         onChangeText={text => {
-                          setDesc(text);
+                          setDescription(text);
                           editInput();
                         }}
-                        value={desc}
-                        maxLength={16}
+                        value={description}
+                        maxLength={40}
                       />
                     </View>
                   </View>
@@ -248,51 +207,18 @@ const TransferFunds = ({ navigation, route }) => {
                 />
               </>
             ) : (
-              <View>
-                <View style={styles.pinContainer} key={reload}>
-                  {haveSetPin ? (
-                    <>
-                      <RegularText>Enter your transaction pin</RegularText>
-                      <View style={styles.changePinCodeLengthsContainer}>
-                        {codeLengths.map(input => (
-                          <PINInput
-                            key={input}
-                            codeLength={input}
-                            focusIndex={focusIndex}
-                            setFocusIndex={setFocusIndex}
-                            pinCode={pinCode}
-                            setPinCode={setPinCode}
-                            setErrorMessage={setErrorMessage}
-                            errorKey={errorKey}
-                            setErrorKey={setErrorKey}
-                            codeLengths={codeLengths.length}
-                          />
-                        ))}
-                      </View>
-                    </>
-                  ) : (
-                    <NoPInSet
-                      otpCode={otpCode}
-                      setOtpCode={setOtpCode}
-                      setErrorMessage={setErrorMessage}
-                      errorKey={errorKey}
-                      setErrorKey={setErrorKey}
-                    />
-                  )}
-                </View>
-                <ErrorMessage errorMessage={errorMessage} />
+              <InputPin customFunc={initiateTransfer}>
                 <View style={styles.footer}>
                   <FooterCard
                     userToSendTo={userToSendTo}
-                    amountInput={amountInput}
-                  />
-                  <Button
-                    text={'Pay now'}
-                    onPress={handlePay}
-                    style={styles.button}
+                    amountInput={`${Number(amountInput).toLocaleString()}${
+                      Number(amountInput).toLocaleString().includes('.')
+                        ? ''
+                        : '.00'
+                    }`}
                   />
                 </View>
-              </View>
+              </InputPin>
             )}
           </View>
         </ScrollView>
@@ -366,6 +292,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 5 + '%',
+    paddingBottom: 40,
   },
   form: {
     gap: 30,
@@ -460,51 +387,8 @@ const styles = StyleSheet.create({
   button: {
     marginBottom: 50,
   },
-  pinContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  changePinCodeLengthsContainer: {
-    flexDirection: 'row',
-    gap: 30,
-    justifyContent: 'center',
-    marginTop: 10,
-  },
   footer: {
     marginTop: 50,
   },
 });
 export default TransferFunds;
-
-const NoPInSet = ({
-  otpCode,
-  setOtpCode,
-  setErrorMessage,
-  errorKey,
-  setErrorKey,
-}) => {
-  const [focusIndex, setFocusIndex] = useState(1);
-  const codeLengths = [1, 2, 3, 4, 5, 6];
-
-  return (
-    <>
-      <RegularText>Enter six digit Pin sent to your mail</RegularText>
-      <View style={styles.changePinCodeLengthsContainer}>
-        {codeLengths.map(codeLength => (
-          <OTPInput
-            key={codeLength}
-            codeLength={codeLength}
-            focusIndex={focusIndex}
-            setFocusIndex={setFocusIndex}
-            otpCode={otpCode}
-            setOtpCode={setOtpCode}
-            setErrorMessage={setErrorMessage}
-            errorKey={errorKey}
-            setErrorKey={setErrorKey}
-            codeLengths={codeLengths.length}
-          />
-        ))}
-      </View>
-    </>
-  );
-};

@@ -10,6 +10,9 @@ import TransactionPin from '../pages/MenuPages/TransactionPin';
 import Referrals from '../pages/MenuPages/Referrals';
 import Support from '../pages/MenuPages/Support';
 import VirtualCard from '../pages/SendMenuPages/VirtualCard';
+import VirtualCardDetails from '../pages/SendMenuPages/VirtualCardDetails';
+import TransactionHistoryParams from '../pages/MenuPages/TransactionHistoryParams';
+import IdentitiyVerification from '../pages/MenuPages/VerificationStatus/IdentitiyVerification';
 
 const MenuNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -29,8 +32,17 @@ const MenuNavigator = () => {
       />
       <Stack.Screen name="MyInfo" component={MyInfo} />
       <Stack.Screen name="VerificationStatus" component={VerificationStatus} />
+      <Stack.Screen
+        name="IdentityVerification"
+        component={IdentitiyVerification}
+      />
       <Stack.Screen name="TransactionHistory" component={TransactionHistory} />
+      <Stack.Screen
+        name="TransactionHistoryDetails"
+        component={TransactionHistoryParams}
+      />
       <Stack.Screen name="VirtualCard" component={VirtualCard} />
+      <Stack.Screen name="VirtualCardDetails" component={VirtualCardDetails} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
       <Stack.Screen name="DevicesAndSessions" component={DevicesAndSessions} />
       <Stack.Screen name="TransactionPin" component={TransactionPin} />

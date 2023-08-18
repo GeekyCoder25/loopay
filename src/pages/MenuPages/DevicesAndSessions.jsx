@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import BoldText from '../../components/fonts/BoldText';
-import { StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import Profile from '../HomePages/Profile';
 import RegularText from '../../components/fonts/RegularText';
 import { getFetchData, putFetchData } from '../../../utils/fetchAPI';
@@ -8,6 +8,7 @@ import { getSessionID } from '../../../utils/storage';
 
 const DevicesAndSessions = ({ navigation }) => {
   const [activeSessions, setActiveSessions] = useState(null);
+  const [isLocalLoading, setIsLocalLoading] = useState(true);
 
   useEffect(() => {
     const getSessions = async () => {
@@ -18,6 +19,7 @@ const DevicesAndSessions = ({ navigation }) => {
       const fetchedResult = await getFetchData('user/session');
       const data = fetchedResult.data;
       fetchedResult.status === 200 && setActiveSessions(data.sessions);
+      setIsLocalLoading(false);
     };
     getSessions();
   }, []);
@@ -25,16 +27,24 @@ const DevicesAndSessions = ({ navigation }) => {
     <Profile navigation={navigation}>
       <View style={styles.DandC}>
         <BoldText style={styles.DandCHeader}>Devices and Sessions</BoldText>
-        {activeSessions?.length > 0 && (
-          <View style={styles.card}>
-            {activeSessions.map(session => (
-              <Session
-                key={session.deviceID}
-                session={session}
-                activeSessions={activeSessions}
-              />
-            ))}
-          </View>
+        {!isLocalLoading ? (
+          activeSessions?.length > 0 && (
+            <View style={styles.card}>
+              {activeSessions.map(session => (
+                <Session
+                  key={session.deviceID}
+                  session={session}
+                  activeSessions={activeSessions}
+                />
+              ))}
+            </View>
+          )
+        ) : (
+          <ActivityIndicator
+            size={'large'}
+            color={'#1e1e1e'}
+            style={styles.loading}
+          />
         )}
       </View>
     </Profile>
@@ -54,6 +64,9 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     borderRadius: 10,
     // paddingVertical: 20,
+  },
+  loading: {
+    marginTop: 15 + '%',
   },
   session: {
     height: 100,

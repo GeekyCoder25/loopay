@@ -2,6 +2,8 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import HomeIcon from '../../assets/images/home.svg';
 import SendIcon from '../../assets/images/send.svg';
 import MenuIcon from '../../assets/images/menu.svg';
+import { useContext } from 'react';
+import { AppContext } from './AppContext';
 const tabRoutes = [
   {
     route: 'HomeNavigator',
@@ -61,9 +63,13 @@ const TabRoute = ({ routePage, navigation, state, index }) => {
   };
   const fillColor = isFocused ? '#000' : '#bbb';
 
+  const { setAmountRefresh } = useContext(AppContext);
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate(`${routePage.route}`)}
+      onPress={() => {
+        navigation.navigate(`${routePage.route}`);
+        routePage.route === 'HomeNavigator' && setAmountRefresh(prev => !prev);
+      }}
       style={styles.routeIcon}>
       <View>{routeIcon(fillColor)}</View>
     </TouchableOpacity>

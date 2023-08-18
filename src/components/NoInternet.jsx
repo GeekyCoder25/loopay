@@ -7,8 +7,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { apiUrl } from '../../utils/fetchAPI';
 
 const NoInternet = ({ modalOpen }) => {
-  const [isChecking, setIsChecking] = useState(false);
-  const { internetStatus, setInternetStatus } = useContext(AppContext);
+  const { setInternetStatus, isChecking, setIsChecking } =
+    useContext(AppContext);
 
   const getFetchData = async () => {
     const API_URL = `${apiUrl}/network`;
