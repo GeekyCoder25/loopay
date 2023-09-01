@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PageContainer from '../../components/PageContainer';
 import { BackHandler, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
@@ -6,8 +6,10 @@ import Check from '../../../assets/images/check.svg';
 import Button from '../../components/Button';
 import FooterCard from '../../components/FooterCard';
 import { useFocusEffect } from '@react-navigation/native';
+import { AppContext } from '../../components/AppContext';
 
 const Success = ({ navigation, route }) => {
+  const { isAdmin } = useContext(AppContext);
   const { userToSendTo, amountInput, fee, airtime, dataPlan } = route.params;
 
   useFocusEffect(
@@ -22,6 +24,13 @@ const Success = ({ navigation, route }) => {
     }, [navigation]),
   );
 
+  const handleHome = () => {
+    if (isAdmin) {
+      return navigation.navigate('Dashboard');
+    }
+    navigation.popToTop();
+    // navigation.navigate('HomeNavigator');
+  };
   return (
     <PageContainer>
       <View style={styles.header}>
@@ -38,13 +47,7 @@ const Success = ({ navigation, route }) => {
         />
       </View>
       <View style={styles.button}>
-        <Button
-          text={'Back Home'}
-          onPress={() => {
-            navigation.popToTop();
-            navigation.navigate('HomeNavigator');
-          }}
-        />
+        <Button text={'Back Home'} onPress={handleHome} />
       </View>
     </PageContainer>
   );
@@ -53,9 +56,8 @@ const Success = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   header: {
     gap: 30,
-    alignItems: 'center',
-    marginTop: 50,
     flex: 1,
+    alignItems: 'center',
     justifyContent: 'center',
   },
   headerText: {
@@ -68,7 +70,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
   },
 });
 export default Success;

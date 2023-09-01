@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   logo: {
-    flex: 1,
+    flex: 0.5,
     justifyContent: 'center',
   },
   headers: {

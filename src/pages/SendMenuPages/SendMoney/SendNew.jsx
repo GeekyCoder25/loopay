@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from 'react';
 import AccInfoCard from '../../../components/AccInfoCard';
 import PageContainer from '../../../components/PageContainer';
-import { ScrollView } from 'react-native-gesture-handler';
 import {
   ActivityIndicator,
   Clipboard,
   Image,
   Pressable,
+  ScrollView,
   StyleSheet,
   TextInput,
   View,
@@ -111,10 +111,10 @@ const SendNew = ({ navigation, route }) => {
             </View>
             <TextInput
               style={styles.textInput}
-              inputMode="text"
+              inputMode="numeric"
               onChangeText={text => handleChange(text)}
               value={inputValue}
-              placeholder="9073002599"
+              placeholder="9012345678"
               placeholderTextColor={'#525252'}
               maxLength={10}
             />

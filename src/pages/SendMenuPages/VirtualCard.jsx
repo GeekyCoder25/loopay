@@ -4,6 +4,7 @@ import {
   ImageBackground,
   Pressable,
   StyleSheet,
+  ScrollView,
   Text,
   View,
 } from 'react-native';
@@ -26,8 +27,9 @@ const VirtualCard = ({ navigation }) => {
     {
       id: 1,
       fullName,
-      exp_month: '04',
+      exp_month: '08',
       exp_year: '2027',
+      cvc: (Math.random() * 1000).toFixed(0),
     },
   ]);
 
@@ -41,7 +43,7 @@ const VirtualCard = ({ navigation }) => {
   }, []);
   return (
     <PageContainer paddingTop={10}>
-      <View style={styles.body}>
+      <ScrollView style={styles.body}>
         <BoldText style={styles.headerText}>Cards</BoldText>
         {activeCards.length > 0 && (
           <View style={styles.activeCards}>
@@ -118,7 +120,7 @@ const VirtualCard = ({ navigation }) => {
         <View style={styles.button}>
           <Button text={'Create New Card'} />
         </View>
-      </View>
+      </ScrollView>
     </PageContainer>
   );
 };

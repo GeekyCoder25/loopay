@@ -4,9 +4,11 @@ import RegularText from './fonts/RegularText';
 import BoldText from './fonts/BoldText';
 import { useContext } from 'react';
 import { AppContext } from './AppContext';
+import { addingDecimal } from '../../utils/AddingZero';
 
 const FooterCard = ({ userToSendTo, airtime, amountInput, dataPlan, fee }) => {
   const { selectedCurrency } = useContext(AppContext);
+  amountInput = addingDecimal(amountInput.toLocaleString());
 
   return (
     <View style={styles.footerCard}>
@@ -83,14 +85,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    paddingVertical: 30,
     borderRadius: 5,
-    marginBottom: 30,
+    marginVeertical: 30,
   },
   footerCardDetails: {
     gap: 10,
+    marginBottom: 30,
   },
   cardAmount: {
+    marginTop: 30,
     fontSize: 24,
     marginBottom: 30,
   },

@@ -7,8 +7,7 @@ const HideTabBar = async status => {
   useFocusEffect(
     useCallback(() => {
       setShowTabBar(status === false ? status : true);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []),
+    }, [setShowTabBar, status]),
   );
 };
 

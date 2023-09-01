@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import { StyleSheet, View } from 'react-native';
 
-const PageContainer = ({ children, padding, paddingTop, justify }) => {
+const PageContainer = ({ children, padding, paddingTop, justify, style }) => {
   return (
     <View
       style={{
@@ -9,6 +9,7 @@ const PageContainer = ({ children, padding, paddingTop, justify }) => {
         paddingTop: paddingTop !== undefined ? paddingTop : 10,
         paddingHorizontal: padding ? 3 + '%' : undefined,
         justifyContent: justify ? 'space-between' : 'flex-start',
+        ...style,
       }}>
       {children}
     </View>

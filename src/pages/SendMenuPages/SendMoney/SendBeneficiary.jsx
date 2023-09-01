@@ -1,7 +1,6 @@
 import AccInfoCard from '../../../components/AccInfoCard';
 import PageContainer from '../../../components/PageContainer';
-import { ScrollView } from 'react-native-gesture-handler';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
 import UserIconSVG from '../../../../assets/images/userMenu.svg';
 import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';

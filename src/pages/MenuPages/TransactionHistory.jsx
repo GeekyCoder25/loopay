@@ -14,8 +14,9 @@ import {
 } from 'react-native';
 import { AppContext } from '../../components/AppContext';
 import { getFetchData } from '../../../utils/fetchAPI';
-import UserIconSVG from '../../../assets/images/userMenu.svg';
 import { allCurrencies } from '../../database/data';
+import UserIcon from '../../components/UserIcon';
+import { addingDecimal } from '../../../utils/AddingZero';
 
 const TransactionHistory = ({ navigation }) => {
   const { vh } = useContext(AppContext);
@@ -239,7 +240,7 @@ const styles = StyleSheet.create({
 });
 export default TransactionHistory;
 
-const History = ({ history, navigation }) => {
+export const History = ({ history, navigation }) => {
   const {
     senderName,
     receiverName,
@@ -273,47 +274,37 @@ const History = ({ history, navigation }) => {
     return `${hours}:${minutes} ${period}`;
   }
 
-  let currencySymbol = allCurrencies.find(
+  const currencySymbol = allCurrencies.find(
     id => currency.toLowerCase() === id.acronym.toLowerCase(),
-  );
-  currencySymbol = currencySymbol.symbol;
+  ).symbol;
+
   return (
     <Pressable
       onPress={() => navigation.navigate('TransactionHistoryDetails', history)}
       style={styles.history}>
       {transactionType?.toLowerCase() === 'credit' ? (
         <>
-          {senderPhoto ? (
-            <Image source={{ uri: senderPhoto }} style={styles.image} />
-          ) : (
-            <View style={styles.image}>
-              <UserIconSVG width={25} height={25} />
-            </View>
-          )}
+          <UserIcon uri={senderPhoto} />
           <View style={styles.historyContent}>
             <BoldText>{senderName}</BoldText>
             <RegularText>{historyTime}</RegularText>
           </View>
           <View style={styles.amount}>
-            <BoldText style={styles.creditAmount}>+{amount}</BoldText>
+            <BoldText style={styles.creditAmount}>
+              +{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
+            </BoldText>
           </View>
         </>
       ) : (
         <>
-          {receiverPhoto ? (
-            <Image source={{ uri: receiverPhoto }} style={styles.image} />
-          ) : (
-            <View style={styles.image}>
-              <UserIconSVG width={25} height={25} />
-            </View>
-          )}
+          <UserIcon uri={receiverPhoto} />
           <View style={styles.historyContent}>
             <BoldText>{receiverName}</BoldText>
             <RegularText>{historyTime}</RegularText>
           </View>
           <View style={styles.amount}>
             <BoldText style={styles.debitAmount}>
-              -{currencySymbol + amount}
+              -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
             </BoldText>
           </View>
         </>

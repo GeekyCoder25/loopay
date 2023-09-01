@@ -38,7 +38,7 @@ const InputPin = ({ children, buttonText, setIsValidPin, customFunc }) => {
         }
         if (result.status === 200) {
           setIsValidPin && setIsValidPin(true);
-          return customFunc(true);
+          return await customFunc(true);
         }
         setErrorMessage(result.data);
         setErrorKey('pinCode');
@@ -64,7 +64,6 @@ const InputPin = ({ children, buttonText, setIsValidPin, customFunc }) => {
       }, 1500);
     } finally {
       setIsLoading(false);
-      setTimeout(() => {}, 1000);
     }
   };
   return (

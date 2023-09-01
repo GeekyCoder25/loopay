@@ -2,12 +2,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import AccInfoCard from '../../../components/AccInfoCard';
 import PageContainer from '../../../components/PageContainer';
-import { ScrollView } from 'react-native-gesture-handler';
 import {
   ActivityIndicator,
   Clipboard,
   Image,
   Pressable,
+  ScrollView,
   StyleSheet,
   TextInput,
   View,
@@ -23,7 +23,7 @@ import { postFetchData } from '../../../../utils/fetchAPI';
 import { tagNameRules } from '../../../database/data';
 import { AppContext } from '../../../components/AppContext';
 import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';
-// import { Paystack } from 'react-native-paystack-webview';
+import FaIcon from '@expo/vector-icons/FontAwesome';
 
 const SendLoopay = ({ navigation, route }) => {
   const { appData } = useContext(AppContext);
@@ -31,7 +31,7 @@ const SendLoopay = ({ navigation, route }) => {
   const [showPaste, setShowPaste] = useState(false);
   const [inputValue, setinputValue] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [saveAsBeneficiary, setSaveAsBeneficiary] = useState(true);
+  const [saveAsBeneficiary, setSaveAsBeneficiary] = useState(false);
   const [userFound, setUserFound] = useState(null);
   const [newBeneficiary, setNewBeneficiary] = useState(true);
   const { minimun, maximum } = tagNameRules;
@@ -62,17 +62,16 @@ const SendLoopay = ({ navigation, route }) => {
   const handlePaste = async () => {
     const copiedText = await Clipboard.getString();
     setinputValue(copiedText);
-    handleChange(copiedText);
+    handleCheck(copiedText);
   };
 
-  const handleChange = async text => {
-    try {
-      setinputValue(text);
-      if (text.length >= minimun && text.length <= maximum) {
-        setIsSearching(true);
-        const senderTagName = appData.tagName;
+  const handleCheck = async () => {
+    if (inputValue.length >= minimun && inputValue.length <= maximum) {
+      setIsSearching(true);
+      const senderTagName = appData.tagName;
+      try {
         const result = await postFetchData(`user/get-tag/${senderTagName}`, {
-          tagName: text,
+          tagName: inputValue,
         });
         if (result.status === 200) {
           const beneficiariesTagName = beneficiaryState?.map(
@@ -85,21 +84,18 @@ const SendLoopay = ({ navigation, route }) => {
           }
           return setUserFound(result.data);
         }
-        return setUserFound(null);
-      } else {
-        return setUserFound(null);
+      } finally {
+        setIsSearching(false);
       }
-    } finally {
-      setIsSearching(false);
+      return setUserFound(null);
+    } else {
+      return setUserFound(null);
     }
   };
 
   const handleContinue = async () => {
     // Make Api Request with Paystack
-    if (saveAsBeneficiary) {
-      const response = await postFetchData('user/beneficiary', userFound);
-    }
-    navigation.navigate('TransferFunds', userFound);
+    navigation.navigate('TransferFunds', { saveAsBeneficiary, ...userFound });
   };
 
   return (
@@ -115,16 +111,22 @@ const SendLoopay = ({ navigation, route }) => {
             <TextInput
               style={styles.textInput}
               inputMode="text"
-              onChangeText={text => handleChange(text)}
+              onChangeText={text => setinputValue(text)}
+              onBlur={handleCheck}
               value={inputValue}
               placeholder="#username"
               placeholderTextColor={'#525252'}
               maxLength={maximum}
             />
-            {showPaste && (
+            {showPaste && !inputValue ? (
               <Pressable onPress={handlePaste} style={styles.paste}>
                 <RegularText style={styles.pasteText}>Paste</RegularText>
                 <Paste />
+              </Pressable>
+            ) : (
+              <Pressable onPress={handleCheck} style={styles.paste}>
+                <RegularText style={styles.pasteText}>Check</RegularText>
+                <FaIcon name="check-circle" color="#fff" />
               </Pressable>
             )}
           </View>

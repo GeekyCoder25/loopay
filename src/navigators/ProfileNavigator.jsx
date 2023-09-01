@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import SendMenuHeader from '../pages/SendMenuPages/Header';
+import Back from '../components/Back';
 import Profile from '../pages/HomePages/Profile';
 import ChangePassword from '../pages/MenuPages/ChangePassword';
 import TransactionPin from '../pages/MenuPages/TransactionPin';
@@ -15,11 +15,11 @@ const ProfileNavigator = () => {
   const Stack = createNativeStackNavigator();
   return (
     <Stack.Navigator
-      screenOptions={({ navigation, route }) => ({
-        header: () => (
-          <SendMenuHeader goBack={navigation.goBack} route={route} />
+      screenOptions={{
+        header: ({ navigation, route }) => (
+          <Back goBack={navigation.goBack} route={route} />
         ),
-      })}>
+      }}>
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="Withdraw" component={Withdraw} />
       <Stack.Screen name="Password" component={ChangePassword} />

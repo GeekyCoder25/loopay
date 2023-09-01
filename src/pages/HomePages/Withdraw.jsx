@@ -8,7 +8,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  ToastAndroid,
   View,
 } from 'react-native';
 import { AppContext } from '../../components/AppContext';
@@ -27,6 +26,7 @@ import { PINInputFields } from '../../components/InputPinPage';
 import NoPInSet from '../../components/NoPinSet';
 import { randomUUID } from 'expo-crypto';
 import { useFocusEffect } from '@react-navigation/native';
+import ToastMessage from '../../components/ToastMessage';
 
 const Withdraw = ({ navigation }) => {
   const { appData, vh, selectedCurrency, setIsLoading } =
@@ -160,8 +160,8 @@ const Withdraw = ({ navigation }) => {
         });
       }
       typeof response === 'string'
-        ? ToastAndroid.show(response, ToastAndroid.SHORT)
-        : ToastAndroid.show(response.data, ToastAndroid.SHORT);
+        ? ToastMessage(response)
+        : ToastMessage(response.data);
     } catch (error) {
       console.log(error.message);
     }
@@ -206,7 +206,7 @@ const Withdraw = ({ navigation }) => {
                 {addedBanks.length ? (
                   addedBanks.map(bank => (
                     <Pressable
-                      key={bank.accNo}
+                      key={bank.accNo + bank.bankName}
                       style={styles.bank}
                       onPress={() => setBankSelected(bank)}>
                       <View style={styles.bankDetails}>
@@ -506,6 +506,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     justifyContent: 'flex-end',
+    marginTop: 20,
     marginBottom: 40,
   },
 });

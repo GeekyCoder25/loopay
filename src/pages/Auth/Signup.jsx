@@ -46,6 +46,7 @@ const Signup = ({ navigation }) => {
     // phoneNumber: '9073002599',
     // password: '251101t',
     // confirmPassword: '251101t',
+    // role: 'user',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');

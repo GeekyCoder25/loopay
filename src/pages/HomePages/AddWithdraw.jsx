@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
 import {
+  Keyboard,
   Modal,
   Pressable,
   ScrollView,
@@ -17,10 +18,10 @@ import Logo from '../../components/Logo';
 import LoggedInForgetPassword from '../../components/LoggedInForgetPassword';
 import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import RegularText from '../../components/fonts/RegularText';
-import SendMenuHeader from '../SendMenuPages/Header';
+import Back from '../../components/Back';
 import ChevronDown from '../../../assets/images/chevron-down-fill.svg';
 import ErrorMessage from '../../components/ErrorMessage';
-import SuccessMessage from '../../components/SuccessMessage';
+import ToastMessage from '../../components/ToastMessage';
 
 const AddWithdraw = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -29,25 +30,28 @@ const AddWithdraw = ({ navigation }) => {
   });
   const [errorKey, setErrorKey] = useState();
   const [needPin, setNeedPin] = useState(true);
-  const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [passowrdIsValid, setPassowrdIsValid] = useState(false);
   const [remembersPassword, setRemembersPassword] = useState(true);
   const [banks, setBanks] = useState([]);
   const [selectedBank, setSelectedBank] = useState(null);
   const [showBankModal, setShowBankModal] = useState(false);
+  const [fullName, setFullName] = useState('');
 
   useEffect(() => {
-    getFetchData('user/banks').then(response => {
-      if (response.status === 200) {
-        return setBanks(response.data);
-      }
-    });
-  }, [selectedBank]);
+    if (!banks.length) {
+      getFetchData('user/banks').then(response => {
+        if (response.status === 200) {
+          return setBanks(response.data);
+        }
+      });
+    }
+  }, [banks.length, showBankModal]);
   const formFields = [
     {
       label: 'Full Name',
       id: 'fullName',
+      disabled: true,
     },
     {
       label: 'Bank account Number',
@@ -59,20 +63,20 @@ const AddWithdraw = ({ navigation }) => {
     //   id: 'branch',
     // },
   ];
-
   useEffect(() => {
     passowrdIsValid && setNeedPin(false);
   }, [formData, navigation, passowrdIsValid, selectedBank]);
 
   const handleConfirm = () => {
-    if (Object.values(formData).includes('')) {
-      setErrorMessage('Please fill all required fields');
-      return setErrorKey(true);
+    if (formData.accNo === '') {
+      setErrorMessage('Please provide you bank account number');
+      return setErrorKey('accNo');
     }
     if (!selectedBank) {
       setErrorMessage('Please select a bank');
       return setErrorKey('bank');
     }
+
     const saveBank = async () => {
       try {
         const response = await postFetchData('user/savedbanks', {
@@ -80,19 +84,16 @@ const AddWithdraw = ({ navigation }) => {
           bank: selectedBank,
         });
         if (response.status === 200) {
-          setSuccessMessage(response.data.name);
-          return setTimeout(() => {
-            navigation.goBack();
-          }, 2500);
+          setFullName(response.data.name);
         } else {
           throw new Error(response.data);
         }
       } catch (err) {
         setErrorMessage(err.message);
-        // ToastAndroid.show(err.message, ToastAndroid.SHORT);
+        setFullName('');
       }
     };
-    saveBank();
+    fullName ? navigation.goBack() : saveBank();
   };
 
   return (
@@ -103,14 +104,13 @@ const AddWithdraw = ({ navigation }) => {
           <View style={styles.form}>
             {formFields.map(field => (
               <AddBankFields
-                field={field}
                 key={field.id}
+                field={field}
                 errorKey={errorKey}
                 setErrorKey={setErrorKey}
                 setErrorMessage={setErrorMessage}
-                formData={formData}
                 setFormData={setFormData}
-                showRedBorder={errorKey}
+                fullName={fullName}
               />
             ))}
             <BoldText>Bank Name</BoldText>
@@ -120,7 +120,6 @@ const AddWithdraw = ({ navigation }) => {
               <View
                 style={{
                   ...styles.bankInput,
-
                   borderColor: errorKey === 'bank' ? 'red' : '#B1B1B1',
                 }}>
                 <BoldText>{selectedBank?.name || 'Choose bank'}</BoldText>
@@ -136,10 +135,12 @@ const AddWithdraw = ({ navigation }) => {
               setErrorKey={setErrorKey}
               setErrorMessage={setErrorMessage}
             />
-            <SuccessMessage successMessage={successMessage} />
             <ErrorMessage errorMessage={errorMessage} />
           </View>
-          <Button text="Confirm" onPress={handleConfirm} />
+          <Button
+            text={fullName ? 'Add Bank' : 'Confirm'}
+            onPress={handleConfirm}
+          />
         </View>
       ) : (
         <View style={styles.password}>
@@ -178,7 +179,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   logo: {
-    flex: 0.5,
+    flex: 1,
     justifyContent: 'center',
   },
   form: {
@@ -195,9 +196,10 @@ const styles = StyleSheet.create({
     height: 55,
     paddingHorizontal: 10,
     borderWidth: 1,
-    alignItems: 'flex-start',
+    justifyContent: 'center',
     borderRadius: 8,
     fontFamily: 'OpenSans-600',
+    color: '#000',
   },
   bankInput: {
     width: 100 + '%',
@@ -221,12 +223,19 @@ const styles = StyleSheet.create({
     gap: 30,
   },
   bankTitle: {
-    // paddingTop: 40,
     paddingBottom: 20,
     textAlign: 'center',
   },
-  bank: {
-    // borderBottomWidth: 0.5,
+  searchInput: {
+    width: 100 + '%',
+    height: 35,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    alignItems: 'flex-start',
+    borderRadius: 4,
+    fontFamily: 'OpenSans-600',
+    marginBottom: 25,
+    borderColor: '#b1b1b1',
   },
 });
 export default AddWithdraw;
@@ -236,40 +245,47 @@ const AddBankFields = ({
   errorKey,
   setErrorKey,
   setErrorMessage,
-  formData,
   setFormData,
-  showRedBorder,
+  fullName,
 }) => {
   const [inputFocus, setInputFocus] = useState(false);
   return (
     <View>
       <BoldText>{field.label}</BoldText>
-      <View style={styles.textInputContainer}>
-        <TextInput
-          style={{
-            ...styles.textInput,
-            borderColor:
-              errorKey === field.id ||
-              (showRedBorder && formData[field.id] === '')
-                ? 'red'
-                : inputFocus
-                ? '#000'
-                : '#B1B1B1',
-          }}
-          onChangeText={text => {
-            setErrorKey('');
-            setErrorMessage('');
-            setFormData(prev => {
-              return { ...prev, [field.id]: text };
-            });
-          }}
-          name={field.question}
-          inputMode={field.keyboard}
-          autoCapitalize="none"
-          onFocus={() => setInputFocus(true)}
-          onBlur={() => setInputFocus(false)}
-        />
-      </View>
+      {field.disabled ? (
+        <Pressable
+          style={styles.textInputContainer}
+          onPress={() => {
+            Keyboard.dismiss();
+            field.disabled && ToastMessage('Your name will be generated');
+          }}>
+          <View style={styles.textInput}>
+            <RegularText>{fullName}</RegularText>
+          </View>
+        </Pressable>
+      ) : (
+        <View style={styles.textInputContainer}>
+          <TextInput
+            style={{
+              ...styles.textInput,
+              borderColor:
+                errorKey === field.id ? 'red' : inputFocus ? '#000' : '#B1B1B1',
+            }}
+            onChangeText={text => {
+              setErrorKey('');
+              setErrorMessage('');
+              setFormData(prev => {
+                return { ...prev, [field.id]: text };
+              });
+            }}
+            name={field.question}
+            inputMode={field.keyboard}
+            autoCapitalize="none"
+            onFocus={() => setInputFocus(true)}
+            onBlur={() => setInputFocus(false)}
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -283,6 +299,8 @@ const BanksModal = ({
   setErrorKey,
   setErrorMessage,
 }) => {
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchBanks, setSearchBanks] = useState([]);
   const handleModal = () => {
     setModalOpen(false);
   };
@@ -293,21 +311,47 @@ const BanksModal = ({
       return { ...prev, bank };
     });
     setModalOpen(false);
+    setIsSearching(false);
     setErrorKey('');
     setErrorMessage('');
   };
+  const handleSearch = text => {
+    text ? setIsSearching(true) : setIsSearching(false);
+    const foundBanks = banks.map(
+      bank => bank.name.toLowerCase().includes(text.toLowerCase()) && bank,
+    );
+    setSearchBanks(foundBanks);
+  };
+
   return (
     <Modal
       visible={modalOpen}
       animationType="slide"
       transparent
       onRequestClose={handleModal}>
-      <SendMenuHeader onPress={handleModal} />
+      <Back onPress={handleModal} />
       <View style={styles.modalContainer}>
         <BoldText style={styles.bankTitle}>Select Bank</BoldText>
+        <TextInput
+          style={styles.searchInput}
+          inputMode="search"
+          onChangeText={text => handleSearch(text)}
+        />
         <ScrollView>
           <View style={styles.modal}>
-            {banks.length ? (
+            {isSearching ? (
+              searchBanks.map(
+                bank =>
+                  bank && (
+                    <Pressable
+                      style={styles.bank}
+                      key={bank.code}
+                      onPress={() => handlePress(bank)}>
+                      <RegularText>{bank.name}</RegularText>
+                    </Pressable>
+                  ),
+              )
+            ) : banks.length ? (
               banks.map(bank => (
                 <Pressable
                   style={styles.bank}

@@ -74,6 +74,7 @@ export const accountType = [
 export const allCurrencies = [
   {
     currency: 'Dollar',
+    fullName: 'United State Dollar',
     acronym: 'USD',
     amount: 0.0,
     symbol: '$',
@@ -82,6 +83,7 @@ export const allCurrencies = [
   },
   {
     currency: 'Euro',
+    fullName: 'European dollar',
     acronym: 'EUR',
     amount: 0.0,
     symbol: '€',
@@ -90,6 +92,7 @@ export const allCurrencies = [
   },
   {
     currency: 'Naira',
+    fullName: 'Nigerian Naira',
     acronym: 'NGN',
     amount: 0.0,
     symbol: '₦',
@@ -98,6 +101,7 @@ export const allCurrencies = [
   },
   {
     currency: 'Pound',
+    fullName: 'Great British Pound',
     acronym: 'GBP',
     amount: 0.0,
     symbol: '£',
@@ -207,20 +211,20 @@ export const menuRoutes = [
 export const swapFromObject = {
   currency: '',
   acronym: '',
-  amount: '*',
-  symbol: '$',
-  minimumAmountToAdd: 1,
+  amount: 0,
+  symbol: '',
+  minimumAmountToAdd: 0,
   fee: 1,
-  balance: 100,
+  balance: 0,
 };
 export const swapToObject = {
   currency: '',
   acronym: '',
-  amount: 0.0,
+  amount: 0,
   symbol: '',
-  minimumAmountToAdd: 100,
+  minimumAmountToAdd: 0,
   fee: 1,
-  balance: 100,
+  balance: 0,
 };
 
 export const tagNameRules = {

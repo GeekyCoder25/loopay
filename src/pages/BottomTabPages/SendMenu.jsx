@@ -23,30 +23,17 @@ import BoldText from '../../components/fonts/BoldText';
 import { sendMenuRoutes } from '../../database/data';
 import { AppContext } from '../../components/AppContext';
 import { useFocusEffect } from '@react-navigation/native';
-import { getFetchData } from '../../../utils/fetchAPI';
-import UserIconSVG from '../../../assets/images/userMenu.svg';
+import UserIcon from '../../components/UserIcon';
 import { useBenefifciaryContext } from '../../context/BenefiaciariesContext';
 
 const SendMenu = ({ navigation }) => {
-  const { showTabBar, setShowTabBar } = useContext(AppContext);
-  const { beneficiaryState, setBeneficiaryState } = useBenefifciaryContext();
+  const { setShowTabBar } = useContext(AppContext);
+  const { beneficiaryState } = useBenefifciaryContext();
   useFocusEffect(
     React.useCallback(() => {
       setShowTabBar(true);
     }, [setShowTabBar]),
   );
-
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const getBeneficiaires = async () => {
-  //       const response = await getFetchData('user/beneficiary');
-  //       if (response.status === 200) {
-  //         setBeneficiaryState(response.data.beneficiaries);
-  //       }
-  //     };
-  //     getBeneficiaires();
-  //   }, [setBeneficiaryState]),
-  // );
 
   const handleBeneficiaryPress = beneficiary => {
     navigation.navigate('TransferFunds', beneficiary);
@@ -56,25 +43,16 @@ const SendMenu = ({ navigation }) => {
     <PageContainer>
       <View style={styles.header}>
         <RegularText>Beneficiaries</RegularText>
-        <RegularText>View all</RegularText>
+        {beneficiaryState.length > 3 && <RegularText>View all</RegularText>}
       </View>
-      {beneficiaryState ? (
+      {beneficiaryState.length ? (
         <ScrollView horizontal={true} style={styles.beneficiaries}>
           {beneficiaryState.map(beneficiary => (
             <Pressable
               key={beneficiary.tagName}
               style={styles.beneficiary}
               onPress={() => handleBeneficiaryPress(beneficiary)}>
-              {beneficiary.photo ? (
-                <Image
-                  source={{ uri: beneficiary.photo }}
-                  style={styles.userIconStyle}
-                />
-              ) : (
-                <View style={styles.nonUserIconStyle}>
-                  <UserIconSVG width={25} height={25} />
-                </View>
-              )}
+              <UserIcon uri={beneficiary.photo} />
               <RegularText>{beneficiary.fullName}</RegularText>
             </Pressable>
           ))}
@@ -183,7 +161,6 @@ const styles = StyleSheet.create({
 export default SendMenu;
 
 export const RouteLink = ({ route, navigation }) => {
-  const { setIsLoading } = useContext(AppContext);
   const routeIcon = () => {
     switch (route.routeIcon) {
       case 'add':
@@ -211,7 +188,6 @@ export const RouteLink = ({ route, navigation }) => {
     }
   };
   const handleNavigate = () => {
-    route.routeNavigate === 'SwapFunds' && setIsLoading(true);
     navigation.navigate(route.routeNavigate);
   };
 

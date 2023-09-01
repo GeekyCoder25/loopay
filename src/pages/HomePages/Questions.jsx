@@ -1,11 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import Logo from '../../components/Logo';
 import { AppContext } from '../../components/AppContext';
 import Header from '../../components/Header';
-import { TextInput } from 'react-native-gesture-handler';
 import Button from '../../components/Button';
 import BoldText from '../../components/fonts/BoldText';
 

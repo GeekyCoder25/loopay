@@ -5,13 +5,13 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  ToastAndroid,
   View,
 } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import { AppContext } from '../../components/AppContext';
 import UserIconSVG from '../../../assets/images/referralUser.svg';
+import ToastMessage from '../../components/ToastMessage';
 
 const Referrals = () => {
   const { selectedCurrency, appData } = useContext(AppContext);
@@ -20,15 +20,12 @@ const Referrals = () => {
 
   const handleShare = () => {
     Clipboard.setString(referralCode);
-    ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);
+    ToastMessage('Copied to clipboard');
   };
 
   const handleClaim = () => {
     if (reward < 1000) {
-      ToastAndroid.show(
-        `Minimum withdrawal is ${selectedCurrency.symbol}1000`,
-        ToastAndroid.SHORT,
-      );
+      ToastMessage(`Minimum withdrawal is ${selectedCurrency.symbol}1000`);
     }
   };
 

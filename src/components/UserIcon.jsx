@@ -3,19 +3,35 @@ import { Image, StyleSheet, View } from 'react-native';
 import { AppContext } from './AppContext';
 import UserIconSVG from '../../assets/images/userMenu.svg';
 
-const UserIcon = ({ style }) => {
+const UserIcon = props => {
   const { appData } = useContext(AppContext);
-  return appData.photo ? (
+
+  return Object.keys(props).includes('uri') ? (
+    props.uri ? (
+      <Image
+        src={props.uri}
+        loadingIndicatorSource={require('../../assets/images/user.jpg')}
+        style={{ ...styles.userIconStyle, ...props.style }}
+      />
+    ) : (
+      <View style={{ ...styles.nonUserIconStyle, ...props.style }}>
+        <UserIconSVG
+          width={props.style?.width / 2 || 25}
+          height={props.style?.height / 2 || 25}
+        />
+      </View>
+    )
+  ) : appData.photoURL ? (
     <Image
       src={appData.photoURL}
       loadingIndicatorSource={require('../../assets/images/user.jpg')}
-      style={{ ...styles.userIconStyle, ...style }}
+      style={{ ...styles.userIconStyle, ...props.style }}
     />
   ) : (
-    <View style={{ ...styles.nonUserIconStyle, ...style }}>
+    <View style={{ ...styles.nonUserIconStyle, ...props.style }}>
       <UserIconSVG
-        width={style?.width / 2 || 25}
-        height={style?.height / 2 || 25}
+        width={props.style?.width / 2 || 25}
+        height={props.style?.height / 2 || 25}
       />
     </View>
   );

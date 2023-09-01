@@ -1,7 +1,6 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Logo from '../../components/Logo';
 import { AppContext } from '../../components/AppContext';
 import Header from '../../components/Header';
@@ -13,6 +12,7 @@ import { postFetchData } from '../../../utils/fetchAPI';
 import SuccessMessage from '../../components/SuccessMessage';
 import RegularText from '../../components/fonts/RegularText';
 import InputPinPage, { PINInputFields } from '../../components/InputPinPage';
+import { useWalletContext } from '../../context/WalletContext';
 
 const TransactionPin = ({ navigation }) => {
   const { vh, appData } = useContext(AppContext);
@@ -39,47 +39,45 @@ const TransactionPin = ({ navigation }) => {
 
   return (
     <PageContainer justify={true}>
-      <ScrollView>
-        <View style={{ ...styles.container, minHeight: vh * 0.8 }}>
-          <View style={styles.logo}>
-            <Logo />
-          </View>
-          {!inputOldPin ? (
-            remembersPassword ? (
-              <CheckPassword
-                setPassowrdIsValid={setInputOldPin}
-                errorMessage={errorMessage}
-                setErrorMessage={setErrorMessage}
-                errorKey={errorKey}
-                setErrorKey={setErrorKey}
-                setRemembersPassword={setRemembersPassword}
-                header={
-                  <Header
-                    title={`${appData.pin ? 'Change' : 'Create'} PIN`}
-                    text={`To ${
-                      appData.pin ? 'change' : 'create'
-                    } your PIN, kindly input your current password below to continue.`}
-                  />
-                }
-              />
-            ) : (
-              <LoggedInForgetPassword setPassowrdIsValid={setInputOldPin} />
-            )
-          ) : canEditPin ? (
-            <ChangePin
-              setReload={setReload}
-              navigation={navigation}
-              key={reload}
+      <View style={{ ...styles.container, minHeight: vh * 0.8 }}>
+        <View style={styles.logo}>
+          <Logo />
+        </View>
+        {!inputOldPin ? (
+          remembersPassword ? (
+            <CheckPassword
+              setPassowrdIsValid={setInputOldPin}
+              errorMessage={errorMessage}
+              setErrorMessage={setErrorMessage}
+              errorKey={errorKey}
+              setErrorKey={setErrorKey}
+              setRemembersPassword={setRemembersPassword}
+              header={
+                <Header
+                  title={`${appData.pin ? 'Change' : 'Create'} PIN`}
+                  text={`To ${
+                    appData.pin ? 'change' : 'create'
+                  } your PIN, kindly input your current password below to continue.`}
+                />
+              }
             />
           ) : (
-            <InputPinPage
-              setCanContinue={setCanEditPin}
-              key={reload}
-              setReload={setReload}
-            />
-          )}
-        </View>
-      </ScrollView>
+            <LoggedInForgetPassword setPassowrdIsValid={setInputOldPin} />
+          )
+        ) : canEditPin ? (
+          <ChangePin
+            setReload={setReload}
+            navigation={navigation}
+            key={reload}
+          />
+        ) : (
+          <InputPinPage
+            setCanContinue={setCanEditPin}
+            key={reload}
+            setReload={setReload}
+          />
+        )}
+      </View>
     </PageContainer>
   );
 };
@@ -130,6 +128,7 @@ export default TransactionPin;
 
 const ChangePin = ({ navigation, setReload }) => {
   const { appData, setAppData, setIsLoading } = useContext(AppContext);
+  const walletContext = useWalletContext();
   const [focusIndex, setFocusIndex] = useState(1);
   const [pinCode, setPinCode] = useState('');
   const [pinCode2, setPinCode2] = useState('');
@@ -180,9 +179,10 @@ const ChangePin = ({ navigation, setReload }) => {
             pin: true,
           };
         });
-        setTimeout(() => {
-          navigation.goBack();
-        }, 1000);
+        walletContext &&
+          setTimeout(() => {
+            navigation.goBack();
+          }, 1000);
       } else {
         setErrorMessage(result.data);
       }
@@ -256,10 +256,10 @@ const ChangePin = ({ navigation, setReload }) => {
       <Button
         text={appData.pin ? 'Change Pin' : 'Create Pin'}
         onPress={handleChangePin}
-        disabled={!isPinOkay}
+        // disabled={!isPinOkay}
         style={{
           ...styles.changePinButton,
-          backgroundColor: isPinOkay ? '#1E1E1E' : 'rgba(30, 30, 30, 0.7)',
+          // backgroundColor: isPinOkay ? '#1E1E1E' : 'rgba(30, 30, 30, 0.7)',
         }}
       />
     </View>

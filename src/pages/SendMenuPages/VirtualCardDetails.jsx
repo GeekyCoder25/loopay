@@ -18,7 +18,7 @@ import AtmScratch from '../../../assets/images/atmScratch.svg';
 import AtmChevron from '../../../assets/images/atmChevronRight.svg';
 
 const VirtualCardDetails = ({ route }) => {
-  const { fullName, exp_month, exp_year } = route.params;
+  const { fullName, exp_month, exp_year, cvc } = route.params;
   const { selectedCurrency, vh } = useContext(AppContext);
 
   return (
@@ -85,7 +85,7 @@ const VirtualCardDetails = ({ route }) => {
                   </View>
                   <View>
                     <RegularText style={styles.expiry}>CVV</RegularText>
-                    <BoldText style={styles.expiryDate}>084</BoldText>
+                    <BoldText style={styles.expiryDate}>{cvc}</BoldText>
                   </View>
                 </View>
                 <View style={styles.atmScratchContainer}>

@@ -4,4 +4,5 @@ export const hideTabRoutes = [
   'ChangePassword',
   'TransactionHistory',
   'Notification',
+  'VerifyImage',
 ];

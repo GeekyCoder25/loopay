@@ -38,8 +38,15 @@ const Signin = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
-  const { vh, setIsLoggedIn, setAppData, isLoading, setIsLoading } =
-    useContext(AppContext);
+  const {
+    vh,
+    setIsLoggedIn,
+    setAppData,
+    isLoading,
+    setIsLoading,
+    setIsAdmin,
+    setCanChangeRole,
+  } = useContext(AppContext);
 
   const handleLogin = async () => {
     setIsLoading(true);
@@ -57,14 +64,14 @@ const Signin = ({ navigation }) => {
           await loginUser(result.data, sessionData.deviceID);
           setSuccessMessage('Login Successful');
           const data = await getFetchData('user');
-          try {
-            setAppData(data.data);
-            setIsLoggedIn(true);
-            setIsLoading(false);
-            setSuccessMessage('');
-          } catch {
-            err => console.log(err);
+          if (result.data.role === 'admin') {
+            setIsAdmin(true);
+            setCanChangeRole(true);
           }
+          setAppData(data.data);
+          setIsLoggedIn(true);
+          setIsLoading(false);
+          setSuccessMessage('');
         } else {
           if (typeof fetchedResult === 'string') {
             setErrorMessage(fetchedResult);

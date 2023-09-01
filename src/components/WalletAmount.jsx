@@ -18,8 +18,9 @@ const WalletAmount = () => {
       setShowAmount(status);
     };
     getShowAmount();
-    wallet &&
-      setWalletAmount(`${addingDecimal(wallet.balance?.toLocaleString())}`);
+    wallet
+      ? setWalletAmount(`${addingDecimal(wallet.balance?.toLocaleString())}`)
+      : setWalletAmount('****');
   }, [wallet]);
 
   const handleShow = () => {
@@ -32,7 +33,7 @@ const WalletAmount = () => {
         style={{
           ...styles.amount,
           marginTop: showAmount ? undefined : 15,
-          fontSize: showAmount ? (walletAmount.length > 8 ? 35 : 40) : 30,
+          fontSize: showAmount ? (walletAmount.length > 8 ? 25 : 40) : 30,
         }}>
         {showAmount ? walletAmount : '****'}
       </BoldText>

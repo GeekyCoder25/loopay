@@ -1,10 +1,9 @@
 /* eslint-disable react-native/no-inline-styles */
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import PageContainer from '../../components/PageContainer';
 import Logo from '../../components/Logo';
 import { useContext, useState } from 'react';
 import { AppContext } from '../../components/AppContext';
-import { TextInput } from 'react-native-gesture-handler';
 import Eye from '../../../assets/images/eye.svg';
 import Button from '../../components/Button';
 import BoldText from '../../components/fonts/BoldText';
@@ -15,7 +14,8 @@ import SuccessMessage from '../../components/SuccessMessage';
 import CheckPassword from '../../components/CheckPassword';
 
 const ChangePassword = ({ navigation }) => {
-  const { vh, setIsLoading } = useContext(AppContext);
+  const { vh, setIsLoading, isLoggedIn, setIsLoggedIn } =
+    useContext(AppContext);
   const [remembersPassword, setRemembersPassword] = useState(true);
 
   const [newFormData, setNewFormData] = useState({
@@ -25,7 +25,7 @@ const ChangePassword = ({ navigation }) => {
   const [errorKey, setErrorKey] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [passowrdIsValid, setPassowrdIsValid] = useState(false);
+  const [passowrdIsValid, setPassowrdIsValid] = useState(!isLoggedIn || false);
 
   const editInput = () => {
     setErrorMessage('');
@@ -61,6 +61,7 @@ const ChangePassword = ({ navigation }) => {
       const { data: result } = fetchResult;
 
       if (result?.password?.includes('successfully')) {
+        if (!isLoggedIn) return setIsLoggedIn(true);
         setTimeout(() => {
           navigation.goBack();
         }, 1500);

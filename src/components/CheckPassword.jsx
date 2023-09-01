@@ -70,50 +70,52 @@ const CheckPassword = ({
   };
 
   return (
-    <View style={styles.form}>
-      {header || (
-        <Header
-          title={'Change Password'}
-          text={
-            'To change your password, kindly input your current password below to continue.'
-          }
-        />
-      )}
-      <View style={styles.textInputContainer}>
-        <View style={styles.icon}>
-          <Lock fill={inputFocus ? '#000' : '#868585'} />
+    <>
+      <View style={styles.form}>
+        {header || (
+          <Header
+            title={'Change Password'}
+            text={
+              'To change your password, kindly input your current password below to continue.'
+            }
+          />
+        )}
+        <View style={styles.textInputContainer}>
+          <View style={styles.icon}>
+            <Lock fill={inputFocus ? '#000' : '#868585'} />
+          </View>
+          <TextInput
+            style={{
+              ...styles.textInput,
+              borderColor: errorKey ? 'red' : inputFocus ? '#000' : '#B1B1B1',
+            }}
+            placeholder={'Enter your password here to continue'}
+            onChangeText={text => {
+              editInput();
+              setFormData({ password: text });
+            }}
+            name={'password'}
+            inputMode={'text'}
+            autoCapitalize="none"
+            onFocus={() => setInputFocus(true)}
+            onBlur={() => setInputFocus(false)}
+            secureTextEntry={hidePassword}
+          />
+          <Pressable
+            style={styles.eye}
+            onPress={() => setHidePassword(prev => !prev)}>
+            <Eye />
+          </Pressable>
         </View>
-        <TextInput
-          style={{
-            ...styles.textInput,
-            borderColor: errorKey ? 'red' : inputFocus ? '#000' : '#B1B1B1',
-          }}
-          placeholder={'Enter your password here to continue'}
-          onChangeText={text => {
-            editInput();
-            setFormData({ password: text });
-          }}
-          name={'password'}
-          inputMode={'text'}
-          autoCapitalize="none"
-          onFocus={() => setInputFocus(true)}
-          onBlur={() => setInputFocus(false)}
-          secureTextEntry={hidePassword}
-        />
-        <Pressable
-          style={styles.eye}
-          onPress={() => setHidePassword(prev => !prev)}>
-          <Eye />
-        </Pressable>
+        <View style={styles.forgetPressable}>
+          <Pressable onPress={handleForget}>
+            <BoldText style={styles.forget}>Forget Password?</BoldText>
+          </Pressable>
+        </View>
+        <ErrorMessage errorMessage={errorMessage} />
       </View>
-      <View style={styles.forgetPressable}>
-        <Pressable onPress={handleForget}>
-          <BoldText style={styles.forget}>Forget Password?</BoldText>
-        </Pressable>
-      </View>
-      <ErrorMessage errorMessage={errorMessage} />
-      <Button text={'Continue'} onPress={handlePress} />
-    </View>
+      <Button text={'Continue'} onPress={handlePress} style={styles.button} />
+    </>
   );
 };
 
@@ -163,6 +165,9 @@ const styles = StyleSheet.create({
   },
   forget: {
     fontWeight: '600',
+  },
+  button: {
+    marginBottom: 50,
   },
 });
 export default CheckPassword;

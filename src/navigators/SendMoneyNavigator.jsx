@@ -4,7 +4,7 @@ import SendLoopay from '../pages/SendMenuPages/SendMoney/SendLoopay';
 import TransferFunds from '../pages/SendMenuPages/SendMoney/TransferFunds';
 import SendBeneficiary from '../pages/SendMenuPages/SendMoney/SendBeneficiary';
 import SendNew from '../pages/SendMenuPages/SendMoney/SendNew';
-import SendMenuHeader from '../pages/SendMenuPages/Header';
+import Back from '../components/Back';
 import Success from '../pages/SendMenuPages/Success';
 import Profile from '../pages/HomePages/Profile';
 import LoopayTag from '../pages/HomePages/LoopayTag';
@@ -13,11 +13,11 @@ const SendMoneyNavigator = () => {
   const Stack = createNativeStackNavigator();
   return (
     <Stack.Navigator
-      screenOptions={({ navigation, route }) => ({
-        header: () => (
-          <SendMenuHeader goBack={navigation.goBack} route={route} />
+      screenOptions={{
+        header: ({ navigation, route }) => (
+          <Back goBack={navigation.goBack} route={route} />
         ),
-      })}>
+      }}>
       <Stack.Screen name="SendMoney" component={SendMoney} />
       <Stack.Screen name="SendLoopay" component={SendLoopay} />
       <Stack.Screen name="SendBeneficiary" component={SendBeneficiary} />

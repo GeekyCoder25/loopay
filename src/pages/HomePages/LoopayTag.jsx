@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { StyleSheet, TextInput, ToastAndroid, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import Button from '../../components/Button';
@@ -9,6 +9,7 @@ import { AppContext } from '../../components/AppContext';
 import { postFetchData } from '../../../utils/fetchAPI';
 import ErrorMessage from '../../components/ErrorMessage';
 import { tagNameRules } from '../../database/data';
+import ToastMessage from '../../components/ToastMessage';
 
 const LoopayTag = ({ navigation }) => {
   const { appData, setAppData, setIsLoading } = useContext(AppContext);
@@ -16,7 +17,6 @@ const LoopayTag = ({ navigation }) => {
   const { userName } = appData.userProfile;
   const [errorMessage, setErrorMessage] = useState('');
   const [isError, setIsError] = useState(false);
-
   const { minimun, maximum } = tagNameRules;
   const handleChange = text => {
     setInputValue(text);
@@ -48,13 +48,13 @@ const LoopayTag = ({ navigation }) => {
       ) {
         throw new Error('This loopay tag has been used by another user');
       }
-      ToastAndroid.show('LoopayTag updated successfully', ToastAndroid.SHORT);
       setAppData(prev => {
         return { ...prev, tagName: inputValue };
       });
+      ToastMessage('LoopayTag updated successfully');
       navigation.goBack();
     } catch (err) {
-      ToastAndroid.show(err.message, ToastAndroid.SHORT);
+      ToastMessage(err.message);
       setErrorMessage(err.message);
     } finally {
       setIsLoading(false);

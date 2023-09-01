@@ -6,7 +6,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  ToastAndroid,
   View,
 } from 'react-native';
 import Bell from '../../../assets/images/bell.svg';
@@ -25,14 +24,15 @@ import UserIcon from '../../components/UserIcon';
 import WalletAmount from '../../components/WalletAmount';
 import { getFetchData } from '../../../utils/fetchAPI';
 import { useFocusEffect } from '@react-navigation/native';
+import ToastMessage from '../../components/ToastMessage';
+import { addingDecimal } from '../../../utils/AddingZero';
 
-const Home = ({ navigation, route }) => {
-  const [modalOpen, setModalOpen] = useState(false);
+const Home = ({ navigation }) => {
   const { selectedCurrency, appData, setShowTabBar } = useContext(AppContext);
+  const [modalOpen, setModalOpen] = useState(false);
   const fullName = appData.userProfile.fullName;
   const [transactionHistory, setTransactionHistory] = useState([]);
   const [isExiting, setIsExiting] = useState(false);
-
   useFocusEffect(
     React.useCallback(() => {
       setShowTabBar(true);
@@ -55,7 +55,7 @@ const Home = ({ navigation, route }) => {
         if (isExiting) {
           return false;
         } else {
-          ToastAndroid.show('Press back again to exit app', ToastAndroid.SHORT);
+          ToastMessage('Press back again to exit app');
           setIsExiting(true);
           return true;
         }
@@ -68,7 +68,7 @@ const Home = ({ navigation, route }) => {
         subscription.remove();
         setTimeout(() => {
           setIsExiting(false);
-        }, 5000);
+        }, 3000);
       };
     }, [isExiting]),
   );
@@ -337,6 +337,7 @@ const History = ({ history, currencySymbol, navigation }) => {
         break;
     }
   }, [currencySymbol, history.createdAt, history.transactionType]);
+
   return (
     <Pressable
       onPress={() => navigation.navigate('TransactionHistoryDetails', history)}
@@ -351,7 +352,7 @@ const History = ({ history, currencySymbol, navigation }) => {
       <View>
         <BoldText style={styles.transactionAmountText}>{`${currencySymbol} ${
           history.transactionType?.toLowerCase() === 'credit' ? '+' : '-'
-        }${history.amount}`}</BoldText>
+        }${addingDecimal(Number(history.amount).toLocaleString())}`}</BoldText>
       </View>
     </Pressable>
   );

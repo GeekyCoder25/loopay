@@ -3,16 +3,16 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  ToastAndroid,
+  TextInput,
   View,
 } from 'react-native';
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
-import { TextInput } from 'react-native-gesture-handler';
 import { AppContext } from '../../components/AppContext';
 import Button from '../../components/Button';
 import { postFetchData } from '../../../utils/fetchAPI';
+import ToastMessage from '../../components/ToastMessage';
 
 const MyInfo = () => {
   const [isEditable, setIsEditable] = useState(false);
@@ -53,9 +53,9 @@ const MyInfo = () => {
       const fetchedResult = await postFetchData('user/profile', userProfile);
       const { data: result } = fetchedResult;
       if (fetchedResult.status >= 400) {
-        return ToastAndroid.show('Error updating profile', ToastAndroid.SHORT);
+        return ToastMessage('Error updating profile');
       }
-      ToastAndroid.show('Profile updated successfully', ToastAndroid.SHORT);
+      ToastMessage('Profile updated successfully');
       setAppData(prev => {
         return {
           ...prev,
@@ -63,7 +63,7 @@ const MyInfo = () => {
         };
       });
     } catch (err) {
-      ToastAndroid.show(err.message, ToastAndroid.SHORT);
+      ToastMessage(err.message);
       console.log(err);
     } finally {
       setIsEditable(false);

@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Text,
   View,
-  ToastAndroid,
 } from 'react-native';
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
@@ -14,17 +13,18 @@ import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../components/AppContext';
 import ChevronDown from '../../../assets/images/chevron-down-fill.svg';
 import { allCurrencies } from '../../database/data';
-import SendMenuHeader from './Header';
+import Back from '../../components/Back';
 import Button from '../../components/Button';
 import FlagSelect from '../../components/FlagSelect';
 import { useWalletContext } from '../../context/WalletContext';
 import Paste from '../../../assets/images/paste.svg';
+import ToastMessage from '../../components/ToastMessage';
 
 const AddMoney = ({ navigation, route }) => {
   const { selectedCurrency, setSelectedCurrency } = useContext(AppContext);
   const { wallet } = useWalletContext();
-  const [accNo] = useState(wallet.accNo);
-  const [bankName] = useState(wallet.bank);
+  const [accNo] = useState(wallet?.accNo);
+  const [bankName] = useState(wallet?.bank);
   const [modalOpen, setModalOpen] = useState(false);
   const [addBalanceData, setAddBalanceData] = useState({
     toBeCredited: 0,
@@ -112,14 +112,14 @@ const AddMoney = ({ navigation, route }) => {
   };
   const handleCopy = () => {
     Clipboard.setString(accNo);
-    ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);
+    ToastMessage('Copied to clipboard');
   };
 
   return (
     <PageContainer paddingTop={10} padding={true}>
       <View style={styles.body}>
         <BoldText style={styles.headerText}>Add Balance</BoldText>
-        <View>
+        <>
           <Text style={styles.topUp}>Account to top up</Text>
           <Pressable
             onPress={() => setModalOpen(true)}
@@ -139,11 +139,8 @@ const AddMoney = ({ navigation, route }) => {
             animationType="slide"
             transparent
             onRequestClose={handleModal}>
+            <Back route={route} onPress={() => setModalOpen(false)} />
             <View style={styles.modal}>
-              <SendMenuHeader
-                route={route}
-                onPress={() => setModalOpen(false)}
-              />
               <BoldText style={styles.modalHeader}>
                 Select account to top up
               </BoldText>
@@ -226,8 +223,7 @@ const AddMoney = ({ navigation, route }) => {
               Fee: {selectedCurrency.symbol}
               {fee < 0 ? '0.00' : fee}
             </RegularText>
-          </View> */}
-        </View>
+          </View>
         <View style={styles.button}>
           {!isOkay ? (
             <Button text="Continue" onPress={handleIsOkay} />
@@ -237,7 +233,8 @@ const AddMoney = ({ navigation, route }) => {
               onPress={() => handleContinue(selectedCurrency)}
             />
           )}
-        </View>
+        </View> */}
+        </>
       </View>
     </PageContainer>
   );
@@ -300,7 +297,7 @@ const styles = StyleSheet.create({
     gap: 10,
     padding: 3 + '%',
   },
-  modalHeader: { textAlign: 'center', marginTop: 15, fontSize: 16 },
+  modalHeader: { textAlign: 'center', fontSize: 16 },
   currencies: {
     flex: 1,
   },

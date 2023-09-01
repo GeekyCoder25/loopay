@@ -1,13 +1,6 @@
 import React, { useContext } from 'react';
 import PageContainer from '../../components/PageContainer';
-import {
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import Tag from '../../../assets/images/tag.svg';
@@ -26,6 +19,7 @@ import QuestionsIcon from '../../../assets/images/questions.svg';
 import ProfileIcon from '../../../assets/images/profile.svg';
 import ChevronLeft from '../../../assets/images/chevron-right.svg';
 import BiometircIcon from '../../../assets/images/biometric.svg';
+import ToastMessage from '../../components/ToastMessage';
 
 const Profile = ({ navigation, children, route }) => {
   const { appData, setAppData } = useContext(AppContext);
@@ -65,20 +59,17 @@ const Profile = ({ navigation, children, route }) => {
         setAppData(prev => {
           return { ...prev, photo, photoURL };
         });
-        ToastAndroid.show(
-          'Profile Picture updated successfully',
-          ToastAndroid.SHORT,
-        );
+        ToastMessage('Profile Picture updated successfully');
       } else {
         const errormessage = result.message.includes(
           'Please upload an image less than',
         )
           ? result.message
           : 'Image upload failed';
-        ToastAndroid.show(errormessage, ToastAndroid.SHORT);
+        ToastMessage(errormessage);
       }
     } catch (error) {
-      ToastAndroid.show('Error uploading image', ToastAndroid.SHORT);
+      ToastMessage('Error uploading image');
       console.log('Error uploading image:', error);
     }
   };
@@ -86,10 +77,7 @@ const Profile = ({ navigation, children, route }) => {
   const selectImage = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      return ToastAndroid.show(
-        'Camera permission was denied by user',
-        ToastAndroid.SHORT,
-      );
+      return ToastMessage('Camera permission was denied by user');
     }
 
     const result = await ImagePicker.launchCameraAsync({

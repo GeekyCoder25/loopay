@@ -1,4 +1,12 @@
-import { Modal, Pressable, StyleSheet, View } from 'react-native';
+/* eslint-disable react-native/no-inline-styles */
+import {
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import PageContainer from '../../../components/PageContainer';
 import BoldText from '../../../components/fonts/BoldText';
 import { useContext, useEffect, useState } from 'react';
@@ -6,13 +14,13 @@ import { AppContext } from '../../../components/AppContext';
 import RegularText from '../../../components/fonts/RegularText';
 import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
 import Button from '../../../components/Button';
+import ErrorMessage from '../../../components/ErrorMessage';
 
-const IdentitiyVerification = () => {
+const IdentitiyVerification = ({ navigation }) => {
   const { vh } = useContext(AppContext);
-  const [selected, setSelected] = useState(false);
-  const [modalData, setModalData] = useState([]);
   const [stateFields, setStateFields] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
+  const [errorKey, setErrorKey] = useState(null);
 
   const fields = [
     {
@@ -43,12 +51,12 @@ const IdentitiyVerification = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchModal = () => {
-    setModalData([]);
-  };
-
   const handleNext = () => {
-    console.log(stateFields);
+    if (Object.values(stateFields).includes('')) {
+      setErrorMessage('Please provide all required fields');
+      return setErrorKey(true);
+    }
+    navigation.navigate('VerificationInformation');
   };
 
   return (
@@ -62,14 +70,20 @@ const IdentitiyVerification = () => {
         <View style={styles.body}>
           {fields.map(field => (
             <SelectInputfield
-              key={field.title}
+              key={field.id}
               selectInput={field}
               setStateFields={setStateFields}
-              customFunc={fetchModal}
               showBalance={field.balance}
               setErrorMessage={setErrorMessage}
+              errorKey={errorKey}
+              setErrorKey={setErrorKey}
             />
           ))}
+          {errorMessage && (
+            <View>
+              <ErrorMessage errorMessage={errorMessage} />
+            </View>
+          )}
         </View>
         <Button text="Next" onPress={handleNext} />
       </View>
@@ -147,7 +161,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     elevation: 10,
-    alignItems: 'center',
     gap: 10,
   },
   modalBorder: {
@@ -169,6 +182,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5 + '%',
     paddingVertical: 10,
     gap: 20,
+    marginBottom: 10,
+  },
+  error: {
+    textAlign: 'center',
   },
 });
 export default IdentitiyVerification;
@@ -176,23 +193,28 @@ export default IdentitiyVerification;
 const SelectInputfield = ({
   selectInput,
   setStateFields,
-  customFunc,
-  showBalance,
   setErrorMessage,
+  errorKey,
+  setErrorKey,
 }) => {
   const [selected, setSelected] = useState(false);
   const [modalData, setModalData] = useState([]);
   const { title, type, placeholder, id, apiUrl } = selectInput;
   const [modalOpen, setModalOpen] = useState(false);
+  const [isLocalLoading, setIsLocalLoading] = useState(true);
 
   useEffect(() => {
     const setModalDataFunc = async () => {
       try {
         const response = await fetch(apiUrl);
         const json = await response.json();
+        json.forEach(i => {
+          if (!i.title) i.title = i.name;
+        });
         setModalData(json.slice(0, 20));
       } catch (error) {
         console.log(error.message);
+        setIsLocalLoading(false);
       }
     };
     if (type === 'select' && apiUrl) {
@@ -207,7 +229,12 @@ const SelectInputfield = ({
         <Pressable
           onPress={() => setModalOpen(true)}
           style={styles.textInputContainer}>
-          <View style={styles.textInput}>
+          <View
+            style={{
+              ...styles.textInput,
+              borderWidth: errorKey ? 1 : 0.5,
+              borderColor: errorKey ? 'red' : '#1e1e1e',
+            }}>
             {selected ? (
               <BoldText style={styles.modalSelected}>{selected}</BoldText>
             ) : (
@@ -227,6 +254,8 @@ const SelectInputfield = ({
         modalData={modalData}
         setStateFields={setStateFields}
         setErrorMessage={setErrorMessage}
+        setErrorKey={setErrorKey}
+        isLocalLoading={isLocalLoading}
         id={id}
       />
     </View>
@@ -239,12 +268,16 @@ const LocalModal = ({
   selected,
   setSelected,
   setStateFields,
+  isLocalLoading,
+  setErrorMessage,
+  setErrorKey,
   id,
 }) => {
   const handleModalSelect = provider => {
     setSelected(provider.title);
     setModalOpen(false);
-    //  setErrorMessage(null);
+    setErrorMessage(null);
+    setErrorKey(null);
     setStateFields(prev => {
       return {
         ...prev,
@@ -261,18 +294,34 @@ const LocalModal = ({
       <Pressable style={styles.overlay} onPress={() => setModalOpen(false)} />
       <View style={styles.modalContainer}>
         <View style={styles.modal}>
-          {modalData.map(provider => (
-            <Pressable
-              key={provider.title}
-              style={{
-                ...styles.modalList,
-                backgroundColor:
-                  selected === provider.title ? '#e4e2e2' : 'transparent',
-              }}
-              onPress={() => handleModalSelect(provider)}>
-              <BoldText style={styles.modalSelected}>{provider.title}</BoldText>
-            </Pressable>
-          ))}
+          <ScrollView>
+            {modalData.length ? (
+              modalData.map(provider => (
+                <Pressable
+                  key={provider.title}
+                  style={{
+                    ...styles.modalList,
+                    backgroundColor:
+                      selected === provider.title ? '#e4e2e2' : 'transparent',
+                  }}
+                  onPress={() => handleModalSelect(provider)}>
+                  <BoldText style={styles.modalSelected}>
+                    {provider.title}
+                  </BoldText>
+                </Pressable>
+              ))
+            ) : isLocalLoading ? (
+              <ActivityIndicator
+                size={'large'}
+                color={'#1e1e1e'}
+                style={styles.loading}
+              />
+            ) : (
+              <BoldText style={styles.error}>
+                Couldn&apos;t connect to server
+              </BoldText>
+            )}
+          </ScrollView>
         </View>
       </View>
     </Modal>

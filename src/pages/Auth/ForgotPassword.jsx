@@ -18,10 +18,11 @@ import ErrorMessage from '../../components/ErrorMessage';
 import saveSessionOptions from '../../services/Savesession';
 
 const ForgotPassword = ({ navigation }) => {
+  const { isLoading, setIsLoading, vh, setAppData } = useContext(AppContext);
   const [codeSent, setCodeSent] = useState(false);
   const [focusIndex, setFocusIndex] = useState(1);
   const [formData, setFormData] = useState({
-    email: '',
+    email: 'toyibe25@gmail.com',
   });
   const [otpCode, setOtpCode] = useState('');
   const [isPinOkay, setIsPinOkay] = useState(false);
@@ -29,8 +30,7 @@ const ForgotPassword = ({ navigation }) => {
   const [errorKey, setErrorKey] = useState('');
   const [otpTimeout, setOtpTimeout] = useState(60);
   const [otpResend, setOtpResend] = useState(otpTimeout);
-  const { setIsLoading, setIsLoggedIn, vh, setAppData } =
-    useContext(AppContext);
+  const [reload, setReload] = useState(false);
   const codeLengths = [1, 2, 3, 4];
 
   useEffect(() => {
@@ -51,32 +51,38 @@ const ForgotPassword = ({ navigation }) => {
           setCodeSent(true);
         } else {
           setErrorKey('email');
-          setErrorMessage(result.email);
+          setErrorMessage(result.error);
         }
         setIsLoading(false);
       });
     }
   };
 
-  const handleCofirm = async () => {
+  const handleConfirm = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const fetchResult = await postFetchData(
         `auth/confirm-otp/${otpCode || 'fake'}`,
         formData,
       );
       const { data: result } = fetchResult;
-      if (result === "Couldn't connect to server") {
-        return setErrorMessage(result);
+      if (fetchResult === "Couldn't connect to server") {
+        return setErrorMessage(fetchResult);
       } else if (Object.keys(result).includes('error')) {
         setErrorKey('otpCode');
+        setTimeout(() => {
+          setFocusIndex(1);
+          setOtpCode('');
+          setReload(prev => !prev);
+        }, 1500);
         return setErrorMessage(result.error);
       }
       const sessionData = saveSessionOptions();
       await loginUser(result.data, sessionData.deviceID);
       const data = await getFetchData('user');
       setAppData(data.data);
-      setIsLoggedIn(true);
+      // setIsLoggedIn(true);
+      navigation.replace('ChangePassword');
     } catch (err) {
       setErrorMessage(err.message);
     } finally {
@@ -109,7 +115,7 @@ const ForgotPassword = ({ navigation }) => {
             />
             {codeSent ? (
               <>
-                <View style={styles.codeLengthsContainer}>
+                <View style={styles.codeLengthsContainer} key={reload}>
                   {codeLengths.map(codeLength => (
                     <OTPInput
                       key={codeLength}
@@ -148,13 +154,13 @@ const ForgotPassword = ({ navigation }) => {
                 </View>
                 <Button
                   text={'Confirm One time password'}
-                  onPress={handleCofirm}
+                  onPress={handleConfirm}
                   style={{
                     backgroundColor: isPinOkay
                       ? '#1E1E1E'
                       : 'rgba(30, 30, 30, 0.7)',
                   }}
-                  disabled={!isPinOkay}
+                  disabled={!isPinOkay || isLoading}
                 />
               </>
             ) : (

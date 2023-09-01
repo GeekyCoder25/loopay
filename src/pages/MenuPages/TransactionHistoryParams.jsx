@@ -7,6 +7,7 @@ import UserIconSVG from '../../../assets/images/userMenu.svg';
 import RegularText from '../../components/fonts/RegularText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { allCurrencies } from '../../database/data';
+import { addingDecimal } from '../../../utils/AddingZero';
 
 const TransactionHistoryParams = ({ route }) => {
   const history = route.params;
@@ -121,7 +122,9 @@ const TransactionHistoryParams = ({ route }) => {
 
               <View style={styles.footerCard}>
                 <BoldText style={styles.cardAmount}>
-                  +{currencySymbol + amount}
+                  +
+                  {currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())}
                 </BoldText>
 
                 <View style={styles.footerCardDetails}>
@@ -140,7 +143,8 @@ const TransactionHistoryParams = ({ route }) => {
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Amount</RegularText>
                     <BoldText style={styles.cardValue}>
-                      {currencySymbol + amount}
+                      {currencySymbol +
+                        addingDecimal(Number(amount).toLocaleString())}
                     </BoldText>
                   </View>
                   <View style={styles.cardLine}>
@@ -222,7 +226,9 @@ const TransactionHistoryParams = ({ route }) => {
 
               <View style={styles.footerCard}>
                 <BoldText style={styles.cardAmount}>
-                  -{currencySymbol + amount}
+                  -
+                  {currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())}
                 </BoldText>
 
                 <View style={styles.footerCardDetails}>
@@ -241,7 +247,8 @@ const TransactionHistoryParams = ({ route }) => {
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Amount</RegularText>
                     <BoldText style={styles.cardValue}>
-                      {currencySymbol + amount}
+                      {currencySymbol +
+                        addingDecimal(Number(amount).toLocaleString())}
                     </BoldText>
                   </View>
                   <View style={styles.cardLine}>

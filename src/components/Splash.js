@@ -21,6 +21,8 @@ const Splash = ({ navigation }) => {
     setIsChecking,
     setIsLoggedIn,
     setAppData,
+    setIsAdmin,
+    setCanChangeRole,
     vw,
   } = useContext(AppContext);
 
@@ -31,22 +33,28 @@ const Splash = ({ navigation }) => {
   useEffect(() => {
     if (internetStatus === true) {
       const getDataFromStorage = async () => {
-        setIsLoggedIn(await getIsLoggedIn());
-        const sessionID = await getSessionID();
-        await putFetchData(`user/session/${sessionID}`, {
-          lastSeen: new Date(),
-        });
-        if (await getIsLoggedIn()) {
-          const data = await getFetchData('user');
-          await setAppData(data);
-          if (!data || Object.entries(data).length === 0) {
-            setIsLoggedIn(false);
-            await deleteFetchData(`user/session/${sessionID}`);
-            logoutUser();
-            setIsLoggedIn(false);
+        try {
+          setIsLoggedIn(await getIsLoggedIn());
+          const sessionID = await getSessionID();
+          if (await getIsLoggedIn()) {
+            const data = await getFetchData('user');
+            await setAppData(data);
+            if (!data || Object.entries(data).length === 0) {
+              setIsLoggedIn(false);
+              await deleteFetchData(`user/session/${sessionID}`);
+              logoutUser();
+              return navigation.replace('FirstPage');
+            }
+            const response = await getFetchData('user/role');
+            if (response.role === 'admin') {
+              setIsAdmin(true);
+              setCanChangeRole(true);
+            }
           }
+          await navigation.replace('FirstPage');
+        } catch (err) {
+          console.log(err);
         }
-        await navigation.replace('FirstPage');
       };
       getDataFromStorage();
     }

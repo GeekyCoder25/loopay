@@ -16,7 +16,7 @@ const Button = ({ text, onPress, Icon, disabled, flex, style }) => {
         }}>
         {text}
       </BoldText>
-      <View>{Icon}</View>
+      {Icon && <View>{Icon}</View>}
     </TouchableOpacity>
   );
 };

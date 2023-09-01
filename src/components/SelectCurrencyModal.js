@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useState } from 'react';
 import {
   Image,
@@ -16,18 +17,28 @@ import { AppContext } from './AppContext';
 import RegularText from './fonts/RegularText';
 import BoldText from './fonts/BoldText';
 import FlagSelect from './FlagSelect';
+import { addingDecimal } from '../../utils/AddingZero';
+import { setDefultCurrency } from '../../utils/storage';
+import { useWalletContext } from '../context/WalletContext';
+import ToastMessage from './ToastMessage';
 
 const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
   const { selectedCurrency, setSelectedCurrency } = useContext(AppContext);
+  const { wallet } = useWalletContext();
   const [showSearchBox, setShowSearchBox] = useState(false);
   const handleModal = () => {
     setModalOpen(false);
     setShowSearchBox(false);
   };
-  const handlecurrencyChange = newSelect => {
-    setSelectedCurrency(newSelect);
-    setModalOpen(false);
+  const handlecurrencyChange = async newSelect => {
+    const workingCurrencies = ['Naira'];
     setShowSearchBox(false);
+    setModalOpen(false);
+    if (!workingCurrencies.includes(newSelect.currency)) {
+      return ToastMessage('Currency not currently supported');
+    }
+    setSelectedCurrency(newSelect);
+    await setDefultCurrency(`${newSelect.currency}`);
   };
   return (
     <Modal
@@ -62,7 +73,6 @@ const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
               {allCurrencies.map(currency => (
                 <Pressable
                   key={currency.currency}
-                  // eslint-disable-next-line react-native/no-inline-styles
                   style={{
                     ...styles.currency,
                     backgroundColor:
@@ -81,7 +91,9 @@ const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
                     </View>
                   </View>
                   <RegularText style={styles.currencyAmount}>
-                    {currency.amount}.00
+                    {wallet && wallet.apiData.currency === currency.acronym
+                      ? addingDecimal(wallet?.balance?.toLocaleString())
+                      : '0.00'}
                   </RegularText>
                 </Pressable>
               ))}

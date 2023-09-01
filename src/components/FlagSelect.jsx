@@ -1,35 +1,42 @@
-import React from 'react';
 import { Image, StyleSheet } from 'react-native';
+import Dollar from '../../assets/images/flag-us.svg';
+import Naira from '../../assets/images/flag-ng.svg';
+import Euro from '../../assets/images/flag-eu.svg';
+import Pound from '../../assets/images/flag-gp.svg';
 
 const FlagSelect = ({ country, style }) => {
   const selectFlag = () => {
     switch (country) {
       case 'Naira':
         return (
-          <Image
-            source={require('../../assets/images/flag-ng.png')}
+          <Naira
             style={style}
+            width={style?.width || 30}
+            height={style?.height || 30}
           />
         );
       case 'Dollar':
         return (
-          <Image
-            source={require('../../assets/images/flag-us.png')}
+          <Dollar
             style={style}
+            width={style?.width || 30}
+            height={style?.height || 30}
           />
         );
       case 'Euro':
         return (
-          <Image
-            source={require('../../assets/images/flag-eu.png')}
+          <Euro
             style={style}
+            width={style?.width || 30}
+            height={style?.height || 30}
           />
         );
       case 'Pound':
         return (
-          <Image
-            source={require('../../assets/images/flag-gp.png')}
+          <Pound
             style={style}
+            width={style?.width || 30}
+            height={style?.height || 30}
           />
         );
 
@@ -39,7 +46,5 @@ const FlagSelect = ({ country, style }) => {
   };
   return selectFlag();
 };
-
-const styles = StyleSheet.create({});
 
 export default FlagSelect;

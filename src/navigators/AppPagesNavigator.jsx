@@ -9,9 +9,12 @@ import BottomTabs from '../../src/navigators/BottomTabs';
 import { useContext, useState } from 'react';
 import { AppContext } from '../components/AppContext';
 import { getNotFirstTime } from '../../utils/storage';
+import TransactionPin from '../pages/MenuPages/TransactionPin';
+import AdminNavigator from './AdminNavigator';
+import ChangePassword from '../pages/MenuPages/ChangePassword';
 
 const AppPagesNavigator = () => {
-  const { isLoggedIn, appData } = useContext(AppContext);
+  const { isLoggedIn, isAdmin, appData } = useContext(AppContext);
   const [notFirstTime, setNotFirstTime] = useState(false);
   const Stack = createNativeStackNavigator();
 
@@ -37,11 +40,20 @@ const AppPagesNavigator = () => {
             <Stack.Screen name="Signin" component={Signin} />
             <Stack.Screen name="AccountType" component={AccountType} />
             <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+            <Stack.Screen name="ChangePassword" component={ChangePassword} />
           </Stack.Group>
         ) : (
           <Stack.Group>
-            {!appData?.accountType || appData?.accountType === '' ? (
-              <Stack.Screen name="FirstPage" component={AccountType} />
+            {!appData?.accountType ||
+            appData?.accountType === '' ||
+            !appData?.pin ? (
+              !appData?.pin ? (
+                <Stack.Screen name="FirstPage" component={TransactionPin} />
+              ) : (
+                <Stack.Screen name="FirstPage" component={AccountType} />
+              )
+            ) : isAdmin ? (
+              <Stack.Screen name="FirstPage" component={AdminNavigator} />
             ) : (
               <Stack.Screen name="FirstPage" component={BottomTabs} />
             )}

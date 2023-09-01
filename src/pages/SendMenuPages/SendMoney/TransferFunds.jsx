@@ -8,7 +8,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  ToastAndroid,
   View,
 } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
@@ -27,10 +26,13 @@ import FooterCard from '../../../components/FooterCard';
 import { useWalletContext } from '../../../context/WalletContext';
 import { randomUUID } from 'expo-crypto';
 import InputPin from '../../../components/InputPin';
+import ToastMessage from '../../../components/ToastMessage';
+import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';
 
 const TransferFunds = ({ navigation, route }) => {
   const { selectedCurrency, appData } = useContext(AppContext);
   const { wallet, setWallet } = useWalletContext();
+  const { setRefetchBeneficiary } = useBenefifciaryContext();
   const [userToSendTo] = useState(route.params);
   const [amountInput, setAmountInput] = useState(null);
   const [description, setDescription] = useState('');
@@ -104,9 +106,13 @@ const TransferFunds = ({ navigation, route }) => {
         setWallet(prev => {
           return { ...prev, balance: prev.balance - Number(balance) };
         });
+        if (route.params.saveAsBeneficiary) {
+          await postFetchData('user/beneficiary', userToSendTo);
+          setRefetchBeneficiary(prev => !prev);
+        }
         return navigation.navigate('Success', { userToSendTo, amountInput });
       }
-      ToastAndroid.show(response.data, ToastAndroid.SHORT);
+      ToastMessage(response.data);
     } catch (error) {
       console.log(error);
     }

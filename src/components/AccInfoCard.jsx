@@ -1,6 +1,5 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
-  Image,
   ImageBackground,
   Pressable,
   StyleSheet,
@@ -13,50 +12,55 @@ import BoldText from './fonts/BoldText';
 import RegularText from './fonts/RegularText';
 import FlagSelect from './FlagSelect';
 import WalletAmount from './WalletAmount';
+import SelectCurrencyModal from './SelectCurrencyModal';
 
 const AccInfoCard = () => {
   const { selectedCurrency } = useContext(AppContext);
+  const [modalOpen, setModalOpen] = useState(false);
   const pendingBalance = 0;
 
   return (
-    <ImageBackground
-      source={require('../../assets/images/cardBg.png')}
-      resizeMode="cover"
-      style={styles.card}>
-      <View style={styles.cardHeader}>
-        <View style={styles.amountContainer}>
-          <View style={styles.symbolContainer}>
-            <Text style={styles.symbol}>{selectedCurrency.symbol}</Text>
-          </View>
-          <View>
-            <WalletAmount />
-            <View style={styles.flagContainer}>
-              <RegularText style={styles.currrencyType}>
-                {selectedCurrency.currency}
-              </RegularText>
-              <FlagSelect country={selectedCurrency.currency} />
+    <>
+      <ImageBackground
+        source={require('../../assets/images/cardBg.png')}
+        resizeMode="cover"
+        style={styles.card}>
+        <View style={styles.cardHeader}>
+          <View style={styles.amountContainer}>
+            <View style={styles.symbolContainer}>
+              <Text style={styles.symbol}>{selectedCurrency.symbol}</Text>
+            </View>
+            <View>
+              <WalletAmount />
+              <View style={styles.flagContainer}>
+                <RegularText style={styles.currrencyType}>
+                  {selectedCurrency.currency}
+                </RegularText>
+                <FlagSelect country={selectedCurrency.currency} />
+              </View>
             </View>
           </View>
+          <Pressable
+            onPress={() => setModalOpen(true)}
+            style={styles.chevronDown}>
+            <ChevronDown />
+          </Pressable>
         </View>
-        <Pressable
-          // onPress={() => setModalOpen(true)}
-          style={styles.chevronDown}>
-          <ChevronDown />
-        </Pressable>
-      </View>
 
-      <View style={styles.cardHeader}>
-        <View style={styles.cardDetails}>
-          <RegularText style={styles.currrencyType}>
-            Pending Balance:{' '}
-            <BoldText>
-              {selectedCurrency.symbol}
-              {pendingBalance}
-            </BoldText>
-          </RegularText>
+        <View style={styles.cardHeader}>
+          <View style={styles.cardDetails}>
+            <RegularText style={styles.currrencyType}>
+              Pending Balance:{' '}
+              <BoldText>
+                {selectedCurrency.symbol}
+                {pendingBalance}
+              </BoldText>
+            </RegularText>
+          </View>
         </View>
-      </View>
-    </ImageBackground>
+      </ImageBackground>
+      <SelectCurrencyModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+    </>
   );
 };
 

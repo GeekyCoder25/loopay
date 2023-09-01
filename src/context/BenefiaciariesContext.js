@@ -3,8 +3,10 @@ import { getFetchData } from '../../utils/fetchAPI';
 
 export const BeneficiaryContext = createContext();
 
-const BeneficiaryProvider = ({ children }) => {
-  const [beneficiaryState, setBeneficiaryState] = useState(null);
+const BeneficiaryContextComponent = ({ children }) => {
+  const [beneficiaryState, setBeneficiaryState] = useState([]);
+  const [refetchBeneficiary, setRefetchBeneficiary] = useState(false);
+
   useEffect(() => {
     const getBeneficiaires = async () => {
       const response = await getFetchData('user/beneficiary');
@@ -13,14 +15,16 @@ const BeneficiaryProvider = ({ children }) => {
       }
     };
     getBeneficiaires();
-  }, []);
+  }, [refetchBeneficiary]);
+
   return (
     <BeneficiaryContext.Provider
-      value={{ beneficiaryState, setBeneficiaryState }}>
+      value={{ beneficiaryState, setBeneficiaryState, setRefetchBeneficiary }}>
       {children}
     </BeneficiaryContext.Provider>
   );
 };
 
-export default BeneficiaryProvider;
+export default BeneficiaryContextComponent;
+
 export const useBenefifciaryContext = () => useContext(BeneficiaryContext);

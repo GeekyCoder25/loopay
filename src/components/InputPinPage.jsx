@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { Keyboard, StyleSheet, View } from 'react-native';
+import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 import ErrorMessage from './ErrorMessage';
 import Header from './Header';
 import { postFetchData } from '../../utils/fetchAPI';
@@ -12,7 +12,6 @@ import {
 } from 'react';
 import { AppContext } from './AppContext';
 import Button from './Button';
-import { TextInput } from 'react-native-gesture-handler';
 
 const InputPinPage = ({
   setCanContinue,

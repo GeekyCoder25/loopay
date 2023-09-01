@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import Home from '../pages/BottomTabPages/Home';
-import SendMenuHeader from '../pages/SendMenuPages/Header';
+import Back from '../components/Back';
 import LoopayTag from '../pages/HomePages/LoopayTag';
 import SendMoneyNavigator from './SendMoneyNavigator';
 import Notification from '../pages/HomePages/Notification';
@@ -14,7 +14,7 @@ const HomeNavigator = () => {
   const screenHeader = (navigation, route) => {
     return {
       headerShown: true,
-      header: () => <SendMenuHeader goBack={navigation.goBack} route={route} />,
+      header: () => <Back goBack={navigation.goBack} route={route} />,
     };
   };
 

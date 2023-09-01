@@ -7,20 +7,24 @@ const StorageKeys = {
   TOKEN: 'TOKEN',
   SESSION: 'SESSION',
   SHOW_BALANCE: 'SHOW_BALANCE',
+  DEFAULT_CURRENCY: 'DEFAULT_CURRENCY',
+  ROLE: 'ROLE',
 };
 
 export const loginUser = async (data, session) => {
   await AsyncStorage.setItem(StorageKeys.USER, JSON.stringify(data));
   await AsyncStorage.setItem(StorageKeys.NOT_FIRST_TIME, 'true');
   await AsyncStorage.setItem(StorageKeys.LOGGED_IN, 'true');
-  await AsyncStorage.setItem(StorageKeys.TOKEN, data.token);
+  await AsyncStorage.setItem(StorageKeys.TOKEN, data.token + '...' + session);
   await AsyncStorage.setItem(StorageKeys.SESSION, session);
+  await AsyncStorage.setItem(StorageKeys.ROLE, data.role);
 };
 
 export const logoutUser = async () => {
   await AsyncStorage.removeItem(StorageKeys.USER);
   await AsyncStorage.removeItem(StorageKeys.TOKEN);
   await AsyncStorage.removeItem(StorageKeys.SESSION);
+  await AsyncStorage.removeItem(StorageKeys.ROLE);
   await AsyncStorage.setItem(StorageKeys.LOGGED_IN, 'false');
 };
 
@@ -55,6 +59,12 @@ export const getShowBalance = async () => {
   const stringifiedState = await AsyncStorage.getItem(StorageKeys.SHOW_BALANCE);
   return JSON.parse(stringifiedState);
 };
+export const setDefultCurrency = async currency => {
+  return await AsyncStorage.setItem(StorageKeys.DEFAULT_CURRENCY, currency);
+};
+export const getDefultCurrency = async () => {
+  return await AsyncStorage.getItem(StorageKeys.DEFAULT_CURRENCY);
+};
 
 const getAllKeys = async () => {
   const data = await AsyncStorage.getAllKeys();
@@ -73,4 +83,4 @@ const deleteStorage = async key => {
 // getAllKeys();
 // clearAllKeys();
 // deleteStorage('USER');
-// getStorage(StorageKeys.SHOW_BALANCE);
+// getStorage(StorageKeys.SESSION);

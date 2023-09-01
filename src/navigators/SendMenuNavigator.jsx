@@ -4,7 +4,7 @@ import SendMenu from '../pages/BottomTabPages/SendMenu';
 import SwapFunds from '../pages/SendMenuPages/SwapFunds';
 import VirtualCard from '../pages/SendMenuPages/VirtualCard';
 import AccStatement from '../pages/SendMenuPages/AccStatement';
-import SendMenuHeader from '../pages/SendMenuPages/Header';
+import Back from '../components/Back';
 import AddMoneyConfirm from '../pages/SendMenuPages/AddMoneyConfirm';
 import BuyAirtime from '../pages/SendMenuPages/AirtimeTopUp/BuyAirtime';
 import PayABill from '../pages/SendMenuPages/PayABill';
@@ -23,11 +23,11 @@ const SendMenuNavigator = () => {
 
   return (
     <Stack.Navigator
-      screenOptions={({ navigation, route }) => ({
-        header: () => (
-          <SendMenuHeader goBack={navigation.goBack} route={route} />
+      screenOptions={{
+        header: ({ navigation, route }) => (
+          <Back goBack={navigation.goBack} route={route} />
         ),
-      })}>
+      }}>
       <Stack.Screen
         name="SendMenu"
         component={SendMenu}
@@ -58,7 +58,11 @@ const SendMenuNavigator = () => {
           headerShown: false,
         }}
       />
-      <Stack.Screen name="SwapFunds" component={SwapFunds} />
+      <Stack.Screen
+        name="SwapFunds"
+        component={SwapFunds}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="AirtimeTopup" component={AirtimeTopUp} />
       <Stack.Screen name="BuyAirtime" component={BuyAirtime} />
       <Stack.Screen name="BuyData" component={BuyData} />

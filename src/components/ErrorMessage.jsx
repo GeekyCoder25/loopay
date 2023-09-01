@@ -2,10 +2,10 @@ import BoldText from './fonts/BoldText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { StyleSheet } from 'react-native';
 
-const ErrorMessage = ({ errorMessage }) => {
+const ErrorMessage = ({ errorMessage, style }) => {
   return (
     errorMessage && (
-      <BoldText style={styles.errorMessageText}>
+      <BoldText style={{ ...styles.errorMessageText, ...style }}>
         <FaIcon name="warning" size={15} color={'red'} />
         {'  '}
         {errorMessage}

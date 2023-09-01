@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Menu from '../pages/BottomTabPages/Menu';
 import ChangePassword from '../pages/MenuPages/ChangePassword';
-import SendMenuHeader from '../pages/SendMenuPages/Header';
+import Back from '../components/Back';
 import MyInfo from '../pages/MenuPages/MyInfo';
 import VerificationStatus from '../pages/MenuPages/VerificationStatus';
 import TransactionHistory from '../pages/MenuPages/TransactionHistory';
@@ -13,16 +13,18 @@ import VirtualCard from '../pages/SendMenuPages/VirtualCard';
 import VirtualCardDetails from '../pages/SendMenuPages/VirtualCardDetails';
 import TransactionHistoryParams from '../pages/MenuPages/TransactionHistoryParams';
 import IdentitiyVerification from '../pages/MenuPages/VerificationStatus/IdentitiyVerification';
+import VerificationInformation from '../pages/MenuPages/VerificationStatus/VerificationInformation';
+import VerifyImage from '../pages/MenuPages/VerificationStatus/VerifyImage';
 
 const MenuNavigator = () => {
   const Stack = createNativeStackNavigator();
   return (
     <Stack.Navigator
-      screenOptions={({ navigation, route }) => ({
-        header: () => (
-          <SendMenuHeader goBack={navigation.goBack} route={route} />
+      screenOptions={{
+        header: ({ navigation, route }) => (
+          <Back goBack={navigation.goBack} route={route} />
         ),
-      })}>
+      }}>
       <Stack.Screen
         name="SendMenu"
         component={Menu}
@@ -36,6 +38,11 @@ const MenuNavigator = () => {
         name="IdentityVerification"
         component={IdentitiyVerification}
       />
+      <Stack.Screen
+        name="VerificationInformation"
+        component={VerificationInformation}
+      />
+      <Stack.Screen name="VerifyImage" component={VerifyImage} />
       <Stack.Screen name="TransactionHistory" component={TransactionHistory} />
       <Stack.Screen
         name="TransactionHistoryDetails"

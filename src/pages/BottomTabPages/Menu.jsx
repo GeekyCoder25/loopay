@@ -1,13 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useEffect } from 'react';
-import {
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import React, { useContext } from 'react';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import PageContainer from '../../components/PageContainer';
 import UserIconSVG from '../../../assets/images/userMenu.svg';
 import HistoryIcon from '../../../assets/images/history.svg';
@@ -27,6 +20,7 @@ import UserIcon from '../../components/UserIcon';
 import { deleteFetchData } from '../../../utils/fetchAPI';
 import { menuRoutes } from '../../database/data';
 import { useFocusEffect } from '@react-navigation/native';
+import ToastMessage from '../../components/ToastMessage';
 
 const Menu = ({ navigation }) => {
   const {
@@ -36,6 +30,7 @@ const Menu = ({ navigation }) => {
     appData,
     setAppData,
     setShowTabBar,
+    setCanChangeRole,
   } = useContext(AppContext);
 
   const handleLogout = async () => {
@@ -44,9 +39,10 @@ const Menu = ({ navigation }) => {
       const sessionID = await getSessionID();
       await deleteFetchData(`user/session/${sessionID}`);
       logoutUser();
-      ToastAndroid.show('Logged Out successfully', ToastAndroid.SHORT);
       setIsLoggedIn(false);
       setAppData({});
+      setCanChangeRole(false);
+      ToastMessage('Logged Out successfully');
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +64,7 @@ const Menu = ({ navigation }) => {
     <PageContainer paddingTop={0}>
       <View style={styles.header}>
         <BoldText style={styles.headerText}>My details</BoldText>
-        <Pressable onPress={() => navigation.navigate('Profile')}>
+        <Pressable onPress={() => navigation.navigate('ProfileNavigator')}>
           <UserIcon />
         </Pressable>
       </View>

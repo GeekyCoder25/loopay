@@ -103,11 +103,22 @@ export default DevicesAndSessions;
 export const Session = ({ session, activeSessions }) => {
   const [lastSeen, setLastSeen] = useState(session.lastSeen);
 
+  const checkSameDateAndTime = sessionTimestamp => {
+    const sessionDate = new Date(sessionTimestamp);
+    const currentDate = new Date();
+    const timeDifference = currentDate - sessionDate;
+    const minutesDifference = timeDifference / (1000 * 60);
+
+    return (
+      sessionDate.toLocaleDateString() === currentDate.toLocaleDateString() &&
+      sessionDate.getHours() === currentDate.getHours() &&
+      (sessionDate.getMinutes() === currentDate.getMinutes() ||
+        minutesDifference <= 5)
+    );
+  };
+
   useEffect(() => {
-    new Date(session.lastSeen).toLocaleDateString() ===
-      new Date().toLocaleDateString() &&
-    new Date(session.lastSeen).getHours() === new Date().getHours() &&
-    new Date(session.lastSeen).getMinutes() === new Date().getMinutes()
+    checkSameDateAndTime(session.lastSeen)
       ? setLastSeen('NOW')
       : setLastSeen(
           `${new Date(session.lastSeen).toLocaleDateString()} ${new Date(

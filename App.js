@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import {
   Keyboard,
@@ -14,6 +15,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { allCurrencies } from './src/database/data';
 import AppStart from './src/components/AppStart';
 import LoadingModal from './src/components/LoadingModal';
+import { getDefultCurrency } from './utils/storage';
+import { RootSiblingParent } from 'react-native-root-siblings';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,6 +31,8 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingModalBg, setLoadingModalBg] = useState(null);
   const [amountRefresh, setAmountRefresh] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [canChangeRole, setCanChangeRole] = useState(false);
   const vw = useWindowDimensions().width;
   const vh = useWindowDimensions().height;
 
@@ -54,29 +59,43 @@ export default function App() {
     setLoadingModalBg,
     amountRefresh,
     setAmountRefresh,
+    isAdmin,
+    setIsAdmin,
+    canChangeRole,
+    setCanChangeRole,
   };
-  const defaultCurrency = allCurrencies.find(
-    currency => currency.currency === 'Naira',
-  );
+
   useEffect(() => {
-    setSelectedCurrency(defaultCurrency);
-  }, [defaultCurrency]);
+    getDefultCurrency().then(defaultCurrency => {
+      if (!defaultCurrency) {
+        return setSelectedCurrency(
+          allCurrencies.find(currency => currency.currency === 'Naira'),
+        );
+      }
+      const defaultCurrencyObject = allCurrencies.find(
+        currency => currency.currency === defaultCurrency,
+      );
+      setSelectedCurrency(defaultCurrencyObject);
+    });
+  }, []);
 
   return (
     <AppContext.Provider value={contextValue}>
-      <StatusBar style="auto" translucent={false} backgroundColor="#fff" />
-      <SafeAreaView style={styles.appContainer}>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            Keyboard.dismiss();
-          }}
-          touchSoundDisabled={true}>
-          <View style={styles.appContainer}>
-            <AppStart />
-            <LoadingModal isLoading={isLoading} />
-          </View>
-        </TouchableWithoutFeedback>
-      </SafeAreaView>
+      <StatusBar style="auto" translucent={false} backgroundColor="#f5f5f5" />
+      <RootSiblingParent>
+        <SafeAreaView style={styles.appContainer}>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              Keyboard.dismiss();
+            }}
+            touchSoundDisabled={true}>
+            <View style={styles.appContainer}>
+              <AppStart />
+              <LoadingModal isLoading={isLoading} />
+            </View>
+          </TouchableWithoutFeedback>
+        </SafeAreaView>
+      </RootSiblingParent>
     </AppContext.Provider>
   );
 }
