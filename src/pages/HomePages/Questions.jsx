@@ -37,40 +37,39 @@ const Questions = () => {
     }
   };
   return (
-    <PageContainer>
-      <ScrollView style={{ paddingHorizontal: 5 + '%' }}>
-        <View style={{ ...styles.container, minHeight: vh * 0.8 }}>
-          <View style={styles.logo}>
-            <Logo />
-          </View>
-          <Header
-            title={'Secret Questions '}
-            text={'Give answers to the below questions'}
-          />
-          <View style={styles.form}>
-            {questions.map(question => (
-              <Question
-                question={question}
-                key={question.id}
-                errorKey={errorKey}
-                setErrorKey={setErrorKey}
-                formData={formData}
-                setFormData={setFormData}
-                showRedBorder={errorKey}
-              />
-            ))}
-          </View>
-          <View style={styles.button}>
-            <Button text={'Set Security Questions'} onPress={handleSet} />
-          </View>
+    <PageContainer scroll>
+      <View style={{ ...styles.container, minHeight: vh * 0.8 }}>
+        <View style={styles.logo}>
+          <Logo />
         </View>
-      </ScrollView>
+        <Header
+          title={'Secret Questions '}
+          text={'Give answers to the below questions'}
+        />
+        <View style={styles.form}>
+          {questions.map(question => (
+            <Question
+              question={question}
+              key={question.id}
+              errorKey={errorKey}
+              setErrorKey={setErrorKey}
+              formData={formData}
+              setFormData={setFormData}
+              showRedBorder={errorKey}
+            />
+          ))}
+        </View>
+        <View style={styles.button}>
+          <Button text={'Set Security Questions'} onPress={handleSet} />
+        </View>
+      </View>
     </PageContainer>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    paddingHorizontal: 5 + '%',
     flex: 1,
     justifyContent: 'space-between',
     paddingBottom: 10 + '%',

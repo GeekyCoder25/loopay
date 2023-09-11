@@ -22,6 +22,7 @@ const LoggedInForgetPassword = ({ setPassowrdIsValid }) => {
   const [errorKey, setErrorKey] = useState('');
   const [otpTimeout, setOtpTimeout] = useState(0);
   const [otpResend, setOtpResend] = useState(60);
+  const [reload, setReload] = useState(false);
 
   const codeLengths = [1, 2, 3, 4, 5, 6];
 
@@ -38,13 +39,16 @@ const LoggedInForgetPassword = ({ setPassowrdIsValid }) => {
       );
       if (result === "Couldn't connect to server") {
         return setErrorMessage(result);
-      } else if (Object.keys(result.data).includes('error')) {
-        setErrorKey('otpCode');
-        return setErrorMessage(result.data.error);
-      }
-      if (result.status < 400) setPassowrdIsValid(true);
+      } else if (result.status === 200) return setPassowrdIsValid(true);
+      setErrorKey('otpCode');
+      return setErrorMessage(result.data.error);
     } finally {
       setIsLoading(false);
+      setTimeout(() => {
+        setOtpCode('');
+        setFocusIndex(1);
+        setReload(prev => !prev);
+      }, 1500);
     }
   };
 
@@ -76,7 +80,7 @@ const LoggedInForgetPassword = ({ setPassowrdIsValid }) => {
           <BoldText>{email}</BoldText>
         </RegularText>
       </View>
-      <View style={styles.codeLengthsContainer}>
+      <View style={styles.codeLengthsContainer} key={reload}>
         {codeLengths.map(codeLength => (
           <OTPInput
             key={codeLength}
@@ -185,7 +189,7 @@ export const OTPInput = ({
   useEffect(() => {
     if (codeLength === focusIndex) {
       inputRef.current.focus();
-      inputRef.current.clear();
+      // inputRef.current.clear();
       setInputValue('');
     }
   }, [focusIndex, codeLength]);

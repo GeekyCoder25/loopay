@@ -88,62 +88,60 @@ const History = ({ navigation }) => {
     }
   };
   return (
-    <PageContainer>
-      <ScrollView>
-        <View style={styles.container}>
-          <BalanceCard />
-        </View>
+    <PageContainer scroll>
+      <View style={styles.container}>
+        <BalanceCard />
+      </View>
 
-        <View style={styles.body}>
-          <View style={styles.container}>
-            <BoldText>Transaction history</BoldText>
-            <TextInput
-              style={{
-                ...styles.textInput,
-                textAlign: isSearchFocused ? 'left' : 'center',
-                paddingLeft: isSearchFocused ? 10 : 0,
-              }}
-              placeholder={isSearchFocused ? '' : 'Search, e.g Username'}
-              onFocus={handleSearchFocus}
-              onBlur={handleSearchBlur}
-              onChangeText={text => handleSearch(text)}
-            />
-          </View>
-          {isSearching ? (
-            <View style={styles.searchList}>
-              {searchHistory.map(
-                history =>
-                  history && (
-                    <HistoryComp
-                      key={history._id}
-                      history={history}
-                      navigation={navigation}
-                    />
-                  ),
-              )}
-            </View>
-          ) : !isLocalLoading ? (
-            histories.map(dayHistory => (
-              <View key={dayHistory.date} style={styles.dateHistory}>
-                <RegularText style={styles.date}>{dayHistory.date}</RegularText>
-                {dayHistory.histories.map(history => (
+      <View style={styles.body}>
+        <View style={styles.container}>
+          <BoldText>Transaction history</BoldText>
+          <TextInput
+            style={{
+              ...styles.textInput,
+              textAlign: isSearchFocused ? 'left' : 'center',
+              paddingLeft: isSearchFocused ? 10 : 0,
+            }}
+            placeholder={isSearchFocused ? '' : 'Search, e.g Username'}
+            onFocus={handleSearchFocus}
+            onBlur={handleSearchBlur}
+            onChangeText={text => handleSearch(text)}
+          />
+        </View>
+        {isSearching ? (
+          <View style={styles.searchList}>
+            {searchHistory.map(
+              history =>
+                history && (
                   <HistoryComp
                     key={history._id}
                     history={history}
                     navigation={navigation}
                   />
-                ))}
-              </View>
-            ))
-          ) : (
-            <ActivityIndicator
-              size={'large'}
-              color={'#1e1e1e'}
-              style={styles.loading}
-            />
-          )}
-        </View>
-      </ScrollView>
+                ),
+            )}
+          </View>
+        ) : !isLocalLoading ? (
+          histories.map(dayHistory => (
+            <View key={dayHistory.date} style={styles.dateHistory}>
+              <RegularText style={styles.date}>{dayHistory.date}</RegularText>
+              {dayHistory.histories.map(history => (
+                <HistoryComp
+                  key={history._id}
+                  history={history}
+                  navigation={navigation}
+                />
+              ))}
+            </View>
+          ))
+        ) : (
+          <ActivityIndicator
+            size={'large'}
+            color={'#1e1e1e'}
+            style={styles.loading}
+          />
+        )}
+      </View>
     </PageContainer>
   );
 };
@@ -251,10 +249,10 @@ const HistoryComp = ({ history, navigation }) => {
     return `${hours}:${minutes} ${period}`;
   }
 
-  let currencySymbol = allCurrencies.find(
-    id => currency.toLowerCase() === id.acronym.toLowerCase(),
-  );
-  currencySymbol = currencySymbol.symbol;
+  const currencySymbol = allCurrencies.find(
+    id => currency === id.currency || currency === id.acronym,
+  )?.symbol;
+
   return (
     <Pressable
       onPress={() =>

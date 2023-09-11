@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useEffect, useState } from 'react';
 import {
   BackHandler,
@@ -13,6 +14,7 @@ import BellActive from '../../../assets/images/bellActive.svg';
 import ChevronDown from '../../../assets/images/chevron-down.svg';
 import Wallet from '../../../assets/images/wallet.svg';
 import UpAndDownArrow from '../../../assets/images/up-down-arrow.svg';
+import SwapIcon from '../../../assets/images/swap.svg';
 import Bg from '../../../assets/images/bg1.svg';
 import { AppContext } from '../../components/AppContext';
 import SelectCurrencyModal from '../../components/SelectCurrencyModal';
@@ -22,32 +24,46 @@ import BoldText from '../../components/fonts/BoldText';
 import FlagSelect from '../../components/FlagSelect';
 import UserIcon from '../../components/UserIcon';
 import WalletAmount from '../../components/WalletAmount';
-import { getFetchData } from '../../../utils/fetchAPI';
 import { useFocusEffect } from '@react-navigation/native';
 import ToastMessage from '../../components/ToastMessage';
 import { addingDecimal } from '../../../utils/AddingZero';
+import FaIcon from '@expo/vector-icons/FontAwesome';
+import { allCurrencies } from '../../database/data';
+import { useRequestFundsContext } from '../../context/RequestContext';
+import { useWalletContext } from '../../context/WalletContext';
+import { useNotificationsContext } from '../../context/NotificationContext';
 
 const Home = ({ navigation }) => {
-  const { selectedCurrency, appData, setShowTabBar } = useContext(AppContext);
+  const { selectedCurrency, appData, setWalletRefresh, setNoReload } =
+    useContext(AppContext);
+  const { transactions } = useWalletContext();
+  const { requestFunds: requests } = useRequestFundsContext();
   const [modalOpen, setModalOpen] = useState(false);
   const fullName = appData.userProfile.fullName;
   const [transactionHistory, setTransactionHistory] = useState([]);
   const [isExiting, setIsExiting] = useState(false);
-  useFocusEffect(
-    React.useCallback(() => {
-      setShowTabBar(true);
-      const getHistories = async () => {
-        const response = await getFetchData('user/transaction');
-        if (response.status >= 400) {
-          return setTransactionHistory("Couldn't connect to server");
-        } else if (response.status === 204) return;
-        if (response.status === 200) {
-          return setTransactionHistory(response.data.transactions);
-        }
-      };
-      getHistories();
-    }, [setShowTabBar]),
-  );
+  const { unread } = useNotificationsContext();
+
+  useEffect(() => {
+    setTransactionHistory(transactions);
+  }, [transactions]);
+
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     setShowTabBar(true);
+  //     const getHistories = async () => {
+  //       const response = await getFetchData('user/transaction?swap=true');
+  //       if (response.status >= 400) {
+  //         return setTransactionHistory("Couldn't connect to server");
+  //       } else if (response.status === 204) return;
+  //       if (response.status === 200) {
+  //         return setTransactionHistory(response.data.transactions);
+  //       }
+  //     };
+  //     getHistories();
+  //     // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   }, [setShowTabBar, walletRefresh]),
+  // );
 
   useFocusEffect(
     React.useCallback(() => {
@@ -73,9 +89,10 @@ const Home = ({ navigation }) => {
     }, [isExiting]),
   );
 
+  const refreshPage = () => {};
   return (
     <>
-      <PageContainer>
+      <PageContainer refreshFunc={refreshPage}>
         <View style={styles.headerContainer}>
           <View style={styles.bgContainer}>
             <Bg />
@@ -88,13 +105,28 @@ const Home = ({ navigation }) => {
               <RegularText>{fullName}</RegularText>
             </Pressable>
             <Pressable onPress={() => navigation.navigate('Notification')}>
-              {<Bell /> || <BellActive />}
+              {unread ? <BellActive /> : <Bell />}
             </Pressable>
           </View>
+          {requests.length > 0 && (
+            <Pressable
+              style={styles.request}
+              onPress={() => navigation.navigate('PendingRequest')}>
+              <BoldText style={styles.requestText}>
+                {requests.length > 1
+                  ? 'You’ve pending requests. Click to check requests'
+                  : 'You’ve a pending request. Click to check request'}
+              </BoldText>
+            </Pressable>
+          )}
           <ImageBackground
             source={require('../../../assets/images/cardBg.png')}
             resizeMode="contain"
-            style={styles.card}>
+            style={{
+              ...styles.card,
+              height: requests.length ? 150 : 200,
+              marginTop: requests.length ? 20 : 30,
+            }}>
             <View style={styles.cardHeader}>
               <View style={styles.amountContainer}>
                 <View style={styles.symbolContainer}>
@@ -111,19 +143,24 @@ const Home = ({ navigation }) => {
                 </View>
               </View>
               <Pressable
-                onPress={() => setModalOpen(true)}
+                onPress={() => {
+                  setWalletRefresh(prev => !prev);
+                  setModalOpen(true);
+                }}
                 style={styles.chevronDown}>
                 <ChevronDown />
               </Pressable>
             </View>
 
             <View style={styles.cardHeader}>
-              <View style={styles.cardDetails}>
+              <Pressable
+                style={styles.cardDetails}
+                onPress={() => navigation.navigate('AccountDetails')}>
                 <Wallet />
                 <RegularText style={styles.currrencyType}>
                   Account Details
                 </RegularText>
-              </View>
+              </Pressable>
               <Pressable
                 style={styles.cardDetails}
                 onPress={() =>
@@ -147,12 +184,18 @@ const Home = ({ navigation }) => {
                 </BoldText>
               </View>
             ) : (
-              <ScrollView style={styles.histories}>
+              <ScrollView
+                style={styles.histories}
+                onScroll={() => {
+                  setTimeout(() => {
+                    setNoReload(false);
+                  }, 2000);
+                  return setNoReload(true);
+                }}>
                 {transactionHistory.map(history => (
                   <History
                     key={history.id}
                     history={history}
-                    currencySymbol={selectedCurrency.symbol}
                     navigation={navigation}
                   />
                 ))}
@@ -196,6 +239,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+  },
+  request: {
+    backgroundColor: '#1e1e1e',
+    width: 106 + '%',
+    marginLeft: -3 + '%',
+    padding: 15,
+    marginTop: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  requestText: {
+    color: '#fff',
   },
   card: {
     backgroundColor: '#000',
@@ -292,24 +347,55 @@ const styles = StyleSheet.create({
     height: 40,
     textAlign: 'center',
     textAlignVertical: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 20,
   },
   historyTitle: {
     flex: 1,
   },
+  transactionAmountTextRow: {
+    flexDirection: 'row',
+    gap: 5,
+    alignItems: 'center',
+  },
+  transactionAmountTextColumn: {
+    alignItems: 'center',
+  },
   transactionAmountText: {
     fontSize: 20,
   },
+  creditAmount: {
+    color: '#006E53',
+  },
+  debitAmount: {
+    color: 'red',
+  },
+  swapIcon: {
+    transform: [{ rotateZ: '90deg' }],
+  },
+  swap: {},
 });
 export default Home;
 
-const History = ({ history, currencySymbol, navigation }) => {
+const History = ({ history, navigation }) => {
+  const { vw } = useContext(AppContext);
   const [transactionTypeIcon, setTransactionTypeIcon] = useState('');
   const [transactionTypeTitle, setTransactionTypeTitle] = useState('');
   const [transactionDate, setTransactionDate] = useState('');
+  const {
+    amount,
+    createdAt,
+    currency,
+    transactionType,
+    swapFrom,
+    swapTo,
+    swapFromAmount,
+    swapToAmount,
+  } = history;
 
   useEffect(() => {
-    const date = new Date(history.createdAt);
+    const date = new Date(createdAt);
 
     setTransactionDate(
       `${date.toDateString()} ${
@@ -323,36 +409,99 @@ const History = ({ history, currencySymbol, navigation }) => {
       }`,
     );
 
-    switch (history.transactionType?.toLowerCase()) {
+    switch (transactionType?.toLowerCase()) {
       case 'credit':
-        setTransactionTypeIcon('RE');
+        setTransactionTypeIcon(<FaIcon name="download" size={18} />);
         setTransactionTypeTitle('Received');
         break;
       case 'debit':
-        setTransactionTypeIcon('SO');
+        setTransactionTypeIcon(<FaIcon name="send" size={18} />);
         setTransactionTypeTitle('Sent Out');
         break;
+      case 'swap':
+        setTransactionTypeIcon(<SwapIcon width={22} height={22} />);
+        setTransactionTypeTitle('Swap Fund');
+        break;
       default:
-        setTransactionTypeIcon(currencySymbol);
+        setTransactionTypeIcon();
         break;
     }
-  }, [currencySymbol, history.createdAt, history.transactionType]);
+  }, [createdAt, transactionType]);
 
+  const currencySymbol = allCurrencies.find(
+    id => currency === id.currency || currency === id.acronym,
+  )?.symbol;
+
+  const swapFromSymbol = allCurrencies.find(
+    id => swapFrom === id.currency,
+  )?.symbol;
+
+  const swapToSymbol = allCurrencies.find(id => swapTo === id.currency)?.symbol;
   return (
     <Pressable
       onPress={() => navigation.navigate('TransactionHistoryDetails', history)}
       style={styles.history}>
       <View style={styles.historyIcon}>
-        <Text style={styles.historyIconText}>{transactionTypeIcon}</Text>
+        {transactionType === 'swap' ? (
+          <View style={styles.historyIconText}>{transactionTypeIcon}</View>
+        ) : (
+          <Text style={styles.historyIconText}>{transactionTypeIcon}</Text>
+        )}
       </View>
       <View style={styles.historyTitle}>
         <BoldText>{transactionTypeTitle}</BoldText>
         <RegularText>{transactionDate}</RegularText>
       </View>
       <View>
-        <BoldText style={styles.transactionAmountText}>{`${currencySymbol} ${
-          history.transactionType?.toLowerCase() === 'credit' ? '+' : '-'
-        }${addingDecimal(Number(history.amount).toLocaleString())}`}</BoldText>
+        {transactionType?.toLowerCase() === 'credit' && (
+          <BoldText
+            style={{ ...styles.transactionAmountText, ...styles.creditAmount }}>
+            {`+ ${currencySymbol}${addingDecimal(
+              Number(amount).toLocaleString(),
+            )}`}
+          </BoldText>
+        )}
+        {transactionType?.toLowerCase() === 'debit' && (
+          <BoldText
+            style={{ ...styles.transactionAmountText, ...styles.debitAmount }}>
+            {`- ${currencySymbol}${addingDecimal(
+              Number(amount).toLocaleString(),
+            )}`}
+          </BoldText>
+        )}
+        {/* {console.log(vw)} */}
+        {transactionType === 'swap' && (
+          <View
+            style={
+              vw > 360
+                ? styles.transactionAmountTextRow
+                : styles.transactionAmountTextColumn
+            }>
+            <BoldText
+              style={{
+                ...styles.transactionAmountText,
+                ...styles.debitAmount,
+              }}>
+              {`${swapFromSymbol}${addingDecimal(
+                Number(swapFromAmount).toLocaleString(),
+              )}`}
+            </BoldText>
+            <SwapIcon
+              width={17}
+              height={17}
+              style={vw > 360 ? styles.swap : styles.swapIcon}
+            />
+            <BoldText
+              style={{
+                ...styles.transactionAmountText,
+                ...styles.creditAmount,
+              }}>
+              {`${swapToSymbol}${addingDecimal(
+                Number(swapToAmount).toLocaleString(),
+              )}`}
+            </BoldText>
+          </View>
+        )}
       </View>
     </Pressable>
   );

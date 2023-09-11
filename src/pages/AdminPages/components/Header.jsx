@@ -19,7 +19,11 @@ const Header = ({ navigation }) => {
       </Pressable>
       <View style={styles.headerIcons}>
         <BoldText>{fullName}</BoldText>
-        <UserIcon />
+        <Pressable
+          onPress={() => navigation.navigate('ProfileNavigator')}
+          style={styles.userImageContainer}>
+          <UserIcon />
+        </Pressable>
         <Pressable onPress={() => navigation.navigate('Notification')}>
           {<Bell /> || <BellActive />}
         </Pressable>

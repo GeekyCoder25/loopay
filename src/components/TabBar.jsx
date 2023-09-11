@@ -63,12 +63,12 @@ const TabRoute = ({ routePage, navigation, state, index }) => {
   };
   const fillColor = isFocused ? '#000' : '#bbb';
 
-  const { setAmountRefresh } = useContext(AppContext);
+  const { setWalletRefresh } = useContext(AppContext);
   return (
     <TouchableOpacity
       onPress={() => {
         navigation.navigate(`${routePage.route}`);
-        routePage.route === 'HomeNavigator' && setAmountRefresh(prev => !prev);
+        routePage.route === 'HomeNavigator' && setWalletRefresh(prev => !prev);
       }}
       style={styles.routeIcon}>
       <View>{routeIcon(fillColor)}</View>

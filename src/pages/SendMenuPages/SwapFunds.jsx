@@ -21,56 +21,119 @@ import { useWalletContext } from '../../context/WalletContext';
 import ErrorMessage from '../../components/ErrorMessage';
 import Arrow from '../../../assets/images/swapArrow.svg';
 import Back from '../../components/Back';
+import Check from '../../../assets/images/check.svg';
+import { postFetchData } from '../../../utils/fetchAPI';
+import { randomUUID } from 'expo-crypto';
 import ToastMessage from '../../components/ToastMessage';
 
 const SwapFunds = ({ navigation }) => {
-  const { selectedCurrency, isLoading, setIsLoading } = useContext(AppContext);
+  const { selectedCurrency, setIsLoading, setWalletRefresh } =
+    useContext(AppContext);
   const { wallet } = useWalletContext();
-  const { balance } = wallet;
-  const [errokey, setErrokey] = useState(false);
+  const [errorkey, setErrorkey] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [value, setValue] = useState('');
   const [swapData, setSwapData] = useState({});
   const [toReceive, setToReceive] = useState('');
-  // const [fee, setFee] = useState(0);
+  const [fee, setFee] = useState(0);
   const [swapFrom, setSwapFrom] = useState({
     ...selectedCurrency,
     balance: wallet.balance,
   });
   const [swapTo, setSwapTo] = useState(swapToObject);
-  const [swapToCurrency, setSwapToCurrency] = useState(
-    swapFrom.currency === 'Naira' ? 'Dollar' : 'Naira',
+  const [swapToCurrency] = useState(
+    swapFrom.currency === 'naira' ? 'dollar' : 'naira',
   );
   const [canSwap, setCanSwap] = useState(10);
   const [showSwapFromCurrencies, setShowSwapFromCurrencies] = useState(false);
   const [showSwapToCurrencies, setShowSwapToCurrencies] = useState(false);
+  const [isSuccessful, setIsSuccessful] = useState(false);
   const currencyRateAPI = [
+    {
+      name: 'NairaToDollar',
+      rate: 1 / 763.86,
+      fee: 1 / 100,
+    },
+    {
+      name: 'NairaToEuro',
+      rate: 1 / 816.34,
+      fee: 3 / 100,
+    },
+    {
+      name: 'NairaToPound',
+      rate: 1 / 956.12,
+      fee: 3 / 100,
+    },
     {
       name: 'DollarToNaira',
       rate: 763.86,
       fee: 1 / 100,
     },
     {
-      name: 'NairaToDollar',
-      rate: 1 / 763.86,
+      name: 'DollarToEuro',
+      rate: 1 / 1.07,
+      fee: 3 / 100,
+    },
+    {
+      name: 'DollarToPound',
+      rate: 1 / 1.26,
       fee: 1 / 100,
+    },
+    {
+      name: 'EuroToNaira',
+      rate: 816.34,
+      fee: 3 / 100,
+    },
+    {
+      name: 'EuroToDollar',
+      rate: 1.07,
+      fee: 3 / 100,
+    },
+    {
+      name: 'EuroToPound',
+      rate: 1 / 1.17,
+      fee: 1 / 100,
+    },
+    {
+      name: 'PoundToNaira',
+      rate: 956.12,
+      fee: 3 / 100,
+    },
+    {
+      name: 'PoundToDollar',
+      rate: 1.26,
+      fee: 1 / 100,
+    },
+    {
+      name: 'PoundToEuro',
+      rate: 1.17,
+      fee: 3 / 100,
     },
   ];
 
   useEffect(() => {
     const selectedCurrencyFunc = index =>
       allCurrencies.find(currency => currency.currency === index);
-    setSwapTo({ ...selectedCurrencyFunc(swapToCurrency), balance: 0 });
-  }, [selectedCurrency, setIsLoading, swapToCurrency, wallet.balance]);
+    setSwapTo({
+      ...selectedCurrencyFunc(swapToCurrency),
+      balance: wallet[`${swapToCurrency}Balance`],
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { minimumAmountToAdd } = swapFrom;
-  const currencyToCurrencyDetector = `${swapFrom.currency}To${swapTo.currency}`;
+  const firstLetterToCapital = input => {
+    return input.charAt(0).toUpperCase() + input.slice(1);
+  };
+  const currencyToCurrencyDetector = `${firstLetterToCapital(
+    swapFrom.currency,
+  )}To${firstLetterToCapital(swapTo.currency)}`;
 
   const handleSwapFromSelect = currency => {
     setSwapFrom({
       ...currency,
-      balance: currency.currency === 'Naira' ? balance : 0,
+      balance: wallet[`${currency.currency}Balance`],
     });
     setShowSwapFromCurrencies(false);
     const swapToSelect =
@@ -80,10 +143,10 @@ const SwapFunds = ({ navigation }) => {
     currency.currency === swapTo.currency &&
       setSwapTo({
         ...swapToSelect,
-        balance: swapToSelect.currency === 'Naira' ? balance : 0,
+        balance: wallet[`${swapToSelect.currency}Balance`],
       });
-    setSwapToCurrency(swapToSelect.currency);
-    setErrokey('');
+    // setSwapToCurrency(swapToSelect.currency);
+    setErrorkey('');
     setErrorMessage('');
     setValue('');
     setToReceive('');
@@ -91,10 +154,13 @@ const SwapFunds = ({ navigation }) => {
 
   const handleSwapToSelect = currency => {
     setSwapTo(prev => {
-      return { ...prev, ...currency };
+      return {
+        ...currency,
+        balance: wallet[`${currency.currency}Balance`],
+      };
     });
     setShowSwapToCurrencies(false);
-    setErrokey('');
+    setErrorkey('');
     setErrorMessage('');
     setValue('');
     setToReceive('');
@@ -117,38 +183,43 @@ const SwapFunds = ({ navigation }) => {
     const textInputValue = Number(text);
     text = Number(text);
     const transactionFee = text * currencyFee();
+    setFee(transactionFee);
     const swapFromAmountAfterFee = text - transactionFee;
-    const toDeduct = text + transactionFee;
-    const toReceiveCalculate = (swapFromAmountAfterFee * currencyRate())
-      // swapFromAmountAfterFee < 1
-      //   ? swapFromAmountAfterFee / currencyRate()
-      //   : swapFromAmountAfterFee * currencyRate()
-      .toFixed(2);
+    const toReceiveCalculate = Number(
+      (swapFromAmountAfterFee * currencyRate()).toFixed(2),
+    );
+    // swapFromAmountAfterFee < 1
+    //   ? swapFromAmountAfterFee / currencyRate()
+    //   : swapFromAmountAfterFee * currencyRate()
 
     setSwapData(prev => {
       return {
         ...prev,
         toSwap: textInputValue,
         toReceive: toReceiveCalculate,
-        // fee: transcationFee,
+        fromCurrency: swapFrom.currency,
+        toCurrency: swapTo.currency,
+        id: randomUUID(),
+        fee: transactionFee,
       };
     });
+
     setToReceive(
       toReceiveCalculate > 0
-        ? addingDecimal(Number(toReceiveCalculate).toLocaleString())
+        ? addingDecimal(toReceiveCalculate.toLocaleString())
         : 'Amount to receive',
     );
-    if (text > balance) {
-      setErrokey(true);
+    if (text > wallet[`${swapFrom.currency}Balance`]) {
+      setErrorkey(true);
       return setErrorMessage('Insufficient funds');
     }
-    setErrokey(false);
+    setErrorkey(false);
     setErrorMessage(false);
   };
 
   const handleAutoFill = () => {
-    if (value < minimumAmountToAdd) {
-      setErrokey(true);
+    if (value && value < minimumAmountToAdd) {
+      setErrorkey(true);
       setErrorMessage(
         `Minimum amount to swap is ${swapFrom.symbol}${minimumAmountToAdd}`,
       );
@@ -157,44 +228,45 @@ const SwapFunds = ({ navigation }) => {
   };
 
   const handleModal = () => {
+    if (isSuccessful) {
+      return handleGoBack();
+    }
     setModalOpen(false);
     setCanSwap(10);
   };
 
   const handleContinue = () => {
     if (!value) {
-      setErrokey(true);
+      setErrorkey(true);
       return setErrorMessage('Input your amount to swap');
     } else if (value < minimumAmountToAdd) {
-      setErrokey(true);
+      setErrorkey(true);
       return setErrorMessage(
         `Minimum amount to swap is ${swapFrom.symbol}${minimumAmountToAdd}`,
       );
-    } else if (value > balance) {
-      setErrokey(true);
+    } else if (value > wallet[`${swapFrom.currency}Balance`]) {
+      setErrorkey(true);
       return setErrorMessage('Insufficient funds');
     }
-    setErrokey('');
+    setErrorkey('');
     setErrorMessage('');
     setModalOpen(true);
   };
 
-  const handleSwap = () => {
-    ToastMessage('Swapping not currently supported');
-    setModalOpen(false);
-  };
   const transactionDetails = [
     {
       title: 'Transaction Fees',
-      value: 'No Fees',
+      value: currencyFee() ? swapFrom.symbol + value * currencyFee() : 'Free',
     },
     {
       title: 'Pay From',
-      value: 'Loopay Balnace',
+      value: 'Loopay Balance',
     },
     {
       title: 'Rate',
-      value: `1 ${swapFrom.acronym} = ${currencyRate()} ${swapTo.acronym}`,
+      value: `1 ${swapFrom.acronym} = ${addingDecimal(
+        Number(currencyRate()).toLocaleString(),
+      )} ${swapTo.acronym}`,
     },
   ];
 
@@ -205,188 +277,198 @@ const SwapFunds = ({ navigation }) => {
       }, 1000);
   }, [canSwap, modalOpen]);
 
+  const handleSwap = async () => {
+    try {
+      setIsLoading(true);
+      const response = await postFetchData('user/swap', swapData);
+
+      if (response.status === 200) {
+        setWalletRefresh(prev => !prev);
+        setIsSuccessful(true);
+      }
+    } catch (err) {
+      ToastMessage(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoBack = () => {
+    navigation.popToTop();
+    navigation.navigate('HomeNavigator');
+  };
+
   return (
     <>
       <Back onPress={() => navigation.goBack()} />
-      <PageContainer paddingTop={10}>
-        <ScrollView>
-          {!isLoading && (
-            <View style={{ ...styles.body }}>
-              <BoldText style={styles.headerText}>Swap Funds</BoldText>
-              <View style={styles.swapContainer}>
-                <View style={styles.swap}>
-                  <RegularText style={styles.swapTitle}>
-                    Account to swap from
+      <PageContainer paddingTop={10} scroll>
+        <View style={{ ...styles.body }}>
+          <BoldText style={styles.headerText}>Swap Funds</BoldText>
+          <View style={styles.swapContainer}>
+            <View style={styles.swap}>
+              <RegularText style={styles.swapTitle}>
+                Account to swap from
+              </RegularText>
+              <Pressable
+                style={{ ...styles.swapBox, ...styles.from }}
+                onPress={() => {
+                  setShowSwapFromCurrencies(true);
+                }}>
+                <FlagSelect
+                  country={swapFrom.currency}
+                  style={styles.flagIcon}
+                />
+                <View style={styles.swapText}>
+                  <BoldText>{swapFrom.acronym} Balance</BoldText>
+                  <RegularText style={styles.swapBalance}>
+                    {swapFrom.symbol}{' '}
+                    {Number(swapFrom.balance.toFixed(2)).toLocaleString()}
                   </RegularText>
-                  <Pressable
-                    style={{ ...styles.swapBox, ...styles.from }}
-                    onPress={() => {
-                      setShowSwapFromCurrencies(true);
-                    }}>
-                    <FlagSelect
-                      country={swapFrom.currency}
-                      style={styles.flagIcon}
-                    />
-                    <View style={styles.swapText}>
-                      <BoldText>{swapFrom.acronym} Balance</BoldText>
-                      <RegularText style={styles.swapBalance}>
-                        {swapFrom.symbol}{' '}
-                        {Number(swapFrom.balance.toFixed(2)).toLocaleString()}
-                      </RegularText>
-                    </View>
-                    <ChevronDown />
-                  </Pressable>
-                  <Modal visible={showSwapFromCurrencies} transparent>
-                    <Pressable
-                      style={styles.swapOverlay}
-                      onPress={() => setShowSwapFromCurrencies(false)}
-                    />
-                    <View
-                      style={{
-                        ...styles.swapCurrencies,
-                      }}>
-                      {allCurrencies
-                        .filter(i => i.currency !== swapFrom.currency)
-                        .map(currency => (
-                          <Pressable
-                            key={currency.currency}
-                            style={styles.swapCurrency}
-                            onPress={() => handleSwapFromSelect(currency)}>
-                            <View style={styles.currencyIcon}>
-                              <FlagSelect country={currency.currency} />
-                            </View>
-                            <View>
-                              <BoldText>{currency.acronym}</BoldText>
-                              <RegularText style={styles.currencyName}>
-                                {currency.currency}
-                              </RegularText>
-                            </View>
-                          </Pressable>
-                        ))}
-                    </View>
-                  </Modal>
                 </View>
-                <View style={styles.swap}>
-                  <RegularText style={styles.swapTitle}>
-                    Account to swap to
-                  </RegularText>
-                  <Pressable
-                    style={{ ...styles.swapBox, ...styles.to }}
-                    onPress={() => {
-                      setShowSwapToCurrencies(true);
-                    }}>
-                    <FlagSelect
-                      country={swapTo.currency}
-                      style={styles.flagIcon}
-                    />
-                    <View style={styles.swapText}>
-                      <BoldText>{swapTo.acronym} Balance</BoldText>
-                      <RegularText style={styles.swapBalance}>
-                        {swapTo.symbol}{' '}
-                        {Number(swapTo.balance.toFixed(2)).toLocaleString()}
-                      </RegularText>
-                    </View>
-                    <ChevronDown />
-                  </Pressable>
-                  <Modal visible={showSwapToCurrencies} transparent>
-                    <Pressable
-                      style={styles.swapOverlay}
-                      onPress={() => setShowSwapToCurrencies(false)}
-                    />
-                    <View
-                      style={{
-                        ...styles.swapCurrencies,
-                        ...styles.swapToCurrencies,
-                      }}>
-                      {allCurrencies
-                        .filter(
-                          i =>
-                            i.currency !== swapFrom.currency &&
-                            i.currency !== swapTo.currency,
-                        )
-                        .map(currency => (
-                          <Pressable
-                            key={currency.currency}
-                            style={styles.swapCurrency}
-                            onPress={() => handleSwapToSelect(currency)}>
-                            <View style={styles.currencyIcon}>
-                              <FlagSelect country={currency.currency} />
-                            </View>
-                            <View>
-                              <BoldText>{currency.acronym}</BoldText>
-                              <RegularText style={styles.currencyName}>
-                                {currency.currency}
-                              </RegularText>
-                            </View>
-                          </Pressable>
-                        ))}
-                    </View>
-                  </Modal>
+                <ChevronDown />
+              </Pressable>
+              <Modal visible={showSwapFromCurrencies} transparent>
+                <Pressable
+                  style={styles.swapOverlay}
+                  onPress={() => setShowSwapFromCurrencies(false)}
+                />
+                <View
+                  style={{
+                    ...styles.swapCurrencies,
+                  }}>
+                  {allCurrencies
+                    .filter(i => i.currency !== swapFrom.currency)
+                    .map(currency => (
+                      <Pressable
+                        key={currency.currency}
+                        style={styles.swapCurrency}
+                        onPress={() => handleSwapFromSelect(currency)}>
+                        <View style={styles.currencyIcon}>
+                          <FlagSelect country={currency.currency} />
+                        </View>
+                        <View>
+                          <BoldText>{currency.acronym}</BoldText>
+                          <RegularText style={styles.currencyName}>
+                            {currency.currency}
+                          </RegularText>
+                        </View>
+                      </Pressable>
+                    ))}
                 </View>
-              </View>
-              <View style={styles.rate}>
-                <BoldText>Current Rate:</BoldText>
-                <RegularText>
-                  1{swapFrom.symbol} = {swapTo.symbol}
-                  {currencyRate()?.startsWith('0')
-                    ? Number(currencyRate()).toFixed(4)
-                    : Number(currencyRate()).toFixed(2)}
-                </RegularText>
-              </View>
-              <View style={styles.swapInputContainer}>
-                <View>
-                  <RegularText style={styles.label}>
-                    Amount to top up
+              </Modal>
+            </View>
+            <View style={styles.swap}>
+              <RegularText style={styles.swapTitle}>
+                Account to swap to
+              </RegularText>
+              <Pressable
+                style={{ ...styles.swapBox, ...styles.to }}
+                onPress={() => {
+                  setShowSwapToCurrencies(true);
+                }}>
+                <FlagSelect country={swapTo.currency} style={styles.flagIcon} />
+                <View style={styles.swapText}>
+                  <BoldText>{swapTo.acronym} Balance</BoldText>
+                  <RegularText style={styles.swapBalance}>
+                    {swapTo.symbol}{' '}
+                    {Number(swapTo.balance.toFixed(2)).toLocaleString()}
                   </RegularText>
-                  <View style={styles.textInputContainer}>
-                    <BoldText style={styles.symbol}>{swapFrom.symbol}</BoldText>
-                    <TextInput
-                      style={{
-                        ...styles.textInput,
-                        borderColor: errokey ? 'red' : '#ccc',
-                      }}
-                      inputMode="numeric"
-                      onChangeText={text => handlePriceInput(text)}
-                      onBlur={handleAutoFill}
-                      value={value}
-                      placeholder="Amount to swap"
-                      placeholderTextColor={'#525252'}
-                    />
-                    {errorMessage && (
-                      <ErrorMessage
-                        errorMessage={errorMessage}
-                        style={styles.errorMessage}
-                      />
-                    )}
-                  </View>
                 </View>
-                <RegularText style={styles.label}>
-                  Amount you will recieve
-                </RegularText>
-                <View style={styles.textInputContainer}>
-                  <BoldText style={styles.symbol}>{swapTo.symbol}</BoldText>
-                  <View style={{ ...styles.textInput, ...styles.toReceiv }}>
-                    <RegularText>
-                      {toReceive || 'Amount to receive'}
-                    </RegularText>
-                  </View>
-                  {/* <View style={styles.fee}>
-                  <RegularText style={styles.feeText}>
-                    Service Charged
-                  </RegularText>
-                  <RegularText style={styles.feeText}>
-                    {swapTo.symbol}
-                    {fee}
-                  </RegularText>
-                </View> */}
+                <ChevronDown />
+              </Pressable>
+              <Modal visible={showSwapToCurrencies} transparent>
+                <Pressable
+                  style={styles.swapOverlay}
+                  onPress={() => setShowSwapToCurrencies(false)}
+                />
+                <View
+                  style={{
+                    ...styles.swapCurrencies,
+                    ...styles.swapToCurrencies,
+                  }}>
+                  {allCurrencies
+                    .filter(
+                      i =>
+                        i.currency !== swapFrom.currency &&
+                        i.currency !== swapTo.currency,
+                    )
+                    .map(currency => (
+                      <Pressable
+                        key={currency.currency}
+                        style={styles.swapCurrency}
+                        onPress={() => handleSwapToSelect(currency)}>
+                        <View style={styles.currencyIcon}>
+                          <FlagSelect country={currency.currency} />
+                        </View>
+                        <View>
+                          <BoldText>{currency.acronym}</BoldText>
+                          <RegularText style={styles.currencyName}>
+                            {currency.currency}
+                          </RegularText>
+                        </View>
+                      </Pressable>
+                    ))}
                 </View>
-              </View>
-              <View style={styles.button}>
-                <Button text="Continue" onPress={handleContinue} />
+              </Modal>
+            </View>
+          </View>
+          <View style={styles.rate}>
+            <BoldText>Current Rate:</BoldText>
+            <RegularText>
+              1{swapFrom.symbol} = {swapTo.symbol}
+              {currencyRate()?.startsWith('0')
+                ? Number(currencyRate()).toFixed(4)
+                : Number(currencyRate()).toFixed(2)}
+            </RegularText>
+          </View>
+          <View style={styles.swapInputContainer}>
+            <View>
+              <RegularText style={styles.label}>Amount to top up</RegularText>
+              <View style={styles.textInputContainer}>
+                <BoldText style={styles.symbol}>{swapFrom.symbol}</BoldText>
+                <TextInput
+                  style={{
+                    ...styles.textInput,
+                    borderColor: errorkey ? 'red' : '#ccc',
+                  }}
+                  inputMode="numeric"
+                  onChangeText={text => handlePriceInput(text)}
+                  onBlur={handleAutoFill}
+                  value={value}
+                  placeholder="Amount to swap"
+                  placeholderTextColor={'#525252'}
+                />
+                {errorMessage && (
+                  <ErrorMessage
+                    errorMessage={errorMessage}
+                    style={styles.errorMessage}
+                  />
+                )}
               </View>
             </View>
-          )}
-        </ScrollView>
+            <RegularText style={styles.label}>
+              Amount you will recieve
+            </RegularText>
+            <View style={styles.textInputContainer}>
+              <BoldText style={styles.symbol}>{swapTo.symbol}</BoldText>
+              <View style={{ ...styles.textInput, ...styles.toReceive }}>
+                <RegularText>{toReceive || 'Amount to receive'}</RegularText>
+              </View>
+              <View style={styles.fee}>
+                <RegularText style={styles.feeText}>
+                  Service Charged
+                </RegularText>
+                <RegularText style={styles.feeText}>
+                  {swapFrom.symbol}
+                  {addingDecimal(fee.toLocaleString())}
+                </RegularText>
+              </View>
+            </View>
+          </View>
+          <View style={styles.button}>
+            <Button text="Continue" onPress={handleContinue} />
+          </View>
+        </View>
       </PageContainer>
       <Modal
         visible={modalOpen}
@@ -395,57 +477,110 @@ const SwapFunds = ({ navigation }) => {
         onRequestClose={handleModal}>
         <Pressable style={styles.overlay} onPress={handleModal} />
         <View style={styles.modalContainer}>
-          <View style={styles.modal}>
-            <View style={styles.modalBorder} />
-            <BoldText style={styles.modalTextHeader}>
-              Confirm Conversion
-            </BoldText>
-            <View style={styles.modalContent}>
-              <View style={styles.swapModal}>
-                <FlagSelect
-                  country={swapFrom.currency}
-                  style={styles.modalFlag}
-                />
-                <RegularText>From</RegularText>
-                <BoldText>
-                  {`${swapData.toSwap?.toLocaleString()} ${swapFrom.acronym}`}
-                </BoldText>
-              </View>
-              <View style={styles.modalIcon}>
-                <Arrow />
-              </View>
-              <View style={styles.swapModal}>
-                <FlagSelect
-                  country={swapTo.currency}
-                  style={styles.modalFlag}
-                />
-                <RegularText>Receive</RegularText>
-                <BoldText>
-                  {`${swapData.toReceive?.toLocaleString()} ${swapTo.acronym}`}
-                </BoldText>
-              </View>
-            </View>
-            <View style={styles.card}>
-              {transactionDetails.map(detail => (
-                <View style={styles.cardRow} key={detail.title}>
-                  <RegularText style={styles.cardKey}>
-                    {detail.title}
-                  </RegularText>
-                  <RegularText style={styles.cardValue}>
-                    {detail.value}
-                  </RegularText>
+          {!isSuccessful ? (
+            <View style={styles.modal}>
+              <View style={styles.modalBorder} />
+              <BoldText style={styles.modalTextHeader}>
+                Confirm Conversion
+              </BoldText>
+              <View style={styles.modalContent}>
+                <View style={styles.swapModal}>
+                  <FlagSelect
+                    country={swapFrom.currency}
+                    style={styles.modalFlag}
+                  />
+                  <RegularText>From</RegularText>
+                  <BoldText>
+                    {`${swapData.toSwap?.toLocaleString()} ${swapFrom.acronym}`}
+                  </BoldText>
                 </View>
-              ))}
+                <View style={styles.modalIcon}>
+                  <Arrow />
+                </View>
+                <View style={styles.swapModal}>
+                  <FlagSelect
+                    country={swapTo.currency}
+                    style={styles.modalFlag}
+                  />
+                  <RegularText>Receive</RegularText>
+                  <BoldText>
+                    {`${swapData.toReceive?.toLocaleString()} ${
+                      swapTo.acronym
+                    }`}
+                  </BoldText>
+                </View>
+              </View>
+              <View style={styles.card}>
+                {transactionDetails.map(detail => (
+                  <View style={styles.cardRow} key={detail.title}>
+                    <RegularText style={styles.cardKey}>
+                      {detail.title}
+                    </RegularText>
+                    <RegularText style={styles.cardValue}>
+                      {detail.value}
+                    </RegularText>
+                  </View>
+                ))}
+              </View>
+              {canSwap === true ? (
+                <Button
+                  text="Swap"
+                  onPress={handleSwap}
+                  style={styles.button}
+                />
+              ) : (
+                <Button
+                  text={`Swap (${canSwap}s)`}
+                  disabled={true}
+                  style={styles.button}
+                />
+              )}
+              <Pressable onPress={handleModal}>
+                <BoldText>Back</BoldText>
+              </Pressable>
             </View>
-            {typeof canSwap === 'boolean' ? (
-              <Button text="Swap" onPress={handleSwap} />
-            ) : (
-              <Button text={`Swap (${canSwap}s)`} disabled={true} />
-            )}
-            <Pressable onPress={handleModal}>
-              <BoldText>Back</BoldText>
-            </Pressable>
-          </View>
+          ) : (
+            <View style={styles.modal}>
+              <View>
+                <Check />
+              </View>
+              <BoldText style={styles.modalTextHeader}>
+                Swap Successful
+              </BoldText>
+              <View style={styles.modalContent}>
+                <View style={styles.swapModal}>
+                  <FlagSelect
+                    country={swapFrom.currency}
+                    style={styles.modalFlag}
+                  />
+                  <RegularText>From</RegularText>
+                  <BoldText>
+                    {`${swapData.toSwap?.toLocaleString()} ${swapFrom.acronym}`}
+                  </BoldText>
+                </View>
+                <View style={styles.modalIcon}>
+                  <Arrow />
+                </View>
+                <View style={styles.swapModal}>
+                  <FlagSelect
+                    country={swapTo.currency}
+                    style={styles.modalFlag}
+                  />
+                  <RegularText>Receive</RegularText>
+                  <BoldText>
+                    {`${swapData.toReceive?.toLocaleString()} ${
+                      swapTo.acronym
+                    }`}
+                  </BoldText>
+                </View>
+              </View>
+              <Button
+                text="Back Home"
+                style={styles.button}
+                onPress={handleGoBack}
+              />
+            </View>
+          )}
         </View>
       </Modal>
     </>
@@ -635,6 +770,7 @@ const styles = StyleSheet.create({
   },
   modalIcon: {
     marginBottom: 60,
+    marginLeft: 25,
   },
   card: {
     backgroundColor: '#E4E2E2',
@@ -654,6 +790,9 @@ const styles = StyleSheet.create({
   cardValue: {
     color: '#525252',
     fontSize: 16,
+  },
+  button: {
+    marginTop: 0,
   },
 });
 

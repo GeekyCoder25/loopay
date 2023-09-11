@@ -30,10 +30,10 @@ import saveSessionOptions from '../../services/Savesession';
 
 const Signin = ({ navigation }) => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    // email: 'toyibe25@gmail.com',
-    // password: '251101t',
+    // email: '',
+    // password: '',
+    email: 'toyibe25@gmail.com',
+    password: '251101t',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -94,59 +94,57 @@ const Signin = ({ navigation }) => {
   };
 
   return (
-    <PageContainer>
-      <ScrollView>
-        <View style={{ ...styles.container, minHeight: vh }}>
-          <View style={styles.headers}>
-            <Logo />
-          </View>
-          <View style={styles.form}>
-            <Header
-              title={'Login Information'}
-              text={'To continue, kindly complete the following details'}
+    <PageContainer scroll>
+      <View style={{ ...styles.container, minHeight: vh }}>
+        <View style={styles.headers}>
+          <Logo />
+        </View>
+        <View style={styles.form}>
+          <Header
+            title={'Login Information'}
+            text={'To continue, kindly complete the following details'}
+          />
+          {signInData.map(inputForm => (
+            <FormField
+              key={inputForm.name}
+              inputForm={inputForm}
+              formData={formData}
+              setFormData={setFormData}
+              editInput={editInput}
+              errorKey={errorKey}
+              setErrorKey={setErrorKey}
+              showRedBorder={errorMessage}
             />
-            {signInData.map(inputForm => (
-              <FormField
-                key={inputForm.name}
-                inputForm={inputForm}
-                formData={formData}
-                setFormData={setFormData}
-                editInput={editInput}
-                errorKey={errorKey}
-                setErrorKey={setErrorKey}
-                showRedBorder={errorMessage}
-              />
-            ))}
-            <ErrorMessage errorMessage={errorMessage} />
-            <SuccessMessage successMessage={successMessage} />
-            <View style={styles.forgetPressable}>
-              <Pressable onPress={() => navigation.navigate('ForgotPassword')}>
-                <BoldText style={styles.forget}>Forget Password?</BoldText>
-              </Pressable>
-            </View>
-          </View>
-          <View style={styles.actionButtons}>
-            <View style={styles.signInIcons}>
-              <Pressable onPress={() => console.log('apple was clicked')}>
-                <Apple />
-              </Pressable>
-              <Pressable onPress={() => console.log('google was clicked')}>
-                <Google />
-              </Pressable>
-            </View>
-            <View style={styles.already}>
-              <RegularText style={styles.alreadyText}>
-                Don&apos;t have an account?
-              </RegularText>
-              <Pressable onPress={() => navigation.replace('Signup')}>
-                <BoldText style={styles.signIn}>Sign up</BoldText>
-              </Pressable>
-            </View>
-            <Button text={'Log in'} onPress={handleLogin} />
+          ))}
+          <ErrorMessage errorMessage={errorMessage} />
+          <SuccessMessage successMessage={successMessage} />
+          <View style={styles.forgetPressable}>
+            <Pressable onPress={() => navigation.navigate('ForgotPassword')}>
+              <BoldText style={styles.forget}>Forget Password?</BoldText>
+            </Pressable>
           </View>
         </View>
-        <LoadingModal isLoading={isLoading} />
-      </ScrollView>
+        <View style={styles.actionButtons}>
+          <View style={styles.signInIcons}>
+            <Pressable onPress={() => console.log('apple was clicked')}>
+              <Apple />
+            </Pressable>
+            <Pressable onPress={() => console.log('google was clicked')}>
+              <Google />
+            </Pressable>
+          </View>
+          <View style={styles.already}>
+            <RegularText style={styles.alreadyText}>
+              Don&apos;t have an account?
+            </RegularText>
+            <Pressable onPress={() => navigation.replace('Signup')}>
+              <BoldText style={styles.signIn}>Sign up</BoldText>
+            </Pressable>
+          </View>
+          <Button text={'Log in'} onPress={handleLogin} />
+        </View>
+      </View>
+      <LoadingModal isLoading={isLoading} />
     </PageContainer>
   );
 };

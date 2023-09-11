@@ -7,6 +7,7 @@ import { AppContext } from '../components/AppContext';
 import HomeNavigator from './HomeNavigator';
 import WalletContextComponent from '../context/WalletContext';
 import BeneficiaryContextComponent from '../context/BenefiaciariesContext';
+import RequestFundsContextComponent from '../context/RequestContext';
 const BottomTabs = () => {
   const { showTabBar, appData, setAppData } = useContext(AppContext);
   const Tab = createBottomTabNavigator();
@@ -23,21 +24,23 @@ const BottomTabs = () => {
   return (
     <WalletContextComponent>
       <BeneficiaryContextComponent>
-        <Tab.Navigator
-          screenOptions={{
-            headerShown: false,
-            tabBarStyle: { display: 'none' },
-          }}
-          backBehavior="initialRoute"
-          tabBar={showTabBar ? TabBar : () => null}>
-          <Tab.Screen name="HomeNavigator" component={HomeNavigator} />
-          <Tab.Screen
-            name="SendMenuNavigator"
-            component={SendMenuNavigator}
-            options={{ tabBarStyle: null }}
-          />
-          <Tab.Screen name="MenuNavigator" component={MenuNavigator} />
-        </Tab.Navigator>
+        <RequestFundsContextComponent>
+          <Tab.Navigator
+            screenOptions={{
+              headerShown: false,
+              tabBarStyle: { display: 'none' },
+            }}
+            backBehavior="initialRoute"
+            tabBar={showTabBar ? TabBar : () => null}>
+            <Tab.Screen name="HomeNavigator" component={HomeNavigator} />
+            <Tab.Screen
+              name="SendMenuNavigator"
+              component={SendMenuNavigator}
+              options={{ tabBarStyle: null }}
+            />
+            <Tab.Screen name="MenuNavigator" component={MenuNavigator} />
+          </Tab.Navigator>
+        </RequestFundsContextComponent>
       </BeneficiaryContextComponent>
     </WalletContextComponent>
   );

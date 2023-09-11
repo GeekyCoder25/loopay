@@ -29,7 +29,7 @@ const Success = ({ navigation, route }) => {
       return navigation.navigate('Dashboard');
     }
     navigation.popToTop();
-    // navigation.navigate('HomeNavigator');
+    navigation.navigate('HomeNavigator');
   };
   return (
     <PageContainer>

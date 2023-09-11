@@ -9,6 +9,7 @@ const AdminContextComponent = ({ children }) => {
   const { setIsLoading } = useContext(AppContext);
   const [adminData, setAdminData] = useState(null);
   const [refetch, setRefetch] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const fetchAdminDatas = async () => {
     try {
@@ -35,7 +36,8 @@ const AdminContextComponent = ({ children }) => {
   }, [refetch]);
 
   return (
-    <AdminContext.Provider value={{ adminData, setAdminData, setRefetch }}>
+    <AdminContext.Provider
+      value={{ adminData, setAdminData, setRefetch, modalOpen, setModalOpen }}>
       {adminData && children}
     </AdminContext.Provider>
   );

@@ -1,11 +1,4 @@
-import {
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import PageContainer from '../../components/PageContainer';
 import AccInfoCard from '../../components/AccInfoCard';
 import RegularText from '../../components/fonts/RegularText';
@@ -26,78 +19,72 @@ const AccStatement = () => {
   };
   const formatType = ['csv', 'pdf'];
   return (
-    <PageContainer padding={true} paddingTop={0}>
-      <ScrollView style={styles.body}>
-        <AccInfoCard />
-        <RegularText style={styles.headerText}>Account Statement</RegularText>
-        <RegularText>Select Currency</RegularText>
-        <Pressable
-          onPress={() => setModalOpen(true)}
-          style={styles.selectCurrencyContainer}>
-          <View style={styles.textInput}>
-            <View style={styles.dateTextContainer}>
-              <FlagSelect country={selectedCurrency.currency} />
-              <RegularText>{selectedCurrency.currency} Balance</RegularText>
-            </View>
-            <ChevronDown />
+    <PageContainer padding={true} paddingTop={0} style={styles.body} scroll>
+      <AccInfoCard />
+      <RegularText style={styles.headerText}>Account Statement</RegularText>
+      <RegularText>Select Currency</RegularText>
+      <Pressable
+        onPress={() => setModalOpen(true)}
+        style={styles.selectCurrencyContainer}>
+        <View style={styles.textInput}>
+          <View style={styles.dateTextContainer}>
+            <FlagSelect country={selectedCurrency.currency} />
+            <RegularText>{selectedCurrency.currency} Balance</RegularText>
           </View>
-        </Pressable>
-        <SelectCurrencyModal
-          modalOpen={modalOpen}
-          setModalOpen={setModalOpen}
-        />
-        <Text style={styles.topUp}>Start Date</Text>
-        <Pressable onPress={handleDatePicker} style={styles.textInputContainer}>
-          <View style={{ ...styles.textInput, ...styles.textInputStyles }}>
-            <View style={styles.dateTextContainer}>
-              <View style={styles.calendarIcon}>
-                <CalendarIcon width={30} height={30} />
-                <RegularText style={styles.newDate}>
-                  {new Date().getDate()}
-                </RegularText>
-              </View>
-              <RegularText>DD/MM/YY</RegularText>
-            </View>
-          </View>
-        </Pressable>
-        <Text style={styles.topUp}>End Date</Text>
-        <Pressable style={styles.textInputContainer} onPress={handleDatePicker}>
-          <View style={{ ...styles.textInput, ...styles.textInputStyles }}>
-            <View style={styles.dateTextContainer}>
-              <View style={styles.calendarIcon}>
-                <CalendarIcon width={30} height={30} />
-                <RegularText style={styles.newDate}>
-                  {new Date().getDate()}
-                </RegularText>
-              </View>
-              <RegularText>DD/MM/YY</RegularText>
-            </View>
-          </View>
-        </Pressable>
-        <Text style={styles.topUp}>Format Type</Text>
-        <View style={styles.formatType}>
-          {formatType.map(type => (
-            <Pressable key={type} onPress={() => setSelectedFormatType(type)}>
-              <BoldText
-                style={
-                  selectedFormatType === type
-                    ? styles.typeSelected
-                    : styles.typeUnselected
-                }>
-                {type}
-              </BoldText>
-            </Pressable>
-          ))}
+          <ChevronDown />
         </View>
-      </ScrollView>
+      </Pressable>
+      <SelectCurrencyModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+      <Text style={styles.topUp}>Start Date</Text>
+      <Pressable onPress={handleDatePicker} style={styles.textInputContainer}>
+        <View style={{ ...styles.textInput, ...styles.textInputStyles }}>
+          <View style={styles.dateTextContainer}>
+            <View style={styles.calendarIcon}>
+              <CalendarIcon width={30} height={30} />
+              <RegularText style={styles.newDate}>
+                {new Date().getDate()}
+              </RegularText>
+            </View>
+            <RegularText>DD/MM/YY</RegularText>
+          </View>
+        </View>
+      </Pressable>
+      <Text style={styles.topUp}>End Date</Text>
+      <Pressable style={styles.textInputContainer} onPress={handleDatePicker}>
+        <View style={{ ...styles.textInput, ...styles.textInputStyles }}>
+          <View style={styles.dateTextContainer}>
+            <View style={styles.calendarIcon}>
+              <CalendarIcon width={30} height={30} />
+              <RegularText style={styles.newDate}>
+                {new Date().getDate()}
+              </RegularText>
+            </View>
+            <RegularText>DD/MM/YY</RegularText>
+          </View>
+        </View>
+      </Pressable>
+      <Text style={styles.topUp}>Format Type</Text>
+      <View style={styles.formatType}>
+        {formatType.map(type => (
+          <Pressable key={type} onPress={() => setSelectedFormatType(type)}>
+            <BoldText
+              style={
+                selectedFormatType === type
+                  ? styles.typeSelected
+                  : styles.typeUnselected
+              }>
+              {type}
+            </BoldText>
+          </Pressable>
+        ))}
+      </View>
     </PageContainer>
   );
 };
 const styles = StyleSheet.create({
   body: {
     gap: 15,
-    flex: 1,
-    paddingHorizontal: 2 + '%',
+    paddingHorizontal: 5 + '%',
   },
   headerText: {
     fontSize: 24,

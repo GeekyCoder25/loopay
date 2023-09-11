@@ -5,7 +5,7 @@ import SwapFunds from '../pages/SendMenuPages/SwapFunds';
 import VirtualCard from '../pages/SendMenuPages/VirtualCard';
 import AccStatement from '../pages/SendMenuPages/AccStatement';
 import Back from '../components/Back';
-import AddMoneyConfirm from '../pages/SendMenuPages/AddMoneyConfirm';
+import AddMoneyConfirm from '../pages/SendMenuPages/AddMoney/AddMoneyConfirm';
 import BuyAirtime from '../pages/SendMenuPages/AirtimeTopUp/BuyAirtime';
 import PayABill from '../pages/SendMenuPages/PayABill';
 import PayABillParams from '../pages/SendMenuPages/PayABill/PayABillParams';
@@ -17,6 +17,10 @@ import TransferFunds from '../pages/SendMenuPages/SendMoney/TransferFunds';
 import VirtualCardDetails from '../pages/SendMenuPages/VirtualCardDetails';
 import TransactionPin from '../pages/MenuPages/TransactionPin';
 import TransferAirtime from '../pages/SendMenuPages/AirtimeTopUp/TransferAirtime';
+import RequestFund from '../pages/SendMenuPages/RequestFund';
+import RequestConfirm from '../pages/SendMenuPages/RequestFunds/RequestConfirm';
+import RequestSuccess from '../pages/SendMenuPages/RequestFunds/RequestSuccess';
+import AddNewCard from '../pages/SendMenuPages/AddMoney/AddNewCard';
 
 const SendMenuNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -37,6 +41,7 @@ const SendMenuNavigator = () => {
       />
       <Stack.Screen name="AddMoney" component={AddMoney} />
       <Stack.Screen name="AddMoneyConfirm" component={AddMoneyConfirm} />
+      <Stack.Screen name="AddNewCard" component={AddNewCard} />
       <Stack.Screen
         name="SendMoneyNavigator"
         component={SendMoneyNavigator}
@@ -61,6 +66,13 @@ const SendMenuNavigator = () => {
       <Stack.Screen
         name="SwapFunds"
         component={SwapFunds}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen name="RequestFund" component={RequestFund} />
+      <Stack.Screen name="RequestConfirm" component={RequestConfirm} />
+      <Stack.Screen
+        name="RequestSuccess"
+        component={RequestSuccess}
         options={{ headerShown: false }}
       />
       <Stack.Screen name="AirtimeTopup" component={AirtimeTopUp} />

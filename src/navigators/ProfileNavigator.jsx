@@ -21,12 +21,12 @@ const ProfileNavigator = () => {
         ),
       }}>
       <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="Myinfo" component={MyInfo} />
       <Stack.Screen name="Withdraw" component={Withdraw} />
       <Stack.Screen name="Password" component={ChangePassword} />
       <Stack.Screen name="Pin" component={TransactionPin} />
       <Stack.Screen name="Limit" component={Limit} />
       <Stack.Screen name="Questions" component={Questions} />
-      <Stack.Screen name="Myinfo" component={MyInfo} />
       {/* <Stack.Screen name="Biometric" component={MyInfo} /> */}
       <Stack.Screen name="AddWithdraw" component={AddWithdraw} />
     </Stack.Navigator>

@@ -295,8 +295,8 @@ const Transaction = ({ transaction }) => {
   }
 
   const currencySymbol = allCurrencies.find(
-    id => currency.toLowerCase() === id.acronym.toLowerCase(),
-  ).symbol;
+    id => currency === id.currency || currency === id.acronym,
+  )?.symbol;
 
   return transactionType?.toLowerCase() === 'credit' ? (
     <Pressable

@@ -1,8 +1,12 @@
 import React, { useContext, useEffect } from 'react';
-import { View, StyleSheet, ActivityIndicator, Pressable } from 'react-native';
-import Logo from '../../assets/images/logoDark.svg';
+import {
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  Pressable,
+  Image,
+} from 'react-native';
 import CustomBackground from '../components/CustomBackground';
-import RegularText from './fonts/RegularText';
 import {
   getIsLoggedIn,
   getSessionID,
@@ -10,7 +14,7 @@ import {
   logoutUser,
 } from '../../utils/storage';
 import { AppContext } from './AppContext';
-import { apiUrl, deleteFetchData, putFetchData } from '../../utils/fetchAPI';
+import { apiUrl, deleteFetchData } from '../../utils/fetchAPI';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 
 const Splash = ({ navigation }) => {
@@ -101,14 +105,19 @@ const Splash = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <CustomBackground />
-      <View style={styles.logo}>
+      {/* <View style={styles.logo}>
         <Logo width={vw * 0.7} height={vw * 0.14} />
         <RegularText
           style={{ ...styles.subText, fontSize: Math.round(vw * 0.035) }}>
           ...your favorite midnight pay pal
         </RegularText>
-      </View>
+      </View> */}
+      <View style={styles.logo} />
+      <Image
+        source={require('../../assets/images/splash.png')}
+        resizeMode="contain"
+        style={{ width: vw * 1.2, height: vw * 1.2 }}
+      />
       {internetStatus || isChecking ? (
         <ActivityIndicator
           color={'#1e1e1e'}
@@ -120,6 +129,7 @@ const Splash = ({ navigation }) => {
           <FaIcon name="refresh" size={35} color={'#1e1e1e'} />
         </Pressable>
       )}
+      <CustomBackground />
     </View>
   );
 };
@@ -127,12 +137,12 @@ const Splash = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#cccccc',
+    backgroundColor: '#ccc',
     alignItems: 'center',
     justifyContent: 'center',
   },
   logo: {
-    flex: 1.3,
+    flex: 1,
     justifyContent: 'flex-end',
   },
   subText: {
@@ -145,6 +155,7 @@ const styles = StyleSheet.create({
   },
   activity: {
     flex: 1,
+    justifyContent: 'flex-start',
   },
   reload: {
     flex: 1,

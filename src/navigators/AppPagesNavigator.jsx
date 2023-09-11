@@ -21,7 +21,12 @@ const AppPagesNavigator = () => {
   getNotFirstTime().then(result => setNotFirstTime(result));
 
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      theme={{
+        colors: {
+          background: '#fff',
+        },
+      }}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {/* <Stack.Screen name="Ssplash" component={BuyData} /> */}
         <Stack.Screen name="Splash" component={Splash} />

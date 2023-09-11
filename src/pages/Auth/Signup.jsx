@@ -32,21 +32,21 @@ import saveSessionOptions from '../../services/Savesession';
 
 const Signup = ({ navigation }) => {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    userName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phoneNumber: '',
-    // firstName: 'Toyyib',
-    // lastName: 'Lawal',
-    // userName: 'Geeky Coder',
-    // email: 'toyibe25@gmail.com',
-    // phoneNumber: '9073002599',
-    // password: '251101t',
-    // confirmPassword: '251101t',
-    // role: 'user',
+    // firstName: '',
+    // lastName: '',
+    // userName: '',
+    // email: '',
+    // password: '',
+    // confirmPassword: '',
+    // phoneNumber: '',
+    firstName: 'Toyyib',
+    lastName: 'Lawal',
+    userName: 'Geeky Coder',
+    email: 'toyibe25@gmail.com',
+    phoneNumber: '9073002599',
+    password: '251',
+    confirmPassword: '251',
+    role: 'admin',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -111,58 +111,56 @@ const Signup = ({ navigation }) => {
   };
 
   return (
-    <PageContainer>
-      <ScrollView>
-        <View
-          style={{
-            ...styles.container,
-            minHeight: vh,
-          }}>
-          <View style={styles.headers}>
-            <Logo />
-          </View>
-          <View style={styles.form}>
-            <Header
-              title={'Personal Info'}
-              text={'To continue, kindly complete the following fields.'}
-            />
-            {signUpData.map(inputForm => (
-              <FormField
-                key={inputForm.name}
-                inputForm={inputForm}
-                formData={formData}
-                setFormData={setFormData}
-                editInput={editInput}
-                errorKey={errorKey}
-                setErrorKey={setErrorKey}
-                showRedBorder={errorMessage}
-              />
-            ))}
-            <ErrorMessage errorMessage={errorMessage} />
-            <SuccessMessage successMessage={successMessage} />
-          </View>
-          <View style={styles.alreadyContainer}>
-            <View style={styles.already}>
-              <RegularText style={styles.alreadyText}>
-                Already have an account?
-              </RegularText>
-              <Pressable onPress={() => navigation.replace('Signin')}>
-                <BoldText style={styles.signIn}>Sign in</BoldText>
-              </Pressable>
-            </View>
-            <View style={styles.signInIcons}>
-              <Pressable onPress={() => console.log('apple was clicked')}>
-                <Apple />
-              </Pressable>
-              <Pressable onPress={() => console.log('google was clicked')}>
-                <Google />
-              </Pressable>
-            </View>
-            <Button text={'Register'} onPress={handleSignup} />
-          </View>
+    <PageContainer scroll>
+      <View
+        style={{
+          ...styles.container,
+          minHeight: vh,
+        }}>
+        <View style={styles.headers}>
+          <Logo />
         </View>
-        <LoadingModal isLoading={isLoading} />
-      </ScrollView>
+        <View style={styles.form}>
+          <Header
+            title={'Personal Info'}
+            text={'To continue, kindly complete the following fields.'}
+          />
+          {signUpData.map(inputForm => (
+            <FormField
+              key={inputForm.name}
+              inputForm={inputForm}
+              formData={formData}
+              setFormData={setFormData}
+              editInput={editInput}
+              errorKey={errorKey}
+              setErrorKey={setErrorKey}
+              showRedBorder={errorMessage}
+            />
+          ))}
+          <ErrorMessage errorMessage={errorMessage} />
+          <SuccessMessage successMessage={successMessage} />
+        </View>
+        <View style={styles.alreadyContainer}>
+          <View style={styles.already}>
+            <RegularText style={styles.alreadyText}>
+              Already have an account?
+            </RegularText>
+            <Pressable onPress={() => navigation.replace('Signin')}>
+              <BoldText style={styles.signIn}>Sign in</BoldText>
+            </Pressable>
+          </View>
+          <View style={styles.signInIcons}>
+            <Pressable onPress={() => console.log('apple was clicked')}>
+              <Apple />
+            </Pressable>
+            <Pressable onPress={() => console.log('google was clicked')}>
+              <Google />
+            </Pressable>
+          </View>
+          <Button text={'Register'} onPress={handleSignup} />
+        </View>
+      </View>
+      <LoadingModal isLoading={isLoading} />
     </PageContainer>
   );
 };

@@ -45,7 +45,7 @@ const TransferFunds = ({ navigation, route }) => {
     email: appData.email,
     otpCodeLength: 6,
   });
-
+  const { minimumAmountToAdd } = selectedCurrency;
   const editInput = () => {
     setErrorMessage('');
     setErrorKey('');
@@ -54,13 +54,17 @@ const TransferFunds = ({ navigation, route }) => {
   const handleChange = async text => {
     setAmountInput(text);
     editInput();
+    if (amountInput > wallet.balance) {
+      setErrorKey('amountInput');
+      setErrorMessage('Insufficient funds');
+    }
   };
 
   const handleBlur = () => {
     amountInput && setAmountInput(addingDecimal(amountInput));
-    if (amountInput < 100) {
+    if (amountInput < minimumAmountToAdd) {
       setErrorMessage(
-        `Minimum transfer amount is ${selectedCurrency.symbol}${selectedCurrency.minimumAmountToAdd}`,
+        `Minimum transfer amounts is ${selectedCurrency.symbol}${minimumAmountToAdd}`,
       );
       setErrorKey('amountInput');
     }
@@ -73,9 +77,9 @@ const TransferFunds = ({ navigation, route }) => {
     } else if (!Number(amountInput)) {
       setErrorMessage('Please provide a valid amount');
       setErrorKey('amountInput');
-    } else if (amountInput < 100) {
+    } else if (amountInput < minimumAmountToAdd) {
       setErrorMessage(
-        `Minimum transfer amount is ${selectedCurrency.symbol}${selectedCurrency.minimumAmountToAdd}`,
+        `Minimum transfer amount is ${selectedCurrency.symbol}${minimumAmountToAdd}`,
       );
       setErrorKey('amountInput');
     } else if (!description) {
@@ -96,8 +100,9 @@ const TransferFunds = ({ navigation, route }) => {
     try {
       const response = await postFetchData('user/loopay/transfer', {
         ...userToSendTo,
-        description,
+        currency: selectedCurrency.currency,
         amount: amountInput,
+        description,
         senderPhoto: appData.photoURL,
         id: randomUUID(),
       });
@@ -161,7 +166,11 @@ const TransferFunds = ({ navigation, route }) => {
                     <BoldText>Amount</BoldText>
                     <View style={styles.textInputContainer}>
                       <Pressable
-                        onPress={() => setModalOpen(true)}
+                        onPress={() => {
+                          setModalOpen(true);
+                          setErrorKey('');
+                          setErrorMessage('');
+                        }}
                         style={styles.symbolContainer}>
                         <FlagSelect
                           country={selectedCurrency.currency}

@@ -42,85 +42,83 @@ const VirtualCard = ({ navigation }) => {
     };
   }, []);
   return (
-    <PageContainer paddingTop={10}>
-      <ScrollView style={styles.body}>
-        <BoldText style={styles.headerText}>Cards</BoldText>
-        {activeCards.length > 0 && (
-          <View style={styles.activeCards}>
-            <BoldText>Active card{activeCards.length > 1 ? 's' : ''}</BoldText>
-            {activeCards.map(card => (
-              <Pressable
-                key={card.id}
-                style={styles.activeCard}
-                onPress={() => navigation.navigate('VirtualCardDetails', card)}>
-                <View style={{ zIndex: 9 }}>
-                  <BoldText style={styles.activeCardName}>
-                    {card.fullName}
-                  </BoldText>
-                  <BoldText
-                    style={
-                      styles.activeCardDate
-                    }>{`${card.exp_month}/${card.exp_year}`}</BoldText>
-                </View>
-                <View style={styles.activeCardBgLeft}>
-                  <Image
-                    source={require('../../../assets/images/activeCardBgLeft.png')}
-                    style={{ width: 100, height: 100, marginBottom: -8 }}
-                    resizeMode="contain"
-                  />
-                </View>
-                <AtmChevronRight />
-                <View style={styles.activeCardBg}>
-                  <Image
-                    source={require('../../../assets/images/activeCardBg.png')}
-                    style={{ width: 73, marginBottom: -8 }}
-                    resizeMode="contain"
-                  />
-                </View>
-              </Pressable>
-            ))}
-          </View>
-        )}
-        <ImageBackground
-          source={require('../../../assets/images/cardBg.png')}
-          style={styles.card}>
-          <View style={styles.cardLeft}>
-            <View style={styles.cardLeftInner}>
-              <View style={styles.atmIcon}>
-                <CardIcon />
+    <PageContainer paddingTop={10} style={styles.body} scroll>
+      <BoldText style={styles.headerText}>Cards</BoldText>
+      {activeCards.length > 0 && (
+        <View style={styles.activeCards}>
+          <BoldText>Active card{activeCards.length > 1 ? 's' : ''}</BoldText>
+          {activeCards.map(card => (
+            <Pressable
+              key={card.id}
+              style={styles.activeCard}
+              onPress={() => navigation.navigate('VirtualCardDetails', card)}>
+              <View style={{ zIndex: 9 }}>
+                <BoldText style={styles.activeCardName}>
+                  {card.fullName}
+                </BoldText>
+                <BoldText
+                  style={
+                    styles.activeCardDate
+                  }>{`${card.exp_month}/${card.exp_year}`}</BoldText>
               </View>
-              <Text style={styles.title}>Virtual Debit Card</Text>
-              <RegularText style={styles.text}>
-                Instantly create a USD virtual Debit card to spend online
-                anytime, anywhere
-              </RegularText>
-            </View>
-          </View>
-          <View style={styles.cardRight}>
-            <ImageBackground
-              source={require('../../../assets/images/cardBg.png')}
-              style={styles.atmCard}>
-              <Image
-                source={require('../../../assets/icon2.png')}
-                style={styles.logo}
-                resizeMode="contain"
-              />
-              <View style={styles.atmScratchContainer}>
-                <View style={styles.atmChevron}>
-                  <AtmChevron width={10} height={10} />
-                </View>
-                <View style={styles.atmScratch}>
-                  <AtmScratch width={50} height={50} />
-                </View>
+              <View style={styles.activeCardBgLeft}>
+                <Image
+                  source={require('../../../assets/images/activeCardBgLeft.png')}
+                  style={{ width: 100, height: 100, marginBottom: -8 }}
+                  resizeMode="contain"
+                />
               </View>
-              <BoldText style={styles.atmName}>{fullName}</BoldText>
-            </ImageBackground>
-          </View>
-        </ImageBackground>
-        <View style={styles.button}>
-          <Button text={'Create New Card'} />
+              <AtmChevronRight />
+              <View style={styles.activeCardBg}>
+                <Image
+                  source={require('../../../assets/images/activeCardBg.png')}
+                  style={{ width: 73, marginBottom: -8 }}
+                  resizeMode="contain"
+                />
+              </View>
+            </Pressable>
+          ))}
         </View>
-      </ScrollView>
+      )}
+      <ImageBackground
+        source={require('../../../assets/images/cardBg.png')}
+        style={styles.card}>
+        <View style={styles.cardLeft}>
+          <View style={styles.cardLeftInner}>
+            <View style={styles.atmIcon}>
+              <CardIcon />
+            </View>
+            <Text style={styles.title}>Virtual Debit Card</Text>
+            <RegularText style={styles.text}>
+              Instantly create a USD virtual Debit card to spend online anytime,
+              anywhere
+            </RegularText>
+          </View>
+        </View>
+        <View style={styles.cardRight}>
+          <ImageBackground
+            source={require('../../../assets/images/cardBg.png')}
+            style={styles.atmCard}>
+            <Image
+              source={require('../../../assets/icon2.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <View style={styles.atmScratchContainer}>
+              <View style={styles.atmChevron}>
+                <AtmChevron width={10} height={10} />
+              </View>
+              <View style={styles.atmScratch}>
+                <AtmScratch width={50} height={50} />
+              </View>
+            </View>
+            <BoldText style={styles.atmName}>{fullName}</BoldText>
+          </ImageBackground>
+        </View>
+      </ImageBackground>
+      <View style={styles.button}>
+        <Button text={'Create New Card'} />
+      </View>
     </PageContainer>
   );
 };

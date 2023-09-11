@@ -7,7 +7,7 @@ import Pound from '../../assets/images/flag-gp.svg';
 const FlagSelect = ({ country, style }) => {
   const selectFlag = () => {
     switch (country) {
-      case 'Naira':
+      case 'naira':
         return (
           <Naira
             style={style}
@@ -15,7 +15,7 @@ const FlagSelect = ({ country, style }) => {
             height={style?.height || 30}
           />
         );
-      case 'Dollar':
+      case 'dollar':
         return (
           <Dollar
             style={style}
@@ -23,7 +23,7 @@ const FlagSelect = ({ country, style }) => {
             height={style?.height || 30}
           />
         );
-      case 'Euro':
+      case 'euro':
         return (
           <Euro
             style={style}
@@ -31,7 +31,7 @@ const FlagSelect = ({ country, style }) => {
             height={style?.height || 30}
           />
         );
-      case 'Pound':
+      case 'pound':
         return (
           <Pound
             style={style}

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import { useContext, useEffect, useState } from 'react';
 import AccInfoCard from '../../../components/AccInfoCard';
 import PageContainer from '../../../components/PageContainer';
@@ -21,6 +22,7 @@ import SwitchOff from '../../../../assets/images/switchOff.svg';
 import { postFetchData } from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
 import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';
+import ErrorMessage from '../../../components/ErrorMessage';
 
 const SendNew = ({ navigation, route }) => {
   const { appData } = useContext(AppContext);
@@ -31,6 +33,7 @@ const SendNew = ({ navigation, route }) => {
   const [saveAsBeneficiary, setSaveAsBeneficiary] = useState(true);
   const [userFound, setUserFound] = useState(null);
   const [newBeneficiary, setNewBeneficiary] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const getClipboard = async () => {
@@ -63,6 +66,7 @@ const SendNew = ({ navigation, route }) => {
 
   const handleChange = async text => {
     try {
+      setErrorMessage('');
       setinputValue(text);
       if (text.length === 10) {
         setIsSearching(true);
@@ -83,6 +87,7 @@ const SendNew = ({ navigation, route }) => {
           // }
           return setUserFound(result.data);
         }
+        setErrorMessage(result.data);
       } else {
         return setUserFound(null);
       }
@@ -129,6 +134,9 @@ const SendNew = ({ navigation, route }) => {
             <ActivityIndicator size="small" color="#1E1E1E" />
           </View>
         )}
+        {errorMessage && (
+          <ErrorMessage errorMessage={errorMessage} style={styles.error} />
+        )}
         {!isSearching && userFound && (
           <View style={styles.userFoundContainer}>
             <RegularText style={styles.top}>Result</RegularText>
@@ -148,20 +156,6 @@ const SendNew = ({ navigation, route }) => {
                 <BoldText>{userFound.tagName || userFound.userName}</BoldText>
               </View>
             </View>
-            {/* {newBeneficiary && (
-              <View style={styles.beneficiary}>
-                <RegularText style={styles.save}>
-                  Save as beneficiary
-                </RegularText>
-                <Pressable onPress={() => setSaveAsBeneficiary(prev => !prev)}>
-                  {saveAsBeneficiary ? (
-                    <SwitchOn width={40} height={40} />
-                  ) : (
-                    <SwitchOff width={40} height={40} />
-                  )}
-                </Pressable>
-              </View>
-            )} */}
           </View>
         )}
         <Button
@@ -232,6 +226,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     padding: 5 + '%',
     marginTop: 10,
+  },
+  error: {
+    marginTop: 10,
+    marginBottom: 0,
   },
   userFoundContainer: {
     marginTop: 30,

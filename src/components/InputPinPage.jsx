@@ -3,22 +3,11 @@ import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 import ErrorMessage from './ErrorMessage';
 import Header from './Header';
 import { postFetchData } from '../../utils/fetchAPI';
-import {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from './AppContext';
 import Button from './Button';
 
-const InputPinPage = ({
-  setCanContinue,
-  setReload,
-  customPinFunc,
-  navigation,
-}) => {
+const InputPinPage = ({ setCanContinue, setReload, customPinFunc }) => {
   const codeLengths = [1, 2, 3, 4];
   const [focusIndex, setFocusIndex] = useState(1);
   const [pinCode, setPinCode] = useState('');
@@ -42,7 +31,7 @@ const InputPinPage = ({
         setErrorKey('pinCode');
         return setErrorMessage(result.data);
       }
-      if (result.status < 400) {
+      if (result.status === 200) {
         if (result.data === false) {
           return setErrorMessage('Invalid Pin');
         }
@@ -56,9 +45,7 @@ const InputPinPage = ({
       }, 1000);
     }
   };
-  useLayoutEffect(() => {
-    !appData.pin && navigation.replace('TransactionPin');
-  }, [appData.pin, navigation]);
+
   return (
     appData.pin && (
       <View style={styles.form}>
@@ -131,25 +118,20 @@ export const PINInputFields = ({
   errorKey,
   setErrorKey,
   codeLengths,
-  noFocus,
-  setNoFocus,
 }) => {
   const inputRef = useRef();
   const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
-    if (!noFocus) {
-      if (codeLength === focusIndex) {
-        inputRef.current.focus();
-        inputRef.current.clear();
-        setInputValue('');
-      }
+    if (codeLength === focusIndex) {
+      inputRef.current.focus();
+      setInputValue('');
     }
-  }, [focusIndex, codeLength, noFocus]);
+  }, [codeLength, focusIndex]);
 
   const handleKeyPress = ({ nativeEvent }) => {
     if (nativeEvent.key !== 'Backspace') {
-      if (focusIndex < codeLengths + 1) {
+      if (focusIndex < codeLengths) {
         setFocusIndex(prev => prev + 1);
       } else {
         Keyboard.dismiss();
@@ -173,15 +155,12 @@ export const PINInputFields = ({
       value={inputValue}
       inputMode="numeric"
       maxLength={1}
-      autoFocus={!noFocus && codeLength === focusIndex}
+      autoFocus={codeLength === focusIndex}
       ref={inputRef}
       onChangeText={text => {
         setInputValue(text);
         setPinCode(prev => `${prev}${text}`);
-        codeLengths + 1 === focusIndex &&
-          setNoFocus &&
-          setNoFocus(prev => !prev) &&
-          setFocusIndex(1);
+        codeLengths + 1 === focusIndex && setFocusIndex(1);
       }}
       onKeyPress={handleKeyPress}
       onFocus={() => {

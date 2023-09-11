@@ -1,19 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import {
-  ImageBackground,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { AppContext } from '../../components/AppContext';
 import Button from '../../components/Button';
 import BoldText from '../../components/fonts/BoldText';
-import WalletAmount from '../../components/WalletAmount';
 import FlagSelect from '../../components/FlagSelect';
 import RegularText from '../../components/fonts/RegularText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
@@ -27,6 +18,7 @@ import NoPInSet from '../../components/NoPinSet';
 import { randomUUID } from 'expo-crypto';
 import { useFocusEffect } from '@react-navigation/native';
 import ToastMessage from '../../components/ToastMessage';
+import AccInfoCard from '../../components/AccInfoCard';
 
 const Withdraw = ({ navigation }) => {
   const { appData, vh, selectedCurrency, setIsLoading } =
@@ -56,10 +48,16 @@ const Withdraw = ({ navigation }) => {
     React.useCallback(() => {
       getFetchData('user/savedbanks').then(response => {
         if (response.status === 200) {
-          return setAddedBanks(response.data);
+          return setAddedBanks(
+            response.data.filter(
+              bank =>
+                bank.currency === selectedCurrency.currency ||
+                bank.currency === selectedCurrency.acronym,
+            ),
+          );
         }
       });
-    }, []),
+    }, [selectedCurrency]),
   );
 
   const handleBlur = () => {
@@ -132,12 +130,14 @@ const Withdraw = ({ navigation }) => {
       setTimeout(() => {
         setPinCode('');
         setOtpCode('');
+        setFocusIndex(1);
         setReload(prev => !prev);
       }, 1500);
     } finally {
       setIsLoading(false);
     }
   };
+
   const initiateWithdrawal = async () => {
     try {
       const response = await postFetchData('user/transfer', {
@@ -150,7 +150,6 @@ const Withdraw = ({ navigation }) => {
       if (response.status === 200) {
         const balance = response.data.amount;
         setWallet(prev => {
-          //   return { ...prev, balance: prev.balance - Number(balance) };
           return { ...prev, balance: prev.balance - balance };
         });
         return navigation.replace('Success', {
@@ -169,176 +168,157 @@ const Withdraw = ({ navigation }) => {
 
   const fee = addingDecimal(`${50.25}`);
   return (
-    <PageContainer>
-      <ScrollView style={{ paddingHorizontal: 5 + '%' }}>
-        <View style={{ ...styles.container, minHeight: vh * 0.75 }}>
-          <ImageBackground
-            source={require('../../../assets/images/cardBg.png')}
-            resizeMode="cover"
-            style={styles.card}>
-            <View style={styles.cardHeader}>
-              <View style={styles.amountContainer}>
-                <View style={styles.symbolContainer}>
-                  <Text style={styles.symbol}>{selectedCurrency.symbol}</Text>
-                </View>
-                <View>
-                  <WalletAmount />
-                  <View style={styles.flagContainer}>
-                    <RegularText style={styles.currrencyType}>
-                      {selectedCurrency.currency}
-                    </RegularText>
-                    <FlagSelect country={selectedCurrency.currency} />
-                  </View>
-                </View>
-              </View>
-            </View>
-          </ImageBackground>
-          {!canContinue && (
-            <RegularText style={styles.headerText}>
-              In cases of insufficient fund, make to have swap to NGN before
-              placing withrawal.
-            </RegularText>
-          )}
-          {!bankSelected ? (
-            <>
-              <BoldText style={styles.paymentHeader}>Payment Bank</BoldText>
-              <View>
-                {addedBanks.length ? (
-                  addedBanks.map(bank => (
-                    <Pressable
-                      key={bank.accNo + bank.bankName}
-                      style={styles.bank}
-                      onPress={() => setBankSelected(bank)}>
-                      <View style={styles.bankDetails}>
-                        <RegularText style={styles.bankName}>
-                          {bank.name}
-                        </RegularText>
-                        <BoldText>{bank.accNo}</BoldText>
-                        <RegularText>{bank.bankName}</RegularText>
-                      </View>
-                      <FaIcon name="chevron-right" size={18} />
-                    </Pressable>
-                  ))
-                ) : (
-                  <View style={styles.noBank}>
-                    <BoldText>No payment bank has been added yet</BoldText>
-                  </View>
-                )}
-              </View>
-              <View style={styles.button}>
-                <Button
-                  text="Add new Payment Bank"
-                  onPress={() => navigation.navigate('AddWithdraw')}
-                />
-              </View>
-            </>
-          ) : !canContinue ? (
+    <PageContainer scroll>
+      <View style={{ ...styles.container, minHeight: vh * 0.75 }}>
+        <AccInfoCard />
+        {!canContinue && (
+          <RegularText style={styles.headerText}>
+            In cases of insufficient fund, make to have swap to NGN before
+            placing withrawal.
+          </RegularText>
+        )}
+        {!bankSelected ? (
+          <>
+            <BoldText style={styles.paymentHeader}>Payment Bank</BoldText>
             <View>
-              <View style={styles.form}>
-                <BoldText>Amount</BoldText>
-                <View style={styles.textInputContainer}>
-                  <View style={styles.textInputSymbolContainer}>
-                    <FlagSelect
-                      country={selectedCurrency.currency}
-                      style={styles.flag}
-                    />
-                    <BoldText style={styles.textInputSymbol}>
-                      {selectedCurrency.acronym}
-                    </BoldText>
-                  </View>
-                  <TextInput
-                    style={{
-                      ...styles.textInput,
-                      borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
-                    }}
-                    inputMode="numeric"
-                    value={amountInput}
-                    onChangeText={text => handleChange(text)}
-                    onBlur={handleBlur}
-                  />
-                </View>
-                <ErrorMessage errorMessage={errorMessage} />
-                <View style={styles.feeTextInputContainer}>
-                  <View style={styles.feeTextInput}>
-                    <RegularText>Loopay Withdrawal</RegularText>
-                  </View>
-                  <View style={styles.fee}>
-                    <RegularText style={styles.feeText}>
-                      Service Charged
-                    </RegularText>
-                    <RegularText style={styles.feeText}>
-                      {selectedCurrency.symbol}
-                      {fee}
-                    </RegularText>
-                  </View>
-                </View>
-              </View>
-              <View style={styles.button}>
-                <Button text="Withdraw" onPress={handleWithdraw} />
-              </View>
-            </View>
-          ) : (
-            <View>
-              <View style={styles.pinContainer} key={reload}>
-                {haveSetPin ? (
-                  <>
-                    <RegularText>Enter your transaction pin</RegularText>
-                    <View style={styles.changePinCodeLengthsContainer}>
-                      {codeLengths.map(input => (
-                        <PINInputFields
-                          key={input}
-                          codeLength={input}
-                          focusIndex={focusIndex}
-                          setFocusIndex={setFocusIndex}
-                          pinCode={pinCode}
-                          setPinCode={setPinCode}
-                          setErrorMessage={setErrorMessage}
-                          errorKey={errorKey}
-                          setErrorKey={setErrorKey}
-                          codeLengths={codeLengths.length}
-                        />
-                      ))}
+              {addedBanks.length ? (
+                addedBanks.map(bank => (
+                  <Pressable
+                    key={bank.accNo + bank.bankName}
+                    style={styles.bank}
+                    onPress={() => setBankSelected(bank)}>
+                    <View style={styles.bankDetails}>
+                      <RegularText style={styles.bankName}>
+                        {bank.name}
+                      </RegularText>
+                      <BoldText>{bank.accNo}</BoldText>
+                      <RegularText>{bank.bankName}</RegularText>
                     </View>
-                  </>
-                ) : (
-                  <NoPInSet
-                    otpCode={otpCode}
-                    setOtpCode={setOtpCode}
-                    setErrorMessage={setErrorMessage}
-                    errorKey={errorKey}
-                    setErrorKey={setErrorKey}
-                    otpResend={otpResend}
-                    setOtpResend={setOtpResend}
-                    otpTimeout={otpTimeout}
-                    setOtpTimeout={setOtpTimeout}
-                    formData={formData}
+                    <FaIcon name="chevron-right" size={18} />
+                  </Pressable>
+                ))
+              ) : (
+                <View style={styles.noBank}>
+                  <BoldText>No payment bank has been added yet</BoldText>
+                </View>
+              )}
+            </View>
+            <View style={styles.button}>
+              <Button
+                text="Add new Payment Bank"
+                onPress={() => navigation.navigate('AddWithdraw')}
+              />
+            </View>
+          </>
+        ) : !canContinue ? (
+          <View>
+            <View style={styles.form}>
+              <BoldText>Amount</BoldText>
+              <View style={styles.textInputContainer}>
+                <View style={styles.textInputSymbolContainer}>
+                  <FlagSelect
+                    country={selectedCurrency.currency}
+                    style={styles.flag}
                   />
-                )}
+                  <BoldText style={styles.textInputSymbol}>
+                    {selectedCurrency.acronym}
+                  </BoldText>
+                </View>
+                <TextInput
+                  style={{
+                    ...styles.textInput,
+                    borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
+                  }}
+                  inputMode="numeric"
+                  value={amountInput}
+                  onChangeText={text => handleChange(text)}
+                  onBlur={handleBlur}
+                />
               </View>
               <ErrorMessage errorMessage={errorMessage} />
-              <View style={styles.footer}>
-                <FooterCard
-                  userToSendTo={bankSelected}
-                  amountInput={`${Number(amountInput).toLocaleString()}${
-                    Number(amountInput).toLocaleString().includes('.')
-                      ? ''
-                      : '.00'
-                  }`}
-                  fee={fee}
-                />
-                <View style={styles.button}>
-                  <Button text={'Confirm'} onPress={handleConfirm} />
+              <View style={styles.feeTextInputContainer}>
+                <View style={styles.feeTextInput}>
+                  <RegularText>Loopay Withdrawal</RegularText>
+                </View>
+                <View style={styles.fee}>
+                  <RegularText style={styles.feeText}>
+                    Service Charged
+                  </RegularText>
+                  <RegularText style={styles.feeText}>
+                    {selectedCurrency.symbol}
+                    {fee}
+                  </RegularText>
                 </View>
               </View>
             </View>
-          )}
-        </View>
-      </ScrollView>
+            <View style={styles.button}>
+              <Button text="Withdraw" onPress={handleWithdraw} />
+            </View>
+          </View>
+        ) : (
+          <View>
+            <View style={styles.pinContainer} key={reload}>
+              {haveSetPin ? (
+                <>
+                  <RegularText>Enter your transaction pin</RegularText>
+                  <View style={styles.changePinCodeLengthsContainer}>
+                    {codeLengths.map(input => (
+                      <PINInputFields
+                        key={input}
+                        codeLength={input}
+                        focusIndex={focusIndex}
+                        setFocusIndex={setFocusIndex}
+                        pinCode={pinCode}
+                        setPinCode={setPinCode}
+                        setErrorMessage={setErrorMessage}
+                        errorKey={errorKey}
+                        setErrorKey={setErrorKey}
+                        codeLengths={codeLengths.length}
+                      />
+                    ))}
+                  </View>
+                </>
+              ) : (
+                <NoPInSet
+                  otpCode={otpCode}
+                  setOtpCode={setOtpCode}
+                  setErrorMessage={setErrorMessage}
+                  errorKey={errorKey}
+                  setErrorKey={setErrorKey}
+                  otpResend={otpResend}
+                  setOtpResend={setOtpResend}
+                  otpTimeout={otpTimeout}
+                  setOtpTimeout={setOtpTimeout}
+                  formData={formData}
+                />
+              )}
+            </View>
+            <ErrorMessage errorMessage={errorMessage} />
+            <View style={styles.footer}>
+              <FooterCard
+                userToSendTo={bankSelected}
+                amountInput={`${Number(amountInput).toLocaleString()}${
+                  Number(amountInput).toLocaleString().includes('.')
+                    ? ''
+                    : '.00'
+                }`}
+                fee={fee}
+              />
+              <View style={styles.button}>
+                <Button text={'Confirm'} onPress={handleConfirm} />
+              </View>
+            </View>
+          </View>
+        )}
+      </View>
     </PageContainer>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 5 + '%',
+  },
   card: {
     backgroundColor: '#000',
     height: 120,

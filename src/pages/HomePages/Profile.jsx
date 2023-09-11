@@ -93,6 +93,12 @@ const Profile = ({ navigation, children, route }) => {
 
   const profileRoutes = [
     {
+      routeName: 'Profile',
+      routeNavigate: 'Myinfo',
+      routeIcon: 'info',
+      routeDetails: 'View/Modify your profile information',
+    },
+    {
       routeName: 'Withdraw',
       routeNavigate: 'Withdraw',
       routeIcon: 'withdraw',
@@ -125,12 +131,6 @@ const Profile = ({ navigation, children, route }) => {
       routeDetails: 'Set up your secret questions',
     },
     {
-      routeName: 'Profile',
-      routeNavigate: 'Myinfo',
-      routeIcon: 'info',
-      routeDetails: 'View/Modify your profile information',
-    },
-    {
       routeName: 'Biometric Authentication',
       routeNavigate: 'Biometric',
       routeIcon: 'biometric',
@@ -139,96 +139,83 @@ const Profile = ({ navigation, children, route }) => {
   ];
 
   return (
-    <PageContainer>
-      <ScrollView style={{ paddingHorizontal: 5 + '%' }}>
-        <View style={styles.body}>
-          <UserIcon style={styles.userIcon} />
-          <Pressable onPress={selectImage} style={styles.userIconContainer}>
-            {appData.photo ? (
-              <FaIcon
-                name="edit"
-                size={25}
-                color="#000"
-                style={styles.faIcon}
-              />
-            ) : (
-              <FaIcon
-                name="plus"
-                size={25}
-                color="#000"
-                style={styles.faIcon}
-              />
-            )}
-          </Pressable>
-          <View>
-            <BoldText style={styles.name}>{fullName}</BoldText>
-            <RegularText style={styles.email}>{email}</RegularText>
-          </View>
-          <View style={styles.modalBorder} />
-          <RegularText style={styles.textHeader}>Loopay Tag</RegularText>
-          <View style={styles.tagContainer}>
-            {appData.tagName ? (
-              <>
-                <View style={styles.textContainer}>
-                  <View style={styles.tagNameContainer}>
-                    <View style={styles.tagName}>
-                      <BoldText>#{appData.tagName}</BoldText>
-                      <Pressable
-                        onPress={() => navigation.navigate('LoopayTag')}>
-                        <FaIcon name="edit" size={15} color={'#868585'} />
-                      </Pressable>
-                    </View>
-                    <RegularText style={styles.text}>
-                      Your unique Loopay tag
-                    </RegularText>
-                  </View>
-                  <View style={styles.tagIcon}>
-                    <Image
-                      source={require('../../../assets/images/pageBg.png')}
-                      resizeMode="cover"
-                      style={styles.bg}
-                    />
-                    <Tag />
-                  </View>
-                </View>
-              </>
-            ) : (
-              <>
-                <BoldText>Loopay Tags</BoldText>
-                <View style={styles.textContainer}>
-                  <RegularText style={styles.text}>
-                    Create a unique username to send and receive funds
-                  </RegularText>
-                  <View style={styles.tagIcon}>
-                    <Image
-                      source={require('../../../assets/images/pageBg.png')}
-                      resizeMode="cover"
-                      style={styles.bg2}
-                    />
-                    <Tag />
-                  </View>
-                </View>
-                <View style={styles.button}>
-                  <Button
-                    text={'Create Loopay Tag'}
-                    onPress={() => navigation.navigate('LoopayTag')}
-                  />
-                </View>
-              </>
-            )}
-          </View>
-
-          <View style={styles.childComponent}>{children}</View>
-          {route?.name === 'Profile' &&
-            profileRoutes.map(routePage => (
-              <RouteLink
-                key={routePage.routeIcon}
-                route={routePage}
-                navigation={navigation}
-              />
-            ))}
+    <PageContainer scroll={route.name === 'Profile' && 1}>
+      <View style={styles.body}>
+        <UserIcon style={styles.userIcon} />
+        <Pressable onPress={selectImage} style={styles.userIconContainer}>
+          {appData.photo ? (
+            <FaIcon name="edit" size={25} color="#000" style={styles.faIcon} />
+          ) : (
+            <FaIcon name="plus" size={25} color="#000" style={styles.faIcon} />
+          )}
+        </Pressable>
+        <View>
+          <BoldText style={styles.name}>{fullName}</BoldText>
+          <RegularText style={styles.email}>{email}</RegularText>
         </View>
-      </ScrollView>
+        <View style={styles.modalBorder} />
+        <RegularText style={styles.textHeader}>Loopay Tag</RegularText>
+        <View style={styles.tagContainer}>
+          {appData.tagName ? (
+            <>
+              <View style={styles.textContainer}>
+                <View style={styles.tagNameContainer}>
+                  <View style={styles.tagName}>
+                    <BoldText>#{appData.tagName}</BoldText>
+                    <Pressable onPress={() => navigation.navigate('LoopayTag')}>
+                      <FaIcon name="edit" size={15} color={'#868585'} />
+                    </Pressable>
+                  </View>
+                  <RegularText style={styles.text}>
+                    Your unique Loopay tag
+                  </RegularText>
+                </View>
+                <View style={styles.tagIcon}>
+                  <Image
+                    source={require('../../../assets/images/pageBg.png')}
+                    resizeMode="cover"
+                    style={styles.bg}
+                  />
+                  <Tag />
+                </View>
+              </View>
+            </>
+          ) : (
+            <>
+              <BoldText>Loopay Tags</BoldText>
+              <View style={styles.textContainer}>
+                <RegularText style={styles.text}>
+                  Create a unique username to send and receive funds
+                </RegularText>
+                <View style={styles.tagIcon}>
+                  <Image
+                    source={require('../../../assets/images/pageBg.png')}
+                    resizeMode="cover"
+                    style={styles.bg2}
+                  />
+                  <Tag />
+                </View>
+              </View>
+              <View style={styles.button}>
+                <Button
+                  text={'Create Loopay Tag'}
+                  onPress={() => navigation.navigate('LoopayTag')}
+                />
+              </View>
+            </>
+          )}
+        </View>
+
+        <View style={styles.childComponent}>{children}</View>
+        {route?.name === 'Profile' &&
+          profileRoutes.map(routePage => (
+            <RouteLink
+              key={routePage.routeIcon}
+              route={routePage}
+              navigation={navigation}
+            />
+          ))}
+      </View>
     </PageContainer>
   );
 };
@@ -238,6 +225,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 15,
     flex: 1,
+    paddingHorizontal: 5 + '%',
   },
   userIconContainer: {
     position: 'relative',

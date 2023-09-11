@@ -1,37 +1,54 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import PageContainer from '../../components/PageContainer';
 import { Image, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { AppContext } from '../../components/AppContext';
-import { getFetchData } from '../../../utils/fetchAPI';
 import UserIconSVG from '../../../assets/images/userMenu.svg';
+import { useNotificationsContext } from '../../context/NotificationContext';
 
 const Notification = () => {
   const { vh } = useContext(AppContext);
   const [focused, setFocused] = useState(false);
-  const [transactionHisiory, setTransactionHisiory] = useState([]);
-  useEffect(() => {
-    const getTransactions = async () => {
-      const response = await getFetchData('user/transaction?date=true');
-      if (response.status === 200) {
-        setTransactionHisiory(response.data);
+  const { notifications } = useNotificationsContext();
+
+  const groupNotificationsByDate = inputArray => {
+    const groupedByDate = {};
+
+    inputArray.forEach(notification => {
+      const dateObject = new Date(notification.createdAt);
+      const options = { month: 'short' };
+      const date = `${dateObject.getDate()} ${dateObject.toLocaleString(
+        'en-US',
+        options,
+      )} ${dateObject.getFullYear()}`;
+      if (!groupedByDate[date]) {
+        groupedByDate[date] = [];
       }
-    };
-    getTransactions();
-  }, []);
+      groupedByDate[date].push(notification);
+    });
+
+    const resultArray = Object.keys(groupedByDate).map(date => {
+      return {
+        date,
+        notifications: groupedByDate[date],
+      };
+    });
+
+    return resultArray;
+  };
 
   return (
-    <PageContainer justify={true}>
-      {transactionHisiory.length ? (
+    <PageContainer justify={true} flex>
+      {notifications.length ? (
         <ScrollView>
           <View
             style={{
               ...styles.container,
               minHeight: vh * 0.65,
             }}>
-            <BoldText style={styles.header}>Notification</BoldText>
+            <BoldText style={styles.header}>Notifications</BoldText>
             <View
               style={{
                 ...styles.textInputContainer,
@@ -48,13 +65,16 @@ const Notification = () => {
               />
             </View>
             <View style={styles.body}>
-              {transactionHisiory.map(dayHistory => (
-                <View key={dayHistory.date} style={styles.dateHistory}>
+              {groupNotificationsByDate(notifications).map(dayNotifiactions => (
+                <View key={dayNotifiactions.date} style={styles.dateHistory}>
                   <RegularText style={styles.date}>
-                    {dayHistory.date}
+                    {dayNotifiactions.date}
                   </RegularText>
-                  {dayHistory.histories.map(history => (
-                    <History key={history.id} history={history} />
+                  {dayNotifiactions.notifications.map(notification => (
+                    <Message
+                      key={notification.id}
+                      notification={notification}
+                    />
                   ))}
                 </View>
               ))}
@@ -64,7 +84,7 @@ const Notification = () => {
       ) : (
         <View style={styles.historyEmpty}>
           <BoldText style={styles.historyEmptyText}>
-            Your transaction histories will appear here
+            Your notifications will appear here
           </BoldText>
         </View>
       )}
@@ -148,16 +168,16 @@ const styles = StyleSheet.create({
 
 export default Notification;
 
-const History = ({ history }) => {
+const Message = ({ notification }) => {
   const {
-    senderName,
-    receiverName,
+    header,
+    message,
     senderPhoto,
     receiverPhoto,
     amount,
     transactionType,
     createdAt,
-  } = history;
+  } = notification;
   const date = new Date(createdAt);
   const historyTime = convertTo12HourFormat(
     `${date.getHours()}:${date.getMinutes()}`,
@@ -192,7 +212,8 @@ const History = ({ history }) => {
             </View>
           )}
           <View style={styles.historyContent}>
-            <BoldText>{senderName}</BoldText>
+            <BoldText>{header}</BoldText>
+            <RegularText>{message}</RegularText>
             <RegularText>{historyTime}</RegularText>
           </View>
           <View style={styles.amount}>
@@ -209,7 +230,8 @@ const History = ({ history }) => {
             </View>
           )}
           <View style={styles.historyContent}>
-            <BoldText>{receiverName}</BoldText>
+            <BoldText>{header}</BoldText>
+            <BoldText>{message}</BoldText>
             <RegularText>{historyTime}</RegularText>
           </View>
           <View style={styles.amount}>

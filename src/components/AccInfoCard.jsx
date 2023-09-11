@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   ImageBackground,
   Pressable,
@@ -13,11 +13,31 @@ import RegularText from './fonts/RegularText';
 import FlagSelect from './FlagSelect';
 import WalletAmount from './WalletAmount';
 import SelectCurrencyModal from './SelectCurrencyModal';
+import { useWalletContext } from '../context/WalletContext';
+import { addingDecimal } from '../../utils/AddingZero';
 
 const AccInfoCard = () => {
   const { selectedCurrency } = useContext(AppContext);
   const [modalOpen, setModalOpen] = useState(false);
-  const pendingBalance = 0;
+  const { wallet, transactions } = useWalletContext();
+  const [pendingAmount, setPendingAmount] = useState(0);
+
+  useEffect(() => {
+    const pending = transactions
+      .filter(
+        transaction =>
+          transaction.status === 'pending' &&
+          (transaction.currency === selectedCurrency.currency ||
+            transaction.currency === selectedCurrency.acronym),
+      )
+      .map(balance => Number(balance.amount));
+    !pending.length && pending.push(0);
+    setPendingAmount(pending?.reduce((a, b) => a + b));
+  }, [selectedCurrency, transactions]);
+
+  const pendingBalance = addingDecimal(
+    (wallet.balance + pendingAmount).toLocaleString(),
+  );
 
   return (
     <>
@@ -112,6 +132,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     paddingLeft: 10,
     fontSize: 15,
+    textTransform: 'capitalize',
   },
   chevronDown: {},
   cardDetails: {

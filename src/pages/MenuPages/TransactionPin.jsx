@@ -135,8 +135,7 @@ const ChangePin = ({ navigation, setReload }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState();
   const [errorKey, setErrorKey] = useState('');
-  const [isPinOkay, setIsPinOkay] = useState(false);
-  const [noFocus, setNoFocus] = useState(true);
+  const [isPin1, setIsPin1] = useState(true);
 
   const codeLengths = [1, 2, 3, 4];
 
@@ -152,114 +151,115 @@ const ChangePin = ({ navigation, setReload }) => {
     });
   }, [pinCode, pinCode2]);
 
-  useEffect(() => {
-    setIsPinOkay(
-      pinCode.length === codeLengths.length &&
-        pinCode2.length === codeLengths.length,
-    );
-  }, [codeLengths.length, pinCode.length, pinCode2.length]);
-
   const handleChangePin = async () => {
-    try {
-      setIsLoading(true);
-      const { pin1, pin2 } = formData;
-
-      if (pin1 !== pin2) {
+    if (isPin1) {
+      if (pinCode.length !== codeLengths.length) {
         setErrorKey('pinCode');
-        return setErrorMessage("Pins arent't the same");
-      }
-
-      const result = await postFetchData('user/set-pin', { pin: pin1 });
-
-      if (result.status === 200) {
-        setSuccessMessage(result.data);
-        setAppData(prev => {
-          return {
-            ...prev,
-            pin: true,
-          };
-        });
-        walletContext &&
-          setTimeout(() => {
-            navigation.goBack();
-          }, 1000);
+        return setErrorMessage('Input your new transaction pin');
       } else {
-        setErrorMessage(result.data);
+        setFocusIndex(1);
+        setIsPin1(false);
       }
-    } catch (err) {
-      console.log(err);
-      setErrorMessage(err);
-    } finally {
-      setIsLoading(false);
-      setTimeout(() => {
-        setReload(prev => !prev);
-      }, 1500);
+    } else {
+      try {
+        setIsLoading(true);
+        const { pin1, pin2 } = formData;
+
+        if (pin1 !== pin2) {
+          setErrorKey('pinCode');
+          return setErrorMessage("Pins arent't the same");
+        }
+
+        const result = await postFetchData('user/set-pin', { pin: pin1 });
+
+        if (result.status === 200) {
+          setSuccessMessage(result.data);
+          setAppData(prev => {
+            return {
+              ...prev,
+              pin: true,
+            };
+          });
+          walletContext &&
+            setTimeout(() => {
+              navigation.goBack();
+            }, 1000);
+        } else {
+          setErrorMessage(result.data);
+        }
+      } catch (err) {
+        console.log(err);
+        setErrorMessage(err);
+      } finally {
+        setIsLoading(false);
+        setTimeout(() => {
+          setReload(prev => !prev);
+        }, 1500);
+      }
     }
   };
   return (
     <View style={styles.form}>
       <Header
-        title={'Create transaction PIN'}
-        text={'Enter your transaction PIN'}
+        title={`${appData.pin ? 'Change' : 'Create'} transaction PIN`}
+        text={'Enter your new transaction PIN'}
       />
       <View style={styles.formBodyContainer}>
-        <View style={styles.formBody}>
-          <RegularText style={styles.changePinHeader}>
-            Enter new transaction PIN
-          </RegularText>
-          <View style={styles.changePinCodeLengthsContainer}>
-            {codeLengths.map(input => (
-              <PINInputFields
-                key={input}
-                codeLength={input}
-                focusIndex={focusIndex}
-                setFocusIndex={setFocusIndex}
-                pinCode={pinCode}
-                setPinCode={setPinCode}
-                setErrorMessage={setErrorMessage}
-                errorKey={errorKey}
-                setErrorKey={setErrorKey}
-                codeLengths={codeLengths.length}
-                noFocus={!noFocus}
-                setNoFocus={setNoFocus}
-              />
-            ))}
+        {isPin1 ? (
+          <View style={styles.formBody}>
+            <RegularText style={styles.changePinHeader}>
+              Enter new transaction PIN
+            </RegularText>
+            <View style={styles.changePinCodeLengthsContainer}>
+              {codeLengths.map(input => (
+                <PINInputFields
+                  key={input}
+                  codeLength={input}
+                  focusIndex={focusIndex}
+                  setFocusIndex={setFocusIndex}
+                  pinCode={pinCode}
+                  setPinCode={setPinCode}
+                  setErrorMessage={setErrorMessage}
+                  errorKey={errorKey}
+                  setErrorKey={setErrorKey}
+                  codeLengths={codeLengths.length}
+                />
+              ))}
+            </View>
           </View>
-        </View>
-        <View style={styles.formBody}>
-          <RegularText style={styles.changePinHeader}>
-            Confirm new transaction PIN
-          </RegularText>
-          <View style={styles.changePinCodeLengthsContainer}>
-            {codeLengths.map(input => (
-              <PINInputFields
-                key={input}
-                codeLength={input}
-                focusIndex={focusIndex}
-                setFocusIndex={setFocusIndex}
-                pinCode={pinCode2}
-                setPinCode={setPinCode2}
-                setErrorMessage={setErrorMessage}
-                errorKey={errorKey}
-                setErrorKey={setErrorKey}
-                codeLengths={codeLengths.length}
-                noFocus={noFocus}
-              />
-            ))}
+        ) : (
+          <View style={styles.formBody} key={isPin1}>
+            <RegularText style={styles.changePinHeader}>
+              Confirm new transaction PIN
+            </RegularText>
+            <View style={styles.changePinCodeLengthsContainer}>
+              {codeLengths.map(input => (
+                <PINInputFields
+                  key={input}
+                  codeLength={input}
+                  focusIndex={focusIndex}
+                  setFocusIndex={setFocusIndex}
+                  pinCode={pinCode2}
+                  setPinCode={setPinCode2}
+                  setErrorMessage={setErrorMessage}
+                  errorKey={errorKey}
+                  setErrorKey={setErrorKey}
+                  codeLengths={codeLengths.length}
+                />
+              ))}
+            </View>
           </View>
-        </View>
+        )}
       </View>
       <View style={styles.messages}>
         <ErrorMessage errorMessage={errorMessage} />
         <SuccessMessage successMessage={successMessage} />
       </View>
       <Button
-        text={appData.pin ? 'Change Pin' : 'Create Pin'}
+        text={isPin1 ? 'Continue' : appData.pin ? 'Change Pin' : 'Create Pin'}
         onPress={handleChangePin}
-        // disabled={!isPinOkay}
         style={{
           ...styles.changePinButton,
-          // backgroundColor: isPinOkay ? '#1E1E1E' : 'rgba(30, 30, 30, 0.7)',
         }}
       />
     </View>

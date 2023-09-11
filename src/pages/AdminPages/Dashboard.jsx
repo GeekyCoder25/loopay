@@ -9,7 +9,6 @@ import Block from '../../../assets/images/blocked.svg';
 import { useAdminDataContext } from '../../context/AdminContext';
 import { addingDecimal } from '../../../utils/AddingZero';
 import BalanceCard from './components/BalanceCard';
-import { allCurrencies } from '../../database/data';
 import { AppContext } from '../../components/AppContext';
 
 const Dashboard = ({ navigation }) => {
@@ -21,8 +20,8 @@ const Dashboard = ({ navigation }) => {
   const [pendingBalance, setPendingBalance] = useState(0);
   const [blocked, setBlocked] = useState([]);
   const [blockedBalance, setBlockedBalance] = useState(0);
-  const [totalUsers, setTotalUsers] = useState(0);
-  const [activeUsers, setActiveUsers] = useState(0);
+  const [totalUsers, setTotalUsers] = useState([]);
+  const [activeUsers, setActiveUsers] = useState([]);
 
   useEffect(() => {
     if (adminData) {
@@ -53,6 +52,7 @@ const Dashboard = ({ navigation }) => {
         ),
       );
       setTotalUsers(adminData.users.length);
+      setActiveUsers([]);
 
       const checkSameDateAndTime = sessionTimestamp => {
         if (sessionTimestamp) {
@@ -70,9 +70,10 @@ const Dashboard = ({ navigation }) => {
           );
         }
       };
-      setActiveUsers(0);
-      adminData.lastActiveSessions.forEach(session => {
-        checkSameDateAndTime(session) && setActiveUsers(prev => prev + 1);
+      adminData.lastActiveSessions.forEach(userSession => {
+        userSession = userSession.sessions[0].lastSeen;
+        checkSameDateAndTime(userSession) &&
+          setActiveUsers(prev => [...prev, userSession]);
       });
     }
   }, [adminData]);
@@ -102,125 +103,133 @@ const Dashboard = ({ navigation }) => {
   }, [success, pending, blocked]);
 
   return (
-    <ScrollView style={styles.body}>
-      <PageContainer style={styles.container}>
-        <BalanceCard showPlus={true} />
-        <View style={styles.transactions}>
-          <Pressable
-            style={styles.transaction}
-            onPress={() => {
-              navigation.navigate('Transactions', {
-                previousScreen: 'Dashboard',
-                transactionStatus: 'success',
-                transactions: success,
-              });
-            }}>
-            <View style={styles.icon}>
-              <Check />
-            </View>
-            <View style={styles.transactionDetails}>
-              <BoldText style={styles.transactionTitle}>
-                Successful Transactions
-              </BoldText>
-              <BoldText style={styles.transactionLength}>
-                {success.length}
-              </BoldText>
-              <BoldText style={styles.success}>
-                {selectedCurrency.symbol +
-                  addingDecimal(successBalance.toLocaleString())}
-              </BoldText>
-            </View>
-          </Pressable>
-          <Pressable
-            style={styles.transaction}
-            onPress={() => {
-              navigation.navigate('Transactions', {
-                previousScreen: 'Dashboard',
-                transactionStatus: 'pending',
-                transactions: pending,
-              });
-            }}>
-            <View style={styles.icon}>
-              <Pending />
-            </View>
-            <View style={styles.transactionDetails}>
-              <BoldText style={styles.transactionTitle}>
-                Pending Transactions
-              </BoldText>
-              <BoldText style={styles.transactionLength}>
-                {pending.length}
-              </BoldText>
-              <BoldText>
-                {selectedCurrency.symbol +
-                  addingDecimal(pendingBalance.toLocaleString())}
-              </BoldText>
-            </View>
-          </Pressable>
-          <Pressable
-            style={styles.transaction}
-            onPress={() => {
-              navigation.navigate('Transactions', {
-                previousScreen: 'Dashboard',
-                transactionStatus: 'blocked',
-                transactions: blocked,
-              });
-            }}>
-            <View style={styles.icon}>
-              <Block />
-            </View>
-            <View style={styles.transactionDetails}>
-              <BoldText style={styles.transactionTitle}>
-                Blocked Transactions
-              </BoldText>
-              <BoldText style={styles.transactionLength}>
-                {blocked.length}
-              </BoldText>
-              <BoldText style={styles.blocked}>
-                {selectedCurrency.symbol +
-                  addingDecimal(blockedBalance.toLocaleString())}
-              </BoldText>
-            </View>
-          </Pressable>
-          <View style={styles.sessions}>
-            <BoldText style={styles.sessionHeader}>Active Percentage</BoldText>
-            <View style={styles.total}>
-              <BoldText style={styles.totalNo}>{totalUsers}</BoldText>
-              <RegularText style={styles.totalText}>Total</RegularText>
-            </View>
-            <View style={styles.sessionGraph}>
-              <View
-                style={{
-                  ...styles.sessionActive,
-                  width: (activeUsers / totalUsers) * 100 + '%',
-                }}
-              />
-            </View>
-            <View style={styles.statusContainer}>
-              <View style={styles.status}>
-                <View style={styles.activeBg} />
-                <View>
-                  <RegularText style={styles.statusText}>Online</RegularText>
-                  <BoldText style={styles.statusNo}>
-                    {activeUsers} user{activeUsers === 1 ? '' : 's'}
-                  </BoldText>
-                </View>
+    <PageContainer style={styles.container} scroll>
+      <BalanceCard showPlus={true} />
+      <View style={styles.transactions}>
+        <Pressable
+          style={styles.transaction}
+          onPress={() => {
+            navigation.navigate('Transactions', {
+              transactionStatus: 'success',
+              transactions: success,
+            });
+          }}>
+          <View style={styles.icon}>
+            <Check />
+          </View>
+          <View style={styles.transactionDetails}>
+            <BoldText style={styles.transactionTitle}>
+              Successful Transactions
+            </BoldText>
+            <BoldText style={styles.transactionLength}>
+              {success.length}
+            </BoldText>
+            <BoldText style={styles.success}>
+              {selectedCurrency.symbol +
+                addingDecimal(successBalance.toLocaleString())}
+            </BoldText>
+          </View>
+        </Pressable>
+        <Pressable
+          style={styles.transaction}
+          onPress={() => {
+            navigation.navigate('Transactions', {
+              transactionStatus: 'pending',
+              transactions: pending,
+            });
+          }}>
+          <View style={styles.icon}>
+            <Pending />
+          </View>
+          <View style={styles.transactionDetails}>
+            <BoldText style={styles.transactionTitle}>
+              Pending Transactions
+            </BoldText>
+            <BoldText style={styles.transactionLength}>
+              {pending.length}
+            </BoldText>
+            <BoldText>
+              {selectedCurrency.symbol +
+                addingDecimal(pendingBalance.toLocaleString())}
+            </BoldText>
+          </View>
+        </Pressable>
+        <Pressable
+          style={styles.transaction}
+          onPress={() => {
+            navigation.navigate('Transactions', {
+              transactionStatus: 'blocked',
+              transactions: blocked,
+            });
+          }}>
+          <View style={styles.icon}>
+            <Block />
+          </View>
+          <View style={styles.transactionDetails}>
+            <BoldText style={styles.transactionTitle}>
+              Blocked Transactions
+            </BoldText>
+            <BoldText style={styles.transactionLength}>
+              {blocked.length}
+            </BoldText>
+            <BoldText style={styles.blocked}>
+              {selectedCurrency.symbol +
+                addingDecimal(blockedBalance.toLocaleString())}
+            </BoldText>
+          </View>
+        </Pressable>
+        <View style={styles.sessions}>
+          <BoldText style={styles.sessionHeader}>Active Percentage</BoldText>
+          <View style={styles.total}>
+            <BoldText style={styles.totalNo}>{totalUsers}</BoldText>
+            <RegularText style={styles.totalText}>Total</RegularText>
+          </View>
+          <View style={styles.sessionGraph}>
+            <View
+              style={{
+                ...styles.sessionActive,
+                width: (activeUsers.length / totalUsers) * 100 + '%',
+              }}
+            />
+          </View>
+          <View style={styles.statusContainer}>
+            <Pressable
+              style={styles.status}
+              onPress={() =>
+                navigation.navigate('ActiveUsers', {
+                  defaultTab: 'active',
+                })
+              }>
+              <View style={styles.activeBg} />
+              <View>
+                <RegularText style={styles.statusText}>Online</RegularText>
+                <BoldText style={styles.statusNo}>
+                  {activeUsers.length} user
+                  {activeUsers.length === 1 ? '' : 's'}
+                </BoldText>
               </View>
+            </Pressable>
 
-              <View style={styles.status}>
-                <View style={styles.totalBg} />
-                <View>
-                  <RegularText style={styles.statusText}>Offline</RegularText>
-                  <BoldText style={styles.statusNo}>
-                    {totalUsers - activeUsers} user
-                    {totalUsers - activeUsers === 1 ? '' : 's'}
-                  </BoldText>
-                </View>
+            <Pressable
+              style={styles.status}
+              onPress={() =>
+                navigation.navigate('ActiveUsers', {
+                  defaultTab: 'inactive',
+                })
+              }>
+              <View style={styles.totalBg} />
+              <View>
+                <RegularText style={styles.statusText}>Offline</RegularText>
+                <BoldText style={styles.statusNo}>
+                  {totalUsers - activeUsers.length} user
+                  {totalUsers - activeUsers.length === 1 ? '' : 's'}
+                </BoldText>
               </View>
-            </View>
+            </Pressable>
           </View>
         </View>
-      </PageContainer>
-    </ScrollView>
+      </View>
+    </PageContainer>
   );
 };
 

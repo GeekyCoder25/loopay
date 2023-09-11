@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Dashboard from '../pages/AdminPages/Dashboard';
 import Header from '../pages/AdminPages/components/Header';
@@ -12,10 +13,27 @@ import History from '../pages/AdminPages/History';
 import Statement from '../pages/AdminPages/Statement';
 import Success from '../pages/SendMenuPages/Success';
 import Transactions from '../pages/AdminPages/Transactions';
+import ActiveUsers from '../pages/AdminPages/ActiveUsers';
+import AdminSelectCurrencyModal from '../pages/AdminPages/components/AdminSelectCurrency';
+import Profile from '../pages/HomePages/Profile';
 
 const AdminNavigator = () => {
   const Drawer = createDrawerNavigator();
 
+  const BackHeader = (navigation, route) => {
+    const previousScreen = route?.params?.previousScreen;
+    return {
+      header: () => (
+        <Back
+          goBack={navigation.goBack}
+          onPress={
+            previousScreen ? () => navigation.navigate(previousScreen) : null
+          }
+          route={route}
+        />
+      ),
+    };
+  };
   return (
     <AdminContextComponent>
       <Drawer.Navigator
@@ -33,26 +51,25 @@ const AdminNavigator = () => {
         <Drawer.Screen
           name="Transactions"
           component={Transactions}
-          options={{
-            header: ({ navigation, route }) => (
-              <Back
-                onPress={() => navigation.navigate(route.params.previousScreen)}
-              />
-            ),
-          }}
+          options={({ navigation, route }) => BackHeader(navigation, route)}
         />
         <Drawer.Screen
           name="TransactionHistoryDetails"
           component={TransactionHistoryParams}
-          options={{
-            header: ({ navigation, route }) => (
-              <Back
-                onPress={() => navigation.navigate(route.params.previousScreen)}
-              />
-            ),
-          }}
+          options={({ navigation, route }) => BackHeader(navigation, route)}
+        />
+        <Drawer.Screen
+          name="ActiveUsers"
+          component={ActiveUsers}
+          options={({ navigation, route }) => BackHeader(navigation, route)}
+        />
+        <Drawer.Screen
+          name="ProfileNavigator"
+          component={Profile}
+          options={({ navigation, route }) => BackHeader(navigation, route)}
         />
       </Drawer.Navigator>
+      <AdminSelectCurrencyModal />
     </AdminContextComponent>
   );
 };

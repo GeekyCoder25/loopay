@@ -22,7 +22,7 @@ const ForgotPassword = ({ navigation }) => {
   const [codeSent, setCodeSent] = useState(false);
   const [focusIndex, setFocusIndex] = useState(1);
   const [formData, setFormData] = useState({
-    email: 'toyibe25@gmail.com',
+    email: '',
   });
   const [otpCode, setOtpCode] = useState('');
   const [isPinOkay, setIsPinOkay] = useState(false);
@@ -81,7 +81,6 @@ const ForgotPassword = ({ navigation }) => {
       await loginUser(result.data, sessionData.deviceID);
       const data = await getFetchData('user');
       setAppData(data.data);
-      // setIsLoggedIn(true);
       navigation.replace('ChangePassword');
     } catch (err) {
       setErrorMessage(err.message);
@@ -101,6 +100,7 @@ const ForgotPassword = ({ navigation }) => {
         otpResend === 1 && setOtpTimeout(prev => prev * 2);
       }, 1000);
   }, [codeSent, otpResend]);
+
   return (
     <PageContainer padding={true} justify={true}>
       <View style={styles.container}>
@@ -358,7 +358,7 @@ const OTPInput = ({
   useEffect(() => {
     if (codeLength === focusIndex) {
       inputRef.current.focus();
-      inputRef.current.clear();
+      // inputRef.current.clear();
       setInputValue('');
     }
   }, [focusIndex, codeLength]);

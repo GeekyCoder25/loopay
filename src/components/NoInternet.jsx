@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { ActivityIndicator, Modal, View, StyleSheet } from 'react-native';
 import BoldText from './fonts/BoldText';
 import Button from './Button';

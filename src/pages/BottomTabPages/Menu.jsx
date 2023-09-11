@@ -61,14 +61,14 @@ const Menu = ({ navigation }) => {
     }, [setShowTabBar]),
   );
   return (
-    <PageContainer paddingTop={0}>
+    <>
       <View style={styles.header}>
         <BoldText style={styles.headerText}>My details</BoldText>
         <Pressable onPress={() => navigation.navigate('ProfileNavigator')}>
           <UserIcon />
         </Pressable>
       </View>
-      <ScrollView>
+      <PageContainer paddingTop={0} scroll>
         <View style={{ ...styles.routesContainer, minHeight: vh * 0.7 }}>
           {menuRoutes.map(route => (
             <RouteLink
@@ -86,8 +86,8 @@ const Menu = ({ navigation }) => {
             onPress={handleLogout}
           />
         </View>
-      </ScrollView>
-    </PageContainer>
+      </PageContainer>
+    </>
   );
 };
 
@@ -114,6 +114,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   routeIcon: {
+    borderColor: '#1e1e1e',
+    borderWidth: 0.5,
     width: 50,
     height: 50,
     backgroundColor: '#f9f9f9',

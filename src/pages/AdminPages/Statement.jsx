@@ -1,5 +1,5 @@
 import PageContainer from '../../components/PageContainer';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import BalanceCard from './components/BalanceCard';
 import BoldText from '../../components/fonts/BoldText';
 import Button from '../../components/Button';
@@ -8,18 +8,21 @@ import { useAdminDataContext } from '../../context/AdminContext';
 import { useContext, useEffect, useState } from 'react';
 import { addingDecimal } from '../../../utils/AddingZero';
 import { AppContext } from '../../components/AppContext';
+import Donut from './components/Donut';
 
 const Statement = () => {
   const { selectedCurrency } = useContext(AppContext);
   const { adminData } = useAdminDataContext();
   const { transactions } = adminData;
-  const [income, setIncome] = useState('0');
-  const [outcome, setOutcome] = useState('0');
-  const [onhold, setOnhold] = useState('0');
+  const [income, setIncome] = useState(0);
+  const [outcome, setOutcome] = useState(0);
+  const [onhold, setOnhold] = useState(0);
 
   useEffect(() => {
     const interTransactions = transactions.filter(
-      transaction => transaction.type === 'intra',
+      transaction =>
+        transaction.type === 'inter' &&
+        transaction.currency === selectedCurrency.currency,
     );
 
     const transactionsAddUp = array =>
@@ -28,7 +31,7 @@ const Statement = () => {
           .map(transaction => Number(transaction.amount))
           .reduce((a, b) => a + b)
           .toFixed(2),
-      ).toLocaleString();
+      );
 
     const incomeTransactions = interTransactions.filter(
       transaction =>
@@ -42,7 +45,7 @@ const Statement = () => {
         transaction.transactionType === 'debit',
     );
     const onholdTransactions = interTransactions.filter(
-      transaction => transaction.transactionType === 'pending',
+      transaction => transaction.status === 'pending',
     );
 
     incomeTransactions.length &&
@@ -51,24 +54,33 @@ const Statement = () => {
       setOutcome(transactionsAddUp(outcomeTransactions));
     onholdTransactions.length &&
       setOnhold(transactionsAddUp(onholdTransactions));
-  }, [transactions]);
+  }, [selectedCurrency.currency, transactions]);
 
   return (
-    <PageContainer style={styles.container}>
-      <ScrollView>
-        <BalanceCard />
-
-        <View style={styles.body}>
-          <BoldText style={styles.headerText}>Account Summary</BoldText>
-          <View style={styles.card}>
-            <View style={styles.chart}></View>
+    <PageContainer style={styles.container} scroll>
+      <BalanceCard />
+      <View style={styles.body}>
+        <BoldText style={styles.headerText}>Account Summary</BoldText>
+        <View style={styles.card}>
+          <View style={styles.chart}>
+            <Donut
+              percentage={100}
+              // delay={500 + 100 * i}
+              max={income + outcome + onhold}
+              income={income}
+              outcome={outcome}
+              onhold={onhold}
+            />
+          </View>
+          <View style={styles.labelsContainer}>
             <View style={styles.labels}>
               <View style={styles.status}>
                 <View style={{ ...styles.statusBg, ...styles.incomeBg }} />
                 <View>
                   <RegularText style={styles.statusText}>Income</RegularText>
                   <BoldText style={styles.statusNo}>
-                    {selectedCurrency.symbol + addingDecimal(income)}
+                    {selectedCurrency.symbol +
+                      addingDecimal(income.toLocaleString())}
                   </BoldText>
                 </View>
               </View>
@@ -77,7 +89,8 @@ const Statement = () => {
                 <View>
                   <RegularText style={styles.statusText}>Outcome</RegularText>
                   <BoldText style={styles.statusNo}>
-                    {selectedCurrency.symbol + addingDecimal(outcome)}
+                    {selectedCurrency.symbol +
+                      addingDecimal(outcome.toLocaleString())}
                   </BoldText>
                 </View>
               </View>
@@ -86,15 +99,16 @@ const Statement = () => {
                 <View>
                   <RegularText style={styles.statusText}>Onhold</RegularText>
                   <BoldText style={styles.statusNo}>
-                    {selectedCurrency.symbol + addingDecimal(onhold)}
+                    {selectedCurrency.symbol +
+                      addingDecimal(onhold.toLocaleString())}
                   </BoldText>
                 </View>
               </View>
             </View>
           </View>
-          <Button text="Download Statement.CSV" />
         </View>
-      </ScrollView>
+        <Button text="Download Statement.CSV" />
+      </View>
     </PageContainer>
   );
 };
@@ -104,12 +118,12 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#EEEEEE',
-    height: 200,
+    minHeight: 200,
     marginVertical: 10,
     marginBottom: 30,
     flexDirection: 'row',
-    alignItems: 'center',
-    padding: 20,
+    // alignItems: 'center',
+    paddingVertical: 20,
   },
   headerText: {
     color: '#11263C',
@@ -120,22 +134,31 @@ const styles = StyleSheet.create({
   },
   chart: {
     flex: 1,
+    alignItems: 'center',
+  },
+  labelsContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
   },
   labels: {
-    flex: 1,
     gap: 5,
+    flex: 1,
+    alignItems: 'flex-start',
+    justifyContent: 'space-evenly',
   },
   status: {
     flexDirection: 'row',
     paddingRight: 30,
     gap: 15,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   statusBg: {
     width: 40,
     height: 5,
     borderRadius: 3,
-    marginBottom: 24,
+    marginBottom: 20,
   },
   incomeBg: {
     backgroundColor: '#00102b',

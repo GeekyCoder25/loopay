@@ -70,12 +70,16 @@ const CustomDrawer = props => {
   };
 
   return (
-    <DrawerContentScrollView {...props}>
+    <DrawerContentScrollView {...props} style={styles.container}>
       <View style={styles.closeBar}>
         <Pressable onPress={() => navigation.closeDrawer()}>
           <Xmark />
         </Pressable>
-        <UserIcon />
+        <Pressable
+          onPress={() => navigation.navigate('ProfileNavigator')}
+          style={styles.userImageContainer}>
+          <UserIcon />
+        </Pressable>
       </View>
       <View
         style={{ ...styles.drawer, minHeight: vh * 0.73, maxHeight: vh * 0.9 }}>
@@ -106,6 +110,9 @@ const CustomDrawer = props => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#fff',
+  },
   closeBar: {
     backgroundColor: '#eee',
     padding: 10,

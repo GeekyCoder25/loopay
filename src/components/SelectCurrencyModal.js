@@ -10,8 +10,6 @@ import {
   View,
 } from 'react-native';
 import Search from '../../assets/images/search.svg';
-import Plus from '../../assets/images/plus.svg';
-import Button from './Button';
 import { allCurrencies } from '../database/data';
 import { AppContext } from './AppContext';
 import RegularText from './fonts/RegularText';
@@ -20,26 +18,15 @@ import FlagSelect from './FlagSelect';
 import { addingDecimal } from '../../utils/AddingZero';
 import { setDefultCurrency } from '../../utils/storage';
 import { useWalletContext } from '../context/WalletContext';
-import ToastMessage from './ToastMessage';
 
 const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
-  const { selectedCurrency, setSelectedCurrency } = useContext(AppContext);
-  const { wallet } = useWalletContext();
+  const { selectedCurrency } = useContext(AppContext);
   const [showSearchBox, setShowSearchBox] = useState(false);
   const handleModal = () => {
     setModalOpen(false);
     setShowSearchBox(false);
   };
-  const handlecurrencyChange = async newSelect => {
-    const workingCurrencies = ['Naira'];
-    setShowSearchBox(false);
-    setModalOpen(false);
-    if (!workingCurrencies.includes(newSelect.currency)) {
-      return ToastMessage('Currency not currently supported');
-    }
-    setSelectedCurrency(newSelect);
-    await setDefultCurrency(`${newSelect.currency}`);
-  };
+
   return (
     <Modal
       visible={modalOpen}
@@ -70,36 +57,33 @@ const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
           )}
           <ScrollView style={{ width: 100 + '%' }}>
             <View style={styles.currencies}>
-              {allCurrencies.map(currency => (
-                <Pressable
-                  key={currency.currency}
-                  style={{
-                    ...styles.currency,
-                    backgroundColor:
-                      selectedCurrency.currency === currency.currency
-                        ? '#e4e2e2'
-                        : 'transparent',
-                  }}
-                  onPress={() => handlecurrencyChange(currency)}>
-                  <View style={styles.currencyIcon}>
-                    <FlagSelect country={currency.currency} />
-                    <View>
-                      <BoldText>{currency.acronym}</BoldText>
-                      <RegularText style={styles.currencyName}>
-                        {currency.currency}
-                      </RegularText>
-                    </View>
-                  </View>
-                  <RegularText style={styles.currencyAmount}>
-                    {wallet && wallet.apiData.currency === currency.acronym
-                      ? addingDecimal(wallet?.balance?.toLocaleString())
-                      : '0.00'}
-                  </RegularText>
-                </Pressable>
-              ))}
+              {allCurrencies
+                .filter(
+                  currency => currency.currency === selectedCurrency.currency,
+                )
+                .map(selected => (
+                  <Currency
+                    key={selected.currency}
+                    selected={selected}
+                    setModalOpen={setModalOpen}
+                    setShowSearchBox={setShowSearchBox}
+                  />
+                ))}
+              {allCurrencies
+                .filter(
+                  currency => currency.currency !== selectedCurrency.currency,
+                )
+                .map(selected => (
+                  <Currency
+                    key={selected.currency}
+                    selected={selected}
+                    setModalOpen={setModalOpen}
+                    setShowSearchBox={setShowSearchBox}
+                  />
+                ))}
             </View>
           </ScrollView>
-          <Button text={'Add Account'} Icon={<Plus />} />
+          {/* <Button text={'Add Account'} Icon={<Plus />} /> */}
         </View>
       </View>
     </Modal>
@@ -190,3 +174,47 @@ const styles = StyleSheet.create({
   },
 });
 export default SelectCurrencyModal;
+
+const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
+  const { wallet } = useWalletContext();
+  const { selectedCurrency, setSelectedCurrency } = useContext(AppContext);
+
+  const handlecurrencyChange = async newSelect => {
+    setShowSearchBox(false);
+    setModalOpen(false);
+    setSelectedCurrency(newSelect);
+    await setDefultCurrency(`${newSelect.currency}`);
+  };
+
+  return (
+    <Pressable
+      key={selected.currency}
+      style={{
+        ...styles.currency,
+        backgroundColor:
+          selectedCurrency.currency === selected.currency
+            ? '#e4e2e2'
+            : 'transparent',
+      }}
+      onPress={() => handlecurrencyChange(selected)}>
+      <View style={styles.currencyIcon}>
+        <FlagSelect country={selected.currency} />
+        <View>
+          <BoldText>{selected.acronym}</BoldText>
+          <RegularText style={styles.currencyName}>
+            {selected.currency}
+          </RegularText>
+        </View>
+      </View>
+      {wallet && (
+        <RegularText style={styles.currencyAmount}>
+          {wallet.currency === selected.currency
+            ? addingDecimal(wallet?.balance?.toLocaleString())
+            : addingDecimal(
+                wallet[`${selected.currency}Balance`]?.toLocaleString(),
+              )}
+        </RegularText>
+      )}
+    </Pressable>
+  );
+};

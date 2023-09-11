@@ -1,13 +1,15 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useWalletContext } from '../context/WalletContext';
 import BoldText from './fonts/BoldText';
 import { Pressable, View, StyleSheet } from 'react-native';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { getShowBalance, setShowBalance } from '../../utils/storage';
 import { addingDecimal } from '../../utils/AddingZero';
+import { AppContext } from './AppContext';
 
 const WalletAmount = () => {
+  const { vw } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [walletAmount, setWalletAmount] = useState('****');
   const [showAmount, setShowAmount] = useState(false);
@@ -27,13 +29,20 @@ const WalletAmount = () => {
     setShowAmount(prev => !prev);
     setShowBalance(!showAmount);
   };
+
   return (
     <View style={styles.eyeContainer}>
       <BoldText
         style={{
           ...styles.amount,
           marginTop: showAmount ? undefined : 15,
-          fontSize: showAmount ? (walletAmount.length > 8 ? 25 : 40) : 30,
+          fontSize: showAmount
+            ? walletAmount.length > 8
+              ? vw > 400
+                ? 40
+                : 25
+              : 40
+            : 30,
         }}>
         {showAmount ? walletAmount : '****'}
       </BoldText>

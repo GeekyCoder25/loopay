@@ -24,6 +24,7 @@ import { tagNameRules } from '../../../database/data';
 import { AppContext } from '../../../components/AppContext';
 import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';
 import FaIcon from '@expo/vector-icons/FontAwesome';
+import ErrorMessage from '../../../components/ErrorMessage';
 
 const SendLoopay = ({ navigation, route }) => {
   const { appData } = useContext(AppContext);
@@ -34,6 +35,7 @@ const SendLoopay = ({ navigation, route }) => {
   const [saveAsBeneficiary, setSaveAsBeneficiary] = useState(false);
   const [userFound, setUserFound] = useState(null);
   const [newBeneficiary, setNewBeneficiary] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
   const { minimun, maximum } = tagNameRules;
 
   useEffect(() => {
@@ -66,6 +68,7 @@ const SendLoopay = ({ navigation, route }) => {
   };
 
   const handleCheck = async () => {
+    setErrorMessage('');
     if (inputValue.length >= minimun && inputValue.length <= maximum) {
       setIsSearching(true);
       const senderTagName = appData.tagName;
@@ -84,6 +87,7 @@ const SendLoopay = ({ navigation, route }) => {
           }
           return setUserFound(result.data);
         }
+        setErrorMessage(result.data);
       } finally {
         setIsSearching(false);
       }
@@ -136,6 +140,9 @@ const SendLoopay = ({ navigation, route }) => {
             <ActivityIndicator size="small" color="#1E1E1E" />
           </View>
         )}
+        {errorMessage && (
+          <ErrorMessage errorMessage={errorMessage} style={styles.error} />
+        )}
         {!isSearching && userFound && (
           <View style={styles.userFoundContainer}>
             <RegularText style={styles.top}>Result</RegularText>
@@ -171,20 +178,6 @@ const SendLoopay = ({ navigation, route }) => {
             )}
           </View>
         )}
-        {/* <Paystack
-          paystackKey={'pk_test_06a8106b8d1d1200d5a4e49dac462e614a3cce42'}
-          amount={100}
-          billingEmail={appData.email}
-          activityIndicatorColor="green"
-          onCancel={e => {
-            // handle response here
-            console.log(e);
-          }}
-          onSuccess={res => {
-            console.log(res);
-          }}
-          autoStart={true}
-        /> */}
         <Button
           text={'Continue'}
           disabled={!userFound}
@@ -253,6 +246,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     padding: 5 + '%',
     marginTop: 10,
+  },
+  error: {
+    marginTop: 10,
+    marginBottom: 0,
   },
   userFoundContainer: {
     marginTop: 30,

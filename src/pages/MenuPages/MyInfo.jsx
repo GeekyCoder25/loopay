@@ -66,122 +66,120 @@ const MyInfo = () => {
       ToastMessage(err.message);
       console.log(err);
     } finally {
+      3;
       setIsEditable(false);
       setIsLoading(false);
       setInputFocus('');
     }
   };
+
   return (
-    <PageContainer justify={true}>
-      <ScrollView style={styles.container}>
-        <BoldText style={styles.headerText}>Personal information</BoldText>
-        <RegularText>Account No:</RegularText>
-        <RegularText>Phone No: {phoneNumber}</RegularText>
-        {!isEditable && (
-          <Pressable onPress={() => setIsEditable(true)} style={styles.edit}>
-            <BoldText style={styles.editText}>Edit Profile</BoldText>
-          </Pressable>
-        )}
-        <View style={styles.form}>
-          <View style={styles.row}>
-            <View style={styles.field}>
-              <BoldText>Last name</BoldText>
-              <TextInput
-                name="lastName"
-                value={userProfile.lastName}
-                onChangeText={text => handleChange(text)}
-                style={
-                  inputFocus === 'lastName' ? styles.inputFocus : styles.input
-                }
-                editable={isEditable}
-                onFocus={() => handleFocus('lastName')}
-              />
-            </View>
-            <View style={styles.field}>
-              <BoldText>First name</BoldText>
-              <TextInput
-                name="firstName"
-                value={userProfile.firstName}
-                onChangeText={text => handleChange(text)}
-                style={
-                  inputFocus === 'firstName' ? styles.inputFocus : styles.input
-                }
-                editable={isEditable}
-                onFocus={() => handleFocus('firstName')}
-              />
-            </View>
+    <PageContainer justify={true} style={styles.container} scroll>
+      <BoldText style={styles.headerText}>Personal information</BoldText>
+      <RegularText>Account No: {phoneNumber.slice(4)}</RegularText>
+      <RegularText>Phone No: {phoneNumber}</RegularText>
+      {!isEditable && (
+        <Pressable onPress={() => setIsEditable(true)} style={styles.edit}>
+          <BoldText style={styles.editText}>Edit Profile</BoldText>
+        </Pressable>
+      )}
+      <View style={styles.form}>
+        <View style={styles.row}>
+          <View style={styles.field}>
+            <BoldText>Last name</BoldText>
+            <TextInput
+              name="lastName"
+              value={userProfile.lastName}
+              onChangeText={text => handleChange(text)}
+              style={
+                inputFocus === 'lastName' ? styles.inputFocus : styles.input
+              }
+              editable={isEditable}
+              onFocus={() => handleFocus('lastName')}
+            />
           </View>
-          <View style={styles.row}>
-            <View style={styles.field}>
-              <BoldText>Address</BoldText>
-              <TextInput
-                name="address"
-                value={userProfile.address}
-                onChangeText={text => handleChange(text)}
-                style={
-                  inputFocus === 'address' ? styles.inputFocus : styles.input
-                }
-                editable={isEditable}
-                onFocus={() => handleFocus('address')}
-              />
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.field}>
-              <BoldText>Zip</BoldText>
-              <TextInput
-                name="zipCode"
-                value={userProfile.zipCode?.toString()}
-                onChangeText={text => handleChange(text)}
-                style={
-                  inputFocus === 'zipCode' ? styles.inputFocus : styles.input
-                }
-                editable={isEditable}
-                onFocus={() => handleFocus('zipCode')}
-              />
-            </View>
-            <View style={styles.field}>
-              <BoldText>City</BoldText>
-              <TextInput
-                name="city"
-                value={userProfile.city}
-                onChangeText={text => handleChange(text)}
-                style={inputFocus === 'city' ? styles.inputFocus : styles.input}
-                editable={isEditable}
-                onFocus={() => handleFocus('city')}
-              />
-            </View>
-            <View style={styles.field}>
-              <BoldText>State</BoldText>
-              <TextInput
-                name="state"
-                value={userProfile.state}
-                onChangeText={text => handleChange(text)}
-                style={
-                  inputFocus === 'state' ? styles.inputFocus : styles.input
-                }
-                editable={isEditable}
-                onFocus={() => handleFocus('state')}
-              />
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.field}>
-              <BoldText>Date of Birth</BoldText>
-              <RegularText style={styles.dob}>{dob}24 May 2000</RegularText>
-            </View>
+          <View style={styles.field}>
+            <BoldText>First name</BoldText>
+            <TextInput
+              name="firstName"
+              value={userProfile.firstName}
+              onChangeText={text => handleChange(text)}
+              style={
+                inputFocus === 'firstName' ? styles.inputFocus : styles.input
+              }
+              editable={isEditable}
+              onFocus={() => handleFocus('firstName')}
+            />
           </View>
         </View>
-        {isEditable ? (
-          <Button
-            onPress={handleSave}
-            text={'Save Changes'}
-            style={styles.button}
-          />
-        ) : (
-          <View style={styles.button} />
-        )}
-      </ScrollView>
+        <View style={styles.row}>
+          <View style={styles.field}>
+            <BoldText>Address</BoldText>
+            <TextInput
+              name="address"
+              value={userProfile.address}
+              onChangeText={text => handleChange(text)}
+              style={
+                inputFocus === 'address' ? styles.inputFocus : styles.input
+              }
+              editable={isEditable}
+              onFocus={() => handleFocus('address')}
+            />
+          </View>
+        </View>
+        <View style={styles.row}>
+          <View style={styles.field}>
+            <BoldText>Zip</BoldText>
+            <TextInput
+              name="zipCode"
+              value={userProfile.zipCode?.toString()}
+              onChangeText={text => handleChange(text)}
+              style={
+                inputFocus === 'zipCode' ? styles.inputFocus : styles.input
+              }
+              editable={isEditable}
+              onFocus={() => handleFocus('zipCode')}
+            />
+          </View>
+          <View style={styles.field}>
+            <BoldText>City</BoldText>
+            <TextInput
+              name="city"
+              value={userProfile.city}
+              onChangeText={text => handleChange(text)}
+              style={inputFocus === 'city' ? styles.inputFocus : styles.input}
+              editable={isEditable}
+              onFocus={() => handleFocus('city')}
+            />
+          </View>
+          <View style={styles.field}>
+            <BoldText>State</BoldText>
+            <TextInput
+              name="state"
+              value={userProfile.state}
+              onChangeText={text => handleChange(text)}
+              style={inputFocus === 'state' ? styles.inputFocus : styles.input}
+              editable={isEditable}
+              onFocus={() => handleFocus('state')}
+            />
+          </View>
+        </View>
+        <View style={styles.row}>
+          <View style={styles.field}>
+            <BoldText>Date of Birth</BoldText>
+            <RegularText style={styles.dob}>{dob}24 May 2000</RegularText>
+          </View>
+        </View>
+      </View>
+      {isEditable ? (
+        <Button
+          onPress={handleSave}
+          text={'Save Changes'}
+          style={styles.button}
+        />
+      ) : (
+        <View style={styles.button} />
+      )}
     </PageContainer>
   );
 };

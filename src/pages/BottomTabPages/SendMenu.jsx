@@ -13,6 +13,7 @@ import CardIcon from '../../../assets/images/cardBeneficiary.svg';
 import BillIcon from '../../../assets/images/bill.svg';
 import InfoIcon from '../../../assets/images/infoBeneficiary.svg';
 import StatementIcon from '../../../assets/images/statementBeneficiary.svg';
+import WalletIcon from '../../../assets/images/walletBeneficiary.svg';
 import Phone from '../../../assets/images/airtime.svg';
 import User from '../../../assets/images/beneficiary.svg';
 import Recipient from '../../../assets/images/recipient.svg';
@@ -40,7 +41,7 @@ const SendMenu = ({ navigation }) => {
   };
 
   return (
-    <PageContainer>
+    <View style={styles.container}>
       <View style={styles.header}>
         <RegularText>Beneficiaries</RegularText>
         {beneficiaryState.length > 3 && <RegularText>View all</RegularText>}
@@ -66,7 +67,7 @@ const SendMenu = ({ navigation }) => {
       <ImageBackground
         source={require('../../../assets/images/pageBg.png')}
         style={styles.bg}>
-        <ScrollView style={styles.routesContainer}>
+        <PageContainer style={styles.routesContainer} scroll>
           {sendMenuRoutes.map(route => (
             <RouteLink
               key={route.routeIcon}
@@ -74,15 +75,15 @@ const SendMenu = ({ navigation }) => {
               navigation={navigation}
             />
           ))}
-        </ScrollView>
+        </PageContainer>
       </ImageBackground>
-    </PageContainer>
+    </View>
   );
 };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
+    paddingTop: 10,
     backgroundColor: '#fff',
   },
   header: {
@@ -139,6 +140,7 @@ const styles = StyleSheet.create({
   },
   routesContainer: {
     paddingHorizontal: 5 + '%',
+    paddingTop: 0,
   },
   route: {
     flexDirection: 'row',
@@ -147,6 +149,8 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   routeIcon: {
+    borderColor: '#1e1e1e',
+    borderWidth: 0.5,
     width: 50,
     height: 50,
     backgroundColor: '#f9f9f9',
@@ -183,6 +187,8 @@ export const RouteLink = ({ route, navigation }) => {
         return <User />;
       case 'recipient':
         return <Recipient />;
+      case 'wallet':
+        return <WalletIcon />;
       default:
         break;
     }

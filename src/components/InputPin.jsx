@@ -27,8 +27,8 @@ const InputPin = ({ children, buttonText, setIsValidPin, customFunc }) => {
   const codeLengths = [1, 2, 3, 4];
 
   const handlePay = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       if (haveSetPin) {
         const result = await postFetchData('user/check-pin', {
           pin: pinCode,
@@ -60,12 +60,14 @@ const InputPin = ({ children, buttonText, setIsValidPin, customFunc }) => {
       setTimeout(() => {
         setPinCode('');
         setOtpCode('');
+        setFocusIndex(1);
         setReload(prev => !prev);
       }, 1500);
     } finally {
       setIsLoading(false);
     }
   };
+
   return (
     <View>
       <View style={styles.pinContainer} key={reload}>

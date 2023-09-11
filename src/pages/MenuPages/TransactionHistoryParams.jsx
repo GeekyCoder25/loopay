@@ -1,13 +1,14 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import PageContainer from '../../components/PageContainer';
-import { Image, ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
-import UserIconSVG from '../../../assets/images/userMenu.svg';
 import RegularText from '../../components/fonts/RegularText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { allCurrencies } from '../../database/data';
 import { addingDecimal } from '../../../utils/AddingZero';
+import UserIcon from '../../components/UserIcon';
+import SwapIcon from '../../../assets/images/swap.svg';
 
 const TransactionHistoryParams = ({ route }) => {
   const history = route.params;
@@ -27,17 +28,29 @@ const TransactionHistoryParams = ({ route }) => {
     currency,
     description,
     reference,
+    userPhoto,
+    fullName,
+    accNo,
+    swapFrom,
+    swapTo,
+    swapFromAmount,
+    swapToAmount,
   } = history;
 
-  let currencySymbol = allCurrencies.find(
-    id => currency.toLowerCase() === id.acronym.toLowerCase(),
-  );
-  currencySymbol = currencySymbol.symbol;
+  const currencySymbol = allCurrencies.find(
+    id => currency === id.currency || currency === id.acronym,
+  )?.symbol;
 
   const transactionDate = `${new Date(
     createdAt,
   ).toLocaleDateString()} ${new Date(createdAt).toLocaleTimeString()}
   `;
+
+  const swapFromSymbol = allCurrencies.find(
+    id => swapFrom === id.currency,
+  )?.symbol;
+
+  const swapToSymbol = allCurrencies.find(id => swapTo === id.currency)?.symbol;
 
   const statusColor = () => {
     switch (status) {
@@ -91,224 +104,283 @@ const TransactionHistoryParams = ({ route }) => {
         );
     }
   };
+
   return (
-    <PageContainer justify={true}>
-      <ScrollView>
-        <BoldText style={styles.historyHeader}>Transaction history</BoldText>
-        <View style={styles.body}>
-          {transactionType?.toLowerCase() === 'credit' ? (
-            <>
-              <View style={styles.headerContainer}>
-                {senderPhoto ? (
-                  <Image
-                    source={{ uri: senderPhoto }}
-                    loadingIndicatorSource={require('../../../assets/images/user.jpg')}
-                    style={styles.userIconStyle}
-                  />
-                ) : (
-                  <View style={styles.userIconStyle}>
-                    <UserIconSVG width={25} height={25} />
-                  </View>
-                )}
-                <View>
-                  <BoldText style={styles.name}>{senderName}</BoldText>
-                  <RegularText style={styles.accNo}>
-                    {senderAccount}
+    <PageContainer justify={true} scroll>
+      <BoldText style={styles.historyHeader}>Transaction history</BoldText>
+      <View style={styles.body}>
+        {transactionType?.toLowerCase() === 'credit' && (
+          <>
+            <View style={styles.headerContainer}>
+              <UserIcon uri={senderPhoto} />
+              <View>
+                <BoldText style={styles.name}>{senderName}</BoldText>
+                <RegularText style={styles.accNo}>{senderAccount}</RegularText>
+              </View>
+            </View>
+
+            <View style={styles.modalBorder} />
+
+            <View style={styles.footerCard}>
+              <BoldText style={styles.cardAmount}>
+                +
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+
+              <View style={styles.footerCardDetails}>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Status</RegularText>
+                  {statusColor()}
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Transaction type
                   </RegularText>
+                  <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
+                    Credit
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Amount</RegularText>
+                  <BoldText style={styles.cardValue}>
+                    {currencySymbol +
+                      addingDecimal(Number(amount).toLocaleString())}
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Sender Name</RegularText>
+                  <BoldText style={styles.cardValue}>{senderName}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Sender Bank</RegularText>
+                  <BoldText style={styles.cardValue}>{sourceBank}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Sender Account
+                  </RegularText>
+                  <BoldText style={styles.cardValue}>{senderAccount}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Description</RegularText>
+                  <BoldText style={styles.cardValue}>{description}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Reference</RegularText>
+                  <BoldText style={styles.cardValue}>{reference}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Payment Method
+                  </RegularText>
+                  <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
+                    Balance
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Traansaction Date
+                  </RegularText>
+                  <BoldText
+                    style={{
+                      ...styles.cardValue,
+                      textTransform: 'uppercase',
+                    }}>
+                    {transactionDate}
+                  </BoldText>
                 </View>
               </View>
-
-              <View style={styles.modalBorder} />
-
-              <View style={styles.footerCard}>
-                <BoldText style={styles.cardAmount}>
-                  +
-                  {currencySymbol +
-                    addingDecimal(Number(amount).toLocaleString())}
-                </BoldText>
-
-                <View style={styles.footerCardDetails}>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>Status</RegularText>
-                    {statusColor()}
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Transaction type
-                    </RegularText>
-                    <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
-                      Credit
-                    </BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>Amount</RegularText>
-                    <BoldText style={styles.cardValue}>
-                      {currencySymbol +
-                        addingDecimal(Number(amount).toLocaleString())}
-                    </BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Sender Name
-                    </RegularText>
-                    <BoldText style={styles.cardValue}>{senderName}</BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Sender Bank
-                    </RegularText>
-                    <BoldText style={styles.cardValue}>{sourceBank}</BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Sender Account
-                    </RegularText>
-                    <BoldText style={styles.cardValue}>
-                      {senderAccount}
-                    </BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Description
-                    </RegularText>
-                    <BoldText style={styles.cardValue}>{description}</BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>Reference</RegularText>
-                    <BoldText style={styles.cardValue}>{reference}</BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Payment Method
-                    </RegularText>
-                    <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
-                      Balance
-                    </BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Traansaction Date
-                    </RegularText>
-                    <BoldText
-                      style={{
-                        ...styles.cardValue,
-                        textTransform: 'uppercase',
-                      }}>
-                      {transactionDate}
-                    </BoldText>
-                  </View>
-                </View>
+            </View>
+          </>
+        )}
+        {transactionType?.toLowerCase() === 'debit' && (
+          <>
+            <View style={styles.headerContainer}>
+              <UserIcon uri={receiverPhoto} />
+              <View>
+                <BoldText style={styles.name}>{receiverName}</BoldText>
+                <RegularText style={styles.accNo}>
+                  {receiverAccount}
+                </RegularText>
               </View>
-            </>
-          ) : (
-            <>
-              <View style={styles.headerContainer}>
-                {receiverPhoto ? (
-                  <Image
-                    source={{ uri: receiverPhoto }}
-                    loadingIndicatorSource={require('../../../assets/images/user.jpg')}
-                    style={styles.userIconStyle}
-                  />
-                ) : (
-                  <View style={styles.userIconStyle}>
-                    <UserIconSVG width={25} height={25} />
-                  </View>
-                )}
-                <View>
-                  <BoldText style={styles.name}>{receiverName}</BoldText>
-                  <RegularText style={styles.accNo}>
+            </View>
+
+            <View style={styles.modalBorder} />
+
+            <View style={styles.footerCard}>
+              <BoldText style={styles.cardAmount}>
+                -
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+
+              <View style={styles.footerCardDetails}>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Status</RegularText>
+                  {statusColor()}
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Transaction type
+                  </RegularText>
+                  <BoldText style={{ ...styles.cardValue, color: '#ff0000' }}>
+                    Debit
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Amount</RegularText>
+                  <BoldText style={styles.cardValue}>
+                    {currencySymbol +
+                      addingDecimal(Number(amount).toLocaleString())}
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Receiver Name
+                  </RegularText>
+                  <BoldText style={styles.cardValue}>{receiverName}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Receiver Bank
+                  </RegularText>
+                  <BoldText style={styles.cardValue}>
+                    {destinationBank}
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Receiver Account
+                  </RegularText>
+                  <BoldText style={styles.cardValue}>
                     {receiverAccount}
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Description</RegularText>
+                  <BoldText style={styles.cardValue}>{description}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Reference</RegularText>
+                  <BoldText style={styles.cardValue}>{reference}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Payment Method
                   </RegularText>
+                  <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
+                    Balance
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Traansaction Date
+                  </RegularText>
+                  <BoldText
+                    style={{
+                      ...styles.cardValue,
+                      textTransform: 'uppercase',
+                    }}>
+                    {transactionDate}
+                  </BoldText>
                 </View>
               </View>
+            </View>
+          </>
+        )}
 
-              <View style={styles.modalBorder} />
+        {transactionType?.toLowerCase() === 'swap' && (
+          <>
+            <View style={styles.headerContainer}>
+              <UserIcon uri={userPhoto} />
+              <View>
+                <BoldText style={styles.name}>{fullName}</BoldText>
+                <RegularText style={styles.accNo}>{accNo}</RegularText>
+              </View>
+            </View>
 
-              <View style={styles.footerCard}>
-                <BoldText style={styles.cardAmount}>
-                  -
-                  {currencySymbol +
-                    addingDecimal(Number(amount).toLocaleString())}
+            <View style={styles.modalBorder} />
+
+            <View style={styles.footerCard}>
+              <View style={styles.cardAmountContainer}>
+                <BoldText style={{ ...styles.cardAmount }}>
+                  {`${swapFromSymbol}${addingDecimal(
+                    Number(swapFromAmount).toLocaleString(),
+                  )}`}
                 </BoldText>
+                <SwapIcon width={24} height={24} style={styles.swapIcon} />
+                <BoldText style={{ ...styles.cardAmount }}>
+                  {`${swapToSymbol}${addingDecimal(
+                    Number(swapToAmount).toLocaleString(),
+                  )}`}
+                </BoldText>
+              </View>
 
-                <View style={styles.footerCardDetails}>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>Status</RegularText>
-                    {statusColor()}
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Transaction type
-                    </RegularText>
-                    <BoldText style={{ ...styles.cardValue, color: '#ff0000' }}>
-                      Debit
-                    </BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>Amount</RegularText>
-                    <BoldText style={styles.cardValue}>
-                      {currencySymbol +
-                        addingDecimal(Number(amount).toLocaleString())}
-                    </BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Receiver Name
-                    </RegularText>
-                    <BoldText style={styles.cardValue}>{receiverName}</BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Receiver Bank
-                    </RegularText>
-                    <BoldText style={styles.cardValue}>
-                      {destinationBank}
-                    </BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Receiver Account
-                    </RegularText>
-                    <BoldText style={styles.cardValue}>
-                      {receiverAccount}
-                    </BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Description
-                    </RegularText>
-                    <BoldText style={styles.cardValue}>{description}</BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>Reference</RegularText>
-                    <BoldText style={styles.cardValue}>{reference}</BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Payment Method
-                    </RegularText>
-                    <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
-                      Balance
-                    </BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Traansaction Date
-                    </RegularText>
-                    <BoldText
-                      style={{
-                        ...styles.cardValue,
-                        textTransform: 'uppercase',
-                      }}>
-                      {transactionDate}
-                    </BoldText>
-                  </View>
+              <View style={styles.footerCardDetails}>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Status</RegularText>
+                  {statusColor()}
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Transaction type
+                  </RegularText>
+                  <BoldText style={styles.cardValue}>Swap</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Swap-from</RegularText>
+                  <BoldText
+                    style={{ ...styles.cardValue, ...styles.statusText }}>
+                    {swapFrom}
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Swap-to</RegularText>
+                  <BoldText
+                    style={{ ...styles.cardValue, ...styles.statusText }}>
+                    {swapTo}
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Swap-from amount
+                  </RegularText>
+                  <BoldText style={styles.cardValue}>
+                    {swapFromSymbol +
+                      addingDecimal(Number(swapFromAmount).toLocaleString())}
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Swap-to amount
+                  </RegularText>
+                  <BoldText style={styles.cardValue}>
+                    {swapToSymbol +
+                      addingDecimal(Number(swapToAmount).toLocaleString())}
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Reference</RegularText>
+                  <BoldText style={styles.cardValue}>{reference}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Traansaction Date
+                  </RegularText>
+                  <BoldText
+                    style={{
+                      ...styles.cardValue,
+                      textTransform: 'uppercase',
+                    }}>
+                    {transactionDate}
+                  </BoldText>
                 </View>
               </View>
-            </>
-          )}
-        </View>
-      </ScrollView>
+            </View>
+          </>
+        )}
+      </View>
     </PageContainer>
   );
 };
@@ -364,9 +436,16 @@ const styles = StyleSheet.create({
   footerCardDetails: {
     gap: 10,
   },
+  cardAmountContainer: {
+    flexDirection: 'row',
+    gap: 10,
+  },
   cardAmount: {
     fontSize: 24,
     marginBottom: 30,
+  },
+  swapIcon: {
+    marginTop: 6,
   },
   cardLine: {
     flexDirection: 'row',

@@ -30,9 +30,10 @@ export default function App() {
   const [appData, setAppData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [loadingModalBg, setLoadingModalBg] = useState(null);
-  const [amountRefresh, setAmountRefresh] = useState(false);
+  const [walletRefresh, setWalletRefresh] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [canChangeRole, setCanChangeRole] = useState(false);
+  const [noReload, setNoReload] = useState(false);
   const vw = useWindowDimensions().width;
   const vh = useWindowDimensions().height;
 
@@ -57,19 +58,21 @@ export default function App() {
     setAppData,
     loadingModalBg,
     setLoadingModalBg,
-    amountRefresh,
-    setAmountRefresh,
+    walletRefresh,
+    setWalletRefresh,
     isAdmin,
     setIsAdmin,
     canChangeRole,
     setCanChangeRole,
+    noReload,
+    setNoReload,
   };
 
   useEffect(() => {
     getDefultCurrency().then(defaultCurrency => {
       if (!defaultCurrency) {
         return setSelectedCurrency(
-          allCurrencies.find(currency => currency.currency === 'Naira'),
+          allCurrencies.find(currency => currency.currency === 'naira'),
         );
       }
       const defaultCurrencyObject = allCurrencies.find(

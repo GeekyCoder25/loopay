@@ -5,49 +5,58 @@ import { AppContext } from '../components/AppContext';
 const WalletContext = createContext();
 
 const WalletContextComponent = ({ children }) => {
-  const { amountRefresh, selectedCurrency } = useContext(AppContext);
+  const { walletRefresh, selectedCurrency } = useContext(AppContext);
   const [wallet, setWallet] = useState(null);
+  const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
-    const fetchNairaWallet = () => {
-      getFetchData('user/wallet')
-        .then(result => {
-          if (result.status === 400) throw new Error(result.data);
-          setWallet(result.data);
-        })
-        .catch(err => {
-          console.log(err.message);
-          setWallet(null);
-        });
-    };
-    const fetchDollarWallet = () => {
-      getFetchData('user/dollar-wallet')
-        .then(result => {
-          if (result.status === 400) throw new Error(result.data);
-          setWallet(result.data);
-        })
-        .catch(err => {
-          console.log(err.message);
-          setWallet(null);
-        });
-    };
+    getFetchData('user/wallet')
+      .then(result => {
+        if (result.status === 400) throw new Error(result.data);
+        walletToSet(result.data);
+      })
+      .catch(err => {
+        console.log(err.message);
+        setWallet(null);
+      });
 
-    switch (selectedCurrency.currency) {
-      case 'Naira':
-        return fetchNairaWallet();
-      case 'Dollar':
-        return fetchDollarWallet();
-      case 'Euro':
-        return fetchDollarWallet();
-      case 'Pound':
-        return fetchDollarWallet();
-      default:
-        return fetchNairaWallet();
-    }
-  }, [amountRefresh, selectedCurrency]);
+    getFetchData('user/transaction?swap=true')
+      .then(result => {
+        if (result.status === 400) throw new Error(result.data);
+        setTransactions(result.data.transactions);
+      })
+      .catch(err => {
+        console.log(err.message);
+        setTransactions([]);
+      });
 
+    const walletToSet = result => {
+      const otherWalletBalances = {
+        nairaBalance: result.walletNaira?.balance,
+        dollarBalance: result.walletDollar?.balance,
+        euroBalance: result.walletEuro?.balance,
+        poundBalance: result.walletPound?.balance,
+      };
+
+      switch (selectedCurrency.currency) {
+        case 'naira':
+          return setWallet({ ...result.walletNaira, ...otherWalletBalances });
+        case 'dollar':
+          return setWallet({ ...result.walletDollar, ...otherWalletBalances });
+        case 'euro':
+          return setWallet({ ...result.walletEuro, ...otherWalletBalances });
+        case 'pound':
+          return setWallet({ ...result.walletPound, ...otherWalletBalances });
+        default:
+          return setWallet({ ...result.walletNaira, ...otherWalletBalances });
+      }
+    };
+  }, [walletRefresh, selectedCurrency]);
+
+  useEffect(() => {}, [wallet]);
   return (
-    <WalletContext.Provider value={{ wallet, setWallet }}>
+    <WalletContext.Provider
+      value={{ wallet, setWallet, transactions, setTransactions }}>
       {children}
     </WalletContext.Provider>
   );

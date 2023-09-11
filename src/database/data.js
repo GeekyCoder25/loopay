@@ -73,7 +73,7 @@ export const accountType = [
 
 export const allCurrencies = [
   {
-    currency: 'Dollar',
+    currency: 'dollar',
     fullName: 'United State Dollar',
     acronym: 'USD',
     amount: 0.0,
@@ -82,7 +82,7 @@ export const allCurrencies = [
     fee: 1,
   },
   {
-    currency: 'Euro',
+    currency: 'euro',
     fullName: 'European dollar',
     acronym: 'EUR',
     amount: 0.0,
@@ -91,7 +91,7 @@ export const allCurrencies = [
     fee: 1,
   },
   {
-    currency: 'Naira',
+    currency: 'naira',
     fullName: 'Nigerian Naira',
     acronym: 'NGN',
     amount: 0.0,
@@ -100,7 +100,7 @@ export const allCurrencies = [
     fee: 5,
   },
   {
-    currency: 'Pound',
+    currency: 'pound',
     fullName: 'Great British Pound',
     acronym: 'GBP',
     amount: 0.0,
@@ -128,6 +128,12 @@ export const sendMenuRoutes = [
     routeDetails: 'Convert your USD to another currency',
     routeIcon: 'swap',
     routeNavigate: 'SwapFunds',
+  },
+  {
+    routeName: 'Request for funds',
+    routeDetails: 'Request fund using loopay tag',
+    routeIcon: 'wallet',
+    routeNavigate: 'RequestFund',
   },
   {
     routeName: 'Airtime Top up',
