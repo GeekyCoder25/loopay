@@ -6,11 +6,16 @@ import BoldText from '../../../components/fonts/BoldText';
 import UserIcon from '../../../components/UserIcon';
 import Bell from '../../../../assets/images/bell.svg';
 import BellActive from '../../../../assets/images/bellActive.svg';
-import { getFetchData } from '../../../../utils/fetchAPI';
+import { useAdminDataContext } from '../../../context/AdminContext';
 
 const Header = ({ navigation }) => {
   const { appData } = useContext(AppContext);
+  const { adminData } = useAdminDataContext();
   const fullName = appData.userProfile.fullName;
+  const { notifications } = adminData;
+  const unReadNotifications = notifications.filter(
+    notification => notification.adminStatus === 'unread',
+  );
 
   return (
     <View style={styles.container}>
@@ -24,8 +29,8 @@ const Header = ({ navigation }) => {
           style={styles.userImageContainer}>
           <UserIcon />
         </Pressable>
-        <Pressable onPress={() => navigation.navigate('Notification')}>
-          {<Bell /> || <BellActive />}
+        <Pressable onPress={() => navigation.navigate('Notifications')}>
+          {unReadNotifications.length ? <BellActive /> : <Bell />}
         </Pressable>
       </View>
     </View>

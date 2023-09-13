@@ -21,7 +21,7 @@ import ToastMessage from '../../components/ToastMessage';
 import AccInfoCard from '../../components/AccInfoCard';
 
 const Withdraw = ({ navigation }) => {
-  const { appData, vh, selectedCurrency, setIsLoading } =
+  const { appData, vh, selectedCurrency, setIsLoading, setWalletRefresh } =
     useContext(AppContext);
   const { wallet, setWallet } = useWalletContext();
   const [bankSelected, setBankSelected] = useState(null);
@@ -152,6 +152,7 @@ const Withdraw = ({ navigation }) => {
         setWallet(prev => {
           return { ...prev, balance: prev.balance - balance };
         });
+        setWalletRefresh(prev => !prev);
         return navigation.replace('Success', {
           userToSendTo: bankSelected,
           amountInput,
@@ -469,7 +470,7 @@ const styles = StyleSheet.create({
     color: '#f9f9f9',
     fontSize: 13,
   },
-  noBank: { minHeight: 250, justifyContent: 'center', alignItems: 'center' },
+  noBank: { minHeight: 200, justifyContent: 'center', alignItems: 'center' },
   pinContainer: {
     alignItems: 'center',
     marginBottom: 20,

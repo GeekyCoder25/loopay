@@ -21,17 +21,19 @@ import { addingDecimal } from '../../../utils/AddingZero';
 import ErrorMessage from '../../components/ErrorMessage';
 import Button from '../../components/Button';
 import { allCurrencies } from '../../database/data';
-import { ScrollView } from 'react-native-gesture-handler';
 import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { randomUUID } from 'expo-crypto';
 
 const AdminTransfer = ({ navigation }) => {
-  const { selectedCurrency, vw, setIsLoading } = useContext(AppContext);
-  const { adminData, setRefetch } = useAdminDataContext();
-  const { nairaBalance, recents } = adminData;
+  const { selectedCurrency, vw, setIsLoading, setWalletRefetch } =
+    useContext(AppContext);
+  const { adminData } = useAdminDataContext();
+  const { recents } = adminData;
   const [transferCurrency, setTransferCurrency] = useState(selectedCurrency);
-  const [balance, setBalance] = useState(nairaBalance);
+  const [balance, setBalance] = useState(
+    adminData[`${selectedCurrency.currency}Balance`],
+  );
   const [errokey, setErrokey] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -77,14 +79,13 @@ const AdminTransfer = ({ navigation }) => {
         currency: transferCurrency.currency,
         id: randomUUID(),
       });
-      console.log(response);
       if (response.status === 200) {
         const { ...userToSendTo } = response.data.data;
         navigation.navigate('Success', {
           userToSendTo,
           amountInput,
         });
-        setRefetch(prev => !prev);
+        setWalletRefetch(prev => !prev);
         setAmountInput('');
         setUserFound('');
         return setUserInput('');
@@ -101,7 +102,7 @@ const AdminTransfer = ({ navigation }) => {
   const handlecurrencyChange = newSelect => {
     setTransferCurrency(newSelect);
     setErrorMessage(false);
-    // setBalance(newSelect.currency !== 'Naira' ? 0 : nairaBalance);
+    setBalance(adminData[`${newSelect.currency}Balance`]);
   };
 
   const handleModal = () => {
@@ -273,6 +274,9 @@ const AdminTransfer = ({ navigation }) => {
                         </RegularText>
                       </View>
                     </View>
+                    <BoldText>
+                      {adminData[`${currency.currency}Balance`]}
+                    </BoldText>
                   </Pressable>
                 ))}
             </View>

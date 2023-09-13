@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
 import { StyleSheet, View } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
@@ -10,8 +10,10 @@ import Block from '../../../../assets/images/block.svg';
 import Back from '../../../components/Back';
 import { postFetchData } from '../../../../utils/fetchAPI';
 import ToastMessage from '../../../components/ToastMessage';
+import { AppContext } from '../../../components/AppContext';
 
 const RequestStatus = ({ navigation, route }) => {
+  const { setWalletRefresh, setIsLoading } = useContext(AppContext);
   const { amount, symbol, status, requesterAccount: tagName } = route.params;
   const [isCancelled, setIsCancelled] = useState(false);
   const [isBlocking, setisBlocking] = useState(false);
@@ -24,6 +26,7 @@ const RequestStatus = ({ navigation, route }) => {
 
   const handleCancel = async () => {
     try {
+      setIsLoading(true);
       const response = await postFetchData(
         'user/request-confirm',
         route.params,
@@ -31,23 +34,27 @@ const RequestStatus = ({ navigation, route }) => {
 
       if (response.status === 200) {
         setIsCancelled(true);
+        setWalletRefresh(prev => !prev);
       }
       throw new Error(response.data);
     } catch (err) {
       ToastMessage(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleBlock = async () => {
-    console.log(route.params);
     setIsCancelled(false);
     try {
+      setIsLoading(true);
       const response = await postFetchData('user/request-confirm', {
         ...route.params,
         status: 'block',
       });
 
       if (response.status === 200) {
+        setWalletRefresh(prev => !prev);
         setisBlocking(false);
         setIsBlocked(true);
         return ToastMessage(response.data);
@@ -55,6 +62,8 @@ const RequestStatus = ({ navigation, route }) => {
       throw new Error(response.data);
     } catch (err) {
       ToastMessage(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 

@@ -30,7 +30,8 @@ import ToastMessage from '../../../components/ToastMessage';
 import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';
 
 const TransferFunds = ({ navigation, route }) => {
-  const { selectedCurrency, appData } = useContext(AppContext);
+  const { appData, selectedCurrency, setWalletRefresh } =
+    useContext(AppContext);
   const { wallet, setWallet } = useWalletContext();
   const { setRefetchBeneficiary } = useBenefifciaryContext();
   const [userToSendTo] = useState(route.params);
@@ -115,6 +116,7 @@ const TransferFunds = ({ navigation, route }) => {
           await postFetchData('user/beneficiary', userToSendTo);
           setRefetchBeneficiary(prev => !prev);
         }
+        setWalletRefresh(prev => !prev);
         return navigation.navigate('Success', { userToSendTo, amountInput });
       }
       ToastMessage(response.data);

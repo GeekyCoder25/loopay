@@ -8,11 +8,10 @@ import { getShowBalance, setShowBalance } from '../../utils/storage';
 import { addingDecimal } from '../../utils/AddingZero';
 import { AppContext } from './AppContext';
 
-const WalletAmount = () => {
+const WalletAmount = ({ showAmount, setShowAmount }) => {
   const { vw } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [walletAmount, setWalletAmount] = useState('****');
-  const [showAmount, setShowAmount] = useState(false);
 
   useEffect(() => {
     const getShowAmount = async () => {
@@ -23,7 +22,7 @@ const WalletAmount = () => {
     wallet
       ? setWalletAmount(`${addingDecimal(wallet.balance?.toLocaleString())}`)
       : setWalletAmount('****');
-  }, [wallet]);
+  }, [setShowAmount, wallet]);
 
   const handleShow = () => {
     setShowAmount(prev => !prev);

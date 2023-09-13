@@ -38,7 +38,7 @@ const TransactionHistoryParams = ({ route }) => {
   } = history;
 
   const currencySymbol = allCurrencies.find(
-    id => currency === id.currency || currency === id.acronym,
+    id => currency === id.currency,
   )?.symbol;
 
   const transactionDate = `${new Date(

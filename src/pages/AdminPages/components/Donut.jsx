@@ -65,8 +65,9 @@ export default function Donut({
   ];
 
   React.useEffect(() => {
+    // setMaxLabel(0);
     setTimeout(() => {
-      maxLabel < max && setMaxLabel(prev => prev + max / 50);
+      maxLabel < max && setMaxLabel(prev => prev + max * 0.2);
       maxLabel > max && setMaxLabel(max);
     }, 10);
   }, [max, maxLabel]);

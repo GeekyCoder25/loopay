@@ -20,6 +20,7 @@ const AccInfoCard = () => {
   const { selectedCurrency } = useContext(AppContext);
   const [modalOpen, setModalOpen] = useState(false);
   const { wallet, transactions } = useWalletContext();
+  const [showAmount, setShowAmount] = useState(false);
   const [pendingAmount, setPendingAmount] = useState(0);
 
   useEffect(() => {
@@ -27,8 +28,7 @@ const AccInfoCard = () => {
       .filter(
         transaction =>
           transaction.status === 'pending' &&
-          (transaction.currency === selectedCurrency.currency ||
-            transaction.currency === selectedCurrency.acronym),
+          transaction.currency === selectedCurrency.currency,
       )
       .map(balance => Number(balance.amount));
     !pending.length && pending.push(0);
@@ -51,7 +51,10 @@ const AccInfoCard = () => {
               <Text style={styles.symbol}>{selectedCurrency.symbol}</Text>
             </View>
             <View>
-              <WalletAmount />
+              <WalletAmount
+                showAmount={showAmount}
+                setShowAmount={setShowAmount}
+              />
               <View style={styles.flagContainer}>
                 <RegularText style={styles.currrencyType}>
                   {selectedCurrency.currency}
@@ -72,8 +75,7 @@ const AccInfoCard = () => {
             <RegularText style={styles.currrencyType}>
               Pending Balance:{' '}
               <BoldText>
-                {selectedCurrency.symbol}
-                {pendingBalance}
+                {showAmount ? selectedCurrency.symbol + pendingBalance : '****'}
               </BoldText>
             </RegularText>
           </View>

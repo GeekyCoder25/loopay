@@ -125,7 +125,7 @@ export const PINInputFields = ({
   useEffect(() => {
     if (codeLength === focusIndex) {
       inputRef.current.focus();
-      setInputValue('');
+      // setInputValue('');
     }
   }, [codeLength, focusIndex]);
 

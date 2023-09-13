@@ -4,7 +4,6 @@ import PageContainer from '../../components/PageContainer';
 import {
   ActivityIndicator,
   Pressable,
-  ScrollView,
   StyleSheet,
   TextInput,
   View,
@@ -250,7 +249,7 @@ const HistoryComp = ({ history, navigation }) => {
   }
 
   const currencySymbol = allCurrencies.find(
-    id => currency === id.currency || currency === id.acronym,
+    id => currency === id.currency,
   )?.symbol;
 
   return (

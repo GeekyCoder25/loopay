@@ -38,6 +38,7 @@ const PendingRequestConfirm = ({ navigation, route }) => {
         throw new Error(response.data);
       } else {
         return navigation.replace('RequestStatus', {
+          id: randomUUID(),
           status,
           ...route.params,
         });
@@ -102,7 +103,8 @@ const PendingRequestConfirm = ({ navigation, route }) => {
                   .split(' ')[0]
                   .slice(0, -3) +
                   ' ' +
-                  new Date(createdAt).toLocaleTimeString().split(' ')[1]}
+                  (new Date(createdAt).toLocaleTimeString().split(' ')[1] ||
+                    '')}
               </BoldText>
             </View>
             <View style={styles.cardLine}>

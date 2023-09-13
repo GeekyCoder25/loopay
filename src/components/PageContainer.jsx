@@ -2,7 +2,6 @@
 import { useContext, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { AppContext } from './AppContext';
-import { useAdminDataContext } from '../context/AdminContext';
 
 const PageContainer = ({
   children,
@@ -14,15 +13,12 @@ const PageContainer = ({
   refreshFunc,
 }) => {
   const [refreshing, setRefreshing] = useState(false);
-  const { setWalletRefresh, isAdmin, isLoggedIn, noReload } =
-    useContext(AppContext);
-  const adminContext = useAdminDataContext();
+  const { setWalletRefresh, isLoggedIn, noReload } = useContext(AppContext);
 
   const handleRefresh = async () => {
     setRefreshing(true);
     setWalletRefresh(prev => !prev);
     refreshFunc && (await refreshFunc());
-    isAdmin && adminContext.setRefetch(prev => !prev);
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);

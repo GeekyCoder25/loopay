@@ -275,7 +275,7 @@ export const History = ({ history, navigation }) => {
   }
 
   const currencySymbol = allCurrencies.find(
-    id => currency === id.currency || currency === id.acronym,
+    id => currency === id.currency,
   )?.symbol;
 
   return (

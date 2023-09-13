@@ -1,7 +1,7 @@
 import { getToken } from './storage';
 
 export const apiUrl = 'http://10.0.2.2:8000/api';
-// export const apiUrl = 'http://192.168.53.8:8000/api';
+// export const apiUrl = 'http://192.168.14.8:8000/api';
 // export const apiUrl = 'https://loopay-api.cyclic.app/api';
 
 export const getFetchData = async apiEndpoint => {
@@ -24,6 +24,7 @@ export const getFetchData = async apiEndpoint => {
     return "Couldn't connect to server";
   }
 };
+
 export const postFetchData = async (apiEndpoint, bodyData, token) => {
   const API_URL = `${apiUrl}/${apiEndpoint}`;
   const controller = new AbortController();

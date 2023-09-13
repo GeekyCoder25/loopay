@@ -39,13 +39,13 @@ const RequestFund = ({ navigation, route }) => {
   const { minimumAmountToAdd } = selected;
 
   const handlePriceInput = text => {
-    const feeRate = 1 / 100;
+    // const feeRate = 1 / 100;
     setValue(text);
     text = Number(text);
-    const transactionFee = text * feeRate;
+    const transactionFee = text * 0;
     setFee(transactionFee);
-    const swapFromAmountAfterFee = text - transactionFee;
-    const toReceiveCalculate = Number(swapFromAmountAfterFee.toFixed(2));
+    // const swapFromAmountAfterFee = text - transactionFee;
+    const toReceiveCalculate = text;
 
     setStateFields(prev => {
       return {
@@ -58,7 +58,7 @@ const RequestFund = ({ navigation, route }) => {
     setToReceive(
       toReceiveCalculate > 0
         ? addingDecimal(toReceiveCalculate.toLocaleString())
-        : '',
+        : 'free',
     );
     setErrorkey(false);
     setErrorMessage(false);
@@ -230,8 +230,8 @@ const RequestFund = ({ navigation, route }) => {
             </View>
             <View style={styles.fee}>
               <RegularText style={styles.feeText}>
-                Fee: {selected.symbol}
-                {fee < 0 ? '0.00' : fee}
+                Fee: {fee > 0 && selected.symbol}
+                {fee <= 0 ? 'free' : fee}
               </RegularText>
             </View>
           </View>

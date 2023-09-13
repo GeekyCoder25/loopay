@@ -6,9 +6,8 @@ import useInterval from '../../utils/hooks/useInterval';
 export const AdminContext = createContext();
 
 const AdminContextComponent = ({ children }) => {
-  const { setIsLoading } = useContext(AppContext);
+  const { setIsLoading, walletRefresh } = useContext(AppContext);
   const [adminData, setAdminData] = useState(null);
-  const [refetch, setRefetch] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
   const fetchAdminDatas = async () => {
@@ -33,11 +32,11 @@ const AdminContextComponent = ({ children }) => {
   useEffect(() => {
     fetchAdminDatas();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refetch]);
+  }, [walletRefresh]);
 
   return (
     <AdminContext.Provider
-      value={{ adminData, setAdminData, setRefetch, modalOpen, setModalOpen }}>
+      value={{ adminData, setAdminData, modalOpen, setModalOpen }}>
       {adminData && children}
     </AdminContext.Provider>
   );

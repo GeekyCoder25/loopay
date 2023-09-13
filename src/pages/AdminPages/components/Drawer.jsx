@@ -4,6 +4,7 @@ import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import DashboardIcon from '../../../../assets/images/dashboard.svg';
 import AccountsIcon from '../../../../assets/images/accounts.svg';
 import TransferIcon from '../../../../assets/images/transfer.svg';
+import RateIcon from '../../../../assets/images/rate.svg';
 import UsersIcon from '../../../../assets/images/users.svg';
 import HistoryIcon from '../../../../assets/images/histories.svg';
 import StatementIcon from '../../../../assets/images/statement.svg';
@@ -32,6 +33,7 @@ const CustomDrawer = props => {
     'Dashboard',
     'Accounts',
     'Transfer',
+    'Rate',
     'Users',
     'History',
     'Statement',
@@ -44,6 +46,8 @@ const CustomDrawer = props => {
         return <AccountsIcon />;
       case 'Transfer':
         return <TransferIcon />;
+      case 'Rate':
+        return <RateIcon />;
       case 'Users':
         return <UsersIcon />;
       case 'History':

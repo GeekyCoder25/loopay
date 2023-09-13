@@ -30,6 +30,7 @@ const Success = ({ navigation, route }) => {
     }
     navigation.popToTop();
     navigation.navigate('HomeNavigator');
+    navigation.navigate('Home');
   };
   return (
     <PageContainer>

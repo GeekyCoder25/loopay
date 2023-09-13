@@ -16,6 +16,8 @@ import Transactions from '../pages/AdminPages/Transactions';
 import ActiveUsers from '../pages/AdminPages/ActiveUsers';
 import AdminSelectCurrencyModal from '../pages/AdminPages/components/AdminSelectCurrency';
 import Profile from '../pages/HomePages/Profile';
+import Notifications from '../pages/AdminPages/Notifications';
+import Rate from '../pages/AdminPages/Rate';
 
 const AdminNavigator = () => {
   const Drawer = createDrawerNavigator();
@@ -44,9 +46,23 @@ const AdminNavigator = () => {
         <Drawer.Screen name="Dashboard" component={Dashboard} />
         <Drawer.Screen name="Accounts" component={Accounts} />
         <Drawer.Screen name="Transfer" component={AdminTransfer} />
-        <Drawer.Screen name="Users" component={Users} />
+        <Drawer.Screen
+          name="Rate"
+          component={Rate}
+          options={{ headerShown: false }}
+        />
+        <Drawer.Screen
+          name="Users"
+          component={Users}
+          options={{ headerShown: false }}
+        />
         <Drawer.Screen name="History" component={History} />
         <Drawer.Screen name="Statement" component={Statement} />
+        <Drawer.Screen
+          name="Notifications"
+          component={Notifications}
+          options={({ navigation, route }) => BackHeader(navigation, route)}
+        />
         <Drawer.Screen name="Success" component={Success} />
         <Drawer.Screen
           name="Transactions"
@@ -61,7 +77,7 @@ const AdminNavigator = () => {
         <Drawer.Screen
           name="ActiveUsers"
           component={ActiveUsers}
-          options={({ navigation, route }) => BackHeader(navigation, route)}
+          options={{ headerShown: false }}
         />
         <Drawer.Screen
           name="ProfileNavigator"

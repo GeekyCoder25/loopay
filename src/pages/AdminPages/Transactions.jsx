@@ -1,13 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import UserIcon from '../../components/UserIcon';
 import BoldText from '../../components/fonts/BoldText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
@@ -16,24 +10,36 @@ import { AppContext } from '../../components/AppContext';
 import { postFetchData } from '../../../utils/fetchAPI';
 import ToastMessage from '../../components/ToastMessage';
 import { useAdminDataContext } from '../../context/AdminContext';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Transactions = ({ route }) => {
-  const { transactions, transactionStatus } = route.params;
+  const { transactionStatus } = route.params;
+  const [transactions, setTransactions] = useState(route.params.transactions);
+
+  useFocusEffect(
+    useCallback(() => {
+      setTransactions(route.params.transactions);
+    }, [route.params]),
+  );
+
   return (
-    <PageContainer style={styles.container}>
-      <ScrollView style={styles.body}>
-        <View style={styles.transactions}>
-          {transactions.length ? (
-            transactions.map(transaction => (
-              <Transaction key={transaction.id} transaction={transaction} />
-            ))
-          ) : (
-            <View>
-              <BoldText>No current {transactionStatus} transactions </BoldText>
-            </View>
-          )}
-        </View>
-      </ScrollView>
+    <PageContainer scroll>
+      <View style={styles.transactions}>
+        {transactions.length ? (
+          transactions.map(transaction => (
+            <Transaction
+              key={transaction.id}
+              transaction={transaction}
+              transactions={transactions}
+              setTransactions={setTransactions}
+            />
+          ))
+        ) : (
+          <View>
+            <BoldText>No current {transactionStatus} transactions </BoldText>
+          </View>
+        )}
+      </View>
     </PageContainer>
   );
 };
@@ -71,32 +77,44 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: 15,
     // alignItems: 'center',
   },
   input: {
-    width: 50 + '%',
+    flex: 2,
     borderWidth: 1,
     borderColor: '#000',
     borderRadius: 5,
     paddingLeft: 10,
   },
+  decline: {
+    // paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    flex: 1,
+    backgroundColor: 'red',
+  },
+  declineText: {
+    textAlign: 'center',
+    color: '#fff',
+  },
   button: {
-    backgroundColor: '#000',
-    paddingHorizontal: 20,
+    flex: 1,
+    backgroundColor: 'green',
+    // paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 5,
   },
   buttonText: {
+    textAlign: 'center',
     color: '#fff',
   },
 });
 export default Transactions;
 
-const Transaction = ({ transaction }) => {
-  const { setIsLoading } = useContext(AppContext);
-  const { setRefetch } = useAdminDataContext();
+const Transaction = ({ transaction, setTransactions }) => {
+  const { setIsLoading, setWalletRefresh } = useContext(AppContext);
   const [otpCode, setOtpCode] = useState('');
-
   const {
     amount,
     currency,
@@ -108,7 +126,7 @@ const Transaction = ({ transaction }) => {
   } = transaction;
 
   const currencySymbol = allCurrencies.find(
-    id => currency === id.currency || currency === id.acronym,
+    id => currency === id.currency,
   )?.symbol;
 
   const statusColor = () => {
@@ -172,7 +190,27 @@ const Transaction = ({ transaction }) => {
         otp: otpCode,
       });
       if (response.status !== 200) throw new Error(response.data);
-      setRefetch(prev => !prev);
+      setWalletRefresh(prev => !prev);
+    } catch (err) {
+      ToastMessage(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBlock = async () => {
+    try {
+      setIsLoading(true);
+      const response = await postFetchData('admin/block-transaction', {
+        _id: transaction._id,
+      });
+      if (response.status !== 200) throw new Error(response.data);
+      setTransactions(prev =>
+        prev.filter(
+          transactionIndex => transactionIndex._id !== transaction._id,
+        ),
+      );
+      setWalletRefresh(prev => !prev);
     } catch (err) {
       ToastMessage(err.message);
     } finally {
@@ -200,6 +238,9 @@ const Transaction = ({ transaction }) => {
             onChangeText={text => setOtpCode(text)}
             maxLength={6}
           />
+          <Pressable style={styles.decline} onPress={handleBlock}>
+            <BoldText style={styles.declineText}>Decline</BoldText>
+          </Pressable>
           <Pressable style={styles.button} onPress={handleVerify}>
             <BoldText style={styles.buttonText}>Finalize</BoldText>
           </Pressable>

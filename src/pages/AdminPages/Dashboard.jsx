@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import Check from '../../../assets/images/success.svg';
@@ -29,6 +29,7 @@ const Dashboard = ({ navigation }) => {
       setSuccess(
         adminData.transactions.filter(
           transaction =>
+            transaction.currency === selectedCurrency.currency &&
             transaction.status === 'success' &&
             !selectedIds.has(transaction.id) &&
             selectedIds.add(transaction.id),
@@ -37,6 +38,7 @@ const Dashboard = ({ navigation }) => {
       setPending(
         adminData.transactions.filter(
           transaction =>
+            transaction.currency === selectedCurrency.currency &&
             transaction.status === 'pending' &&
             !selectedIds.has(transaction.id) &&
             selectedIds.add(transaction.id),
@@ -45,6 +47,7 @@ const Dashboard = ({ navigation }) => {
       setBlocked(
         adminData.transactions.filter(
           transaction =>
+            transaction.currency === selectedCurrency.currency &&
             (transaction.status === 'blocked' ||
               transaction.status === 'declined') &&
             !selectedIds.has(transaction.id) &&
@@ -71,35 +74,37 @@ const Dashboard = ({ navigation }) => {
         }
       };
       adminData.lastActiveSessions.forEach(userSession => {
-        userSession = userSession.sessions[0].lastSeen;
+        userSession = userSession.sessions[0]?.lastSeen;
         checkSameDateAndTime(userSession) &&
           setActiveUsers(prev => [...prev, userSession]);
       });
     }
-  }, [adminData]);
+  }, [adminData, selectedCurrency.currency]);
 
   useEffect(() => {
-    if (success.length) {
-      setSuccessBalance(
-        success
-          .map(successIndex => Number(successIndex.amount))
-          .reduce((a, b) => a + b),
-      );
-    }
-    if (pending.length) {
-      setPendingBalance(
-        pending
-          .map(pendingIndex => Number(pendingIndex.amount))
-          .reduce((a, b) => a + b),
-      );
-    }
-    if (blocked.length) {
-      setBlockedBalance(
-        blocked
-          .map(blockedIndex => Number(blockedIndex.amount))
-          .reduce((a, b) => a + b),
-      );
-    }
+    success.length
+      ? setSuccessBalance(
+          success
+            .map(successIndex => Number(successIndex.amount))
+            .reduce((a, b) => a + b),
+        )
+      : setSuccessBalance(0);
+
+    pending.length
+      ? setPendingBalance(
+          pending
+            .map(pendingIndex => Number(pendingIndex.amount))
+            .reduce((a, b) => a + b),
+        )
+      : setPendingBalance(0);
+
+    blocked.length
+      ? setBlockedBalance(
+          blocked
+            .map(blockedIndex => Number(blockedIndex.amount))
+            .reduce((a, b) => a + b),
+        )
+      : setBlockedBalance(0);
   }, [success, pending, blocked]);
 
   return (
@@ -197,7 +202,7 @@ const Dashboard = ({ navigation }) => {
               style={styles.status}
               onPress={() =>
                 navigation.navigate('ActiveUsers', {
-                  defaultTab: 'active',
+                  defaultTab: 1,
                 })
               }>
               <View style={styles.activeBg} />
@@ -214,7 +219,7 @@ const Dashboard = ({ navigation }) => {
               style={styles.status}
               onPress={() =>
                 navigation.navigate('ActiveUsers', {
-                  defaultTab: 'inactive',
+                  defaultTab: 0,
                 })
               }>
               <View style={styles.totalBg} />

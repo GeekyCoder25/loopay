@@ -4,12 +4,15 @@ import { AppContext } from './AppContext';
 import UserIconSVG from '../../assets/images/userMenu.svg';
 
 const UserIcon = props => {
-  const { appData } = useContext(AppContext);
+  const { appData, vw } = useContext(AppContext);
 
   return Object.keys(props).includes('uri') ? (
     props.uri ? (
       <Image
-        src={props.uri}
+        src={props.uri.replace(
+          '/image/upload',
+          `/image/upload/w_${Math.round(vw)},q_auto,f_auto`,
+        )}
         loadingIndicatorSource={require('../../assets/images/user.jpg')}
         style={{ ...styles.userIconStyle, ...props.style }}
       />
@@ -23,7 +26,10 @@ const UserIcon = props => {
     )
   ) : appData.photoURL ? (
     <Image
-      src={appData.photoURL}
+      src={appData.photoURL.replace(
+        '/image/upload',
+        `/image/upload/w_${Math.round(vw)},q_auto,f_auto`,
+      )}
       loadingIndicatorSource={require('../../assets/images/user.jpg')}
       style={{ ...styles.userIconStyle, ...props.style }}
     />

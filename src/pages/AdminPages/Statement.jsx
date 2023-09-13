@@ -48,13 +48,16 @@ const Statement = () => {
       transaction => transaction.status === 'pending',
     );
 
-    incomeTransactions.length &&
-      setIncome(transactionsAddUp(incomeTransactions));
-    outcomeTransactions.length &&
-      setOutcome(transactionsAddUp(outcomeTransactions));
-    onholdTransactions.length &&
-      setOnhold(transactionsAddUp(onholdTransactions));
-  }, [selectedCurrency.currency, transactions]);
+    incomeTransactions.length
+      ? setIncome(transactionsAddUp(incomeTransactions))
+      : setIncome(0);
+    outcomeTransactions.length
+      ? setOutcome(transactionsAddUp(outcomeTransactions))
+      : setOutcome(0);
+    onholdTransactions.length
+      ? setOnhold(transactionsAddUp(onholdTransactions))
+      : setOnhold(0);
+  }, [selectedCurrency, transactions]);
 
   return (
     <PageContainer style={styles.container} scroll>
@@ -63,14 +66,24 @@ const Statement = () => {
         <BoldText style={styles.headerText}>Account Summary</BoldText>
         <View style={styles.card}>
           <View style={styles.chart}>
-            <Donut
-              percentage={100}
-              // delay={500 + 100 * i}
-              max={income + outcome + onhold}
-              income={income}
-              outcome={outcome}
-              onhold={onhold}
-            />
+            {!income && !outcome && !onhold ? (
+              <View>
+                <BoldText>
+                  {selectedCurrency.symbol}
+                  {'0.00'}
+                </BoldText>
+                <RegularText>Label</RegularText>
+              </View>
+            ) : (
+              <Donut
+                percentage={100}
+                // delay={500 + 100 * i}
+                max={income + outcome + onhold}
+                income={income}
+                outcome={outcome}
+                onhold={onhold}
+              />
+            )}
           </View>
           <View style={styles.labelsContainer}>
             <View style={styles.labels}>
@@ -135,6 +148,7 @@ const styles = StyleSheet.create({
   chart: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   labelsContainer: {
     justifyContent: 'center',

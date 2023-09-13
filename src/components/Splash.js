@@ -43,7 +43,11 @@ const Splash = ({ navigation }) => {
           if (await getIsLoggedIn()) {
             const data = await getFetchData('user');
             await setAppData(data);
-            if (!data || Object.entries(data).length === 0) {
+            if (
+              !data ||
+              Object.entries(data).length === 0 ||
+              typeof data === 'string'
+            ) {
               setIsLoggedIn(false);
               await deleteFetchData(`user/session/${sessionID}`);
               logoutUser();

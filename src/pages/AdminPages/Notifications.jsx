@@ -3,21 +3,29 @@ import React, { useContext, useState } from 'react';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import PageContainer from '../../components/PageContainer';
-import { Image, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Image, StyleSheet, TextInput, View } from 'react-native';
 import { AppContext } from '../../components/AppContext';
-import { useNotificationsContext } from '../../context/NotificationContext';
 import UserIcon from '../../components/UserIcon';
 import { putFetchData } from '../../../utils/fetchAPI';
-import { useNavigation } from '@react-navigation/native';
+import { useAdminDataContext } from '../../context/AdminContext';
+import { useFocusEffect } from '@react-navigation/native';
 
-const Notification = () => {
-  const { vh } = useContext(AppContext);
+const Notifications = () => {
+  const { vh, setWalletRefresh } = useContext(AppContext);
   const [focused, setFocused] = useState(false);
-  const { notifications } = useNotificationsContext();
+  const { adminData } = useAdminDataContext();
+  const { notifications } = adminData;
   const [searchHistory, setSearchHistory] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchInput, setSearchInput] = useState('');
 
+  useFocusEffect(
+    React.useCallback(() => {
+      putFetchData('admin/notifications');
+
+      return () => setWalletRefresh(prev => !prev);
+    }, [setWalletRefresh]),
+  );
   const groupNotificationsByDate = inputArray => {
     const groupedByDate = {};
 
@@ -205,12 +213,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Notification;
+export default Notifications;
 
 const Message = ({ notification }) => {
-  const { setWalletRefresh } = useContext(AppContext);
-  const { _id, header, message, photo, createdAt, status, type } = notification;
-  const { navigate } = useNavigation();
+  const { header, adminMessage, photo, createdAt, adminStatus } = notification;
   const date = new Date(createdAt);
   const historyTime = convertTo12HourFormat(
     `${date.getHours()}:${date.getMinutes()}`,
@@ -233,19 +239,9 @@ const Message = ({ notification }) => {
 
     return `${hours}:${minutes} ${period}`;
   }
-  const handleNavigate = async () => {
-    if (type === 'request') {
-      navigate('PendingRequest');
-    } else if (type === 'request_confirm') {
-      navigate('Home');
-    } else if (type === 'transaction') {
-      navigate('TransactionHistoryDetails', notification.metadata);
-    }
-    const response = await putFetchData(`user/notification/${_id}`);
-    response.status === 200 && setWalletRefresh(prev => !prev);
-  };
+
   return (
-    <Pressable style={styles.history} onPress={handleNavigate}>
+    <View style={styles.history}>
       {photo ? (
         <UserIcon uri={photo} />
       ) : (
@@ -256,10 +252,10 @@ const Message = ({ notification }) => {
       )}
       <View style={styles.historyContent}>
         <BoldText>{header}</BoldText>
-        <RegularText>{message}</RegularText>
+        <RegularText>{adminMessage}</RegularText>
         <RegularText>{historyTime}</RegularText>
       </View>
-      {status === 'unread' && <View style={styles.unread} />}
-    </Pressable>
+      {adminStatus === 'unread' && <View style={styles.unread} />}
+    </View>
   );
 };
