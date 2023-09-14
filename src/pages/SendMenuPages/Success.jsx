@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import PageContainer from '../../components/PageContainer';
 import { BackHandler, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
@@ -7,6 +7,7 @@ import Button from '../../components/Button';
 import FooterCard from '../../components/FooterCard';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppContext } from '../../components/AppContext';
+import { Audio } from 'expo-av';
 
 const Success = ({ navigation, route }) => {
   const { isAdmin } = useContext(AppContext);
@@ -24,6 +25,16 @@ const Success = ({ navigation, route }) => {
     }, [navigation]),
   );
 
+  useEffect(() => {
+    const playSound = async () => {
+      const { sound } = await Audio.Sound.createAsync(
+        require('../../../assets/success.mp3'),
+      );
+      await sound.playAsync();
+    };
+    playSound();
+  }, []);
+
   const handleHome = () => {
     if (isAdmin) {
       return navigation.navigate('Dashboard');
@@ -32,6 +43,7 @@ const Success = ({ navigation, route }) => {
     navigation.navigate('HomeNavigator');
     navigation.navigate('Home');
   };
+
   return (
     <PageContainer>
       <View style={styles.header}>

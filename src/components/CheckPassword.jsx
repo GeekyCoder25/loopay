@@ -52,7 +52,6 @@ const CheckPassword = ({
     setErrorMessage('');
     postFetchData('auth/forget-password', {
       email,
-      otpCodeLength: 6,
     }).then(result => {
       result = result.data;
       if (result?.email === email) {

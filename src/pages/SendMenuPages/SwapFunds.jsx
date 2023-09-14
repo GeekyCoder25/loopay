@@ -25,6 +25,7 @@ import Check from '../../../assets/images/check.svg';
 import { postFetchData } from '../../../utils/fetchAPI';
 import { randomUUID } from 'expo-crypto';
 import ToastMessage from '../../components/ToastMessage';
+import { Audio } from 'expo-av';
 
 const SwapFunds = ({ navigation }) => {
   const { selectedCurrency, setIsLoading, setWalletRefresh } =
@@ -269,6 +270,16 @@ const SwapFunds = ({ navigation }) => {
       )} ${swapTo.acronym}`,
     },
   ];
+
+  useEffect(() => {
+    const playSound = async () => {
+      const { sound } = await Audio.Sound.createAsync(
+        require('../../../assets/success.mp3'),
+      );
+      await sound.playAsync();
+    };
+    isSuccessful && playSound();
+  }, [isSuccessful]);
 
   useEffect(() => {
     modalOpen &&
@@ -770,7 +781,6 @@ const styles = StyleSheet.create({
   },
   modalIcon: {
     marginBottom: 60,
-    marginLeft: 25,
   },
   card: {
     backgroundColor: '#E4E2E2',

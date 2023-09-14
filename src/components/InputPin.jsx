@@ -1,28 +1,32 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import NoPInSet from './NoPinSet';
 import { PINInputFields } from './InputPinPage';
 import RegularText from './fonts/RegularText';
-import { StyleSheet, View } from 'react-native';
+import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 import { AppContext } from './AppContext';
 import { postFetchData } from '../../utils/fetchAPI';
 import ErrorMessage from './ErrorMessage';
 import Button from './Button';
 
-const InputPin = ({ children, buttonText, setIsValidPin, customFunc }) => {
+const InputPin = ({
+  children,
+  buttonText,
+  setIsValidPin,
+  customFunc,
+  style,
+}) => {
   const { appData, setIsLoading } = useContext(AppContext);
   const [otpTimeout, setOtpTimeout] = useState(60);
   const [otpResend, setOtpResend] = useState(otpTimeout);
   const [errorKey, setErrorKey] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [focusIndex, setFocusIndex] = useState(1);
   const [otpCode, setOtpCode] = useState('');
   const [haveSetPin] = useState(appData.pin);
-  const [reload, setReload] = useState(false);
   const [pinCode, setPinCode] = useState('');
   const [formData] = useState({
     email: appData.email,
-    otpCodeLength: 6,
   });
+  const inputRef = useRef();
 
   const codeLengths = [1, 2, 3, 4];
 
@@ -60,8 +64,8 @@ const InputPin = ({ children, buttonText, setIsValidPin, customFunc }) => {
       setTimeout(() => {
         setPinCode('');
         setOtpCode('');
-        setFocusIndex(1);
-        setReload(prev => !prev);
+        inputRef.current.focus();
+        // setReload(prev => !prev);
       }, 1500);
     } finally {
       setIsLoading(false);
@@ -69,8 +73,8 @@ const InputPin = ({ children, buttonText, setIsValidPin, customFunc }) => {
   };
 
   return (
-    <View>
-      <View style={styles.pinContainer} key={reload}>
+    <View style={{ ...styles.container, ...style }}>
+      <View style={styles.pinContainer}>
         {haveSetPin ? (
           <>
             <RegularText>Enter your transaction pin</RegularText>
@@ -79,17 +83,28 @@ const InputPin = ({ children, buttonText, setIsValidPin, customFunc }) => {
                 <PINInputFields
                   key={input}
                   codeLength={input}
-                  focusIndex={focusIndex}
-                  setFocusIndex={setFocusIndex}
                   pinCode={pinCode}
-                  setPinCode={setPinCode}
                   setErrorMessage={setErrorMessage}
                   errorKey={errorKey}
                   setErrorKey={setErrorKey}
-                  codeLengths={codeLengths.length}
+                  inputRef={inputRef}
                 />
               ))}
             </View>
+            <TextInput
+              autoFocus
+              style={styles.codeInput}
+              inputMode="numeric"
+              onChangeText={text => {
+                setPinCode(text);
+                text.length === codeLengths.length && Keyboard.dismiss();
+                setErrorMessage('');
+                setErrorKey('');
+              }}
+              maxLength={codeLengths.length}
+              ref={inputRef}
+              value={pinCode}
+            />
           </>
         ) : (
           <NoPInSet
@@ -118,15 +133,22 @@ const InputPin = ({ children, buttonText, setIsValidPin, customFunc }) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    justifyContent: 'space-between',
+  },
   pinContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginVertical: 20,
   },
   changePinCodeLengthsContainer: {
     flexDirection: 'row',
     gap: 30,
     justifyContent: 'center',
     marginTop: 10,
+  },
+  codeInput: {
+    height: 1,
+    width: 1,
   },
 });
 

@@ -1,12 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import { useContext, useEffect, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  ScrollView,
-} from 'react-native';
+import { View, StyleSheet, TextInput, Pressable } from 'react-native';
 import Email from '../../../assets/images/mail.svg';
 import Lock from '../../../assets/images/lock.svg';
 import Eye from '../../../assets/images/eye.svg';

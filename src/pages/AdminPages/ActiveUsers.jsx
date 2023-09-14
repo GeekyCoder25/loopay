@@ -18,6 +18,9 @@ const ActiveUsers = ({ navigation, route }) => {
 
   useEffect(() => {
     setDefaulTab(route.params.defaultTab);
+  }, [route.params.defaultTab]);
+
+  useEffect(() => {
     setActiveUsers([]);
     setInactiveUsers([]);
 
@@ -46,7 +49,7 @@ const ActiveUsers = ({ navigation, route }) => {
         setInactiveUsers(prev => [...prev, userSession]);
       }
     });
-  }, [adminData, route.params.defaultTab]);
+  }, [adminData]);
 
   return (
     <PageContainer scroll>

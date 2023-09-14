@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { AppContext } from '../../components/AppContext';
 import Button from '../../components/Button';
 import BoldText from '../../components/fonts/BoldText';
@@ -19,6 +19,7 @@ import { randomUUID } from 'expo-crypto';
 import { useFocusEffect } from '@react-navigation/native';
 import ToastMessage from '../../components/ToastMessage';
 import AccInfoCard from '../../components/AccInfoCard';
+import InputPin from '../../components/InputPin';
 
 const Withdraw = ({ navigation }) => {
   const { appData, vh, selectedCurrency, setIsLoading, setWalletRefresh } =
@@ -32,15 +33,13 @@ const Withdraw = ({ navigation }) => {
   const [canContinue, setCanContinue] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [reload, setReload] = useState(false);
-  const [otpTimeout, setOtpTimeout] = useState(60);
-  const [otpResend, setOtpResend] = useState(otpTimeout);
-  const [focusIndex, setFocusIndex] = useState(1);
   const [pinCode, setPinCode] = useState('');
   const [formData] = useState({
     email: appData.email,
     otpCodeLength: 6,
   });
   const [addedBanks, setAddedBanks] = useState([]);
+  const inputRef = useRef();
 
   const codeLengths = [1, 2, 3, 4];
 
@@ -100,43 +99,14 @@ const Withdraw = ({ navigation }) => {
     }
   };
 
-  const handleConfirm = async () => {
-    try {
-      setIsLoading(true);
-      if (haveSetPin) {
-        const result = await postFetchData('user/check-pin', { pin: pinCode });
-        if (result === "Couldn't connect to server") {
-          return setErrorMessage(result);
-        }
-        if (result.status === 200) {
-          return await initiateWithdrawal();
-        }
-        setErrorMessage(result.data);
-        setErrorKey('pinCode');
-      } else {
-        const result = await postFetchData(
-          `auth/confirm-otp/${otpCode || 'fake'}`,
-          formData,
-        );
-        if (result === "Couldn't connect to server") {
-          return setErrorMessage(result);
-        }
-        if (result.status === 200) {
-          return await initiateWithdrawal();
-        }
-        setErrorMessage('Incorrect OTP Code');
-        setErrorKey('otpCode');
-      }
-      setTimeout(() => {
-        setPinCode('');
-        setOtpCode('');
-        setFocusIndex(1);
-        setReload(prev => !prev);
-      }, 1500);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const handleConfirm = async () => {
+  //   try {
+  //     setIsLoading(true);
+
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const initiateWithdrawal = async () => {
     try {
@@ -212,44 +182,42 @@ const Withdraw = ({ navigation }) => {
             </View>
           </>
         ) : !canContinue ? (
-          <View>
-            <View style={styles.form}>
-              <BoldText>Amount</BoldText>
-              <View style={styles.textInputContainer}>
-                <View style={styles.textInputSymbolContainer}>
-                  <FlagSelect
-                    country={selectedCurrency.currency}
-                    style={styles.flag}
-                  />
-                  <BoldText style={styles.textInputSymbol}>
-                    {selectedCurrency.acronym}
-                  </BoldText>
-                </View>
-                <TextInput
-                  style={{
-                    ...styles.textInput,
-                    borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
-                  }}
-                  inputMode="numeric"
-                  value={amountInput}
-                  onChangeText={text => handleChange(text)}
-                  onBlur={handleBlur}
+          <View style={styles.form}>
+            <BoldText>Amount</BoldText>
+            <View style={styles.textInputContainer}>
+              <View style={styles.textInputSymbolContainer}>
+                <FlagSelect
+                  country={selectedCurrency.currency}
+                  style={styles.flag}
                 />
+                <BoldText style={styles.textInputSymbol}>
+                  {selectedCurrency.acronym}
+                </BoldText>
               </View>
-              <ErrorMessage errorMessage={errorMessage} />
-              <View style={styles.feeTextInputContainer}>
-                <View style={styles.feeTextInput}>
-                  <RegularText>Loopay Withdrawal</RegularText>
-                </View>
-                <View style={styles.fee}>
-                  <RegularText style={styles.feeText}>
-                    Service Charged
-                  </RegularText>
-                  <RegularText style={styles.feeText}>
-                    {selectedCurrency.symbol}
-                    {fee}
-                  </RegularText>
-                </View>
+              <TextInput
+                style={{
+                  ...styles.textInput,
+                  borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
+                }}
+                inputMode="numeric"
+                value={amountInput}
+                onChangeText={text => handleChange(text)}
+                onBlur={handleBlur}
+              />
+            </View>
+            <ErrorMessage errorMessage={errorMessage} />
+            <View style={styles.feeTextInputContainer}>
+              <View style={styles.feeTextInput}>
+                <RegularText>Loopay Withdrawal</RegularText>
+              </View>
+              <View style={styles.fee}>
+                <RegularText style={styles.feeText}>
+                  Service Charged
+                </RegularText>
+                <RegularText style={styles.feeText}>
+                  {selectedCurrency.symbol}
+                  {fee}
+                </RegularText>
               </View>
             </View>
             <View style={styles.button}>
@@ -257,59 +225,19 @@ const Withdraw = ({ navigation }) => {
             </View>
           </View>
         ) : (
-          <View>
-            <View style={styles.pinContainer} key={reload}>
-              {haveSetPin ? (
-                <>
-                  <RegularText>Enter your transaction pin</RegularText>
-                  <View style={styles.changePinCodeLengthsContainer}>
-                    {codeLengths.map(input => (
-                      <PINInputFields
-                        key={input}
-                        codeLength={input}
-                        focusIndex={focusIndex}
-                        setFocusIndex={setFocusIndex}
-                        pinCode={pinCode}
-                        setPinCode={setPinCode}
-                        setErrorMessage={setErrorMessage}
-                        errorKey={errorKey}
-                        setErrorKey={setErrorKey}
-                        codeLengths={codeLengths.length}
-                      />
-                    ))}
-                  </View>
-                </>
-              ) : (
-                <NoPInSet
-                  otpCode={otpCode}
-                  setOtpCode={setOtpCode}
-                  setErrorMessage={setErrorMessage}
-                  errorKey={errorKey}
-                  setErrorKey={setErrorKey}
-                  otpResend={otpResend}
-                  setOtpResend={setOtpResend}
-                  otpTimeout={otpTimeout}
-                  setOtpTimeout={setOtpTimeout}
-                  formData={formData}
-                />
-              )}
-            </View>
+          <InputPin
+            buttonText={'Confirm'}
+            customFunc={() => initiateWithdrawal()}
+            style={styles.inputPin}>
             <ErrorMessage errorMessage={errorMessage} />
             <View style={styles.footer}>
               <FooterCard
                 userToSendTo={bankSelected}
-                amountInput={`${Number(amountInput).toLocaleString()}${
-                  Number(amountInput).toLocaleString().includes('.')
-                    ? ''
-                    : '.00'
-                }`}
+                amountInput={amountInput}
                 fee={fee}
               />
-              <View style={styles.button}>
-                <Button text={'Confirm'} onPress={handleConfirm} />
-              </View>
             </View>
-          </View>
+          </InputPin>
         )}
       </View>
     </PageContainer>
@@ -394,6 +322,7 @@ const styles = StyleSheet.create({
   },
   form: {
     marginTop: 30,
+    flex: 1,
   },
   textInputContainer: {
     position: 'relative',
@@ -490,6 +419,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 40,
   },
+  inputPin: { flex: 1 },
 });
 
 export default Withdraw;

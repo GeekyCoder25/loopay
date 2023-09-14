@@ -13,7 +13,7 @@ import { AppContext } from '../../../components/AppContext';
 import { randomUUID } from 'expo-crypto';
 
 const PendingRequestConfirm = ({ navigation, route }) => {
-  const { setWalletRefresh } = useContext(AppContext);
+  const { setWalletRefresh, vh } = useContext(AppContext);
   const { createdAt, description, fee, symbol, requesterAccount } =
     route.params;
 
@@ -49,14 +49,15 @@ const PendingRequestConfirm = ({ navigation, route }) => {
   };
 
   return (
-    <PageContainer style={styles.container} scroll>
+    <PageContainer style={{ ...styles.container, minHeight: vh * 0.8 }} scroll>
       <RegularText style={styles.headerText}>
         <BoldText> #{requesterAccount} </BoldText>
         requested the sum of {symbol + amount.toLocaleString()}{' '}
       </RegularText>
       <InputPin
         buttonText={'Accept'}
-        customFunc={() => handleConfirm('accept')}>
+        customFunc={() => handleConfirm('accept')}
+        style={styles.inputPin}>
         <View style={styles.footerCard}>
           <BoldText style={styles.cardAmount}>
             {symbol + addingDecimal(amount.toLocaleString())}
@@ -136,6 +137,7 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-600',
     textAlign: 'center',
   },
+  inputPin: { flex: 1 },
   footerCard: {
     backgroundColor: '#efe2e2',
     justifyContent: 'center',

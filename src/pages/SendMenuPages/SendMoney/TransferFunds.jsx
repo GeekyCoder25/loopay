@@ -228,11 +228,7 @@ const TransferFunds = ({ navigation, route }) => {
                 <View style={styles.footer}>
                   <FooterCard
                     userToSendTo={userToSendTo}
-                    amountInput={`${Number(amountInput).toLocaleString()}${
-                      Number(amountInput).toLocaleString().includes('.')
-                        ? ''
-                        : '.00'
-                    }`}
+                    amountInput={amountInput}
                   />
                 </View>
               </InputPin>

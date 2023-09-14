@@ -1,15 +1,15 @@
 /* eslint-disable react-native/no-inline-styles */
-import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import ErrorMessage from './ErrorMessage';
 import Header from './Header';
 import { postFetchData } from '../../utils/fetchAPI';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from './AppContext';
 import Button from './Button';
+import BoldText from './fonts/BoldText';
 
 const InputPinPage = ({ setCanContinue, setReload, customPinFunc }) => {
   const codeLengths = [1, 2, 3, 4];
-  const [focusIndex, setFocusIndex] = useState(1);
   const [pinCode, setPinCode] = useState('');
   const [errorMessage, setErrorMessage] = useState();
   const [errorKey, setErrorKey] = useState('');
@@ -46,6 +46,8 @@ const InputPinPage = ({ setCanContinue, setReload, customPinFunc }) => {
     }
   };
 
+  const inputRef = useRef();
+
   return (
     appData.pin && (
       <View style={styles.form}>
@@ -54,30 +56,41 @@ const InputPinPage = ({ setCanContinue, setReload, customPinFunc }) => {
           text={'Enter your current transaction PIN'}
         />
         <View style={styles.codeLengthsContainer}>
-          {codeLengths.map(codeLength => (
+          {codeLengths.map(input => (
             <PINInputFields
-              key={codeLength}
-              codeLength={codeLength}
-              focusIndex={focusIndex}
-              setFocusIndex={setFocusIndex}
+              key={input}
+              codeLength={input}
               pinCode={pinCode}
-              setPinCode={setPinCode}
-              setErrorMessage={setErrorMessage}
+              inputRef={inputRef}
               errorKey={errorKey}
-              setErrorKey={setErrorKey}
-              codeLengths={codeLengths.length}
             />
           ))}
         </View>
-        <ErrorMessage errorMessage={errorMessage} />
-        <Button
-          text={'Continue'}
-          onPress={handlePress}
-          style={{
-            backgroundColor: isPinOkay ? '#1E1E1E' : 'rgba(30, 30, 30, 0.7)',
+        <TextInput
+          autoFocus
+          style={{ height: 1 }}
+          inputMode="numeric"
+          onChangeText={text => {
+            setPinCode(text);
+            text.length === codeLengths.length && Keyboard.dismiss();
+            setErrorMessage('');
+            setErrorKey('');
           }}
-          disabled={!isPinOkay}
+          maxLength={codeLengths.length}
+          ref={inputRef}
+          value={pinCode}
         />
+        <ErrorMessage errorMessage={errorMessage} style={styles.errorMessage} />
+        <View style={styles.button}>
+          <Button
+            text={'Continue'}
+            onPress={handlePress}
+            style={{
+              backgroundColor: isPinOkay ? '#1E1E1E' : 'rgba(30, 30, 30, 0.7)',
+            }}
+            disabled={!isPinOkay}
+          />
+        </View>
       </View>
     )
   );
@@ -93,82 +106,53 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 30,
     justifyContent: 'center',
-    marginVertical: 40,
+    marginVertical: 0,
   },
   codeInput: {
-    borderBottomWidth: 3,
+    borderWidth: 1,
     borderBottomColor: '#000',
+    textAlign: 'center',
+    fontFamily: 'OpenSans-700',
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    // maxWidth: 8 + '%',
+    marginTop: 40,
+  },
+  codeInputText: {
     textAlign: 'center',
     fontSize: 35,
     fontFamily: 'OpenSans-700',
-    width: 50,
-    maxWidth: 8 + '%',
+  },
+  errorMessage: {
+    marginTop: 20,
+  },
+  button: {
+    flex: 1,
+    justifyContent: 'center',
   },
 });
 
 export default InputPinPage;
 
-export const PINInputFields = ({
-  codeLength,
-  focusIndex,
-  setFocusIndex,
-  pinCode,
-  setPinCode,
-  setErrorMessage,
-  errorKey,
-  setErrorKey,
-  codeLengths,
-}) => {
-  const inputRef = useRef();
-  const [inputValue, setInputValue] = useState('');
-
-  useEffect(() => {
-    if (codeLength === focusIndex) {
-      inputRef.current.focus();
-      // setInputValue('');
-    }
-  }, [codeLength, focusIndex]);
-
-  const handleKeyPress = ({ nativeEvent }) => {
-    if (nativeEvent.key !== 'Backspace') {
-      if (focusIndex < codeLengths) {
-        setFocusIndex(prev => prev + 1);
-      } else {
-        Keyboard.dismiss();
-        inputRef.current.blur();
-      }
-    } else {
-      setPinCode(prev => prev.slice(0, pinCode.length - 1));
-      inputValue === ''
-        ? focusIndex > 1 && setFocusIndex(prev => prev - 1)
-        : inputRef.current.clear();
-    }
-  };
-
+export const PINInputFields = ({ codeLength, pinCode, errorKey, inputRef }) => {
   return (
-    <TextInput
+    <Pressable
+      onPress={() => {
+        inputRef.current.focus();
+      }}
       style={{
         ...styles.codeInput,
-        borderBottomColor: errorKey === 'pinCode' ? 'red' : '#000',
-        color: errorKey === 'pinCode' ? 'red' : '#000',
+        borderColor: errorKey === 'pinCode' ? 'red' : '#000',
       }}
-      value={inputValue}
-      inputMode="numeric"
-      maxLength={1}
-      autoFocus={codeLength === focusIndex}
-      ref={inputRef}
-      onChangeText={text => {
-        setInputValue(text);
-        setPinCode(prev => `${prev}${text}`);
-        codeLengths + 1 === focusIndex && setFocusIndex(1);
-      }}
-      onKeyPress={handleKeyPress}
-      onFocus={() => {
-        setFocusIndex(codeLength);
-        setErrorMessage('');
-        setErrorKey('');
-      }}
-      name="pin"
-    />
+      name="pin">
+      <BoldText
+        style={{
+          ...styles.codeInputText,
+          color: errorKey === 'pinCode' ? 'red' : '#000',
+        }}>
+        {pinCode.charAt(codeLength - 1)}
+      </BoldText>
+    </Pressable>
   );
 };

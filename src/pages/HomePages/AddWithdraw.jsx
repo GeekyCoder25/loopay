@@ -303,6 +303,7 @@ const BanksModal = ({
   const [searchBanks, setSearchBanks] = useState([]);
   const handleModal = () => {
     setModalOpen(false);
+    setIsSearching(false);
   };
 
   const handlePress = bank => {
@@ -341,21 +342,21 @@ const BanksModal = ({
           <View style={styles.modal}>
             {isSearching ? (
               searchBanks.map(
-                bank =>
+                (bank, index) =>
                   bank && (
                     <Pressable
                       style={styles.bank}
-                      key={bank.code}
+                      key={bank.code + index}
                       onPress={() => handlePress(bank)}>
                       <RegularText>{bank.name}</RegularText>
                     </Pressable>
                   ),
               )
             ) : banks.length ? (
-              banks.map(bank => (
+              banks.map((bank, index) => (
                 <Pressable
                   style={styles.bank}
-                  key={bank.code}
+                  key={bank.code + index}
                   onPress={() => handlePress(bank)}>
                   <RegularText>{bank.name}</RegularText>
                 </Pressable>

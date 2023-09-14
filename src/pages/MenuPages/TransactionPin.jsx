@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { StyleSheet, View } from 'react-native';
+import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 import Logo from '../../components/Logo';
 import { AppContext } from '../../components/AppContext';
 import Header from '../../components/Header';
@@ -109,6 +109,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 10,
   },
+  codeInput: {
+    height: 1,
+    width: 1,
+  },
   formBodyContainer: {
     gap: 50,
     marginTop: 20,
@@ -120,6 +124,10 @@ const styles = StyleSheet.create({
   messages: {
     marginTop: 20,
   },
+  button: {
+    flex: 1,
+    justifyContent: 'center',
+  },
   changePinButton: {
     marginTop: 30,
   },
@@ -129,13 +137,13 @@ export default TransactionPin;
 const ChangePin = ({ navigation, setReload }) => {
   const { appData, setAppData, setIsLoading } = useContext(AppContext);
   const walletContext = useWalletContext();
-  const [focusIndex, setFocusIndex] = useState(1);
   const [pinCode, setPinCode] = useState('');
   const [pinCode2, setPinCode2] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState();
   const [errorKey, setErrorKey] = useState('');
   const [isPin1, setIsPin1] = useState(true);
+  const inputRef = useRef();
 
   const codeLengths = [1, 2, 3, 4];
 
@@ -157,7 +165,6 @@ const ChangePin = ({ navigation, setReload }) => {
         setErrorKey('pinCode');
         return setErrorMessage('Input your new transaction pin');
       } else {
-        setFocusIndex(1);
         setIsPin1(false);
       }
     } else {
@@ -215,17 +222,26 @@ const ChangePin = ({ navigation, setReload }) => {
                 <PINInputFields
                   key={input}
                   codeLength={input}
-                  focusIndex={focusIndex}
-                  setFocusIndex={setFocusIndex}
                   pinCode={pinCode}
-                  setPinCode={setPinCode}
-                  setErrorMessage={setErrorMessage}
+                  inputRef={inputRef}
                   errorKey={errorKey}
-                  setErrorKey={setErrorKey}
-                  codeLengths={codeLengths.length}
                 />
               ))}
             </View>
+            <TextInput
+              autoFocus
+              style={styles.codeInput}
+              inputMode="numeric"
+              onChangeText={text => {
+                setPinCode(text);
+                text.length === codeLengths.length && Keyboard.dismiss();
+                setErrorMessage('');
+                setErrorKey('');
+              }}
+              maxLength={codeLengths.length}
+              ref={inputRef}
+              value={pinCode}
+            />
           </View>
         ) : (
           <View style={styles.formBody} key={isPin1}>
@@ -237,31 +253,43 @@ const ChangePin = ({ navigation, setReload }) => {
                 <PINInputFields
                   key={input}
                   codeLength={input}
-                  focusIndex={focusIndex}
-                  setFocusIndex={setFocusIndex}
                   pinCode={pinCode2}
-                  setPinCode={setPinCode2}
-                  setErrorMessage={setErrorMessage}
+                  inputRef={inputRef}
                   errorKey={errorKey}
-                  setErrorKey={setErrorKey}
-                  codeLengths={codeLengths.length}
                 />
               ))}
             </View>
+            <TextInput
+              autoFocus
+              style={styles.codeInput}
+              inputMode="numeric"
+              onChangeText={text => {
+                setPinCode2(text);
+                text.length === codeLengths.length && Keyboard.dismiss();
+                setErrorMessage('');
+                setErrorKey('');
+              }}
+              maxLength={codeLengths.length}
+              ref={inputRef}
+              value={pinCode2}
+            />
           </View>
         )}
       </View>
+
       <View style={styles.messages}>
         <ErrorMessage errorMessage={errorMessage} />
         <SuccessMessage successMessage={successMessage} />
       </View>
-      <Button
-        text={isPin1 ? 'Continue' : appData.pin ? 'Change Pin' : 'Create Pin'}
-        onPress={handleChangePin}
-        style={{
-          ...styles.changePinButton,
-        }}
-      />
+      <View style={styles.button}>
+        <Button
+          text={isPin1 ? 'Continue' : appData.pin ? 'Change Pin' : 'Create Pin'}
+          onPress={handleChangePin}
+          style={{
+            ...styles.changePinButton,
+          }}
+        />
+      </View>
     </View>
   );
 };

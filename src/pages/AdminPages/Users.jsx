@@ -418,7 +418,7 @@ const User = ({ user, userData, activeStatus }) => {
         sessionDate.toLocaleDateString() === currentDate.toLocaleDateString() &&
         sessionDate.getHours() === currentDate.getHours() &&
         (sessionDate.getMinutes() === currentDate.getMinutes() ||
-          minutesDifference <= 1)
+          minutesDifference <= 5)
       );
     }
   };

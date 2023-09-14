@@ -16,11 +16,11 @@ import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import { loginUser } from '../../../utils/storage';
 import ErrorMessage from '../../components/ErrorMessage';
 import saveSessionOptions from '../../services/Savesession';
+import { PINInputFields } from '../../components/InputPinPage';
 
 const ForgotPassword = ({ navigation }) => {
   const { isLoading, setIsLoading, vh, setAppData } = useContext(AppContext);
   const [codeSent, setCodeSent] = useState(false);
-  const [focusIndex, setFocusIndex] = useState(1);
   const [formData, setFormData] = useState({
     email: '',
   });
@@ -31,6 +31,8 @@ const ForgotPassword = ({ navigation }) => {
   const [otpTimeout, setOtpTimeout] = useState(60);
   const [otpResend, setOtpResend] = useState(otpTimeout);
   const [reload, setReload] = useState(false);
+  const inputRef = useRef();
+
   const codeLengths = [1, 2, 3, 4];
 
   useEffect(() => {
@@ -49,6 +51,7 @@ const ForgotPassword = ({ navigation }) => {
         result = result.data;
         if (result?.email === formData.email) {
           setCodeSent(true);
+          inputRef.current.focus();
         } else {
           setErrorKey('email');
           setErrorMessage(result.error);
@@ -71,7 +74,6 @@ const ForgotPassword = ({ navigation }) => {
       } else if (Object.keys(result).includes('error')) {
         setErrorKey('otpCode');
         setTimeout(() => {
-          setFocusIndex(1);
           setOtpCode('');
           setReload(prev => !prev);
         }, 1500);
@@ -116,20 +118,30 @@ const ForgotPassword = ({ navigation }) => {
             {codeSent ? (
               <>
                 <View style={styles.codeLengthsContainer} key={reload}>
-                  {codeLengths.map(codeLength => (
-                    <OTPInput
-                      key={codeLength}
-                      codeLength={codeLength}
-                      focusIndex={focusIndex}
-                      setFocusIndex={setFocusIndex}
-                      otpCode={otpCode}
-                      setOtpCode={setOtpCode}
-                      setErrorMessage={setErrorMessage}
+                  {codeLengths.map(input => (
+                    <PINInputFields
+                      key={input}
+                      codeLength={input}
+                      pinCode={otpCode}
+                      inputRef={inputRef}
                       errorKey={errorKey}
-                      setErrorKey={setErrorKey}
                     />
                   ))}
                 </View>
+                <TextInput
+                  autoFocus
+                  style={styles.codeInput}
+                  inputMode="numeric"
+                  onChangeText={text => {
+                    setOtpCode(text);
+                    text.length === codeLengths.length && Keyboard.dismiss();
+                    setErrorMessage('');
+                    setErrorKey('');
+                  }}
+                  maxLength={codeLengths.length}
+                  ref={inputRef}
+                  value={otpCode}
+                />
                 <View>
                   <RegularText style={styles.enterCodeText}>
                     Enter the Four Digit code sent to your email
@@ -152,16 +164,18 @@ const ForgotPassword = ({ navigation }) => {
                     </Pressable>
                   )}
                 </View>
-                <Button
-                  text={'Confirm One time password'}
-                  onPress={handleConfirm}
-                  style={{
-                    backgroundColor: isPinOkay
-                      ? '#1E1E1E'
-                      : 'rgba(30, 30, 30, 0.7)',
-                  }}
-                  disabled={!isPinOkay || isLoading}
-                />
+                <View style={styles.button}>
+                  <Button
+                    text={'Confirm One time password'}
+                    onPress={handleConfirm}
+                    style={{
+                      backgroundColor: isPinOkay
+                        ? '#1E1E1E'
+                        : 'rgba(30, 30, 30, 0.7)',
+                    }}
+                    disabled={!isPinOkay || isLoading}
+                  />
+                </View>
               </>
             ) : (
               <>
@@ -232,12 +246,8 @@ const styles = StyleSheet.create({
     minHeight: 150,
   },
   codeInput: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#000',
-    width: 50,
-    textAlign: 'center',
-    fontSize: 35,
-    fontFamily: 'OpenSans-700',
+    height: 1,
+    width: 1,
   },
   codeLengthsContainer: {
     flexDirection: 'row',
@@ -285,6 +295,10 @@ const styles = StyleSheet.create({
   now: {
     color: 'orange',
     textDecorationLine: 'underline',
+  },
+  button: {
+    flex: 1,
+    justifyContent: 'flex-end',
   },
   alreadyContainer: {
     flex: 1,
@@ -339,69 +353,5 @@ const Form = ({ item, setFormData, errorKey, setErrorKey, editInput }) => {
         onBlur={() => setInputFocus(false)}
       />
     </View>
-  );
-};
-
-const OTPInput = ({
-  codeLength,
-  focusIndex,
-  setFocusIndex,
-  otpCode,
-  setOtpCode,
-  setErrorMessage,
-  errorKey,
-  setErrorKey,
-}) => {
-  const inputRef = useRef();
-  const [inputValue, setInputValue] = useState('');
-
-  useEffect(() => {
-    if (codeLength === focusIndex) {
-      inputRef.current.focus();
-      // inputRef.current.clear();
-      setInputValue('');
-    }
-  }, [focusIndex, codeLength]);
-
-  const handleKeyPress = ({ nativeEvent }) => {
-    if (nativeEvent.key !== 'Backspace') {
-      if (focusIndex < 4) {
-        setFocusIndex(prev => prev + 1);
-      } else {
-        Keyboard.dismiss();
-        inputRef.current.blur();
-      }
-    } else {
-      setOtpCode(prev => prev.slice(0, otpCode.length - 1));
-      inputValue === ''
-        ? focusIndex > 1 && setFocusIndex(prev => prev - 1)
-        : inputRef.current.clear();
-    }
-  };
-
-  return (
-    <TextInput
-      style={{
-        ...styles.codeInput,
-        borderBottomColor: errorKey === 'otpCode' ? 'red' : '#000',
-        color: errorKey === 'otpCode' ? 'red' : '#000',
-      }}
-      value={inputValue}
-      inputMode="numeric"
-      maxLength={1}
-      autoFocus={codeLength === focusIndex}
-      ref={inputRef}
-      onChangeText={text => {
-        setInputValue(text);
-        setOtpCode(prev => `${prev}${text}`);
-      }}
-      onKeyPress={handleKeyPress}
-      onFocus={() => {
-        setFocusIndex(codeLength);
-        setErrorMessage('');
-        setErrorKey('');
-      }}
-      name="otpCode"
-    />
   );
 };

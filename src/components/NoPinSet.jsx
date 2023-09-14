@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { postFetchData } from '../../utils/fetchAPI';
 import RegularText from './fonts/RegularText';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, View } from 'react-native';
 import BoldText from './fonts/BoldText';
-import { OTPInput } from './LoggedInForgetPassword';
+import { PINInputFields } from './InputPinPage';
+import { TextInput } from 'react-native-gesture-handler';
 
 const NoPInSet = ({
   otpCode,
@@ -17,8 +18,8 @@ const NoPInSet = ({
   otpTimeout,
   setOtpTimeout,
 }) => {
-  const [focusIndex, setFocusIndex] = useState(1);
-  const codeLengths = [1, 2, 3, 4, 5, 6];
+  const inputRef = useRef();
+  const codeLengths = [1, 2, 3, 4];
 
   useEffect(() => {
     setTimeout(() => {
@@ -38,21 +39,32 @@ const NoPInSet = ({
     <>
       <RegularText>Enter six digit Pin sent to your mail</RegularText>
       <View style={styles.changePinCodeLengthsContainer}>
-        {codeLengths.map(codeLength => (
-          <OTPInput
-            key={codeLength}
-            codeLength={codeLength}
-            focusIndex={focusIndex}
-            setFocusIndex={setFocusIndex}
-            otpCode={otpCode}
-            setOtpCode={setOtpCode}
+        {codeLengths.map(input => (
+          <PINInputFields
+            key={input}
+            codeLength={input}
+            pinCode={otpCode}
             setErrorMessage={setErrorMessage}
             errorKey={errorKey}
             setErrorKey={setErrorKey}
-            codeLengths={codeLengths.length}
+            inputRef={inputRef}
           />
         ))}
       </View>
+      <TextInput
+        autoFocus
+        style={styles.codeInput}
+        inputMode="numeric"
+        onChangeText={text => {
+          setOtpCode(text);
+          text.length === codeLengths.length && Keyboard.dismiss();
+          setErrorMessage('');
+          setErrorKey('');
+        }}
+        maxLength={codeLengths.length}
+        ref={inputRef}
+        value={otpCode}
+      />
       <View style={styles.didnt}>
         <BoldText>Didn&apos;t receive the code? Resend </BoldText>
         {typeof otpResend === 'number' ? (

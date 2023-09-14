@@ -8,7 +8,7 @@ import { addingDecimal } from '../../utils/AddingZero';
 
 const FooterCard = ({ userToSendTo, airtime, amountInput, dataPlan, fee }) => {
   const { selectedCurrency } = useContext(AppContext);
-  amountInput = addingDecimal(amountInput.toLocaleString());
+  amountInput = addingDecimal(Number(amountInput).toLocaleString());
 
   return (
     <View style={styles.footerCard}>
