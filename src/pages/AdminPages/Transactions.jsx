@@ -164,7 +164,7 @@ const Transactions = ({ navigation, route }) => {
             )}
           </>
         ) : (
-          <View>
+          <View style={styles.empty}>
             <BoldText>
               No current {label2 || transactionStatus} transactions{' '}
             </BoldText>
@@ -339,6 +339,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#fff',
   },
+  empty: {
+    paddingHorizontal: 5 + '%',
+  },
 });
 export default Transactions;
 
@@ -347,7 +350,8 @@ const Transaction = ({ transaction, setTransactions }) => {
   const {
     amount,
     currency,
-    paystackReference,
+    transferCode,
+    reference,
     senderName,
     senderPhoto,
     status,
@@ -467,7 +471,8 @@ const Transaction = ({ transaction, setTransactions }) => {
       </Pressable>
       {isExpanded && status === 'pending' && (
         <ExpandedInput
-          paystackReference={paystackReference}
+          reference={reference}
+          transferCode={transferCode}
           transaction={transaction}
           setTransactions={setTransactions}
         />
@@ -476,14 +481,19 @@ const Transaction = ({ transaction, setTransactions }) => {
   );
 };
 
-const ExpandedInput = ({ paystackReference, transaction, setTransactions }) => {
+const ExpandedInput = ({
+  reference,
+  transferCode,
+  transaction,
+  setTransactions,
+}) => {
   const { setIsLoading, setWalletRefresh } = useContext(AppContext);
   const [otpCode, setOtpCode] = useState('');
   const handleVerify = async () => {
     try {
       setIsLoading(true);
       const response = await postFetchData('admin/finalize', {
-        transfer_code: paystackReference,
+        transfer_code: transferCode,
         otp: otpCode,
       });
       if (response.status !== 200) throw new Error(response.data);
@@ -515,20 +525,24 @@ const ExpandedInput = ({ paystackReference, transaction, setTransactions }) => {
     }
   };
   return (
-    <View style={styles.inputContainer}>
-      <TextInput
-        style={styles.otpInput}
-        placeholder="Input OTP"
-        inputMode="numeric"
-        onChangeText={text => setOtpCode(text)}
-        maxLength={6}
-      />
-      <Pressable style={styles.decline} onPress={handleBlock}>
-        <BoldText style={styles.declineText}>Decline</BoldText>
-      </Pressable>
-      <Pressable style={styles.button} onPress={handleVerify}>
-        <BoldText style={styles.buttonText}>Finalize</BoldText>
-      </Pressable>
+    <View>
+      <RegularText>Reference:</RegularText>
+      <BoldText>{reference}</BoldText>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.otpInput}
+          placeholder="Input OTP"
+          inputMode="numeric"
+          onChangeText={text => setOtpCode(text)}
+          maxLength={6}
+        />
+        <Pressable style={styles.decline} onPress={handleBlock}>
+          <BoldText style={styles.declineText}>Decline</BoldText>
+        </Pressable>
+        <Pressable style={styles.button} onPress={handleVerify}>
+          <BoldText style={styles.buttonText}>Finalize</BoldText>
+        </Pressable>
+      </View>
     </View>
   );
 };
