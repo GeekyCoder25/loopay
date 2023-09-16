@@ -1,4 +1,4 @@
-import BackArrow from '../../assets/images/backArrrow.svg';
+import BackArrow from '../../assets/images/backArrow.svg';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { hideTabRoutes } from '../config/config';
 import { useContext, useEffect } from 'react';

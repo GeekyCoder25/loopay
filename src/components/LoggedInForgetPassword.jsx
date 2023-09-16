@@ -9,7 +9,7 @@ import { postFetchData } from '../../utils/fetchAPI';
 import ErrorMessage from './ErrorMessage';
 import { PINInputFields } from './InputPinPage';
 
-const LoggedInForgetPassword = ({ setPassowrdIsValid }) => {
+const LoggedInForgetPassword = ({ setPasswordIsValid }) => {
   const { appData, setIsLoading } = useContext(AppContext);
   const { email } = appData;
   const [formData] = useState({
@@ -29,7 +29,7 @@ const LoggedInForgetPassword = ({ setPassowrdIsValid }) => {
     setIsPinOkay(otpCode.length === codeLengths.length);
   }, [codeLengths.length, otpCode.length]);
 
-  const handleCofirm = async () => {
+  const handleConfirm = async () => {
     try {
       setIsLoading(true);
       const result = await postFetchData(
@@ -38,7 +38,7 @@ const LoggedInForgetPassword = ({ setPassowrdIsValid }) => {
       );
       if (result === "Couldn't connect to server") {
         return setErrorMessage(result);
-      } else if (result.status === 200) return setPassowrdIsValid(true);
+      } else if (result.status === 200) return setPasswordIsValid(true);
       setErrorKey('otpCode');
       return setErrorMessage(result.data.error);
     } finally {
@@ -107,7 +107,7 @@ const LoggedInForgetPassword = ({ setPassowrdIsValid }) => {
       <View style={styles.button}>
         <Button
           text={'Confirm One time password'}
-          onPress={handleCofirm}
+          onPress={handleConfirm}
           style={{
             backgroundColor: isPinOkay ? '#1E1E1E' : 'rgba(30, 30, 30, 0.7)',
           }}

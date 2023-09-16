@@ -17,7 +17,7 @@ const LoopayTag = ({ navigation }) => {
   const { userName } = appData.userProfile;
   const [errorMessage, setErrorMessage] = useState('');
   const [isError, setIsError] = useState(false);
-  const { minimun, maximum } = tagNameRules;
+  const { minimum, maximum } = tagNameRules;
   const handleChange = text => {
     setInputValue(text);
     setErrorMessage('');
@@ -30,10 +30,10 @@ const LoopayTag = ({ navigation }) => {
       if (!inputValue) {
         setIsError(true);
         return setErrorMessage('Please input your loopay tag');
-      } else if (inputValue.length < minimun || inputValue.length > maximum) {
+      } else if (inputValue.length < minimum || inputValue.length > maximum) {
         setIsError(true);
         return setErrorMessage(
-          `Your tag name must be at least ${minimun}-${maximum} characters long`,
+          `Your tag name must be at least ${minimum}-${maximum} characters long`,
         );
       }
       const fetchedResult = await postFetchData('user/tag-name', {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { wPressable, StyleSheet, View } from 'react-native';
 import Image1 from '../../../assets/images/onboarding1.svg';
 import Image2 from '../../../assets/images/onboarding2.svg';
 import Image3 from '../../../assets/images/onboarding3.svg';
@@ -27,7 +27,7 @@ const Onboarding = () => {
         {onboardings.map(onboarding => (
           <Stack.Screen
             name={`onboarding${onboarding}`}
-            component={OnboadingMaps}
+            component={OnboardingMaps}
             key={onboarding}
           />
         ))}
@@ -38,7 +38,7 @@ const Onboarding = () => {
 
 export default Onboarding;
 
-const OnboadingMaps = ({ route, navigation }) => {
+const OnboardingMaps = ({ route, navigation }) => {
   const onboardingPages = [
     {
       image: <Image1 />,
@@ -60,7 +60,7 @@ const OnboadingMaps = ({ route, navigation }) => {
     },
     {
       image: <Image4 />,
-      title: 'Refferal',
+      title: 'Referral',
       content:
         'Refer friends, family and clients to Loopay and enjoy amazing rewards',
       uri: 4,

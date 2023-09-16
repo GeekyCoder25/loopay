@@ -6,7 +6,7 @@ import { useContext, useEffect } from 'react';
 import { AppContext } from '../components/AppContext';
 import HomeNavigator from './HomeNavigator';
 import WalletContextComponent from '../context/WalletContext';
-import BeneficiaryContextComponent from '../context/BenefiaciariesContext';
+import BeneficiaryContextComponent from '../context/BeneficiariesContext';
 import RequestFundsContextComponent from '../context/RequestContext';
 const BottomTabs = () => {
   const { showTabBar, appData, setAppData } = useContext(AppContext);

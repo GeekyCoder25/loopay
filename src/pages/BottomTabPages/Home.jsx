@@ -163,7 +163,7 @@ const Home = ({ navigation }) => {
                     setShowAmount={setShowAmount}
                   />
                   <View style={styles.flagContainer}>
-                    <RegularText style={styles.currrencyType}>
+                    <RegularText style={styles.currencyType}>
                       {selectedCurrency.acronym}
                     </RegularText>
                     <FlagSelect country={selectedCurrency.currency} />
@@ -185,7 +185,7 @@ const Home = ({ navigation }) => {
                 style={styles.cardDetails}
                 onPress={() => navigation.navigate('AccountDetails')}>
                 <Wallet />
-                <RegularText style={styles.currrencyType}>
+                <RegularText style={styles.currencyType}>
                   Account Details
                 </RegularText>
               </Pressable>
@@ -195,7 +195,7 @@ const Home = ({ navigation }) => {
                   navigation.navigate('SendMoneyNavigatorFromHome')
                 }>
                 <UpAndDownArrow />
-                <RegularText style={styles.currrencyType}>
+                <RegularText style={styles.currencyType}>
                   Send Money
                 </RegularText>
               </Pressable>
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     gap: 10,
     marginLeft: -5,
   },
-  currrencyType: {
+  currencyType: {
     color: '#fff',
     paddingLeft: 10,
     fontSize: 15,

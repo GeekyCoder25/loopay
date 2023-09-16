@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderRadius: 5,
-    marginVeertical: 30,
+    marginVertical: 30,
   },
   footerCardDetails: {
     gap: 10,

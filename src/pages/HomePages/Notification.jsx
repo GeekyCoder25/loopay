@@ -88,10 +88,10 @@ const Notification = () => {
             />
           </View>
           <View style={styles.body}>
-            {groupNotificationsByDate(notifications).map(dayNotifiactions => (
-              <View key={dayNotifiactions.date} style={styles.dateHistory}>
+            {groupNotificationsByDate(notifications).map(dayNotifications => (
+              <View key={dayNotifications.date} style={styles.dateHistory}>
                 <RegularText style={styles.date}>
-                  {dayNotifiactions.date}
+                  {dayNotifications.date}
                 </RegularText>
                 {isSearching
                   ? searchHistory.map(
@@ -103,7 +103,7 @@ const Notification = () => {
                           />
                         ),
                     )
-                  : dayNotifiactions.notifications.map(notification => (
+                  : dayNotifications.notifications.map(notification => (
                       <Message
                         key={notification.id}
                         notification={notification}

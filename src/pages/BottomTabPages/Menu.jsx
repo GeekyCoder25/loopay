@@ -48,10 +48,10 @@ const Menu = ({ navigation }) => {
     }
   };
 
-  const transationPin = menuRoutes.find(
+  const transactionPin = menuRoutes.find(
     route => route.routeNavigate === 'TransactionPin',
   );
-  transationPin.routeName = `${
+  transactionPin.routeName = `${
     appData.pin ? 'Change' : 'Create'
   } Transaction Pin`;
 

@@ -38,7 +38,7 @@ const VirtualCardDetails = ({ route }) => {
                 <View>
                   <WalletAmount />
                   <View style={styles.flagContainer}>
-                    <RegularText style={styles.currrencyType}>
+                    <RegularText style={styles.currencyType}>
                       {selectedCurrency.currency}
                     </RegularText>
                     <FlagSelect country={selectedCurrency.currency} />
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  currrencyType: {
+  currencyType: {
     color: '#fff',
     paddingLeft: 10,
     fontSize: 15,

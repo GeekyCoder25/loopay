@@ -21,19 +21,19 @@ import { AppContext } from '../../../components/AppContext';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { postFetchData } from '../../../../utils/fetchAPI';
-import BackArrow from '../../../../assets/images/backArrrowWhite.svg';
+import BackArrow from '../../../../assets/images/backArrowWhite.svg';
 import FooterCard from '../../../components/FooterCard';
 import { useWalletContext } from '../../../context/WalletContext';
 import { randomUUID } from 'expo-crypto';
 import InputPin from '../../../components/InputPin';
 import ToastMessage from '../../../components/ToastMessage';
-import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';
+import { useBeneficiaryContext } from '../../../context/BeneficiariesContext';
 
 const TransferFunds = ({ navigation, route }) => {
   const { appData, selectedCurrency, setWalletRefresh } =
     useContext(AppContext);
   const { wallet, setWallet } = useWalletContext();
-  const { setRefetchBeneficiary } = useBenefifciaryContext();
+  const { setRefetchBeneficiary } = useBeneficiaryContext();
   const [userToSendTo] = useState(route.params);
   const [amountInput, setAmountInput] = useState(null);
   const [description, setDescription] = useState('');

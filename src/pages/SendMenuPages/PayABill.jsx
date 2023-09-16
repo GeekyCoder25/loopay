@@ -4,7 +4,7 @@ import BoldText from '../../components/fonts/BoldText';
 import TVIcon from '../../../assets/images/billTv.svg';
 import InternetIcon from '../../../assets/images/billInternet.svg';
 import SchoolIcon from '../../../assets/images/billSchool.svg';
-import Electricitycon from '../../../assets/images/billElectricity.svg';
+import ElectricityIcon from '../../../assets/images/billElectricity.svg';
 import RegularText from '../../components/fonts/RegularText';
 import { useContext } from 'react';
 import { AppContext } from '../../components/AppContext';
@@ -26,7 +26,7 @@ const PayABill = ({ navigation }) => {
         {
           title: 'Package',
           type: 'select',
-          placeholder: 'Select Pacakage',
+          placeholder: 'Select Package',
           id: 'package',
         },
         {
@@ -82,7 +82,7 @@ const PayABill = ({ navigation }) => {
         {
           title: 'Package',
           type: 'select',
-          placeholder: 'Select Pacakage',
+          placeholder: 'Select Package',
           id: 'package',
         },
         {
@@ -142,7 +142,7 @@ const PayABill = ({ navigation }) => {
         {
           title: 'Package',
           type: 'select',
-          placeholder: 'Select Pacakage',
+          placeholder: 'Select Package',
           id: 'package',
         },
         {
@@ -222,7 +222,7 @@ const Bill = ({ bill, navigation }) => {
       case 'school':
         return <SchoolIcon width={width} height={height} />;
       case 'electricity':
-        return <Electricitycon width={width} height={height} />;
+        return <ElectricityIcon width={width} height={height} />;
       default:
         break;
     }

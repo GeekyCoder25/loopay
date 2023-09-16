@@ -4,20 +4,20 @@ import PageContainer from '../../components/PageContainer';
 import { Pressable, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import { useAdminDataContext } from '../../context/AdminContext';
-import BackIcon from '../../../assets/images/backArrrow.svg';
+import BackIcon from '../../../assets/images/backArrow.svg';
 import RegularText from '../../components/fonts/RegularText';
 import ChevronDown from '../../../assets/images/drop-down.svg';
 import UserIcon from '../../components/UserIcon';
 
 const ActiveUsers = ({ navigation, route }) => {
-  const [defaultTab, setDefaulTab] = useState(route.params.defaultTab);
+  const [defaultTab, setDefaultTab] = useState(route.params.defaultTab);
   const [activeUsers, setActiveUsers] = useState([]);
   const [inactiveUsers, setInactiveUsers] = useState([]);
   const { adminData } = useAdminDataContext();
   const { users } = adminData;
 
   useEffect(() => {
-    setDefaulTab(route.params.defaultTab);
+    setDefaultTab(route.params.defaultTab);
   }, [route.params.defaultTab]);
 
   useEffect(() => {
@@ -52,6 +52,19 @@ const ActiveUsers = ({ navigation, route }) => {
     });
   }, [adminData]);
 
+  function sortFunc(a, b) {
+    const date1 = a.createdAt;
+    const date2 = b.createdAt;
+    let comparison = 0;
+
+    if (date1 > date2) {
+      comparison = -1;
+    } else if (date1 < date2) {
+      comparison = 1;
+    }
+    return comparison;
+  }
+
   return (
     <PageContainer scroll>
       <View>
@@ -68,7 +81,7 @@ const ActiveUsers = ({ navigation, route }) => {
               ...styles.bodySelector,
               backgroundColor: defaultTab ? '#525252' : '#d0d1d2',
             }}
-            onPress={() => setDefaulTab(1)}>
+            onPress={() => setDefaultTab(1)}>
             <BoldText
               style={{
                 color: defaultTab ? '#fff' : '#1E1E1E',
@@ -81,7 +94,7 @@ const ActiveUsers = ({ navigation, route }) => {
               ...styles.bodySelector,
               backgroundColor: !defaultTab ? '#525252' : '#d0d1d2',
             }}
-            onPress={() => setDefaulTab(0)}>
+            onPress={() => setDefaultTab(0)}>
             <BoldText
               style={{
                 color: !defaultTab ? '#fff' : '#1E1E1E',
@@ -95,13 +108,13 @@ const ActiveUsers = ({ navigation, route }) => {
 
       {defaultTab ? (
         <View style={styles.users}>
-          {activeUsers.map(user => (
+          {activeUsers.sort(sortFunc).map(user => (
             <User key={user.email} userSession={user} status={defaultTab} />
           ))}
         </View>
       ) : (
         <View style={styles.users}>
-          {inactiveUsers.map(user => (
+          {inactiveUsers.sort(sortFunc).map(user => (
             <User key={user.email} userSession={user} status={defaultTab} />
           ))}
         </View>
@@ -151,9 +164,6 @@ const styles = StyleSheet.create({
   },
   user: {
     flexDirection: 'row',
-    // paddingHorizontal: 5 + '%',
-    // borderBottomColor: '#525252',
-    // borderBottomWidth: 0.3,
     paddingVertical: 10,
     gap: 15,
   },

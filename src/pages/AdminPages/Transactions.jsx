@@ -9,7 +9,7 @@ import { AppContext } from '../../components/AppContext';
 import { postFetchData } from '../../../utils/fetchAPI';
 import ToastMessage from '../../components/ToastMessage';
 import { useFocusEffect } from '@react-navigation/native';
-import BackIcon from '../../../assets/images/backArrrow.svg';
+import BackIcon from '../../../assets/images/backArrow.svg';
 import { useAdminDataContext } from '../../context/AdminContext';
 import ChevronDown from '../../../assets/images/chevron-down-fill.svg';
 import RegularText from '../../components/fonts/RegularText';

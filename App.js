@@ -15,7 +15,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { allCurrencies } from './src/database/data';
 import AppStart from './src/components/AppStart';
 import LoadingModal from './src/components/LoadingModal';
-import { getDefultCurrency } from './utils/storage';
+import { getDefaultCurrency } from './utils/storage';
 import { RootSiblingParent } from 'react-native-root-siblings';
 
 SplashScreen.preventAutoHideAsync();
@@ -69,7 +69,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    getDefultCurrency().then(defaultCurrency => {
+    getDefaultCurrency().then(defaultCurrency => {
       if (!defaultCurrency) {
         return setSelectedCurrency(
           allCurrencies.find(currency => currency.currency === 'naira'),

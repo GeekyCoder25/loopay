@@ -11,7 +11,7 @@ import Button from './Button';
 import BoldText from './fonts/BoldText';
 
 const CheckPassword = ({
-  setPassowrdIsValid,
+  setPasswordIsValid,
   setRemembersPassword,
   errorMessage,
   setErrorMessage,
@@ -38,7 +38,7 @@ const CheckPassword = ({
       const fetchResult = await postFetchData('auth/check-password', formData);
       const { data: result } = fetchResult;
       if (result === true) {
-        return setPassowrdIsValid(true);
+        return setPasswordIsValid(true);
       }
       setErrorMessage(result.error || result);
       setErrorKey(true);

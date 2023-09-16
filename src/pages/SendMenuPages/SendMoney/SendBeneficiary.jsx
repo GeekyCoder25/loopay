@@ -3,10 +3,10 @@ import PageContainer from '../../../components/PageContainer';
 import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
 import UserIconSVG from '../../../../assets/images/userMenu.svg';
-import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';
+import { useBeneficiaryContext } from '../../../context/BeneficiariesContext';
 
 const SendBeneficiary = ({ navigation }) => {
-  const { beneficiaryState } = useBenefifciaryContext();
+  const { beneficiaryState } = useBeneficiaryContext();
 
   const handleContinue = async userFound => {
     navigation.navigate('TransferFunds', userFound);

@@ -109,13 +109,6 @@ const Splash = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* <View style={styles.logo}>
-        <Logo width={vw * 0.7} height={vw * 0.14} />
-        <RegularText
-          style={{ ...styles.subText, fontSize: Math.round(vw * 0.035) }}>
-          ...your favorite midnight pay pal
-        </RegularText>
-      </View> */}
       <View style={styles.logo} />
       <Image
         source={require('../../assets/images/splash.png')}

@@ -35,7 +35,7 @@ const AddMoney = ({ navigation, route }) => {
   const { wallet } = useWalletContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [value, setValue] = useState('');
-  const [errorkey, setErrorkey] = useState(false);
+  const [errorKey, setErrorKey] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [paymentModal, setPaymentModal] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('bankTransfer');
@@ -73,7 +73,7 @@ const AddMoney = ({ navigation, route }) => {
     },
   ];
   const handleCurrencyChange = newSelect => {
-    setErrorkey('');
+    setErrorKey('');
     setErrorMessage('');
     setSelectedCurrency(newSelect);
   };
@@ -141,13 +141,13 @@ const AddMoney = ({ navigation, route }) => {
         ? addingDecimal(toReceiveCalculate.toLocaleString())
         : '',
     );
-    setErrorkey(false);
+    setErrorKey(false);
     setErrorMessage(false);
   };
 
   const handleAutoFill = () => {
     if (value && value < minimumAmountToAdd) {
-      setErrorkey('amount');
+      setErrorKey('amount');
       setErrorMessage(
         `Minimum amount to add is ${selectedCurrency.symbol}${minimumAmountToAdd}`,
       );
@@ -168,10 +168,10 @@ const AddMoney = ({ navigation, route }) => {
 
   const handleContinue = () => {
     if (!value) {
-      setErrorkey('amount');
+      setErrorKey('amount');
       return setErrorMessage('Please provide amount');
     } else if (value && value < minimumAmountToAdd) {
-      setErrorkey('amount');
+      setErrorKey('amount');
       return setErrorMessage(
         `Minimum amount to add is ${selectedCurrency.symbol}${minimumAmountToAdd}`,
       );
@@ -301,7 +301,7 @@ const AddMoney = ({ navigation, route }) => {
                   style={{
                     ...styles.textInput,
                     ...styles.textInputStyles,
-                    borderColor: errorkey === 'amount' ? 'red' : '#ccc',
+                    borderColor: errorKey === 'amount' ? 'red' : '#ccc',
                   }}
                   inputMode="numeric"
                   onChangeText={text => handlePriceInput(text)}
@@ -317,7 +317,7 @@ const AddMoney = ({ navigation, route }) => {
               )}
 
               <RegularText style={styles.label}>
-                Amount you’ll recieve
+                Amount you’ll receive
               </RegularText>
               <View style={styles.textInputContainer}>
                 <BoldText style={styles.symbol}>

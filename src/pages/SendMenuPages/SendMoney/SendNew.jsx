@@ -21,14 +21,14 @@ import SwitchOn from '../../../../assets/images/switch.svg';
 import SwitchOff from '../../../../assets/images/switchOff.svg';
 import { postFetchData } from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
-import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';
+import { useBeneficiaryContext } from '../../../context/BeneficiariesContext';
 import ErrorMessage from '../../../components/ErrorMessage';
 
 const SendNew = ({ navigation, route }) => {
   const { appData } = useContext(AppContext);
-  const { beneficiaryState } = useBenefifciaryContext();
+  const { beneficiaryState } = useBeneficiaryContext();
   const [showPaste, setShowPaste] = useState(false);
-  const [inputValue, setinputValue] = useState('');
+  const [inputValue, setInputValue] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [saveAsBeneficiary, setSaveAsBeneficiary] = useState(true);
   const [userFound, setUserFound] = useState(null);
@@ -43,7 +43,7 @@ const SendNew = ({ navigation, route }) => {
     };
 
     if (route.params) {
-      setinputValue(route.params.tagName);
+      setInputValue(route.params.tagName);
       setUserFound(route.params);
       const beneficiariesTagName = beneficiaryState?.map(
         beneficiary => beneficiary.tagName,
@@ -60,14 +60,14 @@ const SendNew = ({ navigation, route }) => {
 
   const handlePaste = async () => {
     const copiedText = await Clipboard.getString();
-    setinputValue(copiedText);
+    setInputValue(copiedText);
     handleChange(copiedText);
   };
 
   const handleChange = async text => {
     try {
       setErrorMessage('');
-      setinputValue(text);
+      setInputValue(text);
       if (text.length === 10) {
         setIsSearching(true);
         const result = await postFetchData('user/get-phone', {

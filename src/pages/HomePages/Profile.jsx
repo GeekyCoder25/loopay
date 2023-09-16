@@ -12,13 +12,13 @@ import * as ImagePicker from 'expo-image-picker';
 import { apiUrl } from '../../../utils/fetchAPI';
 import { getToken } from '../../../utils/storage';
 import WithdrawIcon from '../../../assets/images/withdraw.svg';
-import PassowrdIcon from '../../../assets/images/password.svg';
+import PasswordIcon from '../../../assets/images/password.svg';
 import PinIcon from '../../../assets/images/pin.svg';
 import SettingsIcon from '../../../assets/images/settings.svg';
 import QuestionsIcon from '../../../assets/images/questions.svg';
 import ProfileIcon from '../../../assets/images/profile.svg';
 import ChevronLeft from '../../../assets/images/chevron-right.svg';
-import BiometircIcon from '../../../assets/images/biometric.svg';
+import BiometricIcon from '../../../assets/images/biometric.svg';
 import ToastMessage from '../../components/ToastMessage';
 
 const Profile = ({ navigation, children, route }) => {
@@ -351,7 +351,7 @@ const RouteLink = ({ route, navigation }) => {
       case 'withdraw':
         return <WithdrawIcon />;
       case 'password':
-        return <PassowrdIcon />;
+        return <PasswordIcon />;
       case 'pin':
         return <PinIcon />;
       case 'settings':
@@ -361,7 +361,7 @@ const RouteLink = ({ route, navigation }) => {
       case 'info':
         return <ProfileIcon />;
       case 'biometric':
-        return <BiometircIcon />;
+        return <BiometricIcon />;
     }
   };
   const handleNavigate = () => {

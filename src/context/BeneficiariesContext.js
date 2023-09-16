@@ -8,13 +8,13 @@ const BeneficiaryContextComponent = ({ children }) => {
   const [refetchBeneficiary, setRefetchBeneficiary] = useState(false);
 
   useEffect(() => {
-    const getBeneficiaires = async () => {
+    const getBeneficiaries = async () => {
       const response = await getFetchData('user/beneficiary');
       if (response.status === 200) {
         setBeneficiaryState(response.data.beneficiaries);
       }
     };
-    getBeneficiaires();
+    getBeneficiaries();
   }, [refetchBeneficiary]);
 
   return (
@@ -27,4 +27,4 @@ const BeneficiaryContextComponent = ({ children }) => {
 
 export default BeneficiaryContextComponent;
 
-export const useBenefifciaryContext = () => useContext(BeneficiaryContext);
+export const useBeneficiaryContext = () => useContext(BeneficiaryContext);

@@ -29,7 +29,7 @@ const RequestFund = ({ navigation, route }) => {
     symbol: selected.symbol,
   });
   const [userFound, setUserFound] = useState(false);
-  const [errorkey, setErrorkey] = useState(false);
+  const [errorKey, setErrorKey] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -61,13 +61,13 @@ const RequestFund = ({ navigation, route }) => {
         ? addingDecimal(toReceiveCalculate.toLocaleString())
         : 'free',
     );
-    setErrorkey(false);
+    setErrorKey(false);
     setErrorMessage(false);
   };
 
   const handleAutoFill = () => {
     if (value && value < minimumAmountToAdd) {
-      setErrorkey(true);
+      setErrorKey(true);
       setErrorMessage(
         `Minimum amount to request is ${selected.symbol}${minimumAmountToAdd}`,
       );
@@ -76,7 +76,7 @@ const RequestFund = ({ navigation, route }) => {
   };
 
   const handleCurrencyChange = newSelect => {
-    setErrorkey('');
+    setErrorKey('');
     setErrorMessage('');
     setSelected(newSelect);
     setStateFields(prev => {
@@ -93,7 +93,7 @@ const RequestFund = ({ navigation, route }) => {
   };
 
   const handleTagCheck = async text => {
-    setErrorkey('');
+    setErrorKey('');
     setErrorMessage('');
     setSuccessMessage('');
 
@@ -110,7 +110,7 @@ const RequestFund = ({ navigation, route }) => {
   const handleCheck = async () => {
     try {
       if (!stateFields.tagName) {
-        setErrorkey('tagName');
+        setErrorKey('tagName');
         return setErrorMessage("Please provide user's tag name");
       }
       const senderTagName = appData.tagName;
@@ -129,7 +129,7 @@ const RequestFund = ({ navigation, route }) => {
         return setUserFound(result.data);
       }
       setErrorMessage(result.data);
-      setErrorkey('tagName');
+      setErrorKey('tagName');
     } finally {
       setIsLoading(false);
     }
@@ -137,21 +137,21 @@ const RequestFund = ({ navigation, route }) => {
 
   const handleContinue = async () => {
     if (!stateFields.tagName) {
-      setErrorkey('tagName');
+      setErrorKey('tagName');
       return setErrorMessage("Please provide user's tag name");
     } else if (!userFound) {
-      setErrorkey('tagName');
+      setErrorKey('tagName');
       return setErrorMessage('Invalid tag name');
     } else if (!value) {
-      setErrorkey('amount');
+      setErrorKey('amount');
       return setErrorMessage('Please provide amount');
     } else if (value && value < minimumAmountToAdd) {
-      setErrorkey(true);
+      setErrorKey(true);
       return setErrorMessage(
         `Minimum amount to request is ${selected.symbol}${minimumAmountToAdd}`,
       );
     } else if (!stateFields.description) {
-      setErrorkey('desc');
+      setErrorKey('desc');
       return setErrorMessage('Please provide your request description');
     } else {
       return navigation.navigate('RequestConfirm', stateFields);
@@ -169,7 +169,7 @@ const RequestFund = ({ navigation, route }) => {
           <TextInput
             style={{
               ...styles.textInput,
-              borderColor: errorkey === 'tagName' ? 'red' : '#ccc',
+              borderColor: errorKey === 'tagName' ? 'red' : '#ccc',
             }}
             onChangeText={text => handleTagCheck(text)}
             placeholder={'#username'}
@@ -211,7 +211,7 @@ const RequestFund = ({ navigation, route }) => {
               style={{
                 ...styles.textInput,
                 ...styles.textInputStyles,
-                borderColor: errorkey === 'amount' ? 'red' : '#ccc',
+                borderColor: errorKey === 'amount' ? 'red' : '#ccc',
               }}
               inputMode="numeric"
               onChangeText={text => handlePriceInput(text)}
@@ -220,7 +220,7 @@ const RequestFund = ({ navigation, route }) => {
             />
           </View>
 
-          <RegularText style={styles.label}>Amount you’ll recieve</RegularText>
+          <RegularText style={styles.label}>Amount you’ll receive</RegularText>
           <View style={styles.textInputContainer}>
             <BoldText style={styles.symbol}>{selected.symbol}</BoldText>
             <View style={{ ...styles.textInput, ...styles.textInputStyles }}>
@@ -242,11 +242,11 @@ const RequestFund = ({ navigation, route }) => {
             <TextInput
               style={{
                 ...styles.textInput,
-                borderColor: errorkey === 'desc' ? 'red' : '#ccc',
+                borderColor: errorKey === 'desc' ? 'red' : '#ccc',
               }}
               onChangeText={text => {
                 setErrorMessage('');
-                setErrorkey('');
+                setErrorKey('');
                 setStateFields(prev => {
                   return {
                     ...prev,

@@ -16,7 +16,7 @@ import { allCurrencies } from '../../../database/data';
 import { useAdminDataContext } from '../../../context/AdminContext';
 import FlagSelect from '../../../components/FlagSelect';
 import BoldText from '../../../components/fonts/BoldText';
-import { setDefultCurrency } from '../../../../utils/storage';
+import { setDefaultCurrency } from '../../../../utils/storage';
 import { addingDecimal } from '../../../../utils/AddingZero';
 
 const AdminSelectCurrencyModal = () => {
@@ -180,12 +180,12 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
   const { selectedCurrency, setSelectedCurrency } = useContext(AppContext);
   const { adminData, modalFunc, setModalFunc } = useAdminDataContext();
 
-  const handlecurrencyChange = async newSelect => {
+  const handleCurrencyChange = async newSelect => {
     setShowSearchBox(false);
     setModalOpen(false);
     modalFunc ? modalFunc(newSelect) : setSelectedCurrency(newSelect);
     setModalFunc(null);
-    await setDefultCurrency(`${newSelect.currency}`);
+    await setDefaultCurrency(`${newSelect.currency}`);
   };
 
   return (
@@ -198,7 +198,7 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
             ? '#e4e2e2'
             : 'transparent',
       }}
-      onPress={() => handlecurrencyChange(selected)}>
+      onPress={() => handleCurrencyChange(selected)}>
       <View style={styles.currencyIcon}>
         <FlagSelect country={selected.currency} />
         <View>

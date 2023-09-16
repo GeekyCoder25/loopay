@@ -22,21 +22,21 @@ import SwitchOff from '../../../../assets/images/switchOff.svg';
 import { postFetchData } from '../../../../utils/fetchAPI';
 import { tagNameRules } from '../../../database/data';
 import { AppContext } from '../../../components/AppContext';
-import { useBenefifciaryContext } from '../../../context/BenefiaciariesContext';
+import { useBeneficiaryContext } from '../../../context/BeneficiariesContext';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import ErrorMessage from '../../../components/ErrorMessage';
 
 const SendLoopay = ({ navigation, route }) => {
   const { appData } = useContext(AppContext);
-  const { beneficiaryState } = useBenefifciaryContext();
+  const { beneficiaryState } = useBeneficiaryContext();
   const [showPaste, setShowPaste] = useState(false);
-  const [inputValue, setinputValue] = useState('');
+  const [inputValue, setInputValue] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [saveAsBeneficiary, setSaveAsBeneficiary] = useState(false);
   const [userFound, setUserFound] = useState(null);
   const [newBeneficiary, setNewBeneficiary] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const { minimun, maximum } = tagNameRules;
+  const { minimum, maximum } = tagNameRules;
 
   useEffect(() => {
     const getClipboard = async () => {
@@ -47,7 +47,7 @@ const SendLoopay = ({ navigation, route }) => {
     getClipboard();
 
     if (route.params) {
-      setinputValue(route.params.tagName);
+      setInputValue(route.params.tagName);
       setUserFound(route.params);
       const beneficiariesTagName = beneficiaryState?.map(
         beneficiary => beneficiary.tagName,
@@ -63,13 +63,13 @@ const SendLoopay = ({ navigation, route }) => {
 
   const handlePaste = async () => {
     const copiedText = await Clipboard.getString();
-    setinputValue(copiedText);
+    setInputValue(copiedText);
     handleCheck(copiedText);
   };
 
   const handleCheck = async () => {
     setErrorMessage('');
-    if (inputValue.length >= minimun && inputValue.length <= maximum) {
+    if (inputValue.length >= minimum && inputValue.length <= maximum) {
       setIsSearching(true);
       const senderTagName = appData.tagName;
       try {
@@ -115,7 +115,7 @@ const SendLoopay = ({ navigation, route }) => {
             <TextInput
               style={styles.textInput}
               inputMode="text"
-              onChangeText={text => setinputValue(text)}
+              onChangeText={text => setInputValue(text)}
               onBlur={handleCheck}
               value={inputValue}
               placeholder="#username"

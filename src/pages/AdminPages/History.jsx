@@ -28,8 +28,8 @@ const History = ({ navigation }) => {
   const { transactions } = adminData;
 
   useEffect(() => {
-    const groupedTransactons = groupTransactionsByDate(transactions);
-    setHistories(groupedTransactons);
+    const groupedTransactions = groupTransactionsByDate(transactions);
+    setHistories(groupedTransactions);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

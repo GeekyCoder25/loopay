@@ -17,7 +17,7 @@ const RequestStatus = ({ navigation, route }) => {
   const { setWalletRefresh, setIsLoading } = useContext(AppContext);
   const { amount, symbol, status, requesterAccount: tagName } = route.params;
   const [isCancelled, setIsCancelled] = useState(false);
-  const [isBlocking, setisBlocking] = useState(false);
+  const [isBlocking, setIsBlocking] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const RequestStatus = ({ navigation, route }) => {
 
       if (response.status === 200) {
         setWalletRefresh(prev => !prev);
-        setisBlocking(false);
+        setIsBlocking(false);
         setIsBlocked(true);
         return ToastMessage(response.data);
       }
@@ -117,7 +117,7 @@ const RequestStatus = ({ navigation, route }) => {
                 text={'Cancel and Block'}
                 style={styles.button}
                 color={'#000'}
-                onPress={() => setisBlocking(true)}
+                onPress={() => setIsBlocking(true)}
               />
               <Button text={'Cancel Transaction'} onPress={handleCancel} />
             </View>

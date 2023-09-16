@@ -13,8 +13,6 @@ import ErrorMessage from '../../components/ErrorMessage';
 import { useWalletContext } from '../../context/WalletContext';
 import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import FooterCard from '../../components/FooterCard';
-import { PINInputFields } from '../../components/InputPinPage';
-import NoPInSet from '../../components/NoPinSet';
 import { randomUUID } from 'expo-crypto';
 import { useFocusEffect } from '@react-navigation/native';
 import ToastMessage from '../../components/ToastMessage';
@@ -141,7 +139,7 @@ const Withdraw = ({ navigation }) => {
         {!canContinue && (
           <RegularText style={styles.headerText}>
             In cases of insufficient fund, make to have swap to NGN before
-            placing withrawal.
+            placing withdrawal.
           </RegularText>
         )}
         {!bankSelected ? (
@@ -287,7 +285,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  currrencyType: {
+  currencyType: {
     color: '#fff',
     paddingLeft: 10,
     fontSize: 15,

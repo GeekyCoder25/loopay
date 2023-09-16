@@ -34,7 +34,7 @@ const AdminTransfer = ({ navigation }) => {
   const [balance, setBalance] = useState(
     adminData[`${selectedCurrency.currency}Balance`],
   );
-  const [errokey, setErrokey] = useState(false);
+  const [errorKey, setErrorKey] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [amountInput, setAmountInput] = useState('');
@@ -45,10 +45,10 @@ const AdminTransfer = ({ navigation }) => {
   const handlePriceInput = text => {
     setAmountInput(text);
     if (text > balance) {
-      setErrokey(true);
+      setErrorKey(true);
       return setErrorMessage('Insufficient funds');
     }
-    setErrokey(false);
+    setErrorKey(false);
     setErrorMessage(false);
   };
 
@@ -59,12 +59,12 @@ const AdminTransfer = ({ navigation }) => {
   const handleSend = async () => {
     try {
       if (!userFound) {
-        return setErrorMessage('You havent provide an account to send to');
+        return setErrorMessage("You haven't provide an account to send to");
       } else if (!amountInput) {
-        setErrokey(true);
+        setErrorKey(true);
         return setErrorMessage('Input amount');
       } else if (amountInput > balance) {
-        setErrokey(true);
+        setErrorKey(true);
         return setErrorMessage('Insufficient funds');
       }
       setIsLoading(true);
@@ -99,7 +99,7 @@ const AdminTransfer = ({ navigation }) => {
     }
   };
 
-  const handlecurrencyChange = newSelect => {
+  const handleCurrencyChange = newSelect => {
     setTransferCurrency(newSelect);
     setErrorMessage(false);
     setBalance(adminData[`${newSelect.currency}Balance`]);
@@ -223,7 +223,7 @@ const AdminTransfer = ({ navigation }) => {
           <TextInput
             style={{
               ...styles.textInput,
-              borderColor: errokey ? 'red' : '#ccc',
+              borderColor: errorKey ? 'red' : '#ccc',
             }}
             inputMode="numeric"
             onChangeText={text => handlePriceInput(text)}
@@ -262,7 +262,7 @@ const AdminTransfer = ({ navigation }) => {
                     key={currency.currency}
                     style={styles.currency}
                     onPress={() => {
-                      handlecurrencyChange(currency);
+                      handleCurrencyChange(currency);
                       setModalOpen(false);
                     }}>
                     <View style={styles.currencyIcon}>

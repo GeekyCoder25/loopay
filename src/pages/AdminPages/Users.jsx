@@ -11,7 +11,7 @@ import UserIcon from '../../components/UserIcon';
 import { allCurrencies } from '../../database/data';
 import { useNavigation } from '@react-navigation/native';
 import { addingDecimal } from '../../../utils/AddingZero';
-import BackIcon from '../../../assets/images/backArrrow.svg';
+import BackIcon from '../../../assets/images/backArrow.svg';
 import SortIcon from '../../../assets/images/sort.svg';
 
 const Users = ({ navigation }) => {

@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { getFetchData } from '../../utils/fetchAPI';
 import { AppContext } from '../components/AppContext';
 
-export const NotifiactionsContext = createContext();
+export const NotificationsContext = createContext();
 
 const NotificationsContextComponent = ({ children }) => {
   const { walletRefresh } = useContext(AppContext);
@@ -25,13 +25,13 @@ const NotificationsContextComponent = ({ children }) => {
     );
   }, [notifications]);
   return (
-    <NotifiactionsContext.Provider
+    <NotificationsContext.Provider
       value={{ notifications, setNotifications, unread }}>
       {children}
-    </NotifiactionsContext.Provider>
+    </NotificationsContext.Provider>
   );
 };
 
 export default NotificationsContextComponent;
 
-export const useNotificationsContext = () => useContext(NotifiactionsContext);
+export const useNotificationsContext = () => useContext(NotificationsContext);

@@ -31,7 +31,7 @@ const SwapFunds = ({ navigation }) => {
   const { selectedCurrency, setIsLoading, setWalletRefresh, vh } =
     useContext(AppContext);
   const { wallet } = useWalletContext();
-  const [errorkey, setErrorkey] = useState(false);
+  const [errorKey, setErrorKey] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [value, setValue] = useState('');
@@ -164,7 +164,7 @@ const SwapFunds = ({ navigation }) => {
         balance: wallet[`${swapToSelect.currency}Balance`],
       });
     // setSwapToCurrency(swapToSelect.currency);
-    setErrorkey('');
+    setErrorKey('');
     setErrorMessage('');
     setValue('');
     setToReceive('');
@@ -179,7 +179,7 @@ const SwapFunds = ({ navigation }) => {
       };
     });
     setShowSwapToCurrencies(false);
-    setErrorkey('');
+    setErrorKey('');
     setErrorMessage('');
     setValue('');
     setToReceive('');
@@ -226,16 +226,16 @@ const SwapFunds = ({ navigation }) => {
         : 'Amount to receive',
     );
     if (text > wallet[`${swapFrom.currency}Balance`]) {
-      setErrorkey(true);
+      setErrorKey(true);
       return setErrorMessage('Insufficient funds');
     }
-    setErrorkey(false);
+    setErrorKey(false);
     setErrorMessage(false);
   };
 
   const handleAutoFill = () => {
     if (value && value < minimumAmountToAdd) {
-      setErrorkey(true);
+      setErrorKey(true);
       setErrorMessage(
         `Minimum amount to swap is ${swapFrom.symbol}${minimumAmountToAdd}`,
       );
@@ -253,18 +253,18 @@ const SwapFunds = ({ navigation }) => {
 
   const handleContinue = () => {
     if (!value) {
-      setErrorkey(true);
+      setErrorKey(true);
       return setErrorMessage('Input your amount to swap');
     } else if (value < minimumAmountToAdd) {
-      setErrorkey(true);
+      setErrorKey(true);
       return setErrorMessage(
         `Minimum amount to swap is ${swapFrom.symbol}${minimumAmountToAdd}`,
       );
     } else if (value > wallet[`${swapFrom.currency}Balance`]) {
-      setErrorkey(true);
+      setErrorKey(true);
       return setErrorMessage('Insufficient funds');
     }
-    setErrorkey('');
+    setErrorKey('');
     setErrorMessage('');
     setModalOpen(true);
   };
@@ -461,7 +461,7 @@ const SwapFunds = ({ navigation }) => {
                 <TextInput
                   style={{
                     ...styles.textInput,
-                    borderColor: errorkey ? 'red' : '#ccc',
+                    borderColor: errorKey ? 'red' : '#ccc',
                   }}
                   inputMode="numeric"
                   onChangeText={text => handlePriceInput(text)}
@@ -479,7 +479,7 @@ const SwapFunds = ({ navigation }) => {
               </View>
             </View>
             <RegularText style={styles.label}>
-              Amount you will recieve
+              Amount you will receive
             </RegularText>
             <View style={styles.textInputContainer}>
               <BoldText style={styles.symbol}>{swapTo.symbol}</BoldText>

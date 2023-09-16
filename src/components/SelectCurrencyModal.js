@@ -16,7 +16,7 @@ import RegularText from './fonts/RegularText';
 import BoldText from './fonts/BoldText';
 import FlagSelect from './FlagSelect';
 import { addingDecimal } from '../../utils/AddingZero';
-import { setDefultCurrency } from '../../utils/storage';
+import { setDefaultCurrency } from '../../utils/storage';
 import { useWalletContext } from '../context/WalletContext';
 
 const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
@@ -180,11 +180,11 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
   const { wallet } = useWalletContext();
   const { selectedCurrency, setSelectedCurrency } = useContext(AppContext);
 
-  const handlecurrencyChange = async newSelect => {
+  const handleCurrencyChange = async newSelect => {
     setShowSearchBox(false);
     setModalOpen(false);
     setSelectedCurrency(newSelect);
-    await setDefultCurrency(`${newSelect.currency}`);
+    await setDefaultCurrency(`${newSelect.currency}`);
   };
 
   return (
@@ -197,7 +197,7 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
             ? '#e4e2e2'
             : 'transparent',
       }}
-      onPress={() => handlecurrencyChange(selected)}>
+      onPress={() => handleCurrencyChange(selected)}>
       <View style={styles.currencyIcon}>
         <FlagSelect country={selected.currency} />
         <View>

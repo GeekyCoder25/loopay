@@ -17,7 +17,7 @@ import { addingDecimal } from '../../../../utils/AddingZero';
 import { useWalletContext } from '../../../context/WalletContext';
 import { getFetchData } from '../../../../utils/fetchAPI';
 
-export default function SelectInputfield({
+export default function SelectInputField({
   selectInput,
   setStateFields,
   customFunc,

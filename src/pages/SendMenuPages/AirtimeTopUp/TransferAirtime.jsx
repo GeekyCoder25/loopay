@@ -9,7 +9,7 @@ import AirtelIcon from '../../../../assets/images/airtel.svg';
 import NineMobileIcon from '../../../../assets/images/9mobile.svg';
 import { postFetchData } from '../../../../utils/fetchAPI';
 import PageContainer from '../../../components/PageContainer';
-import BackArrow from '../../../../assets/images/backArrrowWhite.svg';
+import BackArrow from '../../../../assets/images/backArrowWhite.svg';
 
 const TransferAirtime = ({ navigation, route }) => {
   const { formData } = route.params;

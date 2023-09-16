@@ -234,6 +234,6 @@ export const swapToObject = {
 };
 
 export const tagNameRules = {
-  minimun: 6,
+  minimum: 6,
   maximum: 15,
 };

@@ -3,7 +3,7 @@ import PageContainer from '../../../components/PageContainer';
 import BoldText from '../../../components/fonts/BoldText';
 import { useState } from 'react';
 import Button from '../../../components/Button';
-import SelectInputfield from './PayABillFields';
+import SelectInputField from './PayABillFields';
 
 const BillInternet = ({ route }) => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -28,7 +28,7 @@ const BillInternet = ({ route }) => {
       <View style={styles.body}>
         <BoldText style={styles.headerText}>{route.params.headerText}</BoldText>
         {fields.map(field => (
-          <SelectInputfield
+          <SelectInputField
             key={field.title}
             selectInput={field}
             modalOpen={modalOpen}

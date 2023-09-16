@@ -3,7 +3,7 @@ import PageContainer from '../../../components/PageContainer';
 import BoldText from '../../../components/fonts/BoldText';
 import { useEffect, useState } from 'react';
 import Button from '../../../components/Button';
-import SelectInputfield from './PayABillFields';
+import SelectInputField from './PayABillFields';
 import ErrorMessage from '../../../components/ErrorMessage';
 
 const PayABillParams = ({ route }) => {
@@ -38,7 +38,7 @@ const PayABillParams = ({ route }) => {
       <ScrollView style={styles.body}>
         <BoldText style={styles.headerText}>{route.params.headerText}</BoldText>
         {fields.map(field => (
-          <SelectInputfield
+          <SelectInputField
             key={field.title}
             selectInput={field}
             setStateFields={setStateFields}

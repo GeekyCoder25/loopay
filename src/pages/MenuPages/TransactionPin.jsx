@@ -46,7 +46,7 @@ const TransactionPin = ({ navigation }) => {
         {!inputOldPin ? (
           remembersPassword ? (
             <CheckPassword
-              setPassowrdIsValid={setInputOldPin}
+              setPasswordIsValid={setInputOldPin}
               errorMessage={errorMessage}
               setErrorMessage={setErrorMessage}
               errorKey={errorKey}
@@ -62,7 +62,7 @@ const TransactionPin = ({ navigation }) => {
               }
             />
           ) : (
-            <LoggedInForgetPassword setPassowrdIsValid={setInputOldPin} />
+            <LoggedInForgetPassword setPasswordIsValid={setInputOldPin} />
           )
         ) : canEditPin ? (
           <ChangePin

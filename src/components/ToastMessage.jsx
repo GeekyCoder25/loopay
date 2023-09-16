@@ -41,10 +41,8 @@ const styles = StyleSheet.create({
     gap: 10,
     maxWidth: 350,
     paddingTop: 5,
-    // paddingHorizontal: 2 + '%',
   },
   imageContainer: {
-    // padding: 5,
     backgroundColor: '#fff',
     borderRadius: 15,
   },

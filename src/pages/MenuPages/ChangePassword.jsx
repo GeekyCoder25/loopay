@@ -25,7 +25,7 @@ const ChangePassword = ({ navigation }) => {
   const [errorKey, setErrorKey] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [passowrdIsValid, setPassowrdIsValid] = useState(!isLoggedIn || false);
+  const [passwordIsValid, setPasswordIsValid] = useState(!isLoggedIn || false);
 
   const editInput = () => {
     setErrorMessage('');
@@ -81,10 +81,10 @@ const ChangePassword = ({ navigation }) => {
           <View style={styles.logo}>
             <Logo />
           </View>
-          {!passowrdIsValid ? (
+          {!passwordIsValid ? (
             remembersPassword ? (
               <CheckPassword
-                setPassowrdIsValid={setPassowrdIsValid}
+                setPasswordIsValid={setPasswordIsValid}
                 errorMessage={errorMessage}
                 setErrorMessage={setErrorMessage}
                 errorKey={errorKey}
@@ -92,7 +92,7 @@ const ChangePassword = ({ navigation }) => {
                 setRemembersPassword={setRemembersPassword}
               />
             ) : (
-              <LoggedInForgetPassword setPassowrdIsValid={setPassowrdIsValid} />
+              <LoggedInForgetPassword setPasswordIsValid={setPasswordIsValid} />
             )
           ) : (
             <View style={styles.form}>

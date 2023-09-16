@@ -16,7 +16,7 @@ import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
 import Button from '../../../components/Button';
 import ErrorMessage from '../../../components/ErrorMessage';
 
-const IdentitiyVerification = ({ navigation }) => {
+const IdentityVerification = ({ navigation }) => {
   const { vh } = useContext(AppContext);
   const [stateFields, setStateFields] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
@@ -69,7 +69,7 @@ const IdentitiyVerification = ({ navigation }) => {
         <BoldText style={styles.headerText}>Identity Verification</BoldText>
         <View style={styles.body}>
           {fields.map(field => (
-            <SelectInputfield
+            <SelectInputField
               key={field.id}
               selectInput={field}
               setStateFields={setStateFields}
@@ -188,9 +188,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-export default IdentitiyVerification;
+export default IdentityVerification;
 
-const SelectInputfield = ({
+const SelectInputField = ({
   selectInput,
   setStateFields,
   setErrorMessage,

@@ -56,7 +56,7 @@ const AccInfoCard = () => {
                 setShowAmount={setShowAmount}
               />
               <View style={styles.flagContainer}>
-                <RegularText style={styles.currrencyType}>
+                <RegularText style={styles.currencyType}>
                   {selectedCurrency.currency}
                 </RegularText>
                 <FlagSelect country={selectedCurrency.currency} />
@@ -72,7 +72,7 @@ const AccInfoCard = () => {
 
         <View style={styles.cardHeader}>
           <View style={styles.cardDetails}>
-            <RegularText style={styles.currrencyType}>
+            <RegularText style={styles.currencyType}>
               Pending Balance:{' '}
               <BoldText>
                 {showAmount ? selectedCurrency.symbol + pendingBalance : '****'}
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  currrencyType: {
+  currencyType: {
     color: '#fff',
     paddingLeft: 10,
     fontSize: 15,

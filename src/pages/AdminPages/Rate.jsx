@@ -1,6 +1,6 @@
 import PageContainer from '../../components/PageContainer';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
-import BackIcon from '../../../assets/images/backArrrow.svg';
+import BackIcon from '../../../assets/images/backArrow.svg';
 import BoldText from '../../components/fonts/BoldText';
 import ChevronDown from '../../../assets/images/chevron-down-fill.svg';
 import { useContext, useEffect, useState } from 'react';

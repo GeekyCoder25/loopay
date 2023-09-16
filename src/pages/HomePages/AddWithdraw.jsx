@@ -31,7 +31,7 @@ const AddWithdraw = ({ navigation }) => {
   const [errorKey, setErrorKey] = useState();
   const [needPin, setNeedPin] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const [passowrdIsValid, setPassowrdIsValid] = useState(false);
+  const [passwordIsValid, setPasswordIsValid] = useState(false);
   const [remembersPassword, setRemembersPassword] = useState(true);
   const [banks, setBanks] = useState([]);
   const [selectedBank, setSelectedBank] = useState(null);
@@ -64,8 +64,8 @@ const AddWithdraw = ({ navigation }) => {
     // },
   ];
   useEffect(() => {
-    passowrdIsValid && setNeedPin(false);
-  }, [formData, navigation, passowrdIsValid, selectedBank]);
+    passwordIsValid && setNeedPin(false);
+  }, [formData, navigation, passwordIsValid, selectedBank]);
 
   const handleConfirm = () => {
     if (formData.accNo === '') {
@@ -149,7 +149,7 @@ const AddWithdraw = ({ navigation }) => {
           </View>
           {remembersPassword ? (
             <CheckPassword
-              setPassowrdIsValid={setPassowrdIsValid}
+              setPasswordIsValid={setPasswordIsValid}
               errorMessage={errorMessage}
               setErrorMessage={setErrorMessage}
               errorKey={errorKey}
@@ -163,7 +163,7 @@ const AddWithdraw = ({ navigation }) => {
               }
             />
           ) : (
-            <LoggedInForgetPassword setPassowrdIsValid={setPassowrdIsValid} />
+            <LoggedInForgetPassword setPasswordIsValid={setPasswordIsValid} />
           )}
         </View>
       )}

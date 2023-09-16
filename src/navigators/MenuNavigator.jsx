@@ -12,7 +12,7 @@ import Support from '../pages/MenuPages/Support';
 import VirtualCard from '../pages/SendMenuPages/VirtualCard';
 import VirtualCardDetails from '../pages/SendMenuPages/VirtualCardDetails';
 import TransactionHistoryParams from '../pages/MenuPages/TransactionHistoryParams';
-import IdentitiyVerification from '../pages/MenuPages/VerificationStatus/IdentitiyVerification';
+import IdentityVerification from '../pages/MenuPages/VerificationStatus/IdentityVerification';
 import VerificationInformation from '../pages/MenuPages/VerificationStatus/VerificationInformation';
 import VerifyImage from '../pages/MenuPages/VerificationStatus/VerifyImage';
 
@@ -36,7 +36,7 @@ const MenuNavigator = () => {
       <Stack.Screen name="VerificationStatus" component={VerificationStatus} />
       <Stack.Screen
         name="IdentityVerification"
-        component={IdentitiyVerification}
+        component={IdentityVerification}
       />
       <Stack.Screen
         name="VerificationInformation"

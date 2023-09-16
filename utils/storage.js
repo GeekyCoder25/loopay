@@ -60,10 +60,10 @@ export const getShowBalance = async () => {
   const stringifiedState = await AsyncStorage.getItem(StorageKeys.SHOW_BALANCE);
   return JSON.parse(stringifiedState);
 };
-export const setDefultCurrency = async currency => {
+export const setDefaultCurrency = async currency => {
   return await AsyncStorage.setItem(StorageKeys.DEFAULT_CURRENCY, currency);
 };
-export const getDefultCurrency = async () => {
+export const getDefaultCurrency = async () => {
   return await AsyncStorage.getItem(StorageKeys.DEFAULT_CURRENCY);
 };
 

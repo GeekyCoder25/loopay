@@ -25,11 +25,11 @@ import { sendMenuRoutes } from '../../database/data';
 import { AppContext } from '../../components/AppContext';
 import { useFocusEffect } from '@react-navigation/native';
 import UserIcon from '../../components/UserIcon';
-import { useBenefifciaryContext } from '../../context/BenefiaciariesContext';
+import { useBeneficiaryContext } from '../../context/BeneficiariesContext';
 
 const SendMenu = ({ navigation }) => {
   const { setShowTabBar } = useContext(AppContext);
-  const { beneficiaryState } = useBenefifciaryContext();
+  const { beneficiaryState } = useBeneficiaryContext();
   useFocusEffect(
     React.useCallback(() => {
       setShowTabBar(true);
@@ -60,7 +60,7 @@ const SendMenu = ({ navigation }) => {
         </ScrollView>
       ) : (
         <RegularText style={styles.beneficiaryEmpty}>
-          Your recent beneficairies will appear here
+          Your recent beneficiaries will appear here
         </RegularText>
       )}
       <View style={styles.modalBorder} />
