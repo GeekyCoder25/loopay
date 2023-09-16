@@ -4,6 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
 import Button from '../../../components/Button';
 import RegularText from '../../../components/fonts/RegularText';
+import { useEffect } from 'react';
+import { Audio } from 'expo-av';
 
 const RequestSuccess = ({ navigation, route }) => {
   const { amount, symbol, tagName } = route.params;
@@ -12,6 +14,16 @@ const RequestSuccess = ({ navigation, route }) => {
     navigation.popToTop();
     navigation.navigate('HomeNavigator');
   };
+
+  useEffect(() => {
+    const playSound = async () => {
+      const { sound } = await Audio.Sound.createAsync(
+        require('../../../../assets/success.mp3'),
+      );
+      await sound.playAsync();
+    };
+    playSound();
+  }, []);
 
   return (
     <PageContainer style={styles.container}>

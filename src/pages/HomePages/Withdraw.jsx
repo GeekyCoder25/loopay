@@ -118,10 +118,6 @@ const Withdraw = ({ navigation }) => {
         id: randomUUID(),
       });
       if (response.status === 200) {
-        const balance = response.data.amount;
-        setWallet(prev => {
-          return { ...prev, balance: prev.balance - balance };
-        });
         setWalletRefresh(prev => !prev);
         return navigation.replace('Success', {
           userToSendTo: bankSelected,

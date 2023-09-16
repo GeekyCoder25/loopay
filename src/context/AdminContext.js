@@ -9,6 +9,7 @@ const AdminContextComponent = ({ children }) => {
   const { setIsLoading, walletRefresh } = useContext(AppContext);
   const [adminData, setAdminData] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalFunc, setModalFunc] = useState();
 
   const fetchAdminDatas = async () => {
     try {
@@ -36,7 +37,14 @@ const AdminContextComponent = ({ children }) => {
 
   return (
     <AdminContext.Provider
-      value={{ adminData, setAdminData, modalOpen, setModalOpen }}>
+      value={{
+        adminData,
+        setAdminData,
+        modalOpen,
+        setModalOpen,
+        modalFunc,
+        setModalFunc,
+      }}>
       {adminData && children}
     </AdminContext.Provider>
   );

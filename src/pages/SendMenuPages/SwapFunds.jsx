@@ -22,13 +22,13 @@ import ErrorMessage from '../../components/ErrorMessage';
 import Arrow from '../../../assets/images/swapArrow.svg';
 import Back from '../../components/Back';
 import Check from '../../../assets/images/check.svg';
-import { postFetchData } from '../../../utils/fetchAPI';
+import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import { randomUUID } from 'expo-crypto';
 import ToastMessage from '../../components/ToastMessage';
 import { Audio } from 'expo-av';
 
 const SwapFunds = ({ navigation }) => {
-  const { selectedCurrency, setIsLoading, setWalletRefresh } =
+  const { selectedCurrency, setIsLoading, setWalletRefresh, vh } =
     useContext(AppContext);
   const { wallet } = useWalletContext();
   const [errorkey, setErrorkey] = useState(false);
@@ -40,7 +40,7 @@ const SwapFunds = ({ navigation }) => {
   const [fee, setFee] = useState(0);
   const [swapFrom, setSwapFrom] = useState({
     ...selectedCurrency,
-    balance: wallet.balance,
+    balance: wallet?.balance,
   });
   const [swapTo, setSwapTo] = useState(swapToObject);
   const [swapToCurrency] = useState(
@@ -50,68 +50,79 @@ const SwapFunds = ({ navigation }) => {
   const [showSwapFromCurrencies, setShowSwapFromCurrencies] = useState(false);
   const [showSwapToCurrencies, setShowSwapToCurrencies] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
-  const currencyRateAPI = [
-    {
-      name: 'NairaToDollar',
-      rate: 1 / 763.86,
-      fee: 1 / 100,
-    },
-    {
-      name: 'NairaToEuro',
-      rate: 1 / 816.34,
-      fee: 3 / 100,
-    },
-    {
-      name: 'NairaToPound',
-      rate: 1 / 956.12,
-      fee: 3 / 100,
-    },
-    {
-      name: 'DollarToNaira',
-      rate: 763.86,
-      fee: 1 / 100,
-    },
-    {
-      name: 'DollarToEuro',
-      rate: 1 / 1.07,
-      fee: 3 / 100,
-    },
-    {
-      name: 'DollarToPound',
-      rate: 1 / 1.26,
-      fee: 1 / 100,
-    },
-    {
-      name: 'EuroToNaira',
-      rate: 816.34,
-      fee: 3 / 100,
-    },
-    {
-      name: 'EuroToDollar',
-      rate: 1.07,
-      fee: 3 / 100,
-    },
-    {
-      name: 'EuroToPound',
-      rate: 1 / 1.17,
-      fee: 1 / 100,
-    },
-    {
-      name: 'PoundToNaira',
-      rate: 956.12,
-      fee: 3 / 100,
-    },
-    {
-      name: 'PoundToDollar',
-      rate: 1.26,
-      fee: 1 / 100,
-    },
-    {
-      name: 'PoundToEuro',
-      rate: 1.17,
-      fee: 3 / 100,
-    },
-  ];
+  const [currencyRateAPI, setCurrencyRateAPI] = useState([]);
+  const [rateRefetch, setRateRefetch] = useState(false);
+
+  useEffect(() => {
+    const getRates = async () => {
+      const response = await getFetchData('user/rate');
+      response.status === 200 && setCurrencyRateAPI(response.data);
+    };
+    getRates();
+  }, [rateRefetch]);
+
+  // const currencyRateAPI = [
+  //   {
+  //     name: 'NairaToDollar',
+  //     rate: 1 / 763.86,
+  //     fee: 1 / 100,
+  //   },
+  //   {
+  //     name: 'NairaToEuro',
+  //     rate: 1 / 816.34,
+  //     fee: 3 / 100,
+  //   },
+  //   {
+  //     name: 'NairaToPound',
+  //     rate: 1 / 956.12,
+  //     fee: 3 / 100,
+  //   },
+  //   {
+  //     name: 'DollarToNaira',
+  //     rate: 763.86,
+  //     fee: 1 / 100,
+  //   },
+  //   {
+  //     name: 'DollarToEuro',
+  //     rate: 1 / 1.07,
+  //     fee: 3 / 100,
+  //   },
+  //   {
+  //     name: 'DollarToPound',
+  //     rate: 1 / 1.26,
+  //     fee: 1 / 100,
+  //   },
+  //   {
+  //     name: 'EuroToNaira',
+  //     rate: 816.34,
+  //     fee: 3 / 100,
+  //   },
+  //   {
+  //     name: 'EuroToDollar',
+  //     rate: 1.07,
+  //     fee: 3 / 100,
+  //   },
+  //   {
+  //     name: 'EuroToPound',
+  //     rate: 1 / 1.17,
+  //     fee: 1 / 100,
+  //   },
+  //   {
+  //     name: 'PoundToNaira',
+  //     rate: 956.12,
+  //     fee: 3 / 100,
+  //   },
+  //   {
+  //     name: 'PoundToDollar',
+  //     rate: 1.26,
+  //     fee: 1 / 100,
+  //   },
+  //   {
+  //     name: 'PoundToEuro',
+  //     rate: 1.17,
+  //     fee: 3 / 100,
+  //   },
+  // ];
 
   useEffect(() => {
     const selectedCurrencyFunc = index =>
@@ -131,7 +142,13 @@ const SwapFunds = ({ navigation }) => {
     swapFrom.currency,
   )}To${firstLetterToCapital(swapTo.currency)}`;
 
+  const handleSwitch = () => {
+    setSwapFrom(swapTo);
+    setSwapTo(swapFrom);
+  };
+
   const handleSwapFromSelect = currency => {
+    setRateRefetch(prev => !prev);
     setSwapFrom({
       ...currency,
       balance: wallet[`${currency.currency}Balance`],
@@ -154,6 +171,7 @@ const SwapFunds = ({ navigation }) => {
   };
 
   const handleSwapToSelect = currency => {
+    setRateRefetch(prev => !prev);
     setSwapTo(prev => {
       return {
         ...currency,
@@ -169,13 +187,13 @@ const SwapFunds = ({ navigation }) => {
 
   const currencyRate = () => {
     return currencyRateAPI
-      .find(currency => currency.name === currencyToCurrencyDetector)
+      .find(currency => currency.currency === currencyToCurrencyDetector)
       ?.rate.toFixed(4);
   };
 
   const currencyFee = () => {
     return currencyRateAPI.find(
-      currency => currency.name === currencyToCurrencyDetector,
+      currency => currency.currency === currencyToCurrencyDetector,
     )?.fee;
   };
 
@@ -183,15 +201,12 @@ const SwapFunds = ({ navigation }) => {
     setValue(text);
     const textInputValue = Number(text);
     text = Number(text);
-    const transactionFee = text * currencyFee();
+    const transactionFee = text * (currencyFee() / 100);
     setFee(transactionFee);
     const swapFromAmountAfterFee = text - transactionFee;
     const toReceiveCalculate = Number(
       (swapFromAmountAfterFee * currencyRate()).toFixed(2),
     );
-    // swapFromAmountAfterFee < 1
-    //   ? swapFromAmountAfterFee / currencyRate()
-    //   : swapFromAmountAfterFee * currencyRate()
 
     setSwapData(prev => {
       return {
@@ -272,16 +287,6 @@ const SwapFunds = ({ navigation }) => {
   ];
 
   useEffect(() => {
-    const playSound = async () => {
-      const { sound } = await Audio.Sound.createAsync(
-        require('../../../assets/success.mp3'),
-      );
-      await sound.playAsync();
-    };
-    isSuccessful && playSound();
-  }, [isSuccessful]);
-
-  useEffect(() => {
     modalOpen &&
       setTimeout(() => {
         canSwap > 1 ? setCanSwap(prev => prev - 1) : setCanSwap(true);
@@ -296,6 +301,13 @@ const SwapFunds = ({ navigation }) => {
       if (response.status === 200) {
         setWalletRefresh(prev => !prev);
         setIsSuccessful(true);
+        const playSound = async () => {
+          const { sound } = await Audio.Sound.createAsync(
+            require('../../../assets/success.mp3'),
+          );
+          await sound.playAsync();
+        };
+        playSound();
       }
     } catch (err) {
       ToastMessage(err.message);
@@ -313,13 +325,22 @@ const SwapFunds = ({ navigation }) => {
     <>
       <Back onPress={() => navigation.goBack()} />
       <PageContainer paddingTop={10} scroll>
-        <View style={{ ...styles.body }}>
+        <View
+          style={{
+            ...styles.body,
+            minHeight: vh * 0.8,
+          }}>
           <BoldText style={styles.headerText}>Swap Funds</BoldText>
           <View style={styles.swapContainer}>
             <View style={styles.swap}>
-              <RegularText style={styles.swapTitle}>
-                Account to swap from
-              </RegularText>
+              <View style={styles.icon}>
+                <RegularText style={styles.swapTitle}>
+                  Account to swap from
+                </RegularText>
+                <Pressable style={styles.arrow} onPress={handleSwitch}>
+                  <Arrow />
+                </Pressable>
+              </View>
               <Pressable
                 style={{ ...styles.swapBox, ...styles.from }}
                 onPress={() => {
@@ -537,13 +558,13 @@ const SwapFunds = ({ navigation }) => {
                 <Button
                   text="Swap"
                   onPress={handleSwap}
-                  style={styles.button}
+                  style={styles.modalButton}
                 />
               ) : (
                 <Button
                   text={`Swap (${canSwap}s)`}
                   disabled={true}
-                  style={styles.button}
+                  style={styles.modalButton}
                 />
               )}
               <Pressable onPress={handleModal}>
@@ -587,7 +608,7 @@ const SwapFunds = ({ navigation }) => {
               </View>
               <Button
                 text="Back Home"
-                style={styles.button}
+                style={styles.modalButton}
                 onPress={handleGoBack}
               />
             </View>
@@ -614,6 +635,18 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'relative',
   },
+  icon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  arrow: {
+    marginRight: -10,
+  },
+  swapTitle: {
+    flex: 1,
+    textAlign: 'center',
+  },
   swapBox: {
     flex: 1,
     marginTop: 10,
@@ -632,9 +665,6 @@ const styles = StyleSheet.create({
   },
   to: {
     borderLeftWidth: 1,
-  },
-  swapTitle: {
-    textAlign: 'center',
   },
   flagIcon: {
     width: 25,
@@ -660,6 +690,9 @@ const styles = StyleSheet.create({
   swapCurrency: {
     flexDirection: 'row',
     gap: 25,
+  },
+  currencyName: {
+    textTransform: 'capitalize',
   },
   swapOverlay: {
     flex: 1,
@@ -736,6 +769,8 @@ const styles = StyleSheet.create({
   modalContainer: {
     position: 'absolute',
     height: 70 + '%',
+    minHeight: 500,
+    maxHeight: 600,
     width: 100 + '%',
     bottom: 0,
     justifyContent: 'flex-end',
@@ -786,8 +821,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#E4E2E2',
     width: 100 + '%',
     padding: 5 + '%',
-    gap: 10,
+    gap: 15,
     borderRadius: 5,
+    flex: 1,
+    justifyContent: 'space-around',
   },
   cardRow: {
     flexDirection: 'row',
@@ -802,7 +839,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
-    marginTop: 0,
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  modalButton: {
+    marginTop: 2 + '%',
   },
 });
 

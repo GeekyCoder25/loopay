@@ -19,7 +19,8 @@ import SuccessMessage from '../../components/SuccessMessage';
 import { randomUUID } from 'expo-crypto';
 
 const RequestFund = ({ navigation, route }) => {
-  const { appData, selectedCurrency, setIsLoading } = useContext(AppContext);
+  const { appData, selectedCurrency, setIsLoading, vh } =
+    useContext(AppContext);
   const { wallet } = useWalletContext();
   const [selected, setSelected] = useState(selectedCurrency);
   const [stateFields, setStateFields] = useState({
@@ -160,7 +161,7 @@ const RequestFund = ({ navigation, route }) => {
   return (
     <PageContainer style={styles.container} scroll>
       <BoldText style={styles.headerText}>Request Money</BoldText>
-      <View style={styles.body}>
+      <View style={{ ...styles.body, minHeight: vh * 0.75 }}>
         <View style={styles.labelContainer}>
           <RegularText style={styles.label}>Enter user Loopay tag</RegularText>
         </View>
@@ -431,6 +432,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   currencyName: { textTransform: 'capitalize' },
+  button: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
 });
 
 export default RequestFund;

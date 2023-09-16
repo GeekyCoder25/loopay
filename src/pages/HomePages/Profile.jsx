@@ -139,7 +139,7 @@ const Profile = ({ navigation, children, route }) => {
   ];
 
   return (
-    <PageContainer scroll={route?.name === 'Profile'}>
+    <PageContainer scroll>
       <View style={styles.body}>
         <UserIcon style={styles.userIcon} />
         <Pressable onPress={selectImage} style={styles.userIconContainer}>

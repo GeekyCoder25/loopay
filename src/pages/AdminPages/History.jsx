@@ -15,6 +15,7 @@ import RegularText from '../../components/fonts/RegularText';
 import { allCurrencies } from '../../database/data';
 import { addingDecimal } from '../../../utils/AddingZero';
 import UserIcon from '../../components/UserIcon';
+import { groupTransactionsByDate } from '../../../utils/groupTransactions';
 
 const History = ({ navigation }) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -25,37 +26,13 @@ const History = ({ navigation }) => {
   const [isLocalLoading, setIsLocalLoading] = useState(false);
 
   const { transactions } = adminData;
+
   useEffect(() => {
     const groupedTransactons = groupTransactionsByDate(transactions);
     setHistories(groupedTransactons);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const groupTransactionsByDate = inputArray => {
-    const groupedByDate = {};
-
-    inputArray.forEach(transaction => {
-      const dateObject = new Date(transaction.createdAt);
-      const options = { month: 'short' };
-      const date = `${dateObject.getDate()} ${dateObject.toLocaleString(
-        'en-US',
-        options,
-      )} ${dateObject.getFullYear()}`;
-      if (!groupedByDate[date]) {
-        groupedByDate[date] = [];
-      }
-      groupedByDate[date].push(transaction);
-    });
-
-    const resultArray = Object.keys(groupedByDate).map(date => {
-      return {
-        date,
-        histories: groupedByDate[date],
-      };
-    });
-
-    return resultArray;
-  };
   const handleSearchFocus = async () => {
     setIsSearchFocused(true);
   };

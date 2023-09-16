@@ -1,11 +1,9 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useEffect, useState } from 'react';
 import {
   BackHandler,
   ImageBackground,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -14,7 +12,6 @@ import BellActive from '../../../assets/images/bellActive.svg';
 import ChevronDown from '../../../assets/images/chevron-down.svg';
 import Wallet from '../../../assets/images/wallet.svg';
 import UpAndDownArrow from '../../../assets/images/up-down-arrow.svg';
-import SwapIcon from '../../../assets/images/swap.svg';
 import Bg from '../../../assets/images/bg1.svg';
 import { AppContext } from '../../components/AppContext';
 import SelectCurrencyModal from '../../components/SelectCurrencyModal';
@@ -26,15 +23,13 @@ import UserIcon from '../../components/UserIcon';
 import WalletAmount from '../../components/WalletAmount';
 import { useFocusEffect } from '@react-navigation/native';
 import ToastMessage from '../../components/ToastMessage';
-import { addingDecimal } from '../../../utils/AddingZero';
-import FaIcon from '@expo/vector-icons/FontAwesome';
-import { allCurrencies } from '../../database/data';
 import { useRequestFundsContext } from '../../context/RequestContext';
 import { useWalletContext } from '../../context/WalletContext';
 import { useNotificationsContext } from '../../context/NotificationContext';
 import { Audio } from 'expo-av';
+import { styles, History } from './Home';
 
-const Home = ({ navigation }) => {
+export const Home = ({ navigation }) => {
   const {
     selectedCurrency,
     appData,
@@ -49,7 +44,6 @@ const Home = ({ navigation }) => {
   const [transactionHistory, setTransactionHistory] = useState([]);
   const [showAmount, setShowAmount] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
-  const [requestsLength, setRequestsLength] = useState(0);
   const { unread } = useNotificationsContext();
 
   useEffect(() => {
@@ -71,7 +65,6 @@ const Home = ({ navigation }) => {
   //     // eslint-disable-next-line react-hooks/exhaustive-deps
   //   }, [setShowTabBar, walletRefresh]),
   // );
-
   useFocusEffect(
     React.useCallback(() => {
       setShowTabBar(true);
@@ -104,10 +97,8 @@ const Home = ({ navigation }) => {
       );
       await sound.playAsync();
     };
-    requests.length > requestsLength && playSound();
-    setRequestsLength(requests.length);
-  }, [requests.length]);
-
+    !requests.length && playSound();
+  }, []);
   const refreshPage = () => {};
 
   return (
@@ -241,313 +232,5 @@ const Home = ({ navigation }) => {
       </PageContainer>
       <SelectCurrencyModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
     </>
-  );
-};
-
-const styles = StyleSheet.create({
-  headerContainer: {
-    height: 300,
-    paddingHorizontal: 3 + '%',
-  },
-  bgContainer: {
-    flex: 1,
-    transform: [
-      { rotateZ: '-60deg' },
-      { scale: 0.9 },
-      { translateX: -220 },
-      { translateY: -180 },
-    ],
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    position: 'relative',
-  },
-  userImageContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  request: {
-    backgroundColor: '#1e1e1e',
-    width: 106 + '%',
-    marginLeft: -3 + '%',
-    padding: 15,
-    marginTop: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  requestBell: {
-    flexDirection: 'row',
-  },
-  requestText: {
-    color: '#fff',
-    textAlign: 'center',
-    textAlignVertical: 'center',
-  },
-  card: {
-    backgroundColor: '#000',
-    height: 200,
-    marginVertical: 30,
-    borderRadius: 15,
-    paddingHorizontal: 20,
-    paddingTop: 5,
-    paddingBottom: 20,
-    justifyContent: 'space-between',
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  amountContainer: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  symbolContainer: {
-    backgroundColor: '#fff',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  symbol: {
-    fontSize: 28,
-    fontFamily: 'AlfaSlabOne-Regular',
-    transform: [{ translateY: -3.5 }, { translateX: -0.5 }],
-  },
-  flagContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginLeft: -5,
-  },
-  currrencyType: {
-    color: '#fff',
-    paddingLeft: 10,
-    fontSize: 15,
-  },
-  chevronDown: {},
-  cardDetails: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  historyText: {
-    paddingLeft: 3 + '%',
-    fontSize: 18,
-  },
-  body: {
-    flex: 1,
-  },
-  histories: {
-    flex: 1,
-    backgroundColor: '#eee',
-    borderColor: '#0e153a',
-    borderWidth: 0.5,
-    borderBottomWidth: 0,
-    marginTop: 10,
-  },
-  historyEmpty: {
-    backgroundColor: '#eee',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-    paddingHorizontal: 15 + '%',
-  },
-  historyEmptyText: {
-    textAlign: 'center',
-  },
-  history: {
-    paddingHorizontal: 2.5 + '%',
-    paddingVertical: 15,
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#0e153a',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  historyIcon: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  historyIconText: {
-    backgroundColor: '#ccc',
-    fontSize: 18,
-    fontFamily: 'OpenSans-800',
-    width: 40,
-    height: 40,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-  },
-  historyTitle: {
-    flex: 1,
-  },
-  transactionAmountTextRow: {
-    flexDirection: 'row',
-    gap: 5,
-    alignItems: 'center',
-  },
-  transactionAmountTextColumn: {
-    alignItems: 'center',
-  },
-  transactionAmountText: {
-    fontSize: 20,
-  },
-  creditAmount: {
-    color: '#006E53',
-  },
-  debitAmount: {
-    color: 'red',
-  },
-  swapIcon: {
-    transform: [{ rotateZ: '90deg' }],
-  },
-  swap: {},
-});
-export default Home;
-
-const History = ({ history, navigation, showAmount }) => {
-  const { vw } = useContext(AppContext);
-  const [transactionTypeIcon, setTransactionTypeIcon] = useState('');
-  const [transactionTypeTitle, setTransactionTypeTitle] = useState('');
-  const [transactionDate, setTransactionDate] = useState('');
-
-  const {
-    amount,
-    createdAt,
-    currency,
-    transactionType,
-    swapFrom,
-    swapTo,
-    swapFromAmount,
-    swapToAmount,
-  } = history;
-
-  useEffect(() => {
-    const date = new Date(createdAt);
-
-    setTransactionDate(
-      `${date.toDateString()} ${
-        date.getHours().toString().length === 1
-          ? '0' + date.getHours()
-          : date.getHours()
-      }:${
-        date.getMinutes().toString().length === 1
-          ? '0' + date.getMinutes()
-          : date.getMinutes()
-      }`,
-    );
-
-    switch (transactionType?.toLowerCase()) {
-      case 'credit':
-        setTransactionTypeIcon(<FaIcon name="download" size={18} />);
-        setTransactionTypeTitle('Received');
-        break;
-      case 'debit':
-        setTransactionTypeIcon(<FaIcon name="send" size={18} />);
-        setTransactionTypeTitle('Sent Out');
-        break;
-      case 'swap':
-        setTransactionTypeIcon(<SwapIcon width={22} height={22} />);
-        setTransactionTypeTitle('Swap Fund');
-        break;
-      default:
-        setTransactionTypeIcon();
-        break;
-    }
-  }, [createdAt, transactionType]);
-
-  const currencySymbol = allCurrencies.find(
-    id => currency === id.currency,
-  )?.symbol;
-
-  const swapFromSymbol = allCurrencies.find(
-    id => swapFrom === id.currency,
-  )?.symbol;
-
-  const swapToSymbol = allCurrencies.find(id => swapTo === id.currency)?.symbol;
-
-  return (
-    <Pressable
-      onPress={() => navigation.navigate('TransactionHistoryDetails', history)}
-      style={styles.history}>
-      <View style={styles.historyIcon}>
-        {transactionType === 'swap' ? (
-          <View style={styles.historyIconText}>{transactionTypeIcon}</View>
-        ) : (
-          <Text style={styles.historyIconText}>{transactionTypeIcon}</Text>
-        )}
-      </View>
-      <View style={styles.historyTitle}>
-        <BoldText>{transactionTypeTitle}</BoldText>
-        <RegularText>{transactionDate}</RegularText>
-      </View>
-      {showAmount ? (
-        <View>
-          {transactionType?.toLowerCase() === 'credit' && (
-            <BoldText
-              style={{
-                ...styles.transactionAmountText,
-                ...styles.creditAmount,
-              }}>
-              {`+ ${currencySymbol}${addingDecimal(
-                Number(amount).toLocaleString(),
-              )}`}
-            </BoldText>
-          )}
-          {transactionType?.toLowerCase() === 'debit' && (
-            <BoldText
-              style={{
-                ...styles.transactionAmountText,
-                ...styles.debitAmount,
-              }}>
-              {`- ${currencySymbol}${addingDecimal(
-                Number(amount).toLocaleString(),
-              )}`}
-            </BoldText>
-          )}
-          {transactionType === 'swap' && (
-            <View
-              style={
-                vw > 360
-                  ? styles.transactionAmountTextRow
-                  : styles.transactionAmountTextColumn
-              }>
-              <BoldText
-                style={{
-                  ...styles.transactionAmountText,
-                  ...styles.debitAmount,
-                }}>
-                {`${swapFromSymbol}${addingDecimal(
-                  Number(swapFromAmount).toLocaleString(),
-                )}`}
-              </BoldText>
-              <SwapIcon
-                width={17}
-                height={17}
-                style={vw > 360 ? styles.swap : styles.swapIcon}
-              />
-              <BoldText
-                style={{
-                  ...styles.transactionAmountText,
-                  ...styles.creditAmount,
-                }}>
-                {`${swapToSymbol}${addingDecimal(
-                  Number(swapToAmount).toLocaleString(),
-                )}`}
-              </BoldText>
-            </View>
-          )}
-        </View>
-      ) : (
-        <BoldText>****</BoldText>
-      )}
-    </Pressable>
   );
 };

@@ -141,6 +141,7 @@ const Users = ({ navigation }) => {
             {sortStatus === 'status' &&
               activeUsers
                 .filter(user => user.status === 'active')
+                .sort(sortFunc)
                 .map(user => (
                   <User
                     key={user._id}
@@ -154,6 +155,7 @@ const Users = ({ navigation }) => {
             {sortStatus === 'status' &&
               inactiveUsers
                 .filter(user => user.status === 'active')
+                .sort(sortFunc)
                 .map(user => (
                   <User
                     key={user._id}

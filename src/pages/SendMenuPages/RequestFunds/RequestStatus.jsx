@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
 import { StyleSheet, View } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
@@ -11,6 +11,7 @@ import Back from '../../../components/Back';
 import { postFetchData } from '../../../../utils/fetchAPI';
 import ToastMessage from '../../../components/ToastMessage';
 import { AppContext } from '../../../components/AppContext';
+import { Audio } from 'expo-av';
 
 const RequestStatus = ({ navigation, route }) => {
   const { setWalletRefresh, setIsLoading } = useContext(AppContext);
@@ -18,6 +19,16 @@ const RequestStatus = ({ navigation, route }) => {
   const [isCancelled, setIsCancelled] = useState(false);
   const [isBlocking, setisBlocking] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
+
+  useEffect(() => {
+    const playSound = async () => {
+      const { sound } = await Audio.Sound.createAsync(
+        require('../../../../assets/success.mp3'),
+      );
+      await sound.playAsync();
+    };
+    status === 'accept' && playSound();
+  }, []);
 
   const handleHome = () => {
     navigation.popToTop();

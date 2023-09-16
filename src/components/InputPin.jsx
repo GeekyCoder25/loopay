@@ -15,7 +15,7 @@ const InputPin = ({
   customFunc,
   style,
 }) => {
-  const { appData, setIsLoading } = useContext(AppContext);
+  const { appData, setIsLoading, vh } = useContext(AppContext);
   const [otpTimeout, setOtpTimeout] = useState(60);
   const [otpResend, setOtpResend] = useState(otpTimeout);
   const [errorKey, setErrorKey] = useState('');
@@ -65,7 +65,6 @@ const InputPin = ({
         setPinCode('');
         setOtpCode('');
         inputRef.current.focus();
-        // setReload(prev => !prev);
       }, 1500);
     } finally {
       setIsLoading(false);
@@ -73,53 +72,38 @@ const InputPin = ({
   };
 
   return (
-    <View style={{ ...styles.container, ...style }}>
+    <View style={{ ...styles.container, minHeight: vh * 0.55, ...style }}>
       <View style={styles.pinContainer}>
-        {haveSetPin ? (
-          <>
-            <RegularText>Enter your transaction pin</RegularText>
-            <View style={styles.changePinCodeLengthsContainer}>
-              {codeLengths.map(input => (
-                <PINInputFields
-                  key={input}
-                  codeLength={input}
-                  pinCode={pinCode}
-                  setErrorMessage={setErrorMessage}
-                  errorKey={errorKey}
-                  setErrorKey={setErrorKey}
-                  inputRef={inputRef}
-                />
-              ))}
-            </View>
-            <TextInput
-              autoFocus
-              style={styles.codeInput}
-              inputMode="numeric"
-              onChangeText={text => {
-                setPinCode(text);
-                text.length === codeLengths.length && Keyboard.dismiss();
-                setErrorMessage('');
-                setErrorKey('');
-              }}
-              maxLength={codeLengths.length}
-              ref={inputRef}
-              value={pinCode}
-            />
-          </>
-        ) : (
-          <NoPInSet
-            otpCode={otpCode}
-            setOtpCode={setOtpCode}
-            setErrorMessage={setErrorMessage}
-            errorKey={errorKey}
-            setErrorKey={setErrorKey}
-            otpResend={otpResend}
-            setOtpResend={setOtpResend}
-            otpTimeout={otpTimeout}
-            setOtpTimeout={setOtpTimeout}
-            formData={formData}
+        <>
+          <RegularText>Enter your transaction pin</RegularText>
+          <View style={styles.changePinCodeLengthsContainer}>
+            {codeLengths.map(input => (
+              <PINInputFields
+                key={input}
+                codeLength={input}
+                pinCode={pinCode}
+                setErrorMessage={setErrorMessage}
+                errorKey={errorKey}
+                setErrorKey={setErrorKey}
+                inputRef={inputRef}
+              />
+            ))}
+          </View>
+          <TextInput
+            autoFocus
+            style={styles.codeInput}
+            inputMode="numeric"
+            onChangeText={text => {
+              setPinCode(text);
+              text.length === codeLengths.length && Keyboard.dismiss();
+              setErrorMessage('');
+              setErrorKey('');
+            }}
+            maxLength={codeLengths.length}
+            ref={inputRef}
+            value={pinCode}
           />
-        )}
+        </>
       </View>
       <ErrorMessage errorMessage={errorMessage} />
       {children}

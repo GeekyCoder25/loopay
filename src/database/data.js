@@ -83,7 +83,7 @@ export const allCurrencies = [
   },
   {
     currency: 'euro',
-    fullName: 'European dollar',
+    fullName: 'European Dollar',
     acronym: 'EUR',
     amount: 0.0,
     symbol: '€',

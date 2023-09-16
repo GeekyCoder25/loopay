@@ -55,7 +55,7 @@ const TransferFunds = ({ navigation, route }) => {
   const handleChange = async text => {
     setAmountInput(text);
     editInput();
-    if (amountInput > wallet.balance) {
+    if (text > wallet.balance) {
       setErrorKey('amountInput');
       setErrorMessage('Insufficient funds');
     }

@@ -74,7 +74,8 @@ const Dashboard = ({ navigation }) => {
         }
       };
       adminData.lastActiveSessions.forEach(userSession => {
-        userSession = userSession.sessions[0]?.lastSeen;
+        userSession =
+          userSession.sessions[0]?.lastSeen || userSession.updatedAt;
         checkSameDateAndTime(userSession) &&
           setActiveUsers(prev => [...prev, userSession]);
       });
@@ -116,7 +117,6 @@ const Dashboard = ({ navigation }) => {
           onPress={() => {
             navigation.navigate('Transactions', {
               transactionStatus: 'success',
-              transactions: success,
             });
           }}>
           <View style={styles.icon}>
@@ -140,7 +140,6 @@ const Dashboard = ({ navigation }) => {
           onPress={() => {
             navigation.navigate('Transactions', {
               transactionStatus: 'pending',
-              transactions: pending,
             });
           }}>
           <View style={styles.icon}>
@@ -164,7 +163,6 @@ const Dashboard = ({ navigation }) => {
           onPress={() => {
             navigation.navigate('Transactions', {
               transactionStatus: 'blocked',
-              transactions: blocked,
             });
           }}>
           <View style={styles.icon}>

@@ -283,6 +283,7 @@ const AddBankFields = ({
             autoCapitalize="none"
             onFocus={() => setInputFocus(true)}
             onBlur={() => setInputFocus(false)}
+            maxLength={10}
           />
         </View>
       )}

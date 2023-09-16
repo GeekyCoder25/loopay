@@ -67,7 +67,7 @@ const AdminNavigator = () => {
         <Drawer.Screen
           name="Transactions"
           component={Transactions}
-          options={({ navigation, route }) => BackHeader(navigation, route)}
+          options={{ headerShown: false }}
         />
         <Drawer.Screen
           name="TransactionHistoryDetails"

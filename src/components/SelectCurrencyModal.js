@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     position: 'absolute',
     height: 70 + '%',
+    maxHeight: 700,
     width: 100 + '%',
     bottom: 0,
     justifyContent: 'flex-end',

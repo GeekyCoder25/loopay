@@ -42,7 +42,8 @@ const ActiveUsers = ({ navigation, route }) => {
     };
 
     adminData.lastActiveSessions.forEach(userSession => {
-      const sessionTimestamp = userSession.sessions[0].lastSeen;
+      const sessionTimestamp =
+        userSession.sessions[0]?.lastSeen || userSession.updatedAt;
       if (checkSameDateAndTime(sessionTimestamp)) {
         setActiveUsers(prev => [...prev, userSession]);
       } else {
@@ -206,7 +207,7 @@ const User = ({ status, userSession: user }) => {
   const { email, userProfile } = user;
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const lastSeen = new Date(user.sessions[0].lastSeen);
+  const lastSeen = new Date(user.sessions[0]?.lastSeen || user.updatedAt);
 
   return (
     <View style={styles.userExpanded}>

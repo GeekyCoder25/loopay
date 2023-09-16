@@ -12,6 +12,7 @@ import { getNotFirstTime } from '../../utils/storage';
 import TransactionPin from '../pages/MenuPages/TransactionPin';
 import AdminNavigator from './AdminNavigator';
 import ChangePassword from '../pages/MenuPages/ChangePassword';
+import Onboarding from '../pages/Auth/Onboarding';
 
 const AppPagesNavigator = () => {
   const { isLoggedIn, isAdmin, appData } = useContext(AppContext);
@@ -28,7 +29,6 @@ const AppPagesNavigator = () => {
         },
       }}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* <Stack.Screen name="Ssplash" component={BuyData} /> */}
         <Stack.Screen name="Splash" component={Splash} />
         {!isLoggedIn ? (
           <Stack.Group>
@@ -38,7 +38,7 @@ const AppPagesNavigator = () => {
               </>
             ) : (
               <>
-                <Stack.Screen name="FirstPage" component={Signup} />
+                <Stack.Screen name="FirstPage" component={Onboarding} />
               </>
             )}
             <Stack.Screen name="Signup" component={Signup} />

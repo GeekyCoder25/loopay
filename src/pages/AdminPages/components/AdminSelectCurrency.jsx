@@ -10,8 +10,6 @@ import {
   View,
 } from 'react-native';
 import Search from '../../../../assets/images/search.svg';
-import Plus from '../../../../assets/images/plus.svg';
-import Button from '../../../components/Button';
 import { AppContext } from '../../../components/AppContext';
 import RegularText from '../../../components/fonts/RegularText';
 import { allCurrencies } from '../../../database/data';
@@ -180,12 +178,13 @@ export default AdminSelectCurrencyModal;
 
 const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
   const { selectedCurrency, setSelectedCurrency } = useContext(AppContext);
-  const { adminData } = useAdminDataContext();
+  const { adminData, modalFunc, setModalFunc } = useAdminDataContext();
 
   const handlecurrencyChange = async newSelect => {
     setShowSearchBox(false);
     setModalOpen(false);
-    setSelectedCurrency(newSelect);
+    modalFunc ? modalFunc(newSelect) : setSelectedCurrency(newSelect);
+    setModalFunc(null);
     await setDefultCurrency(`${newSelect.currency}`);
   };
 
