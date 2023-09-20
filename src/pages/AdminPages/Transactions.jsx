@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 import { useCallback, useContext, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
 import { Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
@@ -15,12 +14,13 @@ import ChevronDown from '../../../assets/images/chevron-down-fill.svg';
 import RegularText from '../../components/fonts/RegularText';
 import { addingDecimal } from '../../../utils/AddingZero';
 import { groupTransactionsByDate } from '../../../utils/groupTransactions';
+import TransactionHistoryParams from '../MenuPages/TransactionHistoryParams';
 
 const Transactions = ({ navigation, route }) => {
   const { selectedCurrency } = useContext(AppContext);
   const { adminData } = useAdminDataContext();
   const { transactions: allTransactions } = adminData;
-  const selectedIds = new Set();
+  // const selectedIds = new Set();
   const transactions = allTransactions.filter(
     transaction => transaction.currency === selectedCurrency.currency,
     // !selectedIds.has(transaction.id) &&
@@ -31,6 +31,8 @@ const Transactions = ({ navigation, route }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState('');
   const [label2, setLabel2] = useState('');
+  const [modalData, setModalData] = useState(null);
+  const [transactionsModal, setTransactionsModal] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -51,6 +53,7 @@ const Transactions = ({ navigation, route }) => {
         setSelectedLabel('');
         setLabel2('');
       };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [route.params]),
   );
 
@@ -157,6 +160,8 @@ const Transactions = ({ navigation, route }) => {
                       key={transaction._id}
                       transaction={transaction}
                       setTransactions={setSelectedTransaction}
+                      setTransactionsModal={setTransactionsModal}
+                      setModalData={setModalData}
                     />
                   ))}
                 </View>
@@ -170,6 +175,16 @@ const Transactions = ({ navigation, route }) => {
             </BoldText>
           </View>
         )}
+        <Modal
+          visible={transactionsModal}
+          animationType="slide"
+          transparent
+          onRequestClose={() => {
+            setTransactionsModal(false);
+            setModalData(null);
+          }}>
+          <TransactionHistoryParams route={{ params: modalData }} />
+        </Modal>
       </View>
     </PageContainer>
   );
@@ -340,12 +355,19 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   empty: {
+    alignItems: 'center',
     paddingHorizontal: 5 + '%',
+    paddingVertical: 50,
   },
 });
 export default Transactions;
 
-const Transaction = ({ transaction, setTransactions }) => {
+const Transaction = ({
+  transaction,
+  setTransactions,
+  setTransactionsModal,
+  setModalData,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const {
     amount,
@@ -402,12 +424,10 @@ const Transaction = ({ transaction, setTransactions }) => {
   return (
     <View style={styles.expanded}>
       <Pressable
-        // onPress={() =>
-        //   navigation.navigate('TransactionHistoryDetails', {
-        //     previousScreen: 'History',
-        //     ...history,
-        //   })
-        // }
+        onPress={() => {
+          setModalData(transaction);
+          setTransactionsModal(true);
+        }}
         style={styles.transaction}>
         {transactionType?.toLowerCase() === 'credit' ? (
           <>
@@ -497,7 +517,13 @@ const ExpandedInput = ({
         otp: otpCode,
       });
       if (response.status !== 200) throw new Error(response.data);
+      ToastMessage('Transaction Approved');
       setWalletRefresh(prev => !prev);
+      setTransactions(prev =>
+        prev.filter(
+          transactionIndex => transactionIndex._id !== transaction._id,
+        ),
+      );
     } catch (err) {
       ToastMessage(err.message);
     } finally {
@@ -526,8 +552,9 @@ const ExpandedInput = ({
   };
   return (
     <View>
-      <RegularText>Reference:</RegularText>
-      <BoldText>{reference}</BoldText>
+      <RegularText>
+        Reference: <BoldText> {reference}</BoldText>
+      </RegularText>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.otpInput}

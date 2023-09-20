@@ -13,8 +13,8 @@ import ErrorMessage from '../../components/ErrorMessage';
 import SuccessMessage from '../../components/SuccessMessage';
 import CheckPassword from '../../components/CheckPassword';
 
-const ChangePassword = ({ navigation }) => {
-  const { vh, setIsLoading, isLoggedIn, setIsLoggedIn } =
+const ChangePassword = ({ navigation, skipCheck }) => {
+  const { vh, setIsLoading, isLoggedIn, setIsLoggedIn, setIsSessionTimedOut } =
     useContext(AppContext);
   const [remembersPassword, setRemembersPassword] = useState(true);
 
@@ -25,7 +25,9 @@ const ChangePassword = ({ navigation }) => {
   const [errorKey, setErrorKey] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [passwordIsValid, setPasswordIsValid] = useState(!isLoggedIn || false);
+  const [passwordIsValid, setPasswordIsValid] = useState(
+    !isLoggedIn || skipCheck || false,
+  );
 
   const editInput = () => {
     setErrorMessage('');
@@ -63,7 +65,7 @@ const ChangePassword = ({ navigation }) => {
       if (result?.password?.includes('successfully')) {
         if (!isLoggedIn) return setIsLoggedIn(true);
         setTimeout(() => {
-          navigation.goBack();
+          skipCheck ? setIsSessionTimedOut(false) : navigation.goBack();
         }, 1500);
         return setSuccessMessage(result.password);
       }
@@ -75,7 +77,7 @@ const ChangePassword = ({ navigation }) => {
   };
 
   return (
-    <PageContainer padding={true} justify={true}>
+    <PageContainer padding justify={true}>
       <View style={styles.container}>
         <View style={{ ...styles.container, minHeight: vh }}>
           <View style={styles.logo}>
@@ -228,11 +230,12 @@ export const FormField = ({ inputForm, errorKey, setFormData, editInput }) => {
             });
           }}
           name={'password'}
-          inputMode={'text'}
+          inputMode={'numeric'}
           autoCapitalize="none"
           onFocus={() => setInputFocus(true)}
           onBlur={() => setInputFocus(false)}
           secureTextEntry={hidePassword}
+          maxLength={6}
         />
         <Pressable
           style={styles.eye2}

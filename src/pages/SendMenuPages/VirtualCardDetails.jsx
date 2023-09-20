@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AppContext } from '../../components/AppContext';
 import WalletAmount from '../../components/WalletAmount';
 import RegularText from '../../components/fonts/RegularText';
@@ -16,13 +16,16 @@ import FlagSelect from '../../components/FlagSelect';
 import ChevronDown from '../../../assets/images/chevron-down.svg';
 import AtmScratch from '../../../assets/images/atmScratch.svg';
 import AtmChevron from '../../../assets/images/atmChevronRight.svg';
+import SelectCurrencyModal from '../../components/SelectCurrencyModal';
 
 const VirtualCardDetails = ({ route }) => {
   const { fullName, exp_month, exp_year, cvc } = route.params;
   const { selectedCurrency, vh } = useContext(AppContext);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [showAmount, setShowAmount] = useState(false);
 
   return (
-    <PageContainer paddingTop={10} padding={true}>
+    <PageContainer paddingTop={10} padding>
       <BoldText style={styles.header}>My Virtual Card</BoldText>
       <View style={styles.body}>
         <View style={styles.pageBottom}>
@@ -36,7 +39,10 @@ const VirtualCardDetails = ({ route }) => {
                   <Text style={styles.symbol}>{selectedCurrency.symbol}</Text>
                 </View>
                 <View>
-                  <WalletAmount />
+                  <WalletAmount
+                    showAmount={showAmount}
+                    setShowAmount={setShowAmount}
+                  />
                   <View style={styles.flagContainer}>
                     <RegularText style={styles.currencyType}>
                       {selectedCurrency.currency}
@@ -46,12 +52,16 @@ const VirtualCardDetails = ({ route }) => {
                 </View>
               </View>
               <Pressable
-                // onPress={() => setModalOpen(true)}
+                onPress={() => setModalOpen(true)}
                 style={styles.chevronDown}>
                 <ChevronDown />
               </Pressable>
             </View>
           </ImageBackground>
+          <SelectCurrencyModal
+            modalOpen={modalOpen}
+            setModalOpen={setModalOpen}
+          />
         </View>
         <View style={styles.atm}>
           <ImageBackground
@@ -160,8 +170,9 @@ const styles = StyleSheet.create({
   },
   currencyType: {
     color: '#fff',
-    paddingLeft: 10,
+    paddingLeft: 5,
     fontSize: 15,
+    textTransform: 'capitalize',
   },
   atm: { flex: 1 },
   atmBg: {

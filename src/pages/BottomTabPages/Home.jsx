@@ -106,7 +106,7 @@ const Home = ({ navigation }) => {
     };
     requests.length > requestsLength && playSound();
     setRequestsLength(requests.length);
-  }, [requests.length]);
+  }, [requests.length, requestsLength]);
 
   const refreshPage = () => {};
 
@@ -138,7 +138,7 @@ const Home = ({ navigation }) => {
                 <BoldText>🔔 </BoldText>
                 <BoldText style={styles.requestText}>
                   {requests.length > 1
-                    ? 'You’ve pending requests. Click to check requests'
+                    ? `You’ve ${requests.length} pending requests. Click to check requests`
                     : 'You’ve a pending request. Click to check request'}
                 </BoldText>
               </View>

@@ -12,7 +12,7 @@ const PendingRequest = ({ navigation }) => {
   const { requestFunds: requests } = useRequestFundsContext();
 
   return (
-    <PageContainer style={styles.container}>
+    <PageContainer style={styles.container} scroll>
       <BoldText style={styles.headerText}>
         Pending Request{requests.length > 1 && 's'}
       </BoldText>
@@ -22,7 +22,7 @@ const PendingRequest = ({ navigation }) => {
             key={request._id}
             style={styles.request}
             onPress={() =>
-              navigation.navigate('PendingRequestConfirm', {
+              navigation.navigate('RequestStatus', {
                 ...request,
                 symbol: allCurrencies.find(
                   currency => currency.currency === request.currency,

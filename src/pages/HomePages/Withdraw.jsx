@@ -20,26 +20,15 @@ import AccInfoCard from '../../components/AccInfoCard';
 import InputPin from '../../components/InputPin';
 
 const Withdraw = ({ navigation }) => {
-  const { appData, vh, selectedCurrency, setIsLoading, setWalletRefresh } =
+  const { appData, vh, selectedCurrency, setWalletRefresh } =
     useContext(AppContext);
-  const { wallet, setWallet } = useWalletContext();
+  const { wallet } = useWalletContext();
   const [bankSelected, setBankSelected] = useState(null);
   const [amountInput, setAmountInput] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
-  const [haveSetPin] = useState(appData.pin);
   const [canContinue, setCanContinue] = useState(false);
-  const [otpCode, setOtpCode] = useState('');
-  const [reload, setReload] = useState(false);
-  const [pinCode, setPinCode] = useState('');
-  const [formData] = useState({
-    email: appData.email,
-    otpCodeLength: 6,
-  });
   const [addedBanks, setAddedBanks] = useState([]);
-  const inputRef = useRef();
-
-  const codeLengths = [1, 2, 3, 4];
 
   useFocusEffect(
     React.useCallback(() => {
@@ -59,7 +48,7 @@ const Withdraw = ({ navigation }) => {
 
   const handleBlur = () => {
     amountInput && setAmountInput(addingDecimal(amountInput));
-    if (amountInput < 100) {
+    if (amountInput < selectedCurrency.minimumAmountToAdd) {
       setErrorMessage(
         `Minimum transfer amount is ${selectedCurrency.symbol}${selectedCurrency.minimumAmountToAdd}`,
       );
@@ -91,20 +80,8 @@ const Withdraw = ({ navigation }) => {
     } else {
       setAmountInput(prev => `${Number(prev) + Number(fee)}`);
       setCanContinue(true);
-      if (!haveSetPin) {
-        await postFetchData('auth/forget-password', formData);
-      }
     }
   };
-
-  // const handleConfirm = async () => {
-  //   try {
-  //     setIsLoading(true);
-
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   const initiateWithdrawal = async () => {
     try {
@@ -138,7 +115,7 @@ const Withdraw = ({ navigation }) => {
         <AccInfoCard />
         {!canContinue && (
           <RegularText style={styles.headerText}>
-            In cases of insufficient fund, make to have swap to NGN before
+            In cases of insufficient fund, you have to swap to NGN before
             placing withdrawal.
           </RegularText>
         )}
@@ -397,12 +374,6 @@ const styles = StyleSheet.create({
   pinContainer: {
     alignItems: 'center',
     marginBottom: 20,
-  },
-  changePinCodeLengthsContainer: {
-    flexDirection: 'row',
-    gap: 30,
-    justifyContent: 'center',
-    marginTop: 10,
   },
   footer: {
     marginTop: 50,

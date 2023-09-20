@@ -6,7 +6,7 @@ import { RouteLink } from '../BottomTabPages/SendMenu';
 import AccInfoCard from '../../components/AccInfoCard';
 const AccInfo = ({ navigation }) => {
   return (
-    <PageContainer padding={true} paddingTop={0}>
+    <PageContainer padding paddingTop={0}>
       <View style={styles.body}>
         <AccInfoCard />
         <ScrollView>

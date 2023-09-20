@@ -18,8 +18,9 @@ import ErrorMessage from '../../components/ErrorMessage';
 import saveSessionOptions from '../../services/Savesession';
 import { PINInputFields } from '../../components/InputPinPage';
 
-const ForgotPassword = ({ navigation }) => {
-  const { isLoading, setIsLoading, vh, setAppData } = useContext(AppContext);
+const ForgotPassword = ({ navigation, setCanChange }) => {
+  const { appData, isLoading, setIsLoading, vh, setAppData, isLoggedIn } =
+    useContext(AppContext);
   const [codeSent, setCodeSent] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -34,6 +35,10 @@ const ForgotPassword = ({ navigation }) => {
   const inputRef = useRef();
 
   const codeLengths = [1, 2, 3, 4];
+
+  useEffect(() => {
+    isLoggedIn && setFormData({ email: appData.email });
+  }, [appData.email, isLoggedIn]);
 
   useEffect(() => {
     setIsPinOkay(otpCode.length === codeLengths.length);
@@ -83,7 +88,7 @@ const ForgotPassword = ({ navigation }) => {
       await loginUser(result.data, sessionData.deviceID);
       const data = await getFetchData('user');
       setAppData(data.data);
-      navigation.replace('ChangePassword');
+      setCanChange ? setCanChange(true) : navigation.replace('ChangePassword');
     } catch (err) {
       setErrorMessage(err.message);
     } finally {
@@ -104,7 +109,7 @@ const ForgotPassword = ({ navigation }) => {
   }, [codeSent, otpResend]);
 
   return (
-    <PageContainer padding={true} justify={true}>
+    <PageContainer padding justify={true}>
       <View style={styles.container}>
         <View style={{ ...styles.container, minHeight: vh }}>
           <View style={styles.logo}>
@@ -164,24 +169,25 @@ const ForgotPassword = ({ navigation }) => {
                     </Pressable>
                   )}
                 </View>
-                <View style={styles.button}>
-                  <Button
-                    text={'Confirm One time password'}
-                    onPress={handleConfirm}
-                    style={{
-                      backgroundColor: isPinOkay
-                        ? '#1E1E1E'
-                        : 'rgba(30, 30, 30, 0.7)',
-                    }}
-                    disabled={!isPinOkay || isLoading}
-                  />
-                </View>
+                {/* <View style={styles.button}> */}
+                <Button
+                  text={'Confirm One time password'}
+                  onPress={handleConfirm}
+                  style={{
+                    backgroundColor: isPinOkay
+                      ? '#1E1E1E'
+                      : 'rgba(30, 30, 30, 0.7)',
+                  }}
+                  disabled={!isPinOkay || isLoading}
+                />
+                {/* </View> */}
               </>
             ) : (
               <>
                 {signInData.slice(0, 1).map(item => (
                   <Form
                     item={item}
+                    formData={formData}
                     setFormData={setFormData}
                     key={item.name}
                     errorKey={errorKey}
@@ -194,7 +200,7 @@ const ForgotPassword = ({ navigation }) => {
               </>
             )}
           </View>
-          {!codeSent ? (
+          {!codeSent && !isLoggedIn ? (
             <View style={styles.alreadyContainer}>
               <View style={styles.already}>
                 <RegularText style={styles.alreadyText}>
@@ -325,7 +331,14 @@ const styles = StyleSheet.create({
 
 export default ForgotPassword;
 
-const Form = ({ item, setFormData, errorKey, setErrorKey, editInput }) => {
+const Form = ({
+  item,
+  formData,
+  setFormData,
+  errorKey,
+  setErrorKey,
+  editInput,
+}) => {
   const [inputFocus, setInputFocus] = useState(false);
 
   return (
@@ -351,6 +364,7 @@ const Form = ({ item, setFormData, errorKey, setErrorKey, editInput }) => {
         autoCapitalize="none"
         onFocus={() => setInputFocus(true)}
         onBlur={() => setInputFocus(false)}
+        value={formData.email}
       />
     </View>
   );

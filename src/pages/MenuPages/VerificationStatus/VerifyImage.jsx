@@ -68,7 +68,7 @@ const VerifyImage = () => {
     selectImage();
   };
   return (
-    <PageContainer PageContainer padding={true} justify={true}>
+    <PageContainer PageContainer padding justify={true}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.bodyContent}>
           <RegularText style={styles.side}>

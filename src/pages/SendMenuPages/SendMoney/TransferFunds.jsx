@@ -65,7 +65,7 @@ const TransferFunds = ({ navigation, route }) => {
     amountInput && setAmountInput(addingDecimal(amountInput));
     if (amountInput < minimumAmountToAdd) {
       setErrorMessage(
-        `Minimum transfer amounts is ${selectedCurrency.symbol}${minimumAmountToAdd}`,
+        `Minimum transfer amount is ${selectedCurrency.symbol}${minimumAmountToAdd}`,
       );
       setErrorKey('amountInput');
     }
@@ -91,9 +91,6 @@ const TransferFunds = ({ navigation, route }) => {
       setErrorMessage('Insufficient funds');
     } else {
       setCanContinue(true);
-      if (!haveSetPin) {
-        await postFetchData('auth/forget-password', formData);
-      }
     }
   };
 

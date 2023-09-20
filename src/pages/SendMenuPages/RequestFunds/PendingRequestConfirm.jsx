@@ -44,7 +44,13 @@ const PendingRequestConfirm = ({ navigation, route }) => {
         });
       }
     } catch (err) {
-      ToastMessage(err.message);
+      const currency = err.message.split(' ')[1];
+      ToastMessage(
+        err.message.replace(
+          currency,
+          currency.charAt(0).toUpperCase() + currency.slice(1),
+        ),
+      );
     }
   };
 
@@ -55,7 +61,7 @@ const PendingRequestConfirm = ({ navigation, route }) => {
         requested the sum of {symbol + amount.toLocaleString()}{' '}
       </RegularText>
       <InputPin
-        buttonText={'Accept'}
+        buttonText={'Continue'}
         customFunc={() => handleConfirm('accept')}
         style={styles.inputPin}>
         <View style={styles.footerCard}>
@@ -86,8 +92,13 @@ const PendingRequestConfirm = ({ navigation, route }) => {
             <View style={styles.cardLine}>
               <RegularText style={styles.cardKey}>Charges</RegularText>
               <BoldText
-                style={{ ...styles.cardValue, color: fee ? 'red' : '#006E53' }}>
-                {fee ? symbol + addingDecimal(fee.toLocaleString()) : 'free'}
+                style={{
+                  ...styles.cardValue,
+                  color: Number(fee) ? 'red' : '#006E53',
+                }}>
+                {Number(fee)
+                  ? symbol + addingDecimal(Number(fee).toLocaleString())
+                  : 'free'}
               </BoldText>
             </View>
             <View style={styles.cardLine}>
@@ -115,12 +126,6 @@ const PendingRequestConfirm = ({ navigation, route }) => {
           </View>
         </View>
       </InputPin>
-      <Button
-        text={'Decline'}
-        style={styles.button}
-        color={'#000'}
-        onPress={() => handleConfirm('decline')}
-      />
     </PageContainer>
   );
 };

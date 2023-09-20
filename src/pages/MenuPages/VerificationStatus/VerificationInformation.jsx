@@ -17,7 +17,7 @@ const VerificationInformation = ({ navigation }) => {
     'Hold your device steady to avoid any blur',
   ];
   return (
-    <PageContainer PageContainer padding={true} justify={true}>
+    <PageContainer PageContainer padding justify={true}>
       <BoldText style={styles.headerText}>
         Get your National ID card ready
       </BoldText>

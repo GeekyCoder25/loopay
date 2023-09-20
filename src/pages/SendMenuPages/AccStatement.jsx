@@ -19,7 +19,7 @@ const AccStatement = () => {
   };
   const formatType = ['csv', 'pdf'];
   return (
-    <PageContainer padding={true} paddingTop={0} style={styles.body} scroll>
+    <PageContainer padding paddingTop={0} style={styles.body} scroll>
       <AccInfoCard />
       <RegularText style={styles.headerText}>Account Statement</RegularText>
       <RegularText>Select Currency</RegularText>

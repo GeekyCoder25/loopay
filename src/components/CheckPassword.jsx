@@ -99,6 +99,7 @@ const CheckPassword = ({
             onFocus={() => setInputFocus(true)}
             onBlur={() => setInputFocus(false)}
             secureTextEntry={hidePassword}
+            maxLength={6}
           />
           <Pressable
             style={styles.eye}

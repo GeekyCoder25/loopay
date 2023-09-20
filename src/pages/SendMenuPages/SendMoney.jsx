@@ -32,7 +32,7 @@ const SendMoney = ({ navigation }) => {
     },
   ];
   return (
-    <PageContainer padding={true} paddingTop={0}>
+    <PageContainer padding paddingTop={0}>
       <View style={styles.body}>
         <AccInfoCard />
         <RegularText style={styles.headerText}>Send Money</RegularText>

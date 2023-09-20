@@ -38,9 +38,10 @@ const Splash = ({ navigation }) => {
     if (internetStatus === true) {
       const getDataFromStorage = async () => {
         try {
-          setIsLoggedIn(await getIsLoggedIn());
+          const isLoggedIn = await getIsLoggedIn();
+          setIsLoggedIn(isLoggedIn);
           const sessionID = await getSessionID();
-          if (await getIsLoggedIn()) {
+          if (isLoggedIn) {
             const data = await getFetchData('user');
             await setAppData(data);
             if (
@@ -59,7 +60,7 @@ const Splash = ({ navigation }) => {
               setCanChangeRole(true);
             }
           }
-          await navigation.replace('FirstPage');
+          navigation.replace('FirstPage');
         } catch (err) {
           console.log(err);
         }

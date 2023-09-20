@@ -47,7 +47,7 @@ const Referrals = () => {
     // },
   ];
   return (
-    <PageContainer padding={true} justify={true}>
+    <PageContainer padding justify={true}>
       <View style={styles.container}>
         <View style={styles.header}>
           <BoldText style={styles.boldHeader}>

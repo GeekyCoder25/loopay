@@ -1,5 +1,5 @@
 import React from 'react';
-import { wPressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Image1 from '../../../assets/images/onboarding1.svg';
 import Image2 from '../../../assets/images/onboarding2.svg';
 import Image3 from '../../../assets/images/onboarding3.svg';

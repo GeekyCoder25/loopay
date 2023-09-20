@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import {
+  Clipboard,
   Pressable,
-  ScrollView,
   StyleSheet,
   TextInput,
   View,
@@ -19,6 +19,7 @@ const MyInfo = () => {
   const { appData, setAppData, setIsLoading } = useContext(AppContext);
   const [inputFocus, setInputFocus] = useState('');
   const {
+    fullName,
     firstName,
     lastName,
     address,
@@ -66,7 +67,6 @@ const MyInfo = () => {
       ToastMessage(err.message);
       console.log(err);
     } finally {
-      3;
       setIsEditable(false);
       setIsLoading(false);
       setInputFocus('');
@@ -76,8 +76,37 @@ const MyInfo = () => {
   return (
     <PageContainer justify={true} style={styles.container} scroll>
       <BoldText style={styles.headerText}>Personal information</BoldText>
+
+      <View style={styles.tagContainer}>
+        <View>
+          <RegularText style={styles.label}>Your unique Loopay tag</RegularText>
+          <BoldText style={styles.tagName}>#{appData.tagName}</BoldText>
+        </View>
+        <Pressable
+          style={styles.copy}
+          onPress={() => {
+            Clipboard.setString(`#${appData.tagName}`);
+            ToastMessage('Copied to clipboard');
+          }}>
+          <BoldText style={styles.copyText}>Copy</BoldText>
+        </Pressable>
+      </View>
+      <View style={styles.tagContainer}>
+        <View>
+          <RegularText style={styles.label}>Full Name</RegularText>
+          <BoldText style={styles.tagName}>{fullName}</BoldText>
+        </View>
+        <Pressable
+          style={styles.copy}
+          onPress={() => {
+            Clipboard.setString(fullName);
+            ToastMessage('Copied to clipboard');
+          }}>
+          <BoldText style={styles.copyText}>Copy</BoldText>
+        </Pressable>
+      </View>
       <RegularText>Account No: {phoneNumber.slice(4)}</RegularText>
-      <RegularText>Phone No: {phoneNumber}</RegularText>
+      <RegularText style={styles.label}>Phone No: {phoneNumber}</RegularText>
       {!isEditable && (
         <Pressable onPress={() => setIsEditable(true)} style={styles.edit}>
           <BoldText style={styles.editText}>Edit Profile</BoldText>
@@ -167,9 +196,17 @@ const MyInfo = () => {
         <View style={styles.row}>
           <View style={styles.field}>
             <BoldText>Date of Birth</BoldText>
-            <RegularText style={styles.dob}>{dob}24 May 2000</RegularText>
+            <TextInput
+              name="dob"
+              value={userProfile.dob}
+              onChangeText={text => handleChange(text)}
+              style={inputFocus === 'dob' ? styles.inputFocus : styles.input}
+              editable={isEditable}
+              onFocus={() => handleFocus('dob')}
+            />
           </View>
         </View>
+        {console.log(inputFocus)}
       </View>
       {isEditable ? (
         <Button
@@ -189,6 +226,33 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 25,
     marginBottom: 20,
+  },
+  tagContainer: {
+    backgroundColor: '#EEEEEE',
+    borderRadius: 15,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  copy: {
+    backgroundColor: '#1e1e1e',
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 5,
+  },
+  copyText: {
+    color: '#fff',
+  },
+
+  label: {
+    color: '#868585',
+    marginBottom: 5,
+  },
+  tagName: {
+    fontSize: 16,
   },
   edit: {
     alignSelf: 'flex-end',

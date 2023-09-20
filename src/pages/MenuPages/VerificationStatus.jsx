@@ -8,7 +8,7 @@ import RegularText from '../../components/fonts/RegularText';
 
 const VerificationStatus = ({ navigation }) => {
   return (
-    <PageContainer padding={true} justify={true}>
+    <PageContainer padding justify={true}>
       <View style={styles.container}>
         <View>
           <BoldText style={styles.headerText}>Identity Verification</BoldText>

@@ -62,7 +62,7 @@ const LoopayTag = ({ navigation }) => {
   };
 
   return (
-    <PageContainer padding={true}>
+    <PageContainer padding>
       <View style={styles.body}>
         <BoldText style={styles.boldText}>
           {appData.tagName ? 'Change' : 'Create'} your Unique LoopayTag

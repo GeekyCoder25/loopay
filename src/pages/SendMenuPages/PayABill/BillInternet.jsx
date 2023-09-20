@@ -24,7 +24,7 @@ const BillInternet = ({ route }) => {
   const { buttonText } = route.params;
 
   return (
-    <PageContainer paddingTop={0} padding={true}>
+    <PageContainer paddingTop={0} padding>
       <View style={styles.body}>
         <BoldText style={styles.headerText}>{route.params.headerText}</BoldText>
         {fields.map(field => (

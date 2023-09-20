@@ -29,7 +29,7 @@ const AirtimeTopUp = ({ navigation }) => {
     },
   ];
   return (
-    <PageContainer padding={true} paddingTop={0}>
+    <PageContainer padding paddingTop={0}>
       <View style={styles.body}>
         <AccInfoCard />
         <View>

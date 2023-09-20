@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import CurrencyCard from '../../components/CurrencyCard';
 import { useWalletContext } from '../../context/WalletContext';
 import BoldText from '../../components/fonts/BoldText';
-import { StyleSheet } from 'react-native';
+import { AppContext } from '../../components/AppContext';
 
 const AccountDetails = () => {
+  const { setWalletRefresh } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const {
     loopayAccNo: accNo,
@@ -54,8 +55,12 @@ const AccountDetails = () => {
       color: '#105AAD',
     },
   ];
+
+  useEffect(() => {
+    setWalletRefresh(prev => !prev);
+  }, [setWalletRefresh]);
   return (
-    <PageContainer padding={true} scroll>
+    <PageContainer padding scroll>
       <View style={styles.balances}>
         <BoldText>Balance from all accounts</BoldText>
         {currencies.map(currency => (

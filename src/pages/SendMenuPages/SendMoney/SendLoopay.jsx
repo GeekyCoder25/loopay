@@ -98,7 +98,6 @@ const SendLoopay = ({ navigation, route }) => {
   };
 
   const handleContinue = async () => {
-    // Make Api Request with Paystack
     navigation.navigate('TransferFunds', { saveAsBeneficiary, ...userFound });
   };
 

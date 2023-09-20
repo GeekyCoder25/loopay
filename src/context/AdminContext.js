@@ -6,14 +6,15 @@ import useInterval from '../../utils/hooks/useInterval';
 export const AdminContext = createContext();
 
 const AdminContextComponent = ({ children }) => {
-  const { setIsLoading, walletRefresh } = useContext(AppContext);
+  const { isSessionTimedOut, setIsLoading, walletRefresh } =
+    useContext(AppContext);
   const [adminData, setAdminData] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalFunc, setModalFunc] = useState();
 
   const fetchAdminDatas = async () => {
     try {
-      !adminData && setIsLoading(true);
+      !adminData && !isSessionTimedOut && setIsLoading(true);
       const response = await getFetchData('admin');
       if (response.status === 200) {
         return setAdminData(response.data);

@@ -6,7 +6,7 @@ import { useContext } from 'react';
 import { AppContext } from './AppContext';
 const tabRoutes = [
   {
-    route: 'HomeNavigator',
+    route: 'Home',
   },
   {
     route: 'SendMenuNavigator',
@@ -51,7 +51,7 @@ const TabRoute = ({ routePage, navigation, state, index }) => {
   const isFocused = state.index === index;
   const routeIcon = fill => {
     switch (routePage.route) {
-      case 'HomeNavigator':
+      case 'Home':
         return <HomeIcon fill={fill} />;
       case 'SendMenuNavigator':
         return <SendIcon fill={fill} />;

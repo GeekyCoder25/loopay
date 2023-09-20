@@ -111,7 +111,7 @@ const BuyData = ({ navigation }) => {
     }
   };
   return (
-    <PageContainer padding={true} paddingTop={0}>
+    <PageContainer padding paddingTop={0}>
       <ScrollView style={styles.body}>
         <View style={styles.header}>
           <RegularText>Beneficiaries</RegularText>

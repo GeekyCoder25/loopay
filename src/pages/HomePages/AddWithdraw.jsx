@@ -97,7 +97,7 @@ const AddWithdraw = ({ navigation }) => {
   };
 
   return (
-    <PageContainer padding={true}>
+    <PageContainer padding>
       {!needPin ? (
         <View>
           <BoldText style={styles.header}>Add New Payment Account</BoldText>

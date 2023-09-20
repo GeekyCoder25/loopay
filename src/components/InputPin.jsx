@@ -16,8 +16,6 @@ const InputPin = ({
   style,
 }) => {
   const { appData, setIsLoading, vh } = useContext(AppContext);
-  const [otpTimeout, setOtpTimeout] = useState(60);
-  const [otpResend, setOtpResend] = useState(otpTimeout);
   const [errorKey, setErrorKey] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [otpCode, setOtpCode] = useState('');
@@ -33,39 +31,18 @@ const InputPin = ({
   const handlePay = async () => {
     setIsLoading(true);
     try {
-      if (haveSetPin) {
-        const result = await postFetchData('user/check-pin', {
-          pin: pinCode,
-        });
-        if (result === "Couldn't connect to server") {
-          return setErrorMessage(result);
-        }
-        if (result.status === 200) {
-          setIsValidPin && setIsValidPin(true);
-          return await customFunc(true);
-        }
-        setErrorMessage(result.data);
-        setErrorKey('pinCode');
-      } else {
-        const result = await postFetchData(
-          `auth/confirm-otp/${otpCode || 'fake'}`,
-          formData,
-        );
-        if (result === "Couldn't connect to server") {
-          return setErrorMessage(result);
-        }
-        if (result.status === 200) {
-          setIsValidPin && setIsValidPin(true);
-          return await customFunc();
-        }
-        setErrorMessage('Incorrect OTP Code');
-        setErrorKey('otpCode');
+      const result = await postFetchData('user/check-pin', {
+        pin: pinCode,
+      });
+      if (result === "Couldn't connect to server") {
+        return setErrorMessage(result);
       }
-      setTimeout(() => {
-        setPinCode('');
-        setOtpCode('');
-        inputRef.current.focus();
-      }, 1500);
+      if (result.status === 200) {
+        setIsValidPin && setIsValidPin(true);
+        return await customFunc(true);
+      }
+      setErrorMessage(result.data);
+      setErrorKey('pinCode');
     } finally {
       setIsLoading(false);
     }

@@ -60,7 +60,7 @@ const IdentityVerification = ({ navigation }) => {
   };
 
   return (
-    <PageContainer PageContainer padding={true} justify={true}>
+    <PageContainer PageContainer padding justify={true}>
       <View
         style={{
           ...styles.container,

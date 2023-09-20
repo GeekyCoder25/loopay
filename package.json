@@ -36,7 +36,6 @@
     "react": "18.2.0",
     "react-native": "0.72.4",
     "react-native-gesture-handler": "~2.12.0",
-    "react-native-otp-forminput": "^1.0.2",
     "react-native-reanimated": "~3.3.0",
     "react-native-root-siblings": "^4.1.1",
     "react-native-root-toast": "^3.5.0",

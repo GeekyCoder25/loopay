@@ -34,6 +34,7 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [canChangeRole, setCanChangeRole] = useState(false);
   const [noReload, setNoReload] = useState(false);
+  const [isSessionTimedOut, setIsSessionTimedOut] = useState(true);
   const vw = useWindowDimensions().width;
   const vh = useWindowDimensions().height;
 
@@ -66,6 +67,8 @@ export default function App() {
     setCanChangeRole,
     noReload,
     setNoReload,
+    isSessionTimedOut,
+    setIsSessionTimedOut,
   };
 
   useEffect(() => {

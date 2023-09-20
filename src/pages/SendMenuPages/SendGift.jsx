@@ -3,7 +3,7 @@ import PageContainer from '../../components/PageContainer';
 
 const SendGift = () => {
   return (
-    <PageContainer padding={true} paddingTop={0}>
+    <PageContainer padding paddingTop={0}>
       <View style={styles.body}></View>
     </PageContainer>
   );

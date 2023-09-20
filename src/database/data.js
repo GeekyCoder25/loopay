@@ -33,14 +33,14 @@ export const signUpData = [
     name: 'password',
     placeholder: 'Password',
     type: 'password',
-    inputMode: 'text',
+    inputMode: 'numeric',
     eye: true,
   },
   {
     name: 'confirmPassword',
     placeholder: 'Retype Password',
     type: 'password',
-    inputMode: 'text',
+    inputMode: 'numeric',
     eye: true,
   },
 ];
@@ -55,7 +55,7 @@ export const signInData = [
     name: 'password',
     placeholder: 'Password',
     type: 'password',
-    inputMode: 'text',
+    inputMode: 'numeric',
     eye: true,
   },
 ];

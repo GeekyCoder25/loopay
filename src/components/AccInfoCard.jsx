@@ -73,7 +73,7 @@ const AccInfoCard = () => {
         <View style={styles.cardHeader}>
           <View style={styles.cardDetails}>
             <RegularText style={styles.currencyType}>
-              Pending Balance:{' '}
+              Book Balance:{' '}
               <BoldText>
                 {showAmount ? selectedCurrency.symbol + pendingBalance : '****'}
               </BoldText>
