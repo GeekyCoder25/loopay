@@ -21,6 +21,7 @@ import RequestFund from '../pages/SendMenuPages/RequestFund';
 import RequestConfirm from '../pages/SendMenuPages/RequestFunds/RequestConfirm';
 import RequestSuccess from '../pages/SendMenuPages/RequestFunds/RequestSuccess';
 import AddNewCard from '../pages/SendMenuPages/AddMoney/AddNewCard';
+import AirtimeTopUpNavigator from './AirtimeTopUpNavigator';
 
 const SendMenuNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -75,17 +76,13 @@ const SendMenuNavigator = () => {
         component={RequestSuccess}
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="AirtimeTopup" component={AirtimeTopUp} />
-      <Stack.Screen name="BuyAirtime" component={BuyAirtime} />
-      <Stack.Screen name="BuyData" component={BuyData} />
       <Stack.Screen
-        name="TransferAirtime"
-        component={TransferAirtime}
+        name="AirtimeTopUpNavigator"
+        component={AirtimeTopUpNavigator}
         options={{
           headerShown: false,
         }}
       />
-      <Stack.Screen name="AirtimeHistory" component={AccStatement} />
       <Stack.Screen name="PayABill" component={PayABill} />
       <Stack.Screen name="VirtualCard" component={VirtualCard} />
       <Stack.Screen name="VirtualCardDetails" component={VirtualCardDetails} />

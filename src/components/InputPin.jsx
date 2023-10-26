@@ -15,15 +15,10 @@ const InputPin = ({
   customFunc,
   style,
 }) => {
-  const { appData, setIsLoading, vh } = useContext(AppContext);
+  const { setIsLoading, vh } = useContext(AppContext);
   const [errorKey, setErrorKey] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [otpCode, setOtpCode] = useState('');
-  const [haveSetPin] = useState(appData.pin);
   const [pinCode, setPinCode] = useState('');
-  const [formData] = useState({
-    email: appData.email,
-  });
   const inputRef = useRef();
 
   const codeLengths = [1, 2, 3, 4];
@@ -39,7 +34,7 @@ const InputPin = ({
       }
       if (result.status === 200) {
         setIsValidPin && setIsValidPin(true);
-        return await customFunc(true);
+        return await customFunc(setErrorMessage);
       }
       setErrorMessage(result.data);
       setErrorKey('pinCode');
@@ -108,8 +103,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   codeInput: {
-    height: 1,
-    width: 1,
+    color: '#fff',
+    position: 'absolute',
+    transform: [{ translateX: -1000 }],
   },
 });
 

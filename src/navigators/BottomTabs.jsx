@@ -8,6 +8,7 @@ import HomeNavigator from './HomeNavigator';
 import WalletContextComponent from '../context/WalletContext';
 import BeneficiaryContextComponent from '../context/BeneficiariesContext';
 import RequestFundsContextComponent from '../context/RequestContext';
+
 const BottomTabs = () => {
   const { showTabBar, appData, setAppData } = useContext(AppContext);
   const Tab = createBottomTabNavigator();

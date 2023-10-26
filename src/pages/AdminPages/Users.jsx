@@ -37,6 +37,18 @@ const Users = ({ navigation }) => {
     }
     return comparison;
   }
+  function sortFuncInactive(a, b) {
+    const date1 = a.updatedAt;
+    const date2 = b.updatedAt;
+    let comparison = 0;
+
+    if (date1 > date2) {
+      comparison = -1;
+    } else if (date1 < date2) {
+      comparison = 1;
+    }
+    return comparison;
+  }
 
   useEffect(() => {
     const checkSameDateAndTime = sessionTimestamp => {
@@ -155,7 +167,7 @@ const Users = ({ navigation }) => {
             {sortStatus === 'status' &&
               inactiveUsers
                 .filter(user => user.status === 'active')
-                .sort(sortFunc)
+                .sort(sortFuncInactive)
                 .map(user => (
                   <User
                     key={user._id}

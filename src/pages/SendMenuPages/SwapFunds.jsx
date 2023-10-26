@@ -1,13 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import { useContext, useEffect, useState } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-  Modal,
-} from 'react-native';
+import { Pressable, StyleSheet, TextInput, View, Modal } from 'react-native';
 import { AppContext } from '../../components/AppContext';
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';

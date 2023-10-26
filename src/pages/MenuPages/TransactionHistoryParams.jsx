@@ -9,6 +9,8 @@ import { allCurrencies } from '../../database/data';
 import { addingDecimal } from '../../../utils/AddingZero';
 import UserIcon from '../../components/UserIcon';
 import SwapIcon from '../../../assets/images/swap.svg';
+import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
+import Button from '../../components/Button';
 
 const TransactionHistoryParams = ({ route }) => {
   const history = route.params;
@@ -35,6 +37,9 @@ const TransactionHistoryParams = ({ route }) => {
     swapTo,
     swapFromAmount,
     swapToAmount,
+    networkProvider,
+    phoneNo,
+    dataPlan,
   } = history;
 
   const currencySymbol = allCurrencies.find(
@@ -105,6 +110,7 @@ const TransactionHistoryParams = ({ route }) => {
     }
   };
 
+  const handleShare = () => {};
   return (
     <PageContainer justify={true} scroll>
       <BoldText style={styles.historyHeader}>Transaction history</BoldText>
@@ -180,7 +186,7 @@ const TransactionHistoryParams = ({ route }) => {
                 </View>
                 <View style={styles.cardLine}>
                   <RegularText style={styles.cardKey}>
-                    Traansaction Date
+                    Transaction Date
                   </RegularText>
                   <BoldText
                     style={{
@@ -210,7 +216,7 @@ const TransactionHistoryParams = ({ route }) => {
 
             <View style={styles.footerCard}>
               <BoldText style={styles.cardAmount}>
-                -
+                -{' '}
                 {currencySymbol +
                   addingDecimal(Number(amount).toLocaleString())}
               </BoldText>
@@ -275,7 +281,165 @@ const TransactionHistoryParams = ({ route }) => {
                 </View>
                 <View style={styles.cardLine}>
                   <RegularText style={styles.cardKey}>
-                    Traansaction Date
+                    Transaction Date
+                  </RegularText>
+                  <BoldText
+                    style={{
+                      ...styles.cardValue,
+                      textTransform: 'uppercase',
+                    }}>
+                    {transactionDate}
+                  </BoldText>
+                </View>
+              </View>
+            </View>
+          </>
+        )}
+        {transactionType?.toLowerCase() === 'airtime' && (
+          <>
+            <View style={styles.headerContainer}>
+              {networkProvidersIcon(networkProvider)}
+              <View>
+                <BoldText style={styles.name}>{phoneNo}</BoldText>
+                <RegularText style={styles.accNo}>Airtime purchase</RegularText>
+              </View>
+            </View>
+
+            <View style={styles.modalBorder} />
+
+            <View style={styles.footerCard}>
+              <BoldText style={styles.cardAmount}>
+                -{' '}
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+
+              <View style={styles.footerCardDetails}>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Status</RegularText>
+                  {statusColor()}
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Transaction type
+                  </RegularText>
+                  <BoldText style={{ ...styles.cardValue, color: '#ff0000' }}>
+                    Debit
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Amount</RegularText>
+                  <BoldText style={styles.cardValue}>
+                    {currencySymbol +
+                      addingDecimal(Number(amount).toLocaleString())}
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Phone Number</RegularText>
+                  <BoldText style={styles.cardValue}>{phoneNo}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Network</RegularText>
+                  <BoldText style={styles.cardValue}>
+                    {networkProvider}
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Reference</RegularText>
+                  <BoldText style={styles.cardValue}>{reference}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Payment Method
+                  </RegularText>
+                  <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
+                    Balance
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Transaction Date
+                  </RegularText>
+                  <BoldText
+                    style={{
+                      ...styles.cardValue,
+                      textTransform: 'uppercase',
+                    }}>
+                    {transactionDate}
+                  </BoldText>
+                </View>
+              </View>
+            </View>
+          </>
+        )}
+        {transactionType?.toLowerCase() === 'data' && (
+          <>
+            <View style={styles.headerContainer}>
+              {networkProvidersIcon(networkProvider)}
+              <View>
+                <BoldText style={styles.name}>{phoneNo}</BoldText>
+                <RegularText style={styles.accNo}>Data purchase</RegularText>
+              </View>
+            </View>
+
+            <View style={styles.modalBorder} />
+
+            <View style={styles.footerCard}>
+              <BoldText style={styles.cardAmount}>
+                -{' '}
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+
+              <View style={styles.footerCardDetails}>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Status</RegularText>
+                  {statusColor()}
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Transaction type
+                  </RegularText>
+                  <BoldText style={{ ...styles.cardValue, color: '#ff0000' }}>
+                    Debit
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Amount</RegularText>
+                  <BoldText style={styles.cardValue}>
+                    {currencySymbol +
+                      addingDecimal(Number(amount).toLocaleString())}
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Phone Number</RegularText>
+                  <BoldText style={styles.cardValue}>{phoneNo}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Network</RegularText>
+                  <BoldText style={styles.cardValue}>
+                    {networkProvider}
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Data Plan</RegularText>
+                  <BoldText style={styles.cardValue}>{dataPlan}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Reference</RegularText>
+                  <BoldText style={styles.cardValue}>{reference}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Payment Method
+                  </RegularText>
+                  <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
+                    Balance
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Transaction Date
                   </RegularText>
                   <BoldText
                     style={{
@@ -366,7 +530,7 @@ const TransactionHistoryParams = ({ route }) => {
                 </View>
                 <View style={styles.cardLine}>
                   <RegularText style={styles.cardKey}>
-                    Traansaction Date
+                    Transaction Date
                   </RegularText>
                   <BoldText
                     style={{
@@ -380,6 +544,8 @@ const TransactionHistoryParams = ({ route }) => {
             </View>
           </>
         )}
+
+        <Button text={'Share Receipt'} onPress={handleShare} />
       </View>
     </PageContainer>
   );
@@ -390,7 +556,7 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     gap: 15,
     flex: 1,
-    marginTop: 30,
+    marginVertical: 30,
     paddingHorizontal: 3 + '%',
   },
   historyHeader: {

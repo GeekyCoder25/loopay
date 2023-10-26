@@ -27,6 +27,7 @@ const Splash = ({ navigation }) => {
     setAppData,
     setIsAdmin,
     setCanChangeRole,
+    setIsSessionTimedOut,
     vw,
   } = useContext(AppContext);
 
@@ -59,6 +60,8 @@ const Splash = ({ navigation }) => {
               setIsAdmin(true);
               setCanChangeRole(true);
             }
+          } else {
+            setIsSessionTimedOut(false);
           }
           navigation.replace('FirstPage');
         } catch (err) {

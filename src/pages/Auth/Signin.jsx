@@ -283,7 +283,7 @@ const FormField = ({
         placeholder={inputForm.placeholder}
         placeholderTextColor={inputFocus ? '#000' : '#80808080'}
         secureTextEntry={inputForm.eye ? showPassword : false}
-        maxLength={6}
+        maxLength={inputForm.eye ? 6 : undefined}
         onChangeText={text => {
           setErrorKey('');
           editInput();

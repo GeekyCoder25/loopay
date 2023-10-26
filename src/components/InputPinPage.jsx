@@ -116,7 +116,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     justifyContent: 'center',
-    // maxWidth: 8 + '%',
     marginTop: 40,
   },
   codeInputText: {

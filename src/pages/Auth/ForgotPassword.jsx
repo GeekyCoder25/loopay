@@ -19,8 +19,15 @@ import saveSessionOptions from '../../services/Savesession';
 import { PINInputFields } from '../../components/InputPinPage';
 
 const ForgotPassword = ({ navigation, setCanChange }) => {
-  const { appData, isLoading, setIsLoading, vh, setAppData, isLoggedIn } =
-    useContext(AppContext);
+  const {
+    appData,
+    isSessionTimedOut,
+    isLoading,
+    setIsLoading,
+    vh,
+    setAppData,
+    isLoggedIn,
+  } = useContext(AppContext);
   const [codeSent, setCodeSent] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -108,121 +115,134 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
       }, 1000);
   }, [codeSent, otpResend]);
 
+  useEffect(() => {
+    isSessionTimedOut &&
+      postFetchData('auth/forget-password', { email: appData.email }).then(
+        result => {
+          result = result.data;
+          if (result?.email === appData.email) {
+            setCodeSent(true);
+          }
+        },
+      );
+  }, [appData.email, isSessionTimedOut]);
+
   return (
     <PageContainer padding justify={true}>
-      <View style={styles.container}>
-        <View style={{ ...styles.container, minHeight: vh }}>
-          <View style={styles.logo}>
-            <Logo />
-          </View>
-          <View style={styles.form}>
-            <Header
-              title={'Forgot Password'}
-              text={'To continue, kindly enter your email address'}
-            />
-            {codeSent ? (
-              <>
-                <View style={styles.codeLengthsContainer} key={reload}>
-                  {codeLengths.map(input => (
-                    <PINInputFields
-                      key={input}
-                      codeLength={input}
-                      pinCode={otpCode}
-                      inputRef={inputRef}
-                      errorKey={errorKey}
-                    />
-                  ))}
-                </View>
-                <TextInput
-                  autoFocus
-                  style={styles.codeInput}
-                  inputMode="numeric"
-                  onChangeText={text => {
-                    setOtpCode(text);
-                    text.length === codeLengths.length && Keyboard.dismiss();
-                    setErrorMessage('');
-                    setErrorKey('');
-                  }}
-                  maxLength={codeLengths.length}
-                  ref={inputRef}
-                  value={otpCode}
-                />
-                <View>
-                  <RegularText style={styles.enterCodeText}>
-                    Enter the Four Digit code sent to your email
-                  </RegularText>
-                </View>
-                <ErrorMessage errorMessage={errorMessage} />
-                <View style={styles.didnt}>
-                  <BoldText>Didn&apos;t receive the code? Resend </BoldText>
-                  {typeof otpResend === 'number' ? (
-                    <BoldText>
-                      in{' '}
-                      <BoldText style={styles.now}>
-                        {otpResend > 59 && Math.floor(otpResend / 60) + 'm '}
-                        {otpResend % 60}s
-                      </BoldText>
-                    </BoldText>
-                  ) : (
-                    <Pressable onPress={handlePress}>
-                      <BoldText style={styles.now}>{otpResend}</BoldText>
-                    </Pressable>
-                  )}
-                </View>
-                {/* <View style={styles.button}> */}
-                <Button
-                  text={'Confirm One time password'}
-                  onPress={handleConfirm}
-                  style={{
-                    backgroundColor: isPinOkay
-                      ? '#1E1E1E'
-                      : 'rgba(30, 30, 30, 0.7)',
-                  }}
-                  disabled={!isPinOkay || isLoading}
-                />
-                {/* </View> */}
-              </>
-            ) : (
-              <>
-                {signInData.slice(0, 1).map(item => (
-                  <Form
-                    item={item}
-                    formData={formData}
-                    setFormData={setFormData}
-                    key={item.name}
+      <View style={{ ...styles.container, minHeight: vh * 0.95 }}>
+        <View style={styles.logo}>
+          <Logo />
+        </View>
+        <View style={styles.form}>
+          <Header
+            title={'Forgot Password'}
+            text={
+              codeSent
+                ? 'Kindly input the OTP sent to your email address'
+                : 'To continue, kindly enter your email address'
+            }
+          />
+          {isSessionTimedOut || codeSent ? (
+            <>
+              <View style={styles.codeLengthsContainer} key={reload}>
+                {codeLengths.map(input => (
+                  <PINInputFields
+                    key={input}
+                    codeLength={input}
+                    pinCode={otpCode}
+                    inputRef={inputRef}
                     errorKey={errorKey}
-                    setErrorKey={setErrorKey}
-                    editInput={editInput}
                   />
                 ))}
-                <ErrorMessage errorMessage={errorMessage} />
-                <Button text={'Send One time password'} onPress={handlePress} />
-              </>
-            )}
-          </View>
-          {!codeSent && !isLoggedIn ? (
-            <View style={styles.alreadyContainer}>
-              <View style={styles.already}>
-                <RegularText style={styles.alreadyText}>
-                  Already have an account?
+              </View>
+              <TextInput
+                autoFocus
+                style={styles.codeInput}
+                inputMode="numeric"
+                onChangeText={text => {
+                  setOtpCode(text);
+                  text.length === codeLengths.length && Keyboard.dismiss();
+                  setErrorMessage('');
+                  setErrorKey('');
+                }}
+                maxLength={codeLengths.length}
+                ref={inputRef}
+                value={otpCode}
+              />
+              <View>
+                <RegularText style={styles.enterCodeText}>
+                  Enter the Four Digit code sent to your email
                 </RegularText>
-                <Pressable onPress={() => navigation.navigate('Signin')}>
-                  <BoldText style={styles.signIn}>Sign in</BoldText>
-                </Pressable>
               </View>
-              <View style={styles.signInIcons}>
-                <Pressable onPress={() => console.log('apple was clicked')}>
-                  <Apple />
-                </Pressable>
-                <Pressable onPress={() => console.log('google was clicked')}>
-                  <Google />
-                </Pressable>
+              <ErrorMessage errorMessage={errorMessage} />
+              <View style={styles.didnt}>
+                <BoldText>Didn&apos;t receive the code? Resend </BoldText>
+                {typeof otpResend === 'number' ? (
+                  <BoldText>
+                    in{' '}
+                    <BoldText style={styles.now}>
+                      {otpResend > 59 && Math.floor(otpResend / 60) + 'm '}
+                      {otpResend % 60}s
+                    </BoldText>
+                  </BoldText>
+                ) : (
+                  <Pressable onPress={handlePress}>
+                    <BoldText style={styles.now}>{otpResend}</BoldText>
+                  </Pressable>
+                )}
               </View>
-            </View>
+            </>
           ) : (
-            <View style={styles.alreadyContainer} />
+            <>
+              {signInData.slice(0, 1).map(item => (
+                <Form
+                  item={item}
+                  formData={formData}
+                  setFormData={setFormData}
+                  key={item.name}
+                  errorKey={errorKey}
+                  setErrorKey={setErrorKey}
+                  editInput={editInput}
+                />
+              ))}
+              <ErrorMessage errorMessage={errorMessage} />
+              <Button text={'Send One time password'} onPress={handlePress} />
+            </>
           )}
         </View>
+        {!codeSent && !isLoggedIn ? (
+          <View style={styles.alreadyContainer}>
+            <View style={styles.already}>
+              <RegularText style={styles.alreadyText}>
+                Already have an account?
+              </RegularText>
+              <Pressable onPress={() => navigation.navigate('Signin')}>
+                <BoldText style={styles.signIn}>Sign in</BoldText>
+              </Pressable>
+            </View>
+            <View style={styles.signInIcons}>
+              <Pressable onPress={() => console.log('apple was clicked')}>
+                <Apple />
+              </Pressable>
+              <Pressable onPress={() => console.log('google was clicked')}>
+                <Google />
+              </Pressable>
+            </View>
+          </View>
+        ) : (
+          <View style={styles.button}>
+            <Button
+              text={'Confirm One time password'}
+              onPress={handleConfirm}
+              style={{
+                backgroundColor: isPinOkay
+                  ? '#1E1E1E'
+                  : 'rgba(30, 30, 30, 0.7)',
+              }}
+              disabled={!isPinOkay || isLoading}
+            />
+          </View>
+        )}
       </View>
     </PageContainer>
   );
@@ -252,8 +272,9 @@ const styles = StyleSheet.create({
     minHeight: 150,
   },
   codeInput: {
-    height: 1,
-    width: 1,
+    color: '#fff',
+    position: 'absolute',
+    transform: [{ translateX: -1000 }],
   },
   codeLengthsContainer: {
     flexDirection: 'row',
@@ -304,12 +325,14 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
+    paddingBottom: 50,
   },
   alreadyContainer: {
     flex: 1,
     justifyContent: 'center',
   },
+
   already: {
     justifyContent: 'center',
     flexDirection: 'row',

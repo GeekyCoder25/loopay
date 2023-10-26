@@ -22,10 +22,10 @@ import { useWalletContext } from '../../../context/WalletContext';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import { AppContext } from '../../../components/AppContext';
 import ErrorMessage from '../../../components/ErrorMessage';
-import { postFetchData } from '../../../../utils/fetchAPI';
+import { randomUUID } from 'expo-crypto';
 
 const BuyAirtime = ({ navigation }) => {
-  const { selectedCurrency, appData } = useContext(AppContext);
+  const { selectedCurrency } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [networkToBuy, setNetworkToBuy] = useState('');
@@ -38,7 +38,7 @@ const BuyAirtime = ({ navigation }) => {
     amount: '',
     phoneNo: '',
   });
-  const { balance } = wallet;
+  const { nairaBalance } = wallet;
   const airtimeBeneficiaries = [
     // {
     //   phoneNo: '09073002599',
@@ -83,7 +83,7 @@ const BuyAirtime = ({ navigation }) => {
 
   const handleAmountInput = amount => {
     setAmountInput(amount);
-    if (amount > balance) {
+    if (amount > nairaBalance) {
       setErrorMessage('Insufficient Funds');
       setErrorKey('amountInput');
     } else {
@@ -98,9 +98,7 @@ const BuyAirtime = ({ navigation }) => {
   const handleBlur = () => {
     amountInput && setAmountInput(addingDecimal(amountInput));
     if (amountInput < 50) {
-      setErrorMessage(
-        `Minimum recharge amount is ${selectedCurrency.symbol}${50}`,
-      );
+      setErrorMessage(`Minimum recharge amount is ₦${50}`);
       setErrorKey('amountInput');
     }
   };
@@ -109,6 +107,8 @@ const BuyAirtime = ({ navigation }) => {
     setFormData(prev => {
       return { ...prev, phoneNo };
     });
+    setErrorMessage('');
+    setErrorKey('');
   };
 
   const handleInputPin = async () => {
@@ -116,30 +116,21 @@ const BuyAirtime = ({ navigation }) => {
       return setErrorMessage2(
         'Please provide all required fields before progressing',
       );
+    } else if (amountInput < 50) {
+      setErrorMessage(`Minimum recharge amount is ₦${50}`);
+      return setErrorKey('amountInput');
+    } else if (formData.phoneNo.length < 11) {
+      setErrorMessage2('Incomplete phone number');
+      return setErrorKey('phoneInput');
     }
-
-    if (!appData.pin) {
-      await postFetchData('auth/forget-password', {
-        email: appData.email,
-        otpCodeLength: 6,
-      });
-    }
-    navigation.navigate('TransferAirtime', { formData });
-  };
-
-  const networkProvidersIcon = network => {
-    switch (network) {
-      case 'glo':
-        return <GLOIcon />;
-      case 'mtn':
-        return <MTNIcon />;
-      case 'airtel':
-        return <AirtelIcon />;
-      case '9mobile':
-        return <NineMobileIcon />;
-      default:
-        break;
-    }
+    navigation.navigate('TransferAirtime', {
+      formData: {
+        ...formData,
+        id: randomUUID(),
+        currency: 'naira',
+        type: 'airtime',
+      },
+    });
   };
 
   return (
@@ -224,7 +215,7 @@ const BuyAirtime = ({ navigation }) => {
           <Text style={styles.topUp}>
             Balance:{' '}
             {selectedCurrency.symbol +
-              addingDecimal(`${balance.toLocaleString()}`)}
+              addingDecimal(`${nairaBalance.toLocaleString()}`)}
           </Text>
         </View>
         <View style={styles.textInputContainer}>
@@ -249,9 +240,15 @@ const BuyAirtime = ({ navigation }) => {
         <Text style={styles.topUp}>Phone Number</Text>
         <View style={styles.textInputContainer}>
           <TextInput
-            style={{ ...styles.textInput, ...styles.textInputStyles }}
+            style={{
+              ...styles.textInput,
+              ...styles.textInputStyles,
+              borderColor: errorKey === 'phoneInput' ? 'red' : '#ccc',
+            }}
             inputMode="tel"
             onChangeText={text => handlePhoneInput(text)}
+            onBlur={() => {}}
+            maxLength={11}
             value={formData.phoneNo}
           />
         </View>
@@ -400,4 +397,19 @@ const Beneficiary = ({ beneficiary, networkProvidersIcon }) => {
       <RegularText style={styles.phoneNo}>{beneficiary.phoneNo}</RegularText>
     </Pressable>
   );
+};
+
+export const networkProvidersIcon = network => {
+  switch (network) {
+    case 'glo':
+      return <GLOIcon />;
+    case 'mtn':
+      return <MTNIcon />;
+    case 'airtel':
+      return <AirtelIcon />;
+    case '9mobile':
+      return <NineMobileIcon />;
+    default:
+      break;
+  }
 };

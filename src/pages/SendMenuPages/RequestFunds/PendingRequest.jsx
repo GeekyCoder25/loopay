@@ -17,33 +17,39 @@ const PendingRequest = ({ navigation }) => {
         Pending Request{requests.length > 1 && 's'}
       </BoldText>
       <View style={styles.body}>
-        {requests.map(request => (
-          <Pressable
-            key={request._id}
-            style={styles.request}
-            onPress={() =>
-              navigation.navigate('RequestStatus', {
-                ...request,
-                symbol: allCurrencies.find(
-                  currency => currency.currency === request.currency,
-                ).symbol,
-              })
-            }>
-            <UserIcon uri={request.requesterPhoto} />
-            <View>
-              <BoldText>{request.requesterName}</BoldText>
-              <RegularText>
-                Requested the sum of{' '}
-                {
-                  allCurrencies.find(
+        {requests.length ? (
+          requests.map(request => (
+            <Pressable
+              key={request._id}
+              style={styles.request}
+              onPress={() =>
+                navigation.navigate('RequestStatus', {
+                  ...request,
+                  symbol: allCurrencies.find(
                     currency => currency.currency === request.currency,
-                  ).symbol
-                }
-                {addingDecimal(Number(request.amount).toLocaleString())}
-              </RegularText>
-            </View>
-          </Pressable>
-        ))}
+                  ).symbol,
+                })
+              }>
+              <UserIcon uri={request.requesterPhoto} />
+              <View>
+                <BoldText>{request.requesterName}</BoldText>
+                <RegularText>
+                  Requested the sum of{' '}
+                  {
+                    allCurrencies.find(
+                      currency => currency.currency === request.currency,
+                    ).symbol
+                  }
+                  {addingDecimal(Number(request.amount).toLocaleString())}
+                </RegularText>
+              </View>
+            </Pressable>
+          ))
+        ) : (
+          <View style={styles.headerText}>
+            <BoldText>There&apos;s no new request</BoldText>
+          </View>
+        )}
       </View>
     </PageContainer>
   );

@@ -2,6 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
   BackHandler,
+  Clipboard,
   ImageBackground,
   Pressable,
   ScrollView,
@@ -13,7 +14,7 @@ import Bell from '../../../assets/images/bell.svg';
 import BellActive from '../../../assets/images/bellActive.svg';
 import ChevronDown from '../../../assets/images/chevron-down.svg';
 import Wallet from '../../../assets/images/wallet.svg';
-import UpAndDownArrow from '../../../assets/images/up-down-arrow.svg';
+import UpAndDownArrowWhite from '../../../assets/images/left-right.svg';
 import SwapIcon from '../../../assets/images/swap.svg';
 import Bg from '../../../assets/images/bg1.svg';
 import { AppContext } from '../../components/AppContext';
@@ -33,6 +34,8 @@ import { useRequestFundsContext } from '../../context/RequestContext';
 import { useWalletContext } from '../../context/WalletContext';
 import { useNotificationsContext } from '../../context/NotificationContext';
 import { Audio } from 'expo-av';
+import Phone from '../../../assets/images/airtime.svg';
+import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
 
 const Home = ({ navigation }) => {
   const {
@@ -42,19 +45,14 @@ const Home = ({ navigation }) => {
     setNoReload,
     setShowTabBar,
   } = useContext(AppContext);
-  const { transactions } = useWalletContext();
+  const { transactions, wallet } = useWalletContext();
   const { requestFunds: requests } = useRequestFundsContext();
   const [modalOpen, setModalOpen] = useState(false);
   const fullName = appData.userProfile.fullName;
-  const [transactionHistory, setTransactionHistory] = useState([]);
   const [showAmount, setShowAmount] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const [requestsLength, setRequestsLength] = useState(0);
   const { unread } = useNotificationsContext();
-
-  useEffect(() => {
-    setTransactionHistory(transactions);
-  }, [transactions]);
 
   // useFocusEffect(
   //   React.useCallback(() => {
@@ -110,6 +108,31 @@ const Home = ({ navigation }) => {
 
   const refreshPage = () => {};
 
+  const quickLinks = [
+    {
+      routeName: 'Buy airtime',
+      routeDetails: 'Send Funds to Family and Friends',
+      routeIcon: <Phone />,
+      routeNavigate: 'BuyAirtime',
+    },
+    {
+      routeName: 'Buy data',
+      routeDetails: 'Convert your USD to another currency',
+      routeIcon: <FaIcon name="wifi" size={20} />,
+      routeNavigate: 'BuyData',
+    },
+    {
+      routeName: 'Request money',
+      routeDetails: 'Buy airtime via VTU',
+      routeIcon: <FaIcon name="code-fork" size={28} />,
+      routeNavigate: 'RequestFund',
+    },
+  ];
+
+  const handleCopy = () => {
+    Clipboard.setString(wallet.accNo);
+    ToastMessage('Copied to clipboard');
+  };
   return (
     <>
       <PageContainer refreshFunc={refreshPage}>
@@ -189,47 +212,85 @@ const Home = ({ navigation }) => {
                   Account Details
                 </RegularText>
               </Pressable>
-              <Pressable
-                style={styles.cardDetails}
-                onPress={() =>
-                  navigation.navigate('SendMoneyNavigatorFromHome')
-                }>
-                <UpAndDownArrow />
+              <Pressable onPress={handleCopy} style={styles.cardDetails}>
+                <FaIcon name="copy" color="#ccc" size={24} />
                 <RegularText style={styles.currencyType}>
-                  Send Money
+                  {wallet?.loopayAccNo}
                 </RegularText>
               </Pressable>
             </View>
           </ImageBackground>
         </Pressable>
-        <View style={styles.body}>
-          <RegularText style={styles.historyText}>History</RegularText>
-          {transactionHistory.length > 0 ? (
-            typeof transactionHistory === 'string' ? (
-              <View style={styles.historyEmpty}>
-                <BoldText style={styles.historyEmptyText}>
-                  {transactionHistory}
-                </BoldText>
+        <ScrollView
+          style={styles.quickLinks}
+          horizontal
+          showsHorizontalScrollIndicator={false}>
+          <Pressable
+            style={styles.quickLink}
+            onPress={() => navigation.navigate('AddMoney')}>
+            <FaIcon name="plus-circle" color={'#fff'} size={24} />
+            <BoldText style={styles.quickLinkText}>Add money</BoldText>
+          </Pressable>
+          <Pressable
+            style={styles.quickLink}
+            onPress={() => navigation.navigate('SendMoneyNavigatorFromHome')}>
+            <FaIcon name="send" color={'#fff'} size={14} />
+            <BoldText style={styles.quickLinkText}>Send money</BoldText>
+          </Pressable>
+          <Pressable
+            style={styles.quickLink}
+            onPress={() => navigation.navigate('SwapFunds')}>
+            <View style={styles.swapIcon}>
+              <UpAndDownArrowWhite />
+            </View>
+            <BoldText style={styles.quickLinkText}>Swap funds</BoldText>
+          </Pressable>
+        </ScrollView>
+        <BoldText style={styles.shortcutsHeader}>Shortcuts</BoldText>
+        <View style={styles.shortcuts}>
+          {quickLinks.map(link => (
+            <Pressable
+              onPress={() => {
+                navigation.navigate(link.routeNavigate);
+              }}
+              style={styles.route}
+              key={link.routeNavigate}>
+              <View style={styles.routeIcon}>{link.routeIcon}</View>
+              <View style={styles.routeText}>
+                <BoldText>{link.routeName}</BoldText>
               </View>
-            ) : (
-              <ScrollView
-                style={styles.histories}
-                onScroll={() => {
-                  setTimeout(() => {
-                    setNoReload(false);
-                  }, 2000);
-                  return setNoReload(true);
-                }}>
-                {transactionHistory.map(history => (
-                  <History
-                    key={history.id}
-                    history={history}
-                    navigation={navigation}
-                    showAmount={showAmount}
-                  />
-                ))}
-              </ScrollView>
-            )
+            </Pressable>
+          ))}
+        </View>
+        <View style={styles.body}>
+          <View style={styles.historyHeader}>
+            <RegularText style={styles.historyText}>History</RegularText>
+            <Pressable
+              onPress={() => navigation.navigate('TransactionHistory')}>
+              <RegularText>
+                See more <FaIcon name="chevron-right" color="#656565" />
+              </RegularText>
+            </Pressable>
+          </View>
+          {transactions.length > 0 ? (
+            <ScrollView
+              style={styles.histories}
+              onScroll={() => {
+                setTimeout(() => {
+                  setNoReload(false);
+                }, 2000);
+                return setNoReload(true);
+              }}>
+              {transactions.slice(0, 3).map(history => (
+                <History
+                  key={history.id}
+                  history={history}
+                  navigation={navigation}
+                  showAmount={showAmount}
+                  setShowAmount={setShowAmount}
+                />
+              ))}
+            </ScrollView>
           ) : (
             <View style={styles.historyEmpty}>
               <BoldText style={styles.historyEmptyText}>
@@ -335,6 +396,57 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  quickLinks: {
+    paddingLeft: 3 + '%',
+    maxHeight: 60,
+  },
+  quickLink: {
+    backgroundColor: '#1e1e1e',
+    height: 40,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginRight: 10,
+  },
+  quickLinkText: {
+    color: '#fff',
+  },
+  shortcutsHeader: {
+    marginVertical: 10,
+    fontSize: 20,
+    paddingLeft: 3 + '%',
+  },
+  shortcuts: {
+    flexDirection: 'row',
+    // alignItems: 'center',
+    paddingHorizontal: 5 + '%',
+    paddingBottom: 20,
+    gap: 25,
+  },
+
+  route: {
+    // width: 100,
+    gap: 10,
+    alignItems: 'center',
+  },
+  routeIcon: {
+    borderColor: '#1e1e1e',
+    borderWidth: 0.5,
+    width: 50,
+    height: 50,
+    backgroundColor: '#f9f9f9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 25,
+  },
+  historyHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingRight: 3 + '%',
+    alignItems: 'flex-end',
+  },
   historyText: {
     paddingLeft: 3 + '%',
     fontSize: 18,
@@ -397,7 +509,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   transactionAmountText: {
-    fontSize: 20,
+    fontSize: 16,
   },
   creditAmount: {
     color: '#006E53',
@@ -412,7 +524,7 @@ const styles = StyleSheet.create({
 });
 export default Home;
 
-const History = ({ history, navigation, showAmount }) => {
+const History = ({ history, navigation, showAmount, setShowAmount }) => {
   const { vw } = useContext(AppContext);
   const [transactionTypeIcon, setTransactionTypeIcon] = useState('');
   const [transactionTypeTitle, setTransactionTypeTitle] = useState('');
@@ -427,6 +539,7 @@ const History = ({ history, navigation, showAmount }) => {
     swapTo,
     swapFromAmount,
     swapToAmount,
+    networkProvider,
   } = history;
 
   useEffect(() => {
@@ -447,21 +560,26 @@ const History = ({ history, navigation, showAmount }) => {
     switch (transactionType?.toLowerCase()) {
       case 'credit':
         setTransactionTypeIcon(<FaIcon name="download" size={18} />);
-        setTransactionTypeTitle('Received');
+        setTransactionTypeTitle('Credit Transfer');
         break;
       case 'debit':
         setTransactionTypeIcon(<FaIcon name="send" size={18} />);
-        setTransactionTypeTitle('Sent Out');
+        setTransactionTypeTitle('Debit Transfer');
         break;
       case 'swap':
         setTransactionTypeIcon(<SwapIcon width={22} height={22} />);
-        setTransactionTypeTitle('Swap Fund');
+        setTransactionTypeTitle('Swap');
         break;
-      default:
-        setTransactionTypeIcon();
+      case 'airtime':
+        setTransactionTypeIcon(networkProvidersIcon(networkProvider));
+        setTransactionTypeTitle('Airtime Purchase');
+        break;
+      case 'data':
+        setTransactionTypeIcon(networkProvidersIcon(networkProvider));
+        setTransactionTypeTitle('Data Purchase');
         break;
     }
-  }, [createdAt, transactionType]);
+  }, [createdAt, networkProvider, transactionType]);
 
   const currencySymbol = allCurrencies.find(
     id => currency === id.currency,
@@ -481,7 +599,7 @@ const History = ({ history, navigation, showAmount }) => {
         {transactionType === 'swap' ? (
           <View style={styles.historyIconText}>{transactionTypeIcon}</View>
         ) : (
-          <Text style={styles.historyIconText}>{transactionTypeIcon}</Text>
+          <View style={styles.historyIconText}>{transactionTypeIcon}</View>
         )}
       </View>
       <View style={styles.historyTitle}>
@@ -491,34 +609,41 @@ const History = ({ history, navigation, showAmount }) => {
       {showAmount ? (
         <View>
           {transactionType?.toLowerCase() === 'credit' && (
-            <BoldText
-              style={{
-                ...styles.transactionAmountText,
-                ...styles.creditAmount,
-              }}>
-              {`+ ${currencySymbol}${addingDecimal(
-                Number(amount).toLocaleString(),
-              )}`}
-            </BoldText>
+            <Pressable onPress={() => setShowAmount(false)}>
+              <BoldText
+                style={{
+                  ...styles.transactionAmountText,
+                  ...styles.creditAmount,
+                }}>
+                {`+ ${currencySymbol}${addingDecimal(
+                  Number(amount).toLocaleString(),
+                )}`}
+              </BoldText>
+            </Pressable>
           )}
-          {transactionType?.toLowerCase() === 'debit' && (
-            <BoldText
-              style={{
-                ...styles.transactionAmountText,
-                ...styles.debitAmount,
-              }}>
-              {`- ${currencySymbol}${addingDecimal(
-                Number(amount).toLocaleString(),
-              )}`}
-            </BoldText>
+          {(transactionType?.toLowerCase() === 'debit' ||
+            transactionType?.toLowerCase() === 'airtime' ||
+            transactionType?.toLowerCase() === 'data') && (
+            <Pressable onPress={() => setShowAmount(false)}>
+              <BoldText
+                style={{
+                  ...styles.transactionAmountText,
+                  ...styles.debitAmount,
+                }}>
+                {`- ${currencySymbol}${addingDecimal(
+                  Number(amount).toLocaleString(),
+                )}`}
+              </BoldText>
+            </Pressable>
           )}
           {transactionType === 'swap' && (
-            <View
+            <Pressable
               style={
                 vw > 360
                   ? styles.transactionAmountTextRow
                   : styles.transactionAmountTextColumn
-              }>
+              }
+              onPress={() => setShowAmount(false)}>
               <BoldText
                 style={{
                   ...styles.transactionAmountText,
@@ -529,8 +654,8 @@ const History = ({ history, navigation, showAmount }) => {
                 )}`}
               </BoldText>
               <SwapIcon
-                width={17}
-                height={17}
+                width={14}
+                height={14}
                 style={vw > 360 ? styles.swap : styles.swapIcon}
               />
               <BoldText
@@ -542,11 +667,18 @@ const History = ({ history, navigation, showAmount }) => {
                   Number(swapToAmount).toLocaleString(),
                 )}`}
               </BoldText>
-            </View>
+            </Pressable>
           )}
         </View>
       ) : (
-        <BoldText>****</BoldText>
+        <Pressable onPress={() => setShowAmount(true)}>
+          <BoldText
+            style={
+              transactionType === 'credit' ? styles.creditAmount : undefined
+            }>
+            ***
+          </BoldText>
+        </Pressable>
       )}
     </Pressable>
   );

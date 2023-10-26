@@ -19,7 +19,7 @@ const Referrals = () => {
   const reward = 0;
 
   const handleShare = () => {
-    Clipboard.setString(referralCode);
+    Clipboard.setString(referralLink);
     ToastMessage('Copied to clipboard');
   };
 
@@ -46,6 +46,8 @@ const Referrals = () => {
     //   verificationStatus: false,
     // },
   ];
+
+  const referralLink = `https://play.google.com/store/apps/loopay/details?id=com.loopay.hmghomes&referrer=${referralCode}`;
   return (
     <PageContainer padding justify={true}>
       <View style={styles.container}>
@@ -79,7 +81,7 @@ const Referrals = () => {
             </Pressable>
           </View>
           <View>
-            <BoldText style={styles.referalTeamHeader}>Referral Team</BoldText>
+            <BoldText style={styles.referralTeamHeader}>Referral Team</BoldText>
             {referralTeam.length === 0 ? (
               <View style={styles.noReferral}>
                 <BoldText>You have no referral team, refer a friend </BoldText>
@@ -90,16 +92,16 @@ const Referrals = () => {
             ) : (
               <ScrollView>
                 {referralTeam.map(referral => (
-                  <View key={referral.referralCode} style={styles.referal}>
+                  <View key={referral.referralCode} style={styles.referral}>
                     <UserIconSVG />
-                    <View style={styles.referalContent}>
-                      <BoldText style={styles.referalName}>
+                    <View style={styles.referralContent}>
+                      <BoldText style={styles.referralName}>
                         {referral.name}
                       </BoldText>
                       {referral.verificationStatus ? (
-                        <BoldText style={styles.verfied}>Verified</BoldText>
+                        <BoldText style={styles.verified}>Verified</BoldText>
                       ) : (
-                        <BoldText style={styles.notVerfied}>
+                        <BoldText style={styles.notVerified}>
                           Not Verified
                         </BoldText>
                       )}
@@ -164,7 +166,7 @@ const styles = StyleSheet.create({
   claimText: {
     color: '#fff',
   },
-  referalTeamHeader: {
+  referralTeamHeader: {
     color: '#525252',
     fontSize: 18,
   },
@@ -176,7 +178,7 @@ const styles = StyleSheet.create({
   now: {
     color: '#006E53',
   },
-  referal: {
+  referral: {
     height: 80,
     flexDirection: 'row',
     alignItems: 'center',
@@ -184,14 +186,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#BBBBBB',
   },
-  referalName: {
+  referralName: {
     color: '#525252',
   },
-  verfied: {
+  verified: {
     marginTop: 3,
     color: '#006E53',
   },
-  notVerfied: {
+  notVerified: {
     marginTop: 3,
     color: '#525252',
   },

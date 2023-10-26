@@ -47,7 +47,7 @@ const AdminNavigator = () => {
         <Drawer.Screen name="Accounts" component={Accounts} />
         <Drawer.Screen name="Transfer" component={AdminTransfer} />
         <Drawer.Screen
-          name="Rate"
+          name="Rate & Charges"
           component={Rate}
           options={{ headerShown: false }}
         />

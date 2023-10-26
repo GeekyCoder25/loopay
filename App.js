@@ -2,6 +2,7 @@ import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import {
   Keyboard,
+  PanResponder,
   SafeAreaView,
   StyleSheet,
   TouchableWithoutFeedback,
@@ -10,13 +11,15 @@ import {
 } from 'react-native';
 
 import { AppContext } from './src/components/AppContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { allCurrencies } from './src/database/data';
 import AppStart from './src/components/AppStart';
 import LoadingModal from './src/components/LoadingModal';
 import { getDefaultCurrency } from './utils/storage';
 import { RootSiblingParent } from 'react-native-root-siblings';
+import FaIcon from '@expo/vector-icons/FontAwesome';
+import BoldText from './src/components/fonts/BoldText';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -35,6 +38,10 @@ export default function App() {
   const [canChangeRole, setCanChangeRole] = useState(false);
   const [noReload, setNoReload] = useState(false);
   const [isSessionTimedOut, setIsSessionTimedOut] = useState(true);
+  const [timeForInactivityInSecond] = useState(1200);
+  const [showConnected, setShowConnected] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const timerId = useRef(false);
   const vw = useWindowDimensions().width;
   const vh = useWindowDimensions().height;
 
@@ -69,6 +76,10 @@ export default function App() {
     setNoReload,
     isSessionTimedOut,
     setIsSessionTimedOut,
+    showConnected,
+    setShowConnected,
+    refreshing,
+    setRefreshing,
   };
 
   useEffect(() => {
@@ -85,6 +96,28 @@ export default function App() {
     });
   }, []);
 
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponderCapture: () => {
+        resetInactivityTimeout();
+      },
+    }),
+  ).current;
+
+  const resetInactivityTimeout = () => {
+    clearTimeout(timerId.current);
+    timerId.current = setTimeout(() => {
+      setIsSessionTimedOut(true);
+    }, timeForInactivityInSecond * 1000);
+  };
+
+  useEffect(() => {
+    clearTimeout(timerId.current);
+    timerId.current = setTimeout(() => {
+      setIsSessionTimedOut(true);
+    }, 1200 * 1000);
+  }, [isSessionTimedOut]);
+
   return (
     <AppContext.Provider value={contextValue}>
       <StatusBar style="auto" translucent={false} backgroundColor="#f5f5f5" />
@@ -95,7 +128,13 @@ export default function App() {
               Keyboard.dismiss();
             }}
             touchSoundDisabled={true}>
-            <View style={styles.appContainer}>
+            <View style={styles.appContainer} {...panResponder.panHandlers}>
+              {showConnected && (
+                <View style={styles.connected}>
+                  <FaIcon name="wifi" color="#fff" size={20} />
+                  <BoldText style={styles.connectedText}>Connected</BoldText>
+                </View>
+              )}
               <AppStart />
               <LoadingModal isLoading={isLoading} />
             </View>
@@ -110,4 +149,16 @@ const styles = StyleSheet.create({
   appContainer: {
     flex: 1,
   },
+  connected: {
+    backgroundColor: 'green',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    padding: 8,
+    position: 'absolute',
+    zIndex: 1,
+    width: 100 + '%',
+  },
+  connectedText: { color: '#fff' },
 });

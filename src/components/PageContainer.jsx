@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { AppContext } from './AppContext';
 
@@ -12,12 +12,12 @@ const PageContainer = ({
   style,
   refreshFunc,
 }) => {
-  const [refreshing, setRefreshing] = useState(false);
-  const { setWalletRefresh, isLoggedIn, noReload } = useContext(AppContext);
+  const { setWalletRefresh, isLoggedIn, noReload, refreshing, setRefreshing } =
+    useContext(AppContext);
 
   const handleRefresh = async () => {
-    setRefreshing(true);
     setWalletRefresh(prev => !prev);
+    setRefreshing(true);
     refreshFunc && (await refreshFunc());
     setTimeout(() => {
       setRefreshing(false);

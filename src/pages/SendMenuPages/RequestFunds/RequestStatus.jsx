@@ -187,7 +187,7 @@ const RequestStatus = ({ navigation, route }) => {
                       style={styles.flag}
                     />
                     <BoldText style={styles.symbol}>
-                      {selectedCurrency.acronym}
+                      {currency.acronym}
                     </BoldText>
                   </Pressable>
                   <TextInput
@@ -223,7 +223,10 @@ const RequestStatus = ({ navigation, route }) => {
                 </View>
               </View>
             </View>
-            <Button text="Update" onPress={() => handleConfirm('edit')} />
+            <Button
+              text="Update and Pay"
+              onPress={() => handleConfirm('edit')}
+            />
           </>
         ) : (
           <View>

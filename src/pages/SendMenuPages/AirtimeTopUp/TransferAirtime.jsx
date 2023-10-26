@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Pressable, StyleSheet, ScrollView, Text } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
 import InputPin from '../../../components/InputPin';
@@ -10,24 +10,23 @@ import NineMobileIcon from '../../../../assets/images/9mobile.svg';
 import { postFetchData } from '../../../../utils/fetchAPI';
 import PageContainer from '../../../components/PageContainer';
 import BackArrow from '../../../../assets/images/backArrowWhite.svg';
+import { AppContext } from '../../../components/AppContext';
 
 const TransferAirtime = ({ navigation, route }) => {
   const { formData } = route.params;
-
-  const handlePay = () => {
-    const fetchAirtime = async () => {
-      const response = await postFetchData('user/airtime', formData);
-      if (!response.status || response.status !== 200) {
-        // return setErrorMessage2(response.data || response);
-      }
-      navigation.navigate('Success', {
-        airtime: formData,
-        amountInput: formData.amount,
-        dataPlan: formData.plan,
-      });
-    };
-
-    fetchAirtime();
+  const { setWalletRefresh } = useContext(AppContext);
+  console.log(formData.type);
+  const handlePay = async setErrorMessage => {
+    const response = await postFetchData(`user/${formData.type}`, formData);
+    if (!response.status || response.status !== 200) {
+      return setErrorMessage(response.data || response);
+    }
+    setWalletRefresh(prev => !prev);
+    navigation.navigate('Success', {
+      airtime: formData,
+      amountInput: formData.amount,
+      dataPlan: formData.plan,
+    });
   };
 
   const networkProvidersIcon = network => {

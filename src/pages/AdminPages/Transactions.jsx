@@ -15,6 +15,7 @@ import RegularText from '../../components/fonts/RegularText';
 import { addingDecimal } from '../../../utils/AddingZero';
 import { groupTransactionsByDate } from '../../../utils/groupTransactions';
 import TransactionHistoryParams from '../MenuPages/TransactionHistoryParams';
+import Back from '../../components/Back';
 
 const Transactions = ({ navigation, route }) => {
   const { selectedCurrency } = useContext(AppContext);
@@ -178,11 +179,16 @@ const Transactions = ({ navigation, route }) => {
         <Modal
           visible={transactionsModal}
           animationType="slide"
-          transparent
           onRequestClose={() => {
             setTransactionsModal(false);
             setModalData(null);
           }}>
+          <Back
+            onPress={() => {
+              setTransactionsModal(false);
+              setModalData(null);
+            }}
+          />
           <TransactionHistoryParams route={{ params: modalData }} />
         </Modal>
       </View>

@@ -14,6 +14,17 @@ import PendingRequestConfirm from '../pages/SendMenuPages/RequestFunds/PendingRe
 import RequestStatus from '../pages/SendMenuPages/RequestFunds/RequestStatus';
 import AccountDetails from '../pages/HomePages/AccountDetails';
 import NotificationsContextComponent from '../context/NotificationContext';
+import SwapFunds from '../pages/SendMenuPages/SwapFunds';
+import RequestFund from '../pages/SendMenuPages/RequestFund';
+import BuyData from '../pages/SendMenuPages/AirtimeTopUp/BuyData';
+import BuyAirtime from '../pages/SendMenuPages/AirtimeTopUp/BuyAirtime';
+import TransferAirtime from '../pages/SendMenuPages/AirtimeTopUp/TransferAirtime';
+import TransactionHistory from '../pages/MenuPages/TransactionHistory';
+import RequestConfirm from '../pages/SendMenuPages/RequestFunds/RequestConfirm';
+import RequestSuccess from '../pages/SendMenuPages/RequestFunds/RequestSuccess';
+import AddMoney from '../pages/SendMenuPages/AddMoney';
+import AddMoneyConfirm from '../pages/SendMenuPages/AddMoney/AddMoneyConfirm';
+import AddNewCard from '../pages/SendMenuPages/AddMoney/AddNewCard';
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -44,11 +55,60 @@ const HomeNavigator = () => {
           component={AccountDetails}
           options={({ navigation, route }) => screenHeader(navigation, route)}
         />
+
+        <Stack.Screen
+          name="AddMoney"
+          component={AddMoney}
+          options={({ navigation, route }) => screenHeader(navigation, route)}
+        />
+        <Stack.Screen
+          name="SwapFunds"
+          component={SwapFunds}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AddMoneyConfirm"
+          component={AddMoneyConfirm}
+          options={({ navigation, route }) => screenHeader(navigation, route)}
+        />
+        <Stack.Screen
+          name="AddNewCard"
+          component={AddNewCard}
+          options={({ navigation, route }) => screenHeader(navigation, route)}
+        />
         <Stack.Screen
           name="SendMoneyNavigatorFromHome"
           component={SendMoneyNavigator}
         />
+        <Stack.Screen name="SwapFundsFromHome" component={SwapFunds} />
+        <Stack.Screen
+          name="BuyAirtime"
+          component={BuyAirtime}
+          options={({ navigation, route }) => screenHeader(navigation, route)}
+        />
+        <Stack.Screen
+          name="BuyData"
+          component={BuyData}
+          options={({ navigation, route }) => screenHeader(navigation, route)}
+        />
+        <Stack.Screen
+          name="RequestFund"
+          component={RequestFund}
+          options={({ navigation, route }) => screenHeader(navigation, route)}
+        />
+        <Stack.Screen
+          name="RequestConfirm"
+          component={RequestConfirm}
+          options={({ navigation, route }) => screenHeader(navigation, route)}
+        />
+        <Stack.Screen name="RequestSuccess" component={RequestSuccess} />
+        <Stack.Screen name="TransferAirtime" component={TransferAirtime} />
         <Stack.Screen name="Success" component={Success} />
+        <Stack.Screen
+          name="TransactionHistory"
+          component={TransactionHistory}
+          options={({ navigation, route }) => screenHeader(navigation, route)}
+        />
         <Stack.Screen
           name="TransactionHistoryDetails"
           component={TransactionHistoryParams}

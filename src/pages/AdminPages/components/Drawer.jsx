@@ -33,7 +33,7 @@ const CustomDrawer = props => {
     'Dashboard',
     'Accounts',
     'Transfer',
-    'Rate',
+    'Rate & Charges',
     'Users',
     'History',
     'Statement',
@@ -46,7 +46,7 @@ const CustomDrawer = props => {
         return <AccountsIcon />;
       case 'Transfer':
         return <TransferIcon />;
-      case 'Rate':
+      case 'Rate & Charges':
         return <RateIcon />;
       case 'Users':
         return <UsersIcon />;

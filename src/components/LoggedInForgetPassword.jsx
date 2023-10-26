@@ -152,8 +152,9 @@ const styles = StyleSheet.create({
     marginVertical: 40,
   },
   codeInput: {
-    height: 1,
-    width: 1,
+    color: '#fff',
+    position: 'absolute',
+    transform: [{ translateX: -1000 }],
   },
   errorMessageText: {
     fontSize: 14,

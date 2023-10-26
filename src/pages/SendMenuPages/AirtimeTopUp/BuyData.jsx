@@ -19,22 +19,22 @@ import NineMobileIcon from '../../../../assets/images/9mobile.svg';
 import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
 import Button from '../../../components/Button';
 import ErrorMessage from '../../../components/ErrorMessage';
-import { postFetchData } from '../../../../utils/fetchAPI';
-import { AppContext } from '../../../components/AppContext';
+import { randomUUID } from 'expo-crypto';
 
 const BuyData = ({ navigation }) => {
-  const { appData } = useContext(AppContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [planModalOpen, setPlanModalOpen] = useState(false);
   const [networkToBuy, setNetworkToBuy] = useState(null);
   const [dataPlans, setDataPlans] = useState([]);
-  const [planToBuy, setPlanToBuy] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [errorKey, setErrorKey] = useState('');
+  const [amountInput, setAmountInput] = useState('');
   const [formData, setFormData] = useState({
     network: '',
     phoneNo: '',
     plan: '30gb',
   });
+  const [planToBuy, setPlanToBuy] = useState(formData.plan);
   const dataBeneficiaries = [
     // {
     //   phoneNo: '09073002599',
@@ -84,16 +84,21 @@ const BuyData = ({ navigation }) => {
       return setErrorMessage(
         'Please provide all required fields before progressing',
       );
+    } else if (!formData.plan) {
+      setErrorMessage('Please select a data plan');
+      return setErrorKey('amountInput');
+    } else if (formData.phoneNo.length < 11) {
+      setErrorMessage('Incomplete phone number');
+      return setErrorKey('phoneInput');
     }
-    if (!appData.pin) {
-      await postFetchData('auth/forget-password', {
-        email: appData.email,
-        otpCodeLength: 6,
-      });
-    }
-    navigation.navigate('TransferAirtime', { formData });
-
-    // isValidPin ? customPinFunc() : setNeedPin(true);
+    navigation.navigate('TransferAirtime', {
+      formData: {
+        ...formData,
+        id: randomUUID(),
+        currency: 'naira',
+        type: 'data',
+      },
+    });
   };
 
   const networkProvidersIcon = network => {
@@ -211,6 +216,7 @@ const BuyData = ({ navigation }) => {
             inputMode="tel"
             onChangeText={text => handlePhoneInput(text)}
             value={formData.phoneNo}
+            maxLength={11}
           />
         </View>
         <View style={styles.labelContainer}>

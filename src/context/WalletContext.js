@@ -5,14 +5,21 @@ import { AppContext } from '../components/AppContext';
 const WalletContext = createContext();
 
 const WalletContextComponent = ({ children }) => {
-  const { walletRefresh, selectedCurrency } = useContext(AppContext);
-  const [wallet, setWallet] = useState(null);
+  const { walletRefresh, selectedCurrency, setShowConnected, refreshing } =
+    useContext(AppContext);
+  const [wallet, setWallet] = useState({ balance: 0 });
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
     getFetchData('user/wallet')
       .then(result => {
         if (result.status === 400) throw new Error(result.data);
+        if (refreshing) {
+          setShowConnected(true);
+          setTimeout(() => {
+            setShowConnected(false);
+          }, 3000);
+        }
         walletToSet(result.data);
       })
       .catch(err => {
@@ -51,9 +58,9 @@ const WalletContextComponent = ({ children }) => {
           return setWallet({ ...result.walletNaira, ...otherWalletBalances });
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletRefresh, selectedCurrency]);
 
-  useEffect(() => {}, [wallet]);
   return (
     <WalletContext.Provider
       value={{ wallet, setWallet, transactions, setTransactions }}>

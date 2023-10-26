@@ -1,16 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Image, Modal, Pressable, StyleSheet, View } from 'react-native';
 import RegularText from '../../components/fonts/RegularText';
-import FaIcon from '@expo/vector-icons/FontAwesome';
 import { postFetchData } from '../../../utils/fetchAPI';
 import UserIcon from '../../components/UserIcon';
 import { AppContext } from '../../components/AppContext';
 import ForgotPassword from '../Auth/ForgotPassword';
 import ChangePassword from '../MenuPages/ChangePassword';
 import BoldText from '../../components/fonts/BoldText';
+import Back from '../../components/Back';
+import * as Haptics from 'expo-haptics';
 
 const LockScreen = () => {
-  const { vw, vh, isSessionTimedOut, setIsSessionTimedOut } =
+  const { vw, vh, isLoggedIn, isSessionTimedOut, setIsSessionTimedOut } =
     useContext(AppContext);
   const [inputCode, setInputCode] = useState('');
   const [hasForgot, setHasForgot] = useState(false);
@@ -23,7 +24,7 @@ const LockScreen = () => {
     setTimeout(() => {
       setSwitchIcon(prev => !prev);
     }, 2500);
-  }, [switchIcon]);
+  }, []);
 
   const handleInput = async input => {
     setInputCode(prev => `${prev}${input}`);
@@ -33,9 +34,11 @@ const LockScreen = () => {
           password: `${inputCode}${input}`,
         });
         if (response.status === 200) {
+          setInputCode('');
           return setIsSessionTimedOut(false);
         } else {
           setErrorCode(true);
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
           setTimeout(() => {
             setInputCode('');
             setErrorCode(false);
@@ -48,23 +51,29 @@ const LockScreen = () => {
   };
 
   return (
-    <Modal visible={isSessionTimedOut} animationType="fade">
+    <Modal visible={isSessionTimedOut && isLoggedIn} animationType="fade">
       {hasForgot ? (
         canChange ? (
-          <ChangePassword skipCheck />
+          <>
+            <Back onPress={() => setCanChange(false)} />
+            <ChangePassword skipCheck />
+          </>
         ) : (
-          <ForgotPassword setCanChange={setCanChange} />
+          <>
+            <Back onPress={() => setHasForgot(false)} />
+            <ForgotPassword setCanChange={setCanChange} />
+          </>
         )
       ) : (
         <View style={styles.container}>
           {switchIcon ? (
-            <UserIcon style={styles.icon} />
-          ) : (
             <Image
               style={styles.logo}
               source={require('../../../assets/icon.png')}
               resizeMode="contain"
             />
+          ) : (
+            <UserIcon style={styles.icon} />
           )}
           <RegularText>Enter Password</RegularText>
           <View style={styles.displayContainer}>
@@ -86,19 +95,19 @@ const LockScreen = () => {
                 disabled={inputCode.length >= codeLength.length}
                 style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
                 onPress={() => handleInput('1')}>
-                <RegularText style={styles.digitText}>1</RegularText>
+                <BoldText style={styles.digitText}>1</BoldText>
               </Pressable>
               <Pressable
                 disabled={inputCode.length >= codeLength.length}
                 style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
                 onPress={() => handleInput('2')}>
-                <RegularText style={styles.digitText}>2</RegularText>
+                <BoldText style={styles.digitText}>2</BoldText>
               </Pressable>
               <Pressable
                 disabled={inputCode.length >= codeLength.length}
                 style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
                 onPress={() => handleInput('3')}>
-                <RegularText style={styles.digitText}>3</RegularText>
+                <BoldText style={styles.digitText}>3</BoldText>
               </Pressable>
             </View>
             <View style={styles.row}>
@@ -106,19 +115,19 @@ const LockScreen = () => {
                 disabled={inputCode.length >= codeLength.length}
                 style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
                 onPress={() => handleInput('4')}>
-                <RegularText style={styles.digitText}>4</RegularText>
+                <BoldText style={styles.digitText}>4</BoldText>
               </Pressable>
               <Pressable
                 disabled={inputCode.length >= codeLength.length}
                 style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
                 onPress={() => handleInput('5')}>
-                <RegularText style={styles.digitText}>5</RegularText>
+                <BoldText style={styles.digitText}>5</BoldText>
               </Pressable>
               <Pressable
                 disabled={inputCode.length >= codeLength.length}
                 style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
                 onPress={() => handleInput('6')}>
-                <RegularText style={styles.digitText}>6</RegularText>
+                <BoldText style={styles.digitText}>6</BoldText>
               </Pressable>
             </View>
             <View style={styles.row}>
@@ -126,19 +135,19 @@ const LockScreen = () => {
                 disabled={inputCode.length >= codeLength.length}
                 style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
                 onPress={() => handleInput('7')}>
-                <RegularText style={styles.digitText}>7</RegularText>
+                <BoldText style={styles.digitText}>7</BoldText>
               </Pressable>
               <Pressable
                 disabled={inputCode.length >= codeLength.length}
                 style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
                 onPress={() => handleInput('8')}>
-                <RegularText style={styles.digitText}>8</RegularText>
+                <BoldText style={styles.digitText}>8</BoldText>
               </Pressable>
               <Pressable
                 disabled={inputCode.length >= codeLength.length}
                 style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
                 onPress={() => handleInput('9')}>
-                <RegularText style={styles.digitText}>9</RegularText>
+                <BoldText style={styles.digitText}>9</BoldText>
               </Pressable>
             </View>
             <View style={styles.row}>
@@ -150,12 +159,17 @@ const LockScreen = () => {
                 disabled={inputCode.length >= codeLength.length}
                 style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
                 onPress={() => handleInput('0')}>
-                <RegularText style={styles.digitText}>0</RegularText>
+                <BoldText style={styles.digitText}>0</BoldText>
               </Pressable>
+
               <Pressable
                 style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
                 onPress={() => setInputCode(prev => prev.slice(0, -1))}>
-                <FaIcon name="close" />
+                <Image
+                  source={require('../../../assets/images/delete.png')}
+                  style={styles.delete}
+                />
+                {/* <FaIcon name="close" /> */}
               </Pressable>
             </View>
           </View>
@@ -222,10 +236,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     justifyContent: 'center',
     alignItems: 'center',
+    fontFamily: 'OpenSans-700',
   },
   digitText: {
     fontSize: 32,
-    fontWeight: 700,
+  },
+  delete: {
+    width: 30,
+    height: 30,
   },
 });
 export default LockScreen;

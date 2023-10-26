@@ -5,15 +5,24 @@ import BoldText from './fonts/BoldText';
 import { useContext } from 'react';
 import { AppContext } from './AppContext';
 import { addingDecimal } from '../../utils/AddingZero';
+import { allCurrencies } from '../database/data';
 
 const FooterCard = ({ userToSendTo, airtime, amountInput, dataPlan, fee }) => {
   const { selectedCurrency } = useContext(AppContext);
-  amountInput = addingDecimal(Number(amountInput).toLocaleString());
+  amountInput = addingDecimal(
+    Number(airtime ? airtime.amount : amountInput).toLocaleString(),
+  );
+
+  const currency = airtime
+    ? allCurrencies.find(
+        currencyIndex => currencyIndex.currency === airtime.currency,
+      )?.symbol
+    : selectedCurrency.symbol;
 
   return (
     <View style={styles.footerCard}>
       <BoldText style={styles.cardAmount}>
-        {dataPlan || selectedCurrency.symbol + amountInput}
+        {dataPlan || currency + amountInput}
       </BoldText>
       {userToSendTo ? (
         <View style={styles.footerCardDetails}>
@@ -63,7 +72,7 @@ const FooterCard = ({ userToSendTo, airtime, amountInput, dataPlan, fee }) => {
             <View style={styles.cardLine}>
               <RegularText style={styles.cardKey}>Amount</RegularText>
               <BoldText style={styles.cardValue}>
-                {selectedCurrency.symbol}
+                {currency}
                 {amountInput}
               </BoldText>
             </View>

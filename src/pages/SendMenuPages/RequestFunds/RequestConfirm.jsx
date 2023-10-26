@@ -21,7 +21,7 @@ const RequestConfirm = ({ navigation, route }) => {
   };
 
   return (
-    <PageContainer style={styles.container}>
+    <PageContainer style={styles.container} scroll>
       <RegularText style={styles.headerText}>
         You’re about to request the sum of {symbol + amount.toLocaleString()}{' '}
         from

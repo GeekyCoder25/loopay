@@ -204,7 +204,7 @@ const RequestFund = ({ navigation, route }) => {
             </View>
           </Pressable>
 
-          <RegularText style={styles.label}>Amount to be requested</RegularText>
+          <RegularText style={styles.label}>Request Amount</RegularText>
           <View style={styles.textInputContainer}>
             <BoldText style={styles.symbol}>{selected.symbol}</BoldText>
             <TextInput

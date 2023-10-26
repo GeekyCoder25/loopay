@@ -206,7 +206,6 @@ const MyInfo = () => {
             />
           </View>
         </View>
-        {console.log(inputFocus)}
       </View>
       {isEditable ? (
         <Button

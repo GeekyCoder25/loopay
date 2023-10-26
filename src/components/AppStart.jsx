@@ -31,7 +31,7 @@ const AppStart = () => {
     getFetchData().then(data => {
       setInternetStatus(data.network || false);
     });
-  }, [internetStatus, setInternetStatus]);
+  }, [setInternetStatus]);
 
   const [fontsLoaded] = useFonts({
     'OpenSans-300': require('../../assets/fonts/OpenSans-Light.ttf'),
@@ -63,8 +63,8 @@ const AppStart = () => {
     <>
       <View onLayout={onLayoutRootView} />
       <AppPagesNavigator />
-      <NoInternet modalOpen={!internetStatus} />
       <LockScreen />
+      <NoInternet modalOpen={!internetStatus} />
     </>
   );
 };

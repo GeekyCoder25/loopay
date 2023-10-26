@@ -14,7 +14,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import Button from '../../components/Button';
-import Logo from '../../components/Logo';
+import LogoIcon from '../../../assets/images/logoDark.svg';
 
 const onboardings = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -106,7 +106,9 @@ const OnboardingMaps = ({ route, navigation }) => {
   );
   return (
     <View style={styles.body}>
-      <Logo />
+      <View style={styles.logo}>
+        <LogoIcon height={40} width={250} />
+      </View>
       {currentPage.image}
       <BoldText style={styles.title}>{currentPage.title}</BoldText>
       {currentPage.uri !== 1 ? (
@@ -168,6 +170,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 15 + '%',
     paddingHorizontal: 5 + '%',
+  },
+
+  logo: {
+    alignItems: 'center',
+    minHeight: 70,
+    maxWidth: 100 + '%',
   },
   title: {
     fontSize: 20,

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import PageContainer from '../../components/PageContainer';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import BackIcon from '../../../assets/images/backArrow.svg';
@@ -15,6 +16,7 @@ import AdminSelectCurrencyModal from './components/AdminSelectCurrency';
 
 const Rate = ({ navigation }) => {
   const { selectedCurrency, vh, setIsLoading } = useContext(AppContext);
+  const [defaultTab, setDefaultTab] = useState(0);
   const { setModalFunc, setModalOpen } = useAdminDataContext();
   const [swapFrom, setSwapFrom] = useState(selectedCurrency);
   const [swapTo, setSwapTo] = useState(
@@ -54,11 +56,11 @@ const Rate = ({ navigation }) => {
   }, [swapFrom.currency, swapTo.currency]);
 
   useEffect(() => {
-    const selectedRate = allRates.find(
+    const selectedRateName = allRates.find(
       rate => rate.currency === selectedSwapName,
     );
-    setSelectedRate(selectedRate);
-    setNewRateData(selectedRate);
+    setSelectedRate(selectedRateName);
+    setNewRateData(selectedRateName);
   }, [allRates, selectedSwapName]);
 
   const handleSwapFrom = () => {
@@ -110,6 +112,24 @@ const Rate = ({ navigation }) => {
     }
   };
 
+  const updateFields = [
+    {
+      field: 'Swap fee',
+      index: 'swap',
+      fee: '',
+    },
+    {
+      field: 'Transfer to Loopay users fee',
+      index: 'loopay',
+      fee: '',
+    },
+    {
+      field: "Transfer to other bank's fee",
+      index: 'others',
+      fee: '',
+    },
+  ];
+
   return (
     <PageContainer style={styles.container} scroll>
       <View style={styles.header}>
@@ -118,80 +138,147 @@ const Rate = ({ navigation }) => {
           <BoldText style={styles.headerText}>Currency rate</BoldText>
         </Pressable>
       </View>
+      <View style={styles.bodySelectors}>
+        <Pressable
+          style={{
+            ...styles.bodySelector,
+            backgroundColor: !defaultTab ? '#525252' : '#d0d1d2',
+          }}
+          onPress={() => setDefaultTab(0)}>
+          <BoldText
+            style={{
+              color: !defaultTab ? '#fff' : '#1E1E1E',
+            }}>
+            Rates
+          </BoldText>
+        </Pressable>
+        <Pressable
+          style={{
+            ...styles.bodySelector,
+            backgroundColor: defaultTab ? '#525252' : '#d0d1d2',
+          }}
+          onPress={() => setDefaultTab(1)}>
+          <BoldText
+            style={{
+              color: defaultTab ? '#fff' : '#1E1E1E',
+            }}>
+            Fees
+          </BoldText>
+        </Pressable>
+      </View>
       <View style={{ ...styles.body, minHeight: vh * 0.8 }}>
-        <View>
-          <RegularText style={styles.label}>Swap From</RegularText>
-          <Pressable style={styles.input} onPress={handleSwapFrom}>
-            <BoldText style={styles.inputText}>
-              {swapFrom.symbol} {swapFrom.acronym} - {swapFrom.fullName}
-            </BoldText>
-            <ChevronDown />
-          </Pressable>
-        </View>
-        <View>
-          <RegularText style={styles.label}>Swap To</RegularText>
-          <Pressable style={styles.input} onPress={handleSwapTo}>
-            <BoldText style={styles.inputText}>
-              {swapTo.symbol} {swapTo.acronym} - {swapTo.fullName}
-            </BoldText>
-            <ChevronDown />
-          </Pressable>
-        </View>
-        <View>
-          <RegularText style={styles.label}>Current rate</RegularText>
-          <Pressable style={{ ...styles.input, ...styles.input2 }}>
-            <BoldText style={{ ...styles.inputText, ...styles.inputText2 }}>
-              {swapFrom.symbol}1 = {swapTo.symbol}
-              {selectedRate?.rate}
-            </BoldText>
-            <RegularText style={styles.fee}>
-              {selectedRate?.fee}% fee{selectedRate?.fee > 1 && 's'}
-            </RegularText>
-          </Pressable>
-        </View>
-        <View>
-          <RegularText style={styles.label}>Input new rate</RegularText>
-          <TextInput
-            style={{ ...styles.input, ...styles.inputText }}
-            inputMode="numeric"
-            onChangeText={text => {
-              setNewRate(text);
-              setNewRateData(prev => {
-                return {
-                  ...prev,
-                  rate: text,
-                };
-              });
-            }}
-            onFocus={() => setErrorMessage('')}
-            value={newRate}
-          />
-        </View>
-        <View>
-          <RegularText style={styles.label}>Service Charge</RegularText>
-          <View style={styles.inputContainer}>
-            <BoldText style={styles.inputSymbol}>%</BoldText>
-            <TextInput
-              style={styles.inputAbsolute}
-              inputMode="numeric"
-              onChangeText={text => {
-                setNewFee(text);
-                setNewRateData(prev => {
-                  return {
-                    ...prev,
-                    fee: text,
-                  };
-                });
-              }}
-              onFocus={() => setErrorMessage('')}
-              value={newFee}
+        {!defaultTab ? (
+          <>
+            <View>
+              <RegularText style={styles.label}>Swap From</RegularText>
+              <Pressable style={styles.input} onPress={handleSwapFrom}>
+                <BoldText style={styles.inputText}>
+                  {swapFrom.symbol} {swapFrom.acronym} - {swapFrom.fullName}
+                </BoldText>
+                <ChevronDown />
+              </Pressable>
+            </View>
+            <View>
+              <RegularText style={styles.label}>Swap To</RegularText>
+              <Pressable style={styles.input} onPress={handleSwapTo}>
+                <BoldText style={styles.inputText}>
+                  {swapTo.symbol} {swapTo.acronym} - {swapTo.fullName}
+                </BoldText>
+                <ChevronDown />
+              </Pressable>
+            </View>
+            <View>
+              <RegularText style={styles.label}>Current rate</RegularText>
+              <Pressable style={{ ...styles.input, ...styles.input2 }}>
+                <BoldText style={{ ...styles.inputText, ...styles.inputText2 }}>
+                  {swapFrom.symbol}1 = {swapTo.symbol}
+                  {selectedRate?.rate}
+                </BoldText>
+                <RegularText style={styles.fee}>
+                  {selectedRate?.fee}% fee{selectedRate?.fee > 1 && 's'}
+                </RegularText>
+              </Pressable>
+            </View>
+            <View>
+              <RegularText style={styles.label}>Input new rate</RegularText>
+              <TextInput
+                style={{ ...styles.input, ...styles.inputText }}
+                inputMode="numeric"
+                onChangeText={text => {
+                  setNewRate(text);
+                  setNewRateData(prev => {
+                    return {
+                      ...prev,
+                      rate: text,
+                    };
+                  });
+                }}
+                onFocus={() => setErrorMessage('')}
+                value={newRate}
+              />
+            </View>
+            <View>
+              <RegularText style={styles.label}>Service Charge</RegularText>
+              <View style={styles.inputContainer}>
+                <BoldText style={styles.inputSymbol}>%</BoldText>
+                <TextInput
+                  style={styles.inputAbsolute}
+                  inputMode="numeric"
+                  onChangeText={text => {
+                    setNewFee(text);
+                    setNewRateData(prev => {
+                      return {
+                        ...prev,
+                        fee: text,
+                      };
+                    });
+                  }}
+                  onFocus={() => setErrorMessage('')}
+                  value={newFee}
+                />
+              </View>
+            </View>
+            <ErrorMessage
+              errorMessage={errorMessage}
+              style={styles.errorMessage}
             />
-          </View>
-        </View>
-        <ErrorMessage errorMessage={errorMessage} style={styles.errorMessage} />
-        <View style={styles.button}>
-          <Button text="Update Rate" onPress={handleUpdate} />
-        </View>
+            <View style={styles.button}>
+              <Button text="Update Rate" onPress={handleUpdate} />
+            </View>
+          </>
+        ) : (
+          <>
+            <View>
+              {updateFields.map(updateField => (
+                <View key={updateField.field}>
+                  <View>
+                    <RegularText style={styles.label}>
+                      {updateField.field}
+                    </RegularText>
+                    <View style={styles.feeInputContainer}>
+                      <TextInput
+                        style={styles.feeInput}
+                        inputMode="numeric"
+                        onChangeText={text => {
+                          setNewFee(text);
+                          setNewRateData(prev => {
+                            return {
+                              ...prev,
+                              fee: text,
+                            };
+                          });
+                        }}
+                        onFocus={() => setErrorMessage('')}
+                        value={newFee}
+                      />
+                    </View>
+                  </View>
+                </View>
+              ))}
+            </View>
+            <Button text="Update Fees" onPress={handleUpdate} />
+          </>
+        )}
       </View>
       <AdminSelectCurrencyModal />
     </PageContainer>
@@ -212,6 +299,20 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 20,
+  },
+  bodySelectors: {
+    flexDirection: 'row',
+    alignItems: 'space-between',
+  },
+  bodySelector: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 50,
+    marginBottom: 10,
+  },
+  selectedTab: {
+    backgroundColor: 'red',
   },
   body: {
     paddingHorizontal: 5 + '%',
@@ -264,6 +365,24 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-600',
     padding: 15,
     paddingLeft: 0,
+  },
+  feeInputContainer: {
+    position: 'relative',
+    borderRadius: 10,
+    height: 55,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+    marginBottom: 20,
+    borderWidth: 1,
+  },
+  feeInput: {
+    width: 95 + '%',
+    fontSize: 18,
+    fontFamily: 'OpenSans-600',
+    padding: 15,
+    paddingLeft: 15,
   },
   button: {
     flex: 1,

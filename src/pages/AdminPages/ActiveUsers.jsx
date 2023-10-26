@@ -53,10 +53,9 @@ const ActiveUsers = ({ navigation, route }) => {
   }, [adminData]);
 
   function sortFunc(a, b) {
-    const date1 = a.createdAt;
-    const date2 = b.createdAt;
+    const date1 = a.updatedAt;
+    const date2 = b.updatedAt;
     let comparison = 0;
-
     if (date1 > date2) {
       comparison = -1;
     } else if (date1 < date2) {

@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import PageContainer from '../../components/PageContainer';
@@ -9,6 +9,7 @@ import { useNotificationsContext } from '../../context/NotificationContext';
 import UserIcon from '../../components/UserIcon';
 import { putFetchData } from '../../../utils/fetchAPI';
 import { useNavigation } from '@react-navigation/native';
+import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
 
 const Notification = () => {
   const { vh } = useContext(AppContext);
@@ -209,7 +210,19 @@ export default Notification;
 
 const Message = ({ notification }) => {
   const { setWalletRefresh } = useContext(AppContext);
-  const { _id, header, message, photo, createdAt, status, type } = notification;
+  const [transactionTypeIcon, setTransactionTypeIcon] = useState(
+    <Image source={require('../../../assets/icon.png')} style={styles.image} />,
+  );
+  const {
+    _id,
+    header,
+    message,
+    photo,
+    createdAt,
+    status,
+    type,
+    networkProvider,
+  } = notification;
   const { navigate } = useNavigation();
   const date = new Date(createdAt);
   const historyTime = convertTo12HourFormat(
@@ -244,16 +257,45 @@ const Message = ({ notification }) => {
     const response = await putFetchData(`user/notification/${_id}`);
     response.status === 200 && setWalletRefresh(prev => !prev);
   };
+
+  useEffect(() => {
+    switch (type) {
+      case 'airtime':
+        setTransactionTypeIcon(networkProvidersIcon(photo));
+        break;
+      case 'data':
+        setTransactionTypeIcon(networkProvidersIcon(photo));
+        break;
+      case 'transfer':
+        setTransactionTypeIcon(
+          photo ? (
+            <UserIcon uri={photo} />
+          ) : (
+            <Image
+              source={require('../../../assets/icon.png')}
+              style={styles.image}
+            />
+          ),
+        );
+        break;
+      default:
+        setTransactionTypeIcon(
+          photo ? (
+            <UserIcon uri={photo} />
+          ) : (
+            <Image
+              source={require('../../../assets/icon.png')}
+              style={styles.image}
+            />
+          ),
+        );
+        break;
+    }
+  }, [networkProvider, photo, type]);
+
   return (
     <Pressable style={styles.history} onPress={handleNavigate}>
-      {photo ? (
-        <UserIcon uri={photo} />
-      ) : (
-        <Image
-          source={require('../../../assets/icon.png')}
-          style={styles.image}
-        />
-      )}
+      {transactionTypeIcon}
       <View style={styles.historyContent}>
         <BoldText>{header}</BoldText>
         <RegularText>{message}</RegularText>

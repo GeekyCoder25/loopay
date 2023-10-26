@@ -26,6 +26,7 @@ const NoInternet = ({ modalOpen }) => {
       return "Couldn't connect to server";
     }
   };
+
   const handlePress = () => {
     setIsChecking(true);
     getFetchData('network').then(data => {
@@ -36,6 +37,7 @@ const NoInternet = ({ modalOpen }) => {
       }
     });
   };
+
   return (
     <Modal
       visible={modalOpen}

@@ -130,7 +130,7 @@ export const sendMenuRoutes = [
     routeNavigate: 'SwapFunds',
   },
   {
-    routeName: 'Request for funds',
+    routeName: 'Request Fund',
     routeDetails: 'Request fund using loopay tag',
     routeIcon: 'wallet',
     routeNavigate: 'RequestFund',
@@ -139,7 +139,7 @@ export const sendMenuRoutes = [
     routeName: 'Airtime Top up',
     routeDetails: 'Buy airtime via VTU',
     routeIcon: 'airtime',
-    routeNavigate: 'AirtimeTopup',
+    routeNavigate: 'AirtimeTopUpNavigator',
   },
   {
     routeName: 'Pay a Bill',

@@ -1,7 +1,7 @@
 import { getToken } from './storage';
 
 // export const apiUrl = 'http://10.0.2.2:8000/api';
-// export const apiUrl = 'http://192.168.85.8:8000/api';
+// export const apiUrl = 'http://192.168.212.8:8000/api';
 export const apiUrl = 'https://loopay-api.cyclic.app/api';
 
 export const getFetchData = async apiEndpoint => {
@@ -30,6 +30,24 @@ export const postFetchData = async (apiEndpoint, bodyData, token) => {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
   token = token || (await getToken());
+
+  function removeTrailingWhiteSpace(obj) {
+    const newObj = {};
+
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        const value = obj[key];
+        if (typeof value === 'string') {
+          newObj[key] = value.trimRight(); // Removes trailing white spaces
+        } else {
+          newObj[key] = value;
+        }
+      }
+    }
+
+    return newObj;
+  }
+  bodyData = removeTrailingWhiteSpace(bodyData);
 
   try {
     const response = await fetch(API_URL, {
