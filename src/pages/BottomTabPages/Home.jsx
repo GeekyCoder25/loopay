@@ -130,7 +130,7 @@ const Home = ({ navigation }) => {
   ];
 
   const handleCopy = () => {
-    Clipboard.setString(wallet.accNo);
+    Clipboard.setString(wallet.loopayAccNo);
     ToastMessage('Copied to clipboard');
   };
   return (

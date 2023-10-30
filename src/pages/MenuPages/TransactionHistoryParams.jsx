@@ -11,6 +11,8 @@ import UserIcon from '../../components/UserIcon';
 import SwapIcon from '../../../assets/images/swap.svg';
 import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
 import Button from '../../components/Button';
+import { printToFileAsync } from 'expo-print';
+import { shareAsync } from 'expo-sharing';
 
 const TransactionHistoryParams = ({ route }) => {
   const history = route.params;
@@ -110,7 +112,29 @@ const TransactionHistoryParams = ({ route }) => {
     }
   };
 
-  const handleShare = () => {};
+  const handleShare = async () => {
+    const html = String.raw` <html lang="en">
+      <head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+        <title>Loopay Statement</title>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+      </head>
+      <body>
+        <h1>Transaction receipt to be created with html and css</h1>
+      </body>
+    </html>`;
+    createPDF(html);
+  };
+
+  const createPDF = async html => {
+    const { uri } = await printToFileAsync({ html });
+    await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+  };
+
   return (
     <PageContainer justify={true} scroll>
       <BoldText style={styles.historyHeader}>Transaction history</BoldText>

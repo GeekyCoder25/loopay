@@ -11,8 +11,14 @@ import Back from '../../components/Back';
 import * as Haptics from 'expo-haptics';
 
 const LockScreen = () => {
-  const { vw, vh, isLoggedIn, isSessionTimedOut, setIsSessionTimedOut } =
-    useContext(AppContext);
+  const {
+    vw,
+    vh,
+    isLoggedIn,
+    isSessionTimedOut,
+    setIsSessionTimedOut,
+    setWalletRefresh,
+  } = useContext(AppContext);
   const [inputCode, setInputCode] = useState('');
   const [hasForgot, setHasForgot] = useState(false);
   const [canChange, setCanChange] = useState(false);
@@ -34,6 +40,7 @@ const LockScreen = () => {
           password: `${inputCode}${input}`,
         });
         if (response.status === 200) {
+          setWalletRefresh(prev => !prev);
           setInputCode('');
           return setIsSessionTimedOut(false);
         } else {

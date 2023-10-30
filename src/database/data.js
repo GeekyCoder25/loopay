@@ -73,6 +73,15 @@ export const accountType = [
 
 export const allCurrencies = [
   {
+    currency: 'naira',
+    fullName: 'Nigerian Naira',
+    acronym: 'NGN',
+    amount: 0.0,
+    symbol: '₦',
+    minimumAmountToAdd: 100,
+    fee: 5,
+  },
+  {
     currency: 'dollar',
     fullName: 'United State Dollar',
     acronym: 'USD',
@@ -89,15 +98,6 @@ export const allCurrencies = [
     symbol: '€',
     minimumAmountToAdd: 1,
     fee: 1,
-  },
-  {
-    currency: 'naira',
-    fullName: 'Nigerian Naira',
-    acronym: 'NGN',
-    amount: 0.0,
-    symbol: '₦',
-    minimumAmountToAdd: 100,
-    fee: 5,
   },
   {
     currency: 'pound',

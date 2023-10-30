@@ -24,10 +24,10 @@ import saveSessionOptions from '../../services/Savesession';
 
 const Signin = ({ navigation }) => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    // email: 'toyibe25@gmail.com',
-    // password: '251101t',
+    // email: '',
+    // password: '',
+    email: 'toyibe25@gmail.com',
+    password: '251101',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');

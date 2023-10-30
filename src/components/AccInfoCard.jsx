@@ -16,7 +16,7 @@ import SelectCurrencyModal from './SelectCurrencyModal';
 import { useWalletContext } from '../context/WalletContext';
 import { addingDecimal } from '../../utils/AddingZero';
 
-const AccInfoCard = () => {
+const AccInfoCard = ({ disableSwitchCurrency }) => {
   const { selectedCurrency } = useContext(AppContext);
   const [modalOpen, setModalOpen] = useState(false);
   const { wallet, transactions } = useWalletContext();
@@ -63,11 +63,13 @@ const AccInfoCard = () => {
               </View>
             </View>
           </View>
-          <Pressable
-            onPress={() => setModalOpen(true)}
-            style={styles.chevronDown}>
-            <ChevronDown />
-          </Pressable>
+          {!disableSwitchCurrency && (
+            <Pressable
+              onPress={() => setModalOpen(true)}
+              style={styles.chevronDown}>
+              <ChevronDown />
+            </Pressable>
+          )}
         </View>
 
         <View style={styles.cardHeader}>

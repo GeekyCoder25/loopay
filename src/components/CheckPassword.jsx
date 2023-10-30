@@ -94,7 +94,7 @@ const CheckPassword = ({
               setFormData({ password: text });
             }}
             name={'password'}
-            inputMode={'text'}
+            inputMode={'numeric'}
             autoCapitalize="none"
             onFocus={() => setInputFocus(true)}
             onBlur={() => setInputFocus(false)}

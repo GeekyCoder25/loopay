@@ -25,6 +25,10 @@ const Rate = ({ navigation }) => {
     ),
   );
   const [allRates, setAllRates] = useState([]);
+  const [allFees, setAllFees] = useState([]);
+  const [updatedFee, setUpdatedFee] = useState({});
+  const [updatedFees, setUpdatedFees] = useState([]);
+  const [currentInput, setCurrentInput] = useState('');
   const [selectedRate, setSelectedRate] = useState(null);
   const [selectedSwapName, setSelectedSwapName] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
@@ -42,8 +46,12 @@ const Rate = ({ navigation }) => {
       const response = await getFetchData('admin/rate');
       response.status === 200 && setAllRates(response.data);
     };
-    getRates();
-  }, [rateRefetch]);
+    const getFees = async () => {
+      const response = await getFetchData('admin/fees');
+      response.status === 200 && setAllFees(response.data);
+    };
+    !defaultTab ? getRates() : getFees();
+  }, [defaultTab, rateRefetch]);
 
   useEffect(() => {
     setSelectedSwapName(
@@ -112,22 +120,41 @@ const Rate = ({ navigation }) => {
     }
   };
 
+  const handleUpdateFees = async () => {
+    try {
+      setIsLoading(true);
+      const response = await putFetchData('admin/fees', updatedFees);
+      if (response.status === 200) {
+        setRateRefetch(prev => !prev);
+        setUpdatedFees([]);
+        setUpdatedFee({});
+      }
+    } catch (err) {
+      setErrorMessage(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const updateFields = [
-    {
-      field: 'Swap fee',
-      index: 'swap',
-      fee: '',
-    },
-    {
-      field: 'Transfer to Loopay users fee',
-      index: 'loopay',
-      fee: '',
-    },
-    {
-      field: "Transfer to other bank's fee",
-      index: 'others',
-      fee: '',
-    },
+    ...allCurrencies.map(currency => {
+      return {
+        feeName: `Transfer to other bank's fee in ${currency.acronym}`,
+        index: `transfer_others_in_${currency.acronym}`,
+        group: 'transferOthers',
+        currency: currency.currency,
+        amount: 0,
+      };
+    }),
+    ...allCurrencies.map(currency => {
+      return {
+        feeName: `Tax fee for ${currency.acronym}`,
+        index: `tax_in_${currency.acronym}`,
+        group: 'tax',
+        currency: currency.currency,
+        amount: 0,
+      };
+    }),
   ];
 
   return (
@@ -248,35 +275,20 @@ const Rate = ({ navigation }) => {
           </>
         ) : (
           <>
-            <View>
-              {updateFields.map(updateField => (
-                <View key={updateField.field}>
-                  <View>
-                    <RegularText style={styles.label}>
-                      {updateField.field}
-                    </RegularText>
-                    <View style={styles.feeInputContainer}>
-                      <TextInput
-                        style={styles.feeInput}
-                        inputMode="numeric"
-                        onChangeText={text => {
-                          setNewFee(text);
-                          setNewRateData(prev => {
-                            return {
-                              ...prev,
-                              fee: text,
-                            };
-                          });
-                        }}
-                        onFocus={() => setErrorMessage('')}
-                        value={newFee}
-                      />
-                    </View>
-                  </View>
-                </View>
-              ))}
-            </View>
-            <Button text="Update Fees" onPress={handleUpdate} />
+            {updateFields.map(updateField => (
+              <Fees
+                key={updateField.index}
+                updateField={updateField}
+                currentInput={currentInput}
+                setCurrentInput={setCurrentInput}
+                allFees={allFees}
+                updatedFees={updatedFees}
+                setUpdatedFees={setUpdatedFees}
+                updatedFee={updatedFee}
+                setUpdatedFee={setUpdatedFee}
+              />
+            ))}
+            <Button text="Update Fees" onPress={handleUpdateFees} />
           </>
         )}
       </View>
@@ -374,7 +386,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 10,
-    marginBottom: 20,
     borderWidth: 1,
   },
   feeInput: {
@@ -392,3 +403,57 @@ const styles = StyleSheet.create({
 });
 
 export default Rate;
+
+const Fees = ({
+  updateField,
+  setUpdatedFee,
+  allFees,
+  updatedFees,
+  updatedFee,
+  setUpdatedFees,
+}) => {
+  const [inputFocused, setInputFocused] = useState(false);
+  const [currentInput, setCurrentInput] = useState(updateField.fee);
+
+  const value =
+    updatedFees.find(fee => fee.feeName === updateField.index)?.amount ||
+    allFees.find(fee => fee.feeName === updateField.index)?.amount ||
+    '0';
+
+  return (
+    <View>
+      <View key={updateField.feeName}>
+        <View>
+          <RegularText style={styles.label}>{updateField.feeName}</RegularText>
+          <View style={styles.feeInputContainer}>
+            <TextInput
+              style={styles.feeInput}
+              inputMode="numeric"
+              onChangeText={text => {
+                setInputFocused(true);
+                setCurrentInput(text);
+                setUpdatedFee({
+                  feeName: updateField.index,
+                  amount: Number(text),
+                  currency: updateField.currency,
+                  group: updateField.group,
+                });
+              }}
+              value={`${inputFocused ? currentInput : value}`}
+              onBlur={() => {
+                updatedFee.amount &&
+                  setUpdatedFees(prev => {
+                    return [
+                      ...prev.filter(i => i.feeName !== updatedFee.feeName),
+                      updatedFee,
+                    ];
+                  });
+                setInputFocused(false);
+              }}
+            />
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+};

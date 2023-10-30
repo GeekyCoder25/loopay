@@ -53,6 +53,7 @@ const Splash = ({ navigation }) => {
               setIsLoggedIn(false);
               await deleteFetchData(`user/session/${sessionID}`);
               logoutUser();
+              setIsSessionTimedOut(false);
               return navigation.replace('FirstPage');
             }
             const response = await getFetchData('user/role');

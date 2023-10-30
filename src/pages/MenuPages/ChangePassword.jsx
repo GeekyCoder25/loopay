@@ -49,7 +49,7 @@ const ChangePassword = ({ navigation, skipCheck }) => {
     try {
       setIsLoading(true);
       if (Object.values(newFormData).includes('')) {
-        setErrorMessage('Please input all reuired fields');
+        setErrorMessage('Please input all required fields');
         return setErrorKey(true);
       } else if (newFormData.password !== newFormData.confirmPassword) {
         setErrorKey(true);

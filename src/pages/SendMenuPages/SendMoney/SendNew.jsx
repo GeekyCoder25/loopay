@@ -73,7 +73,6 @@ const SendNew = ({ navigation, route }) => {
         const result = await postFetchData('user/get-phone', {
           phoneNumber: text,
         });
-        9030582706;
         if (result.status === 200) {
           // const beneficiariesTagName = beneficiaryState?.map(
           //   beneficiary => beneficiary.tagName || beneficiary.userName,

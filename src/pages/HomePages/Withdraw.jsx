@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { AppContext } from '../../components/AppContext';
 import Button from '../../components/Button';
 import BoldText from '../../components/fonts/BoldText';
@@ -29,6 +29,7 @@ const Withdraw = ({ navigation }) => {
   const [errorKey, setErrorKey] = useState('');
   const [canContinue, setCanContinue] = useState(false);
   const [addedBanks, setAddedBanks] = useState([]);
+  const [fee, setFee] = useState(0);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -107,16 +108,26 @@ const Withdraw = ({ navigation }) => {
       console.log(error.message);
     }
   };
+  useEffect(() => {
+    getFetchData('user/fees').then(response =>
+      setFee(
+        response.data.find(
+          i =>
+            i.group === 'transferOthers' &&
+            i.currency === selectedCurrency.currency,
+        ).amount,
+      ),
+    );
+  }, [selectedCurrency.currency]);
 
-  const fee = addingDecimal(`${50.25}`);
   return (
     <PageContainer scroll>
       <View style={{ ...styles.container, minHeight: vh * 0.75 }}>
-        <AccInfoCard />
+        <AccInfoCard disableSwitchCurrency={bankSelected} />
         {!canContinue && (
           <RegularText style={styles.headerText}>
-            In cases of insufficient fund, you have to swap to NGN before
-            placing withdrawal.
+            In cases of insufficient fund, you have to swap to{' '}
+            {selectedCurrency.acronym} before placing withdrawal.
           </RegularText>
         )}
         {!bankSelected ? (

@@ -1,9 +1,12 @@
 import React, { useContext } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import Logo from '../../components/Logo';
 import { AppContext } from '../../components/AppContext';
 import Header from '../../components/Header';
+import Button from '../../components/Button';
+import BoldText from '../../components/fonts/BoldText';
+import RegularText from '../../components/fonts/RegularText';
 
 const Limit = () => {
   const { vh } = useContext(AppContext);
@@ -20,11 +23,37 @@ const Limit = () => {
               text={'Manage your transaction limits'}
             />
           </View>
-
-          <View style={styles.form} />
-          {/* <View style={styles.button}>
-            <Button text={'Set Security Questions'} />
-          </View> */}
+          <View style={styles.form}>
+            <View>
+              <RegularText>Enter new Transaction Limit</RegularText>
+              <View style={styles.textInputContainer}>
+                <TextInput
+                  style={{
+                    ...styles.textInput,
+                  }}
+                  onChangeText={text => {}}
+                  inputMode={'numeric'}
+                />
+              </View>
+            </View>
+            <View>
+              <RegularText>Enter password to continue</RegularText>
+              <View style={styles.textInputContainer}>
+                <TextInput
+                  style={{
+                    ...styles.textInput,
+                  }}
+                  onChangeText={text => {}}
+                  inputMode={'numeric'}
+                  // onFocus={() => setInputFocus(true)}
+                  // onBlur={() => setInputFocus(false)}
+                />
+              </View>
+            </View>
+          </View>
+          <View style={styles.button}>
+            <Button text={'Update Limit'} />
+          </View>
         </View>
       </ScrollView>
     </PageContainer>
@@ -37,7 +66,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: 4 + '%',
   },
-  header: { gap: 15 },
+  header: { gap: 15, marginBottom: 30 },
   form: {
     flex: 1,
     paddingVertical: 30,
