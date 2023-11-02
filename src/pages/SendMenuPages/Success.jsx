@@ -8,6 +8,8 @@ import FooterCard from '../../components/FooterCard';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppContext } from '../../components/AppContext';
 import { Audio } from 'expo-av';
+import { printToFileAsync } from 'expo-print';
+import { shareAsync } from 'expo-sharing';
 
 const Success = ({ navigation, route }) => {
   const { isAdmin } = useContext(AppContext);
@@ -35,6 +37,29 @@ const Success = ({ navigation, route }) => {
     playSound();
   }, []);
 
+  const handleShare = async () => {
+    const html = String.raw` <html lang="en">
+      <head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+        <title>Loopay Statement</title>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+      </head>
+      <body>
+        <h1>Transaction receipt to be created with html and css</h1>
+      </body>
+    </html>`;
+    createPDF(html);
+  };
+
+  const createPDF = async html => {
+    const { uri } = await printToFileAsync({ html });
+    await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+  };
+
   const handleHome = () => {
     if (isAdmin) {
       return navigation.navigate('Dashboard');
@@ -45,7 +70,7 @@ const Success = ({ navigation, route }) => {
   };
 
   return (
-    <PageContainer>
+    <PageContainer scroll>
       <View style={styles.header}>
         <Check />
         <BoldText style={styles.headerText}>Transaction Successful</BoldText>
@@ -60,6 +85,7 @@ const Success = ({ navigation, route }) => {
         />
       </View>
       <View style={styles.button}>
+        <Button text={'Share Receipt'} onPress={handleShare} />
         <Button text={'Back Home'} onPress={handleHome} />
       </View>
     </PageContainer>

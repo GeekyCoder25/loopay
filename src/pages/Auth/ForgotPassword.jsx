@@ -44,10 +44,6 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
   const codeLengths = [1, 2, 3, 4];
 
   useEffect(() => {
-    isLoggedIn && setFormData({ email: appData.email });
-  }, [appData.email, isLoggedIn]);
-
-  useEffect(() => {
     setIsPinOkay(otpCode.length === codeLengths.length);
   }, [codeLengths.length, otpCode.length]);
 
@@ -116,6 +112,7 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
   }, [codeSent, otpResend]);
 
   useEffect(() => {
+    isLoggedIn && setFormData({ email: appData.email });
     isSessionTimedOut &&
       postFetchData('auth/forget-password', { email: appData.email }).then(
         result => {
@@ -125,7 +122,7 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
           }
         },
       );
-  }, [appData.email, isSessionTimedOut]);
+  }, [appData.email, isLoggedIn, isSessionTimedOut]);
 
   return (
     <PageContainer padding justify={true}>
@@ -142,7 +139,21 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
                 : 'To continue, kindly enter your email address'
             }
           />
-          {isSessionTimedOut || codeSent ? (
+          <TextInput
+            autoFocus
+            style={styles.codeInput}
+            inputMode="numeric"
+            onChangeText={text => {
+              setOtpCode(text);
+              text.length === codeLengths.length && Keyboard.dismiss();
+              setErrorMessage('');
+              setErrorKey('');
+            }}
+            maxLength={codeLengths.length}
+            ref={inputRef}
+            value={otpCode}
+          />
+          {codeSent ? (
             <>
               <View style={styles.codeLengthsContainer} key={reload}>
                 {codeLengths.map(input => (
@@ -155,27 +166,14 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
                   />
                 ))}
               </View>
-              <TextInput
-                autoFocus
-                style={styles.codeInput}
-                inputMode="numeric"
-                onChangeText={text => {
-                  setOtpCode(text);
-                  text.length === codeLengths.length && Keyboard.dismiss();
-                  setErrorMessage('');
-                  setErrorKey('');
-                }}
-                maxLength={codeLengths.length}
-                ref={inputRef}
-                value={otpCode}
-              />
+
               <View>
                 <RegularText style={styles.enterCodeText}>
                   Enter the Four Digit code sent to your email
                 </RegularText>
               </View>
               <ErrorMessage errorMessage={errorMessage} />
-              <View style={styles.didnt}>
+              {/* <View style={styles.didnt}>
                 <BoldText>Didn&apos;t receive the code? Resend </BoldText>
                 {typeof otpResend === 'number' ? (
                   <BoldText>
@@ -190,7 +188,7 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
                     <BoldText style={styles.now}>{otpResend}</BoldText>
                   </Pressable>
                 )}
-              </View>
+              </View> */}
             </>
           ) : (
             <>
@@ -220,16 +218,19 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
                 <BoldText style={styles.signIn}>Sign in</BoldText>
               </Pressable>
             </View>
-            <View style={styles.signInIcons}>
+            {/* <View style={styles.signInIcons}>
               <Pressable onPress={() => console.log('apple was clicked')}>
                 <Apple />
               </Pressable>
               <Pressable onPress={() => console.log('google was clicked')}>
                 <Google />
               </Pressable>
-            </View>
+            </View> */}
           </View>
         ) : (
+          <View style={styles.button} />
+        )}
+        {codeSent && (
           <View style={styles.button}>
             <Button
               text={'Confirm One time password'}

@@ -5,7 +5,8 @@ import {
   StyleSheet,
   TextInput,
   Pressable,
-  ScrollView,
+  Modal,
+  Image,
 } from 'react-native';
 import User from '../../../assets/images/user.svg';
 import Email from '../../../assets/images/mail.svg';
@@ -13,8 +14,8 @@ import Phone from '../../../assets/images/phone.svg';
 import Lock from '../../../assets/images/lock.svg';
 import Eye from '../../../assets/images/eye.svg';
 import EyeClosed from '../../../assets/images/eye-slash.svg';
-import Apple from '../../../assets/images/apple.svg';
-import Google from '../../../assets/images/google.svg';
+// import Apple from '../../../assets/images/apple.svg';
+// import Google from '../../../assets/images/google.svg';
 import { signUpData } from '../../database/data.js';
 import Logo from '../../components/Logo';
 import Button from '../../components/Button';
@@ -23,12 +24,15 @@ import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import { AppContext } from '../../components/AppContext';
-import { postFetchData } from '../../../utils/fetchAPI';
-import LoadingModal from '../../components/LoadingModal';
+import { postFetchData, putFetchData } from '../../../utils/fetchAPI';
 import { loginUser } from '../../../utils/storage';
 import ErrorMessage from '../../components/ErrorMessage';
 import SuccessMessage from '../../components/SuccessMessage';
 import saveSessionOptions from '../../services/Savesession';
+import FaIcon from '@expo/vector-icons/FontAwesome';
+import { CountryPicker } from 'react-native-country-codes-picker';
+import { Flag } from '@mfauzanap/react-native-svg-flagkit';
+import * as Haptics from 'expo-haptics';
 
 const Signup = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -51,47 +55,40 @@ const Signup = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
-  const { vh, setAppData, isLoading, setIsLoading } = useContext(AppContext);
+  const [countryCode, setCountryCode] = useState('');
+  const [countryCodeData, setCountryCodeData] = useState('');
+  const [showPicker, setShowPicker] = useState(false);
+  const [deviceID, setDeviceID] = useState('');
+  const { vh, setIsLoading } = useContext(AppContext);
+  const [verifyEmail, setVerifyEmail] = useState(false);
 
-  const handleSignup = async () => {
+  const handleSignUp = async () => {
     setIsLoading(true);
     if (Object.values(formData).includes('')) {
       setErrorMessage('Please input all fields');
-      setIsLoading(false);
     } else if (formData.password !== formData.confirmPassword) {
       setErrorMessage("Passwords doesn't match");
       setErrorKey('password');
-      setIsLoading(false);
+    } else if (!countryCode) {
+      setErrorMessage('Please input all fields');
+      setErrorKey('phoneNumber');
     } else {
       editInput();
       try {
         const sessionData = saveSessionOptions();
-        const { email, firstName, lastName, userName, phoneNumber } = formData;
-        const fetchedResult = await postFetchData('auth/register', {
-          formData,
+        const { email, phoneNumber } = formData;
+        const response = await postFetchData('auth/register', {
+          formData: { ...formData, phoneNumber: countryCode + phoneNumber },
           sessionData,
         });
-        const result = fetchedResult.data;
-        if (fetchedResult.status === 201) {
-          setSuccessMessage(Object.values(result)[0]);
-          await loginUser(result.data, sessionData.deviceID);
-          const data = {
-            email,
-            userProfile: {
-              lastName,
-              firstName,
-              userName,
-              phoneNumber,
-            },
-          };
-          setAppData(data);
+        const result = response.data;
+        if (response.status === 200 && result.email === email) {
+          setDeviceID(sessionData.deviceID);
           setIsLoading(false);
-          setErrorMessage('');
-          setSuccessMessage('');
-          navigation.replace('AccountType');
+          return setVerifyEmail(true);
         } else {
-          if (typeof fetchedResult === 'string') {
-            setErrorMessage(fetchedResult);
+          if (typeof response === 'string') {
+            setErrorMessage(response);
           } else {
             setErrorKey(Object.keys(result)[0]);
             setErrorMessage(Object.values(result)[0]);
@@ -103,6 +100,7 @@ const Signup = ({ navigation }) => {
         setIsLoading(false);
       }
     }
+    setIsLoading(false);
   };
 
   const editInput = () => {
@@ -135,6 +133,9 @@ const Signup = ({ navigation }) => {
               errorKey={errorKey}
               setErrorKey={setErrorKey}
               showRedBorder={errorMessage}
+              countryCode={countryCode}
+              setShowPicker={setShowPicker}
+              countryCodeData={countryCodeData}
             />
           ))}
           <ErrorMessage errorMessage={errorMessage} />
@@ -149,18 +150,45 @@ const Signup = ({ navigation }) => {
               <BoldText style={styles.signIn}>Sign in</BoldText>
             </Pressable>
           </View>
-          <View style={styles.signInIcons}>
+          {/* <View style={styles.signInIcons}>
             <Pressable onPress={() => console.log('apple was clicked')}>
               <Apple />
             </Pressable>
             <Pressable onPress={() => console.log('google was clicked')}>
               <Google />
             </Pressable>
-          </View>
-          <Button text={'Register'} onPress={handleSignup} />
+          </View> */}
+          <Button text={'Register'} onPress={handleSignUp} />
         </View>
       </View>
-      <LoadingModal isLoading={isLoading} />
+      <CountryPicker
+        show={showPicker}
+        pickerButtonOnPress={item => {
+          setCountryCode(item.dial_code);
+          setShowPicker(false);
+          setCountryCodeData(item);
+          setFormData(prev => {
+            return { ...prev, phoneNumber: '' };
+          });
+        }}
+        searchMessage={'Search here'}
+        onRequestClose={() => setShowPicker(false)}
+        style={{
+          modal: {
+            height: vh * 0.975,
+          },
+        }}
+      />
+      {verifyEmail && (
+        <EmailVerify
+          email={formData.email}
+          deviceID={deviceID}
+          setErrorMessage={setErrorMessage}
+          setSuccessMessage={setSuccessMessage}
+          navigation={navigation}
+          setVerifyEmail={setVerifyEmail}
+        />
+      )}
     </PageContainer>
   );
 };
@@ -189,8 +217,25 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 10,
     zIndex: 9,
-    top: 30 + '%',
+    justifyContent: 'center',
+    height: 100 + '%',
+    alignItems: 'center',
+    minWidth: 5,
   },
+  phonePicker: {
+    minWidth: 60,
+    position: 'absolute',
+    zIndex: 9,
+    left: 5,
+    justifyContent: 'space-between',
+    paddingRight: 5,
+    borderRightWidth: 1,
+    height: 100 + '%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  code: { width: 85, paddingLeft: 45, textAlign: 'center' },
   textInput: {
     width: 100 + '%',
     height: 45,
@@ -245,6 +290,63 @@ const styles = StyleSheet.create({
     marginTop: 20,
     gap: 15,
   },
+  verifyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 50,
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  displayContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 15,
+  },
+  display: {
+    width: 15,
+    height: 15,
+    borderRadius: 10,
+    backgroundColor: '#eee',
+  },
+  displayFilled: {
+    width: 15,
+    height: 15,
+    borderRadius: 10,
+    backgroundColor: '#1e1e1e',
+  },
+  displayError: {
+    width: 15,
+    height: 15,
+    borderRadius: 10,
+    backgroundColor: 'red',
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  digits: {
+    gap: 20,
+    alignItems: 'center',
+  },
+  digit: {
+    fontSize: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontFamily: 'OpenSans-700',
+  },
+  digitText: {
+    fontSize: 32,
+  },
+  delete: {
+    width: 30,
+    height: 30,
+  },
 });
 export default Signup;
 
@@ -256,6 +358,9 @@ const FormField = ({
   errorKey,
   setErrorKey,
   showRedBorder,
+  countryCode,
+  setShowPicker,
+  countryCodeData,
 }) => {
   const [showPassword, setShowPassword] = useState(true);
   const [inputFocus, setInputFocus] = useState(false);
@@ -288,10 +393,37 @@ const FormField = ({
   const fillColor = inputFocus ? '#000' : '#868585';
   return (
     <View style={styles.textInputContainer}>
-      <View style={styles.icon}>{selectIcon(fillColor)}</View>
+      {inputForm.countryCode ? (
+        <Pressable
+          style={styles.phonePicker}
+          onPress={() => setShowPicker(true)}>
+          {countryCodeData ? (
+            <>
+              <View style={styles.icon}>
+                <Flag
+                  id={countryCodeData.code}
+                  width={25}
+                  height={25}
+                  style={styles.icon}
+                />
+              </View>
+            </>
+          ) : (
+            <View style={styles.icon}>{selectIcon(fillColor)}</View>
+          )}
+          <BoldText style={styles.code}>{countryCode}</BoldText>
+
+          <View style={styles.phoneChevron}>
+            <FaIcon name="chevron-down" size={18} color={'#b1b1b1'} />
+          </View>
+        </Pressable>
+      ) : (
+        <View style={styles.icon}>{selectIcon(fillColor)}</View>
+      )}
       <TextInput
         style={{
           ...styles.textInput,
+          paddingLeft: inputForm.countryCode ? 130 : 40,
           borderColor:
             errorKey === inputForm.name ||
             (errorKey === 'password' && inputForm.name === 'confirmPassword') ||
@@ -305,10 +437,14 @@ const FormField = ({
         placeholderTextColor={inputFocus ? '#000' : '#80808080'}
         maxLength={inputForm.eye ? 6 : undefined}
         onChangeText={text => {
+          inputForm.countryCode && !countryCode && setShowPicker(true);
           setErrorKey('');
           editInput();
           setFormData(prev => {
-            return { ...prev, [inputForm.name]: text };
+            return {
+              ...prev,
+              [inputForm.name]: text,
+            };
           });
         }}
         name={inputForm.name}
@@ -316,8 +452,13 @@ const FormField = ({
         inputMode={inputForm.inputMode}
         autoCapitalize={inputForm.eye ? 'none' : undefined}
         autoCorrect={inputForm.eye || false}
-        onFocus={() => setInputFocus(true)}
+        onFocus={() => {
+          inputForm.countryCode && !countryCode && setShowPicker(true);
+          setInputFocus(true);
+        }}
         onBlur={() => setInputFocus(false)}
+        value={formData[inputForm.name]}
+        secureTextEntry={inputForm.eye ? showPassword : false}
       />
       {inputForm.eye && (
         <Pressable
@@ -327,5 +468,174 @@ const FormField = ({
         </Pressable>
       )}
     </View>
+  );
+};
+
+const EmailVerify = ({
+  email,
+  deviceID,
+  setErrorMessage,
+  setSuccessMessage,
+  setVerifyEmail,
+  navigation,
+}) => {
+  const [inputCode, setInputCode] = useState('');
+  const [errorCode, setErrorCode] = useState(false);
+  const { vw, vh, setAppData, setIsLoading } = useContext(AppContext);
+
+  const handleInput = async input => {
+    setInputCode(prev => `${prev}${input}`);
+    if (inputCode.length + 1 >= codeLength.length) {
+      try {
+        const response = await putFetchData('auth/register/', {
+          otp: `${inputCode}${input}`,
+          email,
+        });
+        if (response.status === 201) {
+          setIsLoading(true);
+          setVerifyEmail(false);
+          const result = response.data;
+          const { firstName, lastName, userName, phoneNumber } = result;
+          setSuccessMessage(Object.values(result)[0]);
+          await loginUser(result.data, deviceID);
+          const data = {
+            email,
+            userProfile: {
+              lastName,
+              firstName,
+              userName,
+              phoneNumber,
+            },
+          };
+          setAppData(data);
+          setIsLoading(false);
+          setErrorMessage('');
+          setSuccessMessage('');
+          navigation.replace('AccountType');
+        } else {
+          setErrorCode(true);
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          setTimeout(() => {
+            setInputCode('');
+            setErrorCode(false);
+          }, 500);
+        }
+      } catch (err) {
+        console.log(err.message);
+      }
+    }
+  };
+
+  const codeLength = [1, 2, 3, 4];
+
+  return (
+    <Modal>
+      <View style={styles.verifyContainer}>
+        <Image
+          style={styles.logo}
+          source={require('../../../assets/icon.png')}
+          resizeMode="contain"
+        />
+        <RegularText>
+          Enter the verification code sent to your email{' '}
+        </RegularText>
+        <View style={styles.displayContainer}>
+          {codeLength.map(code =>
+            inputCode.length >= code ? (
+              errorCode ? (
+                <View key={code} style={styles.displayError} />
+              ) : (
+                <View key={code} style={styles.displayFilled} />
+              )
+            ) : (
+              <View key={code} style={styles.display} />
+            ),
+          )}
+        </View>
+        <View style={styles.digits}>
+          <View style={styles.row}>
+            <Pressable
+              disabled={inputCode.length >= codeLength.length}
+              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+              onPress={() => handleInput('1')}>
+              <BoldText style={styles.digitText}>1</BoldText>
+            </Pressable>
+            <Pressable
+              disabled={inputCode.length >= codeLength.length}
+              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+              onPress={() => handleInput('2')}>
+              <BoldText style={styles.digitText}>2</BoldText>
+            </Pressable>
+            <Pressable
+              disabled={inputCode.length >= codeLength.length}
+              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+              onPress={() => handleInput('3')}>
+              <BoldText style={styles.digitText}>3</BoldText>
+            </Pressable>
+          </View>
+          <View style={styles.row}>
+            <Pressable
+              disabled={inputCode.length >= codeLength.length}
+              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+              onPress={() => handleInput('4')}>
+              <BoldText style={styles.digitText}>4</BoldText>
+            </Pressable>
+            <Pressable
+              disabled={inputCode.length >= codeLength.length}
+              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+              onPress={() => handleInput('5')}>
+              <BoldText style={styles.digitText}>5</BoldText>
+            </Pressable>
+            <Pressable
+              disabled={inputCode.length >= codeLength.length}
+              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+              onPress={() => handleInput('6')}>
+              <BoldText style={styles.digitText}>6</BoldText>
+            </Pressable>
+          </View>
+          <View style={styles.row}>
+            <Pressable
+              disabled={inputCode.length >= codeLength.length}
+              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+              onPress={() => handleInput('7')}>
+              <BoldText style={styles.digitText}>7</BoldText>
+            </Pressable>
+            <Pressable
+              disabled={inputCode.length >= codeLength.length}
+              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+              onPress={() => handleInput('8')}>
+              <BoldText style={styles.digitText}>8</BoldText>
+            </Pressable>
+            <Pressable
+              disabled={inputCode.length >= codeLength.length}
+              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+              onPress={() => handleInput('9')}>
+              <BoldText style={styles.digitText}>9</BoldText>
+            </Pressable>
+          </View>
+          <View style={styles.row}>
+            <Pressable
+              disabled={inputCode.length >= codeLength.length}
+              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+            />
+            <Pressable
+              disabled={inputCode.length >= codeLength.length}
+              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+              onPress={() => handleInput('0')}>
+              <BoldText style={styles.digitText}>0</BoldText>
+            </Pressable>
+
+            <Pressable
+              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+              onPress={() => setInputCode(prev => prev.slice(0, -1))}>
+              <Image
+                source={require('../../../assets/images/delete.png')}
+                style={styles.delete}
+              />
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 };

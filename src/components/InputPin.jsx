@@ -80,7 +80,7 @@ const InputPin = ({
       <ErrorMessage errorMessage={errorMessage} />
       {children}
       <Button
-        text={buttonText || 'Pay now'}
+        text={buttonText || 'Send'}
         onPress={handlePay}
         style={styles.button}
       />

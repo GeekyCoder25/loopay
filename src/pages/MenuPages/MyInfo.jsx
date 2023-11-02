@@ -13,11 +13,13 @@ import { AppContext } from '../../components/AppContext';
 import Button from '../../components/Button';
 import { postFetchData } from '../../../utils/fetchAPI';
 import ToastMessage from '../../components/ToastMessage';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const MyInfo = () => {
   const [isEditable, setIsEditable] = useState(false);
   const { appData, setAppData, setIsLoading } = useContext(AppContext);
   const [inputFocus, setInputFocus] = useState('');
+  const [showPicker, setShowPicker] = useState(false);
   const {
     fullName,
     firstName,
@@ -46,6 +48,36 @@ const MyInfo = () => {
   };
   const handleFocus = value => {
     setInputFocus(value);
+  };
+
+  const handleDOB = () => {
+    setShowPicker(true);
+    setInputFocus('dob');
+  };
+
+  const defaultPickerDate = () => {
+    if (userProfile.dob) {
+      return new Date(userProfile.dob);
+    }
+    return new Date(Date.now());
+  };
+
+  const handleDatePicker = (event, selectedDate) => {
+    setShowPicker(false);
+    if (selectedDate > Date.now()) {
+      selectedDate = new Date(Date.now());
+    }
+    switch (event.type) {
+      case 'set':
+        selectedDate.setMilliseconds(0);
+        selectedDate.setSeconds(0);
+        selectedDate.setMinutes(0);
+        selectedDate.setHours(0);
+        handleChange(selectedDate);
+        break;
+      default:
+        break;
+    }
   };
 
   const handleSave = async () => {
@@ -196,14 +228,21 @@ const MyInfo = () => {
         <View style={styles.row}>
           <View style={styles.field}>
             <BoldText>Date of Birth</BoldText>
-            <TextInput
-              name="dob"
-              value={userProfile.dob}
-              onChangeText={text => handleChange(text)}
+            <Pressable
               style={inputFocus === 'dob' ? styles.inputFocus : styles.input}
-              editable={isEditable}
-              onFocus={() => handleFocus('dob')}
-            />
+              onPress={() => isEditable && handleDOB()}>
+              <RegularText>
+                {userProfile.dob &&
+                  new Date(userProfile.dob).toLocaleDateString()}
+              </RegularText>
+            </Pressable>
+            {showPicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={defaultPickerDate()}
+                onChange={handleDatePicker}
+              />
+            )}
           </View>
         </View>
       </View>
@@ -280,6 +319,7 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-500',
     fontSize: 15,
     marginTop: 8,
+    minHeight: 30,
   },
   inputFocus: {
     borderBottomWidth: 1,
@@ -288,8 +328,8 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-500',
     fontSize: 15,
     marginTop: 8,
+    minHeight: 30,
   },
-  dob: { marginTop: 15 },
   button: {
     marginBottom: 50,
   },

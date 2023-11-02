@@ -16,7 +16,6 @@ import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import { AppContext } from '../../components/AppContext';
 import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
-import LoadingModal from '../../components/LoadingModal';
 import { loginUser } from '../../../utils/storage';
 import ErrorMessage from '../../components/ErrorMessage';
 import SuccessMessage from '../../components/SuccessMessage';
@@ -24,10 +23,10 @@ import saveSessionOptions from '../../services/Savesession';
 
 const Signin = ({ navigation }) => {
   const [formData, setFormData] = useState({
-    // email: '',
-    // password: '',
-    email: 'toyibe25@gmail.com',
-    password: '251101',
+    email: '',
+    password: '',
+    // email: 'toyibe25@gmail.com',
+    // password: '251101',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -36,7 +35,6 @@ const Signin = ({ navigation }) => {
     vh,
     setIsLoggedIn,
     setAppData,
-    isLoading,
     setIsLoading,
     setIsAdmin,
     setCanChangeRole,
@@ -119,14 +117,14 @@ const Signin = ({ navigation }) => {
           </View>
         </View>
         <View style={styles.actionButtons}>
-          <View style={styles.signInIcons}>
+          {/* <View style={styles.signInIcons}>
             <Pressable onPress={() => console.log('apple was clicked')}>
               <Apple />
             </Pressable>
             <Pressable onPress={() => console.log('google was clicked')}>
               <Google />
             </Pressable>
-          </View>
+          </View> */}
           <View style={styles.already}>
             <RegularText style={styles.alreadyText}>
               Don&apos;t have an account?
@@ -138,7 +136,6 @@ const Signin = ({ navigation }) => {
           <Button text={'Log in'} onPress={handleLogin} />
         </View>
       </View>
-      <LoadingModal isLoading={isLoading} />
     </PageContainer>
   );
 };

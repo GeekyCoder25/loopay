@@ -28,6 +28,7 @@ export const signUpData = [
     placeholder: 'Phone number',
     type: 'tel',
     inputMode: 'tel',
+    countryCode: true
   },
   {
     name: 'password',
@@ -136,8 +137,8 @@ export const sendMenuRoutes = [
     routeNavigate: 'RequestFund',
   },
   {
-    routeName: 'Airtime Top up',
-    routeDetails: 'Buy airtime via VTU',
+    routeName: 'Mobile/Virtual Top up',
+    routeDetails: 'Buy airtime and data via VTU',
     routeIcon: 'airtime',
     routeNavigate: 'AirtimeTopUpNavigator',
   },

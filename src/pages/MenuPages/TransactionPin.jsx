@@ -175,7 +175,7 @@ const ChangePin = ({ navigation, setReload }) => {
 
         if (pin1 !== pin2) {
           setErrorKey('pinCode');
-          return setErrorMessage("Pins arent't the same");
+          return setErrorMessage("Pins aren't the same");
         }
 
         const result = await postFetchData('user/set-pin', { pin: pin1 });
@@ -218,17 +218,6 @@ const ChangePin = ({ navigation, setReload }) => {
             <RegularText style={styles.changePinHeader}>
               Enter new transaction PIN
             </RegularText>
-            <View style={styles.changePinCodeLengthsContainer}>
-              {codeLengths.map(input => (
-                <PINInputFields
-                  key={input}
-                  codeLength={input}
-                  pinCode={pinCode}
-                  inputRef={inputRef}
-                  errorKey={errorKey}
-                />
-              ))}
-            </View>
             <TextInput
               autoFocus
               style={styles.codeInput}
@@ -243,6 +232,17 @@ const ChangePin = ({ navigation, setReload }) => {
               ref={inputRef}
               value={pinCode}
             />
+            <View style={styles.changePinCodeLengthsContainer}>
+              {codeLengths.map(input => (
+                <PINInputFields
+                  key={input}
+                  codeLength={input}
+                  pinCode={pinCode}
+                  inputRef={inputRef}
+                  errorKey={errorKey}
+                />
+              ))}
+            </View>
           </View>
         ) : (
           <View style={styles.formBody} key={isPin1}>

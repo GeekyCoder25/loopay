@@ -229,6 +229,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 20,
+    zIndex: 9,
   },
   select: {
     width: 95 + '%',

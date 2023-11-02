@@ -38,7 +38,7 @@ export default function App() {
   const [canChangeRole, setCanChangeRole] = useState(false);
   const [noReload, setNoReload] = useState(false);
   const [isSessionTimedOut, setIsSessionTimedOut] = useState(true);
-  const [timeForInactivityInSecond] = useState(1200);
+  const [timeForInactivityInSecond] = useState(120);
   const [showConnected, setShowConnected] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const timerId = useRef(false);
@@ -86,7 +86,7 @@ export default function App() {
     getDefaultCurrency().then(defaultCurrency => {
       if (!defaultCurrency) {
         return setSelectedCurrency(
-          allCurrencies.find(currency => currency.currency === 'naira'),
+          allCurrencies.find(currency => currency.currency === 'dollar'),
         );
       }
       const defaultCurrencyObject = allCurrencies.find(

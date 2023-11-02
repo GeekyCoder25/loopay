@@ -265,12 +265,14 @@ const Home = ({ navigation }) => {
         <View style={styles.body}>
           <View style={styles.historyHeader}>
             <RegularText style={styles.historyText}>History</RegularText>
-            <Pressable
-              onPress={() => navigation.navigate('TransactionHistory')}>
-              <RegularText>
-                See more <FaIcon name="chevron-right" color="#656565" />
-              </RegularText>
-            </Pressable>
+            {transactions.length > 3 && (
+              <Pressable
+                onPress={() => navigation.navigate('TransactionHistory')}>
+                <RegularText>
+                  See more <FaIcon name="chevron-right" color="#656565" />
+                </RegularText>
+              </Pressable>
+            )}
           </View>
           {transactions.length > 0 ? (
             <ScrollView
@@ -420,14 +422,12 @@ const styles = StyleSheet.create({
   },
   shortcuts: {
     flexDirection: 'row',
-    // alignItems: 'center',
     paddingHorizontal: 5 + '%',
     paddingBottom: 20,
-    gap: 25,
+    gap: 15,
   },
 
   route: {
-    // width: 100,
     gap: 10,
     alignItems: 'center',
   },

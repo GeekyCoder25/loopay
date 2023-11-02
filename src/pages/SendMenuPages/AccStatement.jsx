@@ -4,7 +4,7 @@ import AccInfoCard from '../../components/AccInfoCard';
 import RegularText from '../../components/fonts/RegularText';
 import ChevronDown from '../../../assets/images/chevron-down-fill.svg';
 import CalendarIcon from '../../../assets/images/calendar.svg';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { AppContext } from '../../components/AppContext';
 import SelectCurrencyModal from '../../components/SelectCurrencyModal';
 import BoldText from '../../components/fonts/BoldText';
