@@ -48,8 +48,8 @@ const Signup = ({ navigation }) => {
     // userName: 'Geeky Coder',
     // email: 'toyibe25@gmail.com',
     // phoneNumber: '9073002599',
-    // password: '251',
-    // confirmPassword: '251',
+    // password: '251101',
+    // confirmPassword: '251101',
     // role: 'admin',
   });
   const [errorMessage, setErrorMessage] = useState('');
@@ -83,8 +83,11 @@ const Signup = ({ navigation }) => {
         });
         const result = response.data;
         if (response.status === 200 && result.email === email) {
-          setDeviceID(sessionData.deviceID);
+          setDeviceID(result?.sessions?.deviceID || sessionData.deviceID);
           setIsLoading(false);
+          setTimeout(() => {
+            setVerifyEmail(false);
+          }, 300000);
           return setVerifyEmail(true);
         } else {
           if (typeof response === 'string') {

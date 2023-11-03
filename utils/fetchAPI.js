@@ -1,13 +1,16 @@
 import { getToken } from './storage';
 
-// export const apiUrl = 'http://10.0.2.2:8000/api';
-// export const apiUrl = 'http://192.168.212.8:8000/api';
-export const apiUrl = 'https://loopay-api.cyclic.app/api';
+export const apiUrl = 'http://10.0.2.2:8000/api';
+// export const apiUrl = 'http://192.168.182.8:8000/api';
+// export const apiUrl = 'https://loopay-api.cyclic.app/api';
 
 export const getFetchData = async apiEndpoint => {
   const API_URL = `${apiUrl}/${apiEndpoint}`;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000);
+  const timeout = setTimeout(() => {
+    controller.abort();
+    return { data: "Couldn't connect to server", status: 404 };
+  }, 10000);
   const token = await getToken();
 
   try {
@@ -21,6 +24,7 @@ export const getFetchData = async apiEndpoint => {
     const data = await response.json();
     return { data, status: response.status };
   } catch (err) {
+    clearTimeout(timeout);
     return "Couldn't connect to server";
   }
 };
@@ -28,7 +32,10 @@ export const getFetchData = async apiEndpoint => {
 export const postFetchData = async (apiEndpoint, bodyData, token) => {
   const API_URL = `${apiUrl}/${apiEndpoint}`;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000);
+  const timeout = setTimeout(() => {
+    controller.abort();
+    return { data: "Couldn't connect to server", status: 404 };
+  }, 10000);
   token = token || (await getToken());
 
   function removeTrailingWhiteSpace(obj) {
@@ -63,7 +70,7 @@ export const postFetchData = async (apiEndpoint, bodyData, token) => {
     const data = await response.json();
     return { data, status: response.status };
   } catch (err) {
-    console.log(err);
+    clearTimeout(timeout);
     return "Couldn't connect to server";
   }
 };
@@ -71,7 +78,10 @@ export const postFetchData = async (apiEndpoint, bodyData, token) => {
 export const putFetchData = async (apiEndpoint, bodyData) => {
   const API_URL = `${apiUrl}/${apiEndpoint}`;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000);
+  const timeout = setTimeout(() => {
+    controller.abort();
+    return { data: "Couldn't connect to server", status: 404 };
+  }, 10000);
   const token = await getToken();
 
   try {
@@ -88,7 +98,7 @@ export const putFetchData = async (apiEndpoint, bodyData) => {
     const data = await response.json();
     return { data, status: response.status };
   } catch (err) {
-    console.log(err);
+    clearTimeout(timeout);
     return "Couldn't connect to server";
   }
 };
@@ -96,7 +106,10 @@ export const putFetchData = async (apiEndpoint, bodyData) => {
 export const deleteFetchData = async (apiEndpoint, bodyData) => {
   const API_URL = `${apiUrl}/${apiEndpoint}`;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000);
+  const timeout = setTimeout(() => {
+    controller.abort();
+    return { data: "Couldn't connect to server", status: 404 };
+  }, 10000);
   const token = await getToken();
 
   try {
@@ -113,7 +126,7 @@ export const deleteFetchData = async (apiEndpoint, bodyData) => {
     const data = await response.json();
     return { data, status: response.status };
   } catch (err) {
-    console.log(err);
+    clearTimeout(timeout);
     return "Couldn't connect to server";
   }
 };

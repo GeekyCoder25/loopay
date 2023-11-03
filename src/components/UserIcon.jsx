@@ -24,7 +24,7 @@ const UserIcon = props => {
         />
       </View>
     )
-  ) : appData.photoURL ? (
+  ) : appData?.photoURL ? (
     <Image
       src={appData.photoURL.replace(
         '/image/upload',

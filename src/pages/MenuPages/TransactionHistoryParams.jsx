@@ -113,6 +113,20 @@ const TransactionHistoryParams = ({ route }) => {
   };
 
   const handleShare = async () => {
+    const shareReceiptData = [
+      { key: 'Receiver Account', value: receiverAccount },
+      { key: 'Sender Account', value: senderAccount },
+      { key: 'Receiver Name', value: receiverName },
+      { key: 'Transaction type', value: transactionType },
+      {
+        key: [transactionType === 'credit' ? 'Sender Bank' : 'Receiver Bank'],
+        value: transactionType === 'credit' ? sourceBank : destinationBank,
+      },
+      { key: 'Reference Id', value: reference },
+      { key: 'Narration', value: description },
+      { key: 'Status', value: status },
+    ];
+
     const html = String.raw` <html lang="en">
       <head>
         <meta
@@ -122,9 +136,140 @@ const TransactionHistoryParams = ({ route }) => {
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+        <style>
+          * {
+            padding: 0;
+            margin: 0;
+          }
+          body {
+            padding: 30px;
+            max-width: 1000px;
+            margin: auto;
+            min-height: 500px;
+            /* box-shadow: ; */
+          }
+          .container {
+            width: 100%;
+            height: 100%;
+            padding: 50px 30px;
+            box-shadow: 0px 4px 14px 0px rgba(82, 100, 116, 0.16);
+            display: flex;
+            flex-direction: column;
+          }
+          .logo {
+            width: 150px;
+            height: 100px;
+          }
+          header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            width: 100%;
+            margin-bottom: 50px;
+
+            & span {
+              display: inline-block;
+              padding-top: 6px;
+            }
+          }
+          .title {
+            font-size: 2rem;
+          }
+          .amount {
+            display: flex;
+            align-items: center;
+
+            & h4 {
+              margin-right: 10px;
+              margin-top: 8px;
+              font-size: 1.3rem;
+            }
+            & h5 {
+              margin-right: 10px;
+              margin-top: 10px;
+              font-size: 1.5rem;
+            }
+          }
+          .status {
+            font-weight: 600;
+            margin-top: 20px;
+            display: inline-block;
+          }
+          .success {
+            color: #0fb52d;
+          }
+          .pending {
+            color: #ffa500;
+          }
+          .blocked {
+            color: #ed4c5c;
+          }
+          section {
+            margin-top: 30px;
+
+            & div {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              border-bottom: 1px solid #000;
+              padding: 15px 2px;
+            }
+          }
+          footer {
+            padding: 30px 20px;
+            text-align: justify;
+            margin-top: auto;
+            & h3 {
+              display: inline-block;
+            }
+          }
+        </style>
       </head>
       <body>
-        <h1>Transaction receipt to be created with html and css</h1>
+        <div class="container">
+          <header>
+            <div>
+              <h2 class="title">Receipt</h2>
+              <span>${new Date(createdAt).toString()}</span>
+            </div>
+            <img
+              src="https://res.cloudinary.com/geekycoder/image/upload/v1688782340/loopay/appIcon.png"
+              alt=""
+              class="logo" />
+          </header>
+          <div class="amount">
+            <h4>${currencySymbol}</h4>
+            <h1>${Number(amount).toLocaleString().split('.')[0]}</h1>
+            <h5>${Number(amount).toLocaleString().split('.')[1]}</h5>
+          </div>
+          <span class="status pending">Successful</span>
+          <section>
+            ${shareReceiptData.map(
+              index =>
+                String.raw`
+      <div>
+        <h3>${index.key}</h3>
+        <p>${index.value}</p>
+      </div>
+    `,
+            )}
+          </section>
+
+          <footer>
+            <div>
+              <h3>DISCLAIMER:</h3>
+              Your transaction has been successfully processed. Note. however,
+              that completion of any transfer may be affected by other factors
+              including but not limited to transmission errors, incomplete
+              information, fluctuations on the network/internet, interruptions,
+              glitch, delayed information or other matters beyond the Bank's
+              control which may impact on the transaction and for which the Bank
+              will not be liable. A" transactions are subject to Loopay
+              confirmation and fraud proof verification.
+            </div>
+          </footer>
+        </div>
       </body>
     </html>`;
     createPDF(html);
