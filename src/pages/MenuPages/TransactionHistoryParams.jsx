@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, { useContext } from 'react';
 import PageContainer from '../../components/PageContainer';
 import { StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
@@ -13,8 +13,10 @@ import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
 import Button from '../../components/Button';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
+import { AppContext } from '../../components/AppContext';
 
 const TransactionHistoryParams = ({ route }) => {
+  const { vh } = useContext(AppContext);
   const history = route.params;
   const {
     status,
@@ -42,6 +44,7 @@ const TransactionHistoryParams = ({ route }) => {
     networkProvider,
     phoneNo,
     dataPlan,
+    debitAccount,
   } = history;
 
   const currencySymbol = allCurrencies.find(
@@ -113,20 +116,34 @@ const TransactionHistoryParams = ({ route }) => {
   };
 
   const handleShare = async () => {
-    const shareReceiptData = [
-      { key: 'Receiver Account', value: receiverAccount },
-      { key: 'Sender Account', value: senderAccount },
-      { key: 'Receiver Name', value: receiverName },
-      { key: 'Transaction type', value: transactionType },
-      {
-        key: [transactionType === 'credit' ? 'Sender Bank' : 'Receiver Bank'],
-        value: transactionType === 'credit' ? sourceBank : destinationBank,
-      },
-      { key: 'Reference Id', value: reference },
-      { key: 'Narration', value: description },
-      { key: 'Status', value: status },
-    ];
-
+    const shareReceiptData = () => {
+      if (transactionType === 'airtime' || transactionType === 'data') {
+        return [
+          {
+            key: 'Transaction type',
+            value: `Debit - ${transactionType} `,
+          },
+          { key: 'Debit Account', value: debitAccount },
+          { key: 'Network', value: networkProvider },
+          { key: 'Phone Number', value: phoneNo },
+          { key: 'Reference Id', value: reference },
+          { key: 'Status', value: status },
+        ];
+      }
+      return [
+        { key: 'Receiver Account', value: receiverAccount },
+        { key: 'Sender Account', value: senderAccount },
+        { key: 'Receiver Name', value: receiverName },
+        { key: 'Transaction type', value: transactionType },
+        {
+          key: [transactionType === 'credit' ? 'Sender Bank' : 'Receiver Bank'],
+          value: transactionType === 'credit' ? sourceBank : destinationBank,
+        },
+        { key: 'Reference Id', value: reference },
+        { key: 'Narration', value: description, noTransform: true },
+        { key: 'Status', value: status },
+      ];
+    };
     const html = String.raw` <html lang="en">
       <head>
         <meta
@@ -136,95 +153,98 @@ const TransactionHistoryParams = ({ route }) => {
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
-        <style>
-          * {
-            padding: 0;
-            margin: 0;
+          <style>
+        * {
+          padding: 0;
+          margin: 0;
+        }
+        body {
+          padding: 20px;
+          margin: auto;
+          max-height: 842px;
+          max-width: 800px;
+        }
+        .container {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+        .logo {
+          width: 150px;
+          height: 100px;
+          object-fit: contain;
+        }
+        header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+          width: 100%;
+          margin-bottom: 50px;
+
+          & span {
+            display: inline-block;
+            padding-top: 6px;
           }
-          body {
-            padding: 30px;
-            max-width: 1000px;
-            margin: auto;
-            min-height: 500px;
-            /* box-shadow: ; */
+        }
+        .title {
+          font-size: 2rem;
+        }
+        .amount {
+          display: flex;
+          align-items: flex-end;
+
+          & h4 {
+            margin-right: 5px;
+            margin-bottom: 2px;
+            font-size: 1.3rem;
           }
-          .container {
-            width: 100%;
-            height: 100%;
-            padding: 50px 30px;
-            box-shadow: 0px 4px 14px 0px rgba(82, 100, 116, 0.16);
-            display: flex;
-            flex-direction: column;
+          & h5 {
+            margin-right: 10px;
+            margin-bottom: 2px;
+            font-size: 1.5rem;
           }
-          .logo {
-            width: 150px;
-            height: 100px;
-          }
-          header {
+        }
+        .statusHeader {
+          font-weight: 600;
+          margin-top: 20px;
+          display: inline-block;
+          text-transform: capitalize;
+        }
+        .success {
+          color: #0fb52d;
+        }
+        .pending {
+          color: #ffa500;
+        }
+        .blocked {
+          color: #ed4c5c;
+        }
+        section {
+          margin-top: 30px;
+
+          & div {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 20px;
-            width: 100%;
-            margin-bottom: 50px;
-
-            & span {
-              display: inline-block;
-              padding-top: 6px;
-            }
+            border-bottom: 1px solid #000;
+            padding: 10px 2px;
           }
-          .title {
-            font-size: 2rem;
+          & .value {
+            text-transform: capitalize;
           }
-          .amount {
-            display: flex;
-            align-items: center;
-
-            & h4 {
-              margin-right: 10px;
-              margin-top: 8px;
-              font-size: 1.3rem;
-            }
-            & h5 {
-              margin-right: 10px;
-              margin-top: 10px;
-              font-size: 1.5rem;
-            }
-          }
-          .status {
-            font-weight: 600;
-            margin-top: 20px;
+        }
+        footer {
+          padding: 50px 20px 10px;
+          text-align: justify;
+          margin-top: auto;
+          line-height: 25px;
+          & h3 {
             display: inline-block;
           }
-          .success {
-            color: #0fb52d;
-          }
-          .pending {
-            color: #ffa500;
-          }
-          .blocked {
-            color: #ed4c5c;
-          }
-          section {
-            margin-top: 30px;
-
-            & div {
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              border-bottom: 1px solid #000;
-              padding: 15px 2px;
-            }
-          }
-          footer {
-            padding: 30px 20px;
-            text-align: justify;
-            margin-top: auto;
-            & h3 {
-              display: inline-block;
-            }
-          }
-        </style>
+        }
+      </style>
       </head>
       <body>
         <div class="container">
@@ -241,19 +261,23 @@ const TransactionHistoryParams = ({ route }) => {
           <div class="amount">
             <h4>${currencySymbol}</h4>
             <h1>${Number(amount).toLocaleString().split('.')[0]}</h1>
-            <h5>${Number(amount).toLocaleString().split('.')[1]}</h5>
+            <h5>.${Number(amount).toLocaleString().split('.')[1] || '00'}</h5>
           </div>
-          <span class="status pending">Successful</span>
+          <span class="statusHeader ${status}">${status}</span>
           <section>
-            ${shareReceiptData.map(
-              index =>
-                String.raw`
+            ${shareReceiptData()
+              .map(
+                index =>
+                  String.raw`
       <div>
         <h3>${index.key}</h3>
-        <p>${index.value}</p>
+        <p class="status" style="${
+          !index.noTransform && 'text-transform: capitalize;'
+        }">${index.value}</p>
       </div>
     `,
-            )}
+              )
+              .join('')}
           </section>
 
           <footer>
@@ -265,7 +289,7 @@ const TransactionHistoryParams = ({ route }) => {
               information, fluctuations on the network/internet, interruptions,
               glitch, delayed information or other matters beyond the Bank's
               control which may impact on the transaction and for which the Bank
-              will not be liable. A" transactions are subject to Loopay
+              will not be liable. All transactions are subject to Loopay
               confirmation and fraud proof verification.
             </div>
           </footer>
@@ -283,7 +307,7 @@ const TransactionHistoryParams = ({ route }) => {
   return (
     <PageContainer justify={true} scroll>
       <BoldText style={styles.historyHeader}>Transaction history</BoldText>
-      <View style={styles.body}>
+      <View style={{ ...styles.body, minHeight: vh * 0.8 }}>
         {transactionType?.toLowerCase() === 'credit' && (
           <>
             <View style={styles.headerContainer}>
@@ -713,8 +737,9 @@ const TransactionHistoryParams = ({ route }) => {
             </View>
           </>
         )}
-
-        <Button text={'Share Receipt'} onPress={handleShare} />
+        <View style={styles.button}>
+          <Button text={'Share Receipt'} onPress={handleShare} />
+        </View>
       </View>
     </PageContainer>
   );
@@ -796,6 +821,10 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'right',
     color: '#525252',
+  },
+  button: {
+    flex: 1,
+    justifyContent: 'flex-end',
   },
   status: {
     flexDirection: 'row',

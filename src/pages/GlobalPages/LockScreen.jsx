@@ -33,6 +33,7 @@ const LockScreen = () => {
   }, []);
 
   const handleInput = async input => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setInputCode(prev => `${prev}${input}`);
     if (inputCode.length + 1 >= codeLength.length) {
       try {

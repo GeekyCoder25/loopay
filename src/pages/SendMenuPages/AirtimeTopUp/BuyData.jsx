@@ -28,7 +28,6 @@ const BuyData = ({ navigation }) => {
   const [dataPlans, setDataPlans] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
-  const [amountInput, setAmountInput] = useState('');
   const [formData, setFormData] = useState({
     network: '',
     phoneNo: '',
@@ -77,6 +76,8 @@ const BuyData = ({ navigation }) => {
     setFormData(prev => {
       return { ...prev, phoneNo };
     });
+    setErrorMessage('');
+    setErrorKey('');
   };
 
   const handleInputPin = async () => {
@@ -212,7 +213,11 @@ const BuyData = ({ navigation }) => {
         <Text style={styles.label}>Enter Phone Number</Text>
         <View style={styles.textInputContainer}>
           <TextInput
-            style={{ ...styles.textInput, ...styles.textInputStyles }}
+            style={{
+              ...styles.textInput,
+              ...styles.textInputStyles,
+              borderColor: errorKey === 'phoneInput' ? 'red' : '#ccc',
+            }}
             inputMode="tel"
             onChangeText={text => handlePhoneInput(text)}
             value={formData.phoneNo}
@@ -226,7 +231,11 @@ const BuyData = ({ navigation }) => {
           <Pressable
             onPress={() => setPlanModalOpen(true)}
             style={styles.textInputContainer}>
-            <View style={styles.textInput}>
+            <View
+              style={{
+                ...styles.textInput,
+                borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
+              }}>
               {planToBuy ? (
                 <BoldText style={styles.networkToBuySelected}>
                   {planToBuy}
@@ -295,6 +304,8 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   textInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
     borderRadius: 5,
     backgroundColor: '#f9f9f9',
     height: 50,

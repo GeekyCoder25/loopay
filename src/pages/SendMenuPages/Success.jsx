@@ -10,9 +10,12 @@ import { AppContext } from '../../components/AppContext';
 import { Audio } from 'expo-av';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
+import { useWalletContext } from '../../context/WalletContext';
+import { allCurrencies } from '../../database/data';
 
 const Success = ({ navigation, route }) => {
-  const { isAdmin } = useContext(AppContext);
+  const { isAdmin, setShowTabBar, vh } = useContext(AppContext);
+  const { transactions } = useWalletContext();
   const { userToSendTo, amountInput, fee, airtime, dataPlan } = route.params;
 
   useFocusEffect(
@@ -26,7 +29,9 @@ const Success = ({ navigation, route }) => {
       return () => subscription.remove();
     }, [navigation]),
   );
-
+  useEffect(() => {
+    setShowTabBar(false);
+  }, [setShowTabBar]);
   useEffect(() => {
     const playSound = async () => {
       const { sound } = await Audio.Sound.createAsync(
@@ -38,6 +43,60 @@ const Success = ({ navigation, route }) => {
   }, []);
 
   const handleShare = async () => {
+    const transaction = transactions.find(
+      index => route.params.id === index.id || route.params.airtime?.id,
+    );
+
+    const {
+      status,
+      receiverName,
+      amount,
+      transactionType,
+      createdAt,
+      sourceBank,
+      destinationBank,
+      senderAccount,
+      receiverAccount,
+      currency,
+      description,
+      reference,
+      networkProvider,
+      phoneNo,
+      debitAccount,
+    } = transaction;
+
+    const currencySymbol = allCurrencies.find(
+      id => currency === id.currency,
+    )?.symbol;
+
+    const shareReceiptData = () => {
+      if (transactionType === 'airtime' || transactionType === 'data') {
+        return [
+          {
+            key: 'Transaction type',
+            value: `Debit - ${transactionType} `,
+          },
+          { key: 'Debit Account', value: debitAccount },
+          { key: 'Network', value: networkProvider },
+          { key: 'Phone Number', value: phoneNo },
+          { key: 'Reference Id', value: reference },
+          { key: 'Status', value: status },
+        ];
+      }
+      return [
+        { key: 'Receiver Account', value: receiverAccount },
+        { key: 'Sender Account', value: senderAccount },
+        { key: 'Receiver Name', value: receiverName },
+        { key: 'Transaction type', value: transactionType },
+        {
+          key: [transactionType === 'credit' ? 'Sender Bank' : 'Receiver Bank'],
+          value: transactionType === 'credit' ? sourceBank : destinationBank,
+        },
+        { key: 'Reference Id', value: reference },
+        { key: 'Narration', value: description, noTransform: true },
+        { key: 'Status', value: status },
+      ];
+    };
     const html = String.raw` <html lang="en">
       <head>
         <meta
@@ -47,9 +106,147 @@ const Success = ({ navigation, route }) => {
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+          <style>
+        * {
+          padding: 0;
+          margin: 0;
+        }
+        body {
+          padding: 20px;
+          margin: auto;
+          max-height: 842px;
+          max-width: 800px;
+        }
+        .container {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+        .logo {
+          width: 150px;
+          height: 100px;
+          object-fit: contain;
+        }
+        header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+          width: 100%;
+          margin-bottom: 50px;
+
+          & span {
+            display: inline-block;
+            padding-top: 6px;
+          }
+        }
+        .title {
+          font-size: 2rem;
+        }
+        .amount {
+          display: flex;
+          align-items: flex-end;
+
+          & h4 {
+            margin-right: 5px;
+            margin-bottom: 2px;
+            font-size: 1.3rem;
+          }
+          & h5 {
+            margin-right: 10px;
+            margin-bottom: 2px;
+            font-size: 1.5rem;
+          }
+        }
+        .statusHeader {
+          font-weight: 600;
+          margin-top: 20px;
+          display: inline-block;
+          text-transform: capitalize;
+        }
+        .success {
+          color: #0fb52d;
+        }
+        .pending {
+          color: #ffa500;
+        }
+        .blocked {
+          color: #ed4c5c;
+        }
+        section {
+          margin-top: 30px;
+
+          & div {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #000;
+            padding: 10px 2px;
+          }
+          & .value {
+            text-transform: capitalize;
+          }
+        }
+        footer {
+          padding: 50px 20px 10px;
+          text-align: justify;
+          margin-top: auto;
+          line-height: 25px;
+          & h3 {
+            display: inline-block;
+          }
+        }
+      </style>
       </head>
       <body>
-        <h1>Transaction receipt to be created with html and css</h1>
+        <div class="container">
+          <header>
+            <div>
+              <h2 class="title">Receipt</h2>
+              <span>${new Date(createdAt).toString()}</span>
+            </div>
+            <img
+              src="https://res.cloudinary.com/geekycoder/image/upload/v1688782340/loopay/appIcon.png"
+              alt=""
+              class="logo" />
+          </header>
+          <div class="amount">
+            <h4>${currencySymbol}</h4>
+            <h1>${Number(amount).toLocaleString().split('.')[0]}</h1>
+            <h5>.${Number(amount).toLocaleString().split('.')[1] || '00'}</h5>
+          </div>
+          <span class="statusHeader ${status}">${status}</span>
+          <section>
+            ${shareReceiptData()
+              .map(
+                index =>
+                  String.raw`
+      <div>
+        <h3>${index.key}</h3>
+        <p class="status" style="${
+          !index.noTransform && 'text-transform: capitalize;'
+        }">${index.value}</p>
+      </div>
+    `,
+              )
+              .join('')}
+          </section>
+
+          <footer>
+            <div>
+              <h3>DISCLAIMER:</h3>
+              Your transaction has been successfully processed. Note. however,
+              that completion of any transfer may be affected by other factors
+              including but not limited to transmission errors, incomplete
+              information, fluctuations on the network/internet, interruptions,
+              glitch, delayed information or other matters beyond the Bank's
+              control which may impact on the transaction and for which the Bank
+              will not be liable. All transactions are subject to Loopay
+              confirmation and fraud proof verification.
+            </div>
+          </footer>
+        </div>
       </body>
     </html>`;
     createPDF(html);
@@ -71,28 +268,34 @@ const Success = ({ navigation, route }) => {
 
   return (
     <PageContainer scroll>
-      <View style={styles.header}>
-        <Check />
-        <BoldText style={styles.headerText}>Transaction Successful</BoldText>
-      </View>
-      <View style={styles.footer}>
-        <FooterCard
-          userToSendTo={userToSendTo}
-          amountInput={amountInput}
-          fee={fee || null}
-          airtime={airtime}
-          dataPlan={dataPlan}
-        />
-      </View>
-      <View style={styles.button}>
-        <Button text={'Share Receipt'} onPress={handleShare} />
-        <Button text={'Back Home'} onPress={handleHome} />
+      <View style={{ ...styles.container, minHeight: vh * 0.8 }}>
+        <View style={styles.header}>
+          <Check />
+          <BoldText style={styles.headerText}>Transaction Successful</BoldText>
+        </View>
+        <View style={styles.footer}>
+          <FooterCard
+            userToSendTo={userToSendTo}
+            amountInput={amountInput}
+            fee={fee || null}
+            airtime={airtime}
+            dataPlan={dataPlan}
+          />
+        </View>
+        <View style={styles.button}>
+          <Button text={'Share Receipt'} onPress={handleShare} />
+          <Button text={'Back Home'} onPress={handleHome} />
+        </View>
       </View>
     </PageContainer>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginVertical: 10 + '%',
+    justifyContent: 'center',
+  },
   header: {
     gap: 30,
     flex: 1,

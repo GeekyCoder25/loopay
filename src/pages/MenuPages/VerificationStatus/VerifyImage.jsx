@@ -1,7 +1,7 @@
 import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import PageContainer from '../../../components/PageContainer';
 import Button from '../../../components/Button';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import RegularText from '../../../components/fonts/RegularText';
 import IDcard from '../../../../assets/images/sideIdCard.svg';
 import Capture from '../../../../assets/images/capture.svg';
@@ -33,9 +33,6 @@ const VerifyImage = () => {
     }
   };
 
-  useEffect(() => {
-    // console.log(formData);
-  }, [formData]);
   const handleCapture = () => {
     const selectImage = async () => {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();

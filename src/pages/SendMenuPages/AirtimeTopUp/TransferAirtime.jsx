@@ -15,7 +15,6 @@ import { AppContext } from '../../../components/AppContext';
 const TransferAirtime = ({ navigation, route }) => {
   const { formData } = route.params;
   const { setWalletRefresh } = useContext(AppContext);
-  console.log(formData.type);
   const handlePay = async setErrorMessage => {
     const response = await postFetchData(`user/${formData.type}`, formData);
     if (!response.status || response.status !== 200) {

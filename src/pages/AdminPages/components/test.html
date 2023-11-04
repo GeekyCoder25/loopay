@@ -13,23 +13,21 @@
         margin: 0;
       }
       body {
-        padding: 30px;
-        max-width: 1000px;
+        padding: 20px;
         margin: auto;
-        min-height: 500px;
-        /* box-shadow: ; */
+        max-height: 842px;
+        max-width: 800px;
       }
       .container {
         width: 100%;
         height: 100%;
-        padding: 50px 30px;
-        box-shadow: 0px 4px 14px 0px rgba(82, 100, 116, 0.16);
         display: flex;
         flex-direction: column;
       }
       .logo {
         width: 150px;
         height: 100px;
+        object-fit: contain;
       }
       header {
         display: flex;
@@ -49,16 +47,16 @@
       }
       .amount {
         display: flex;
-        align-items: center;
+        align-items: flex-end;
 
         & h4 {
-          margin-right: 10px;
-          margin-top: 8px;
+          margin-right: 5px;
+          margin-bottom: 2px;
           font-size: 1.3rem;
         }
         & h5 {
           margin-right: 10px;
-          margin-top: 10px;
+          margin-bottom: 2px;
           font-size: 1.5rem;
         }
       }
@@ -84,13 +82,17 @@
           align-items: center;
           justify-content: space-between;
           border-bottom: 1px solid #000;
-          padding: 15px 2px;
+          padding: 10px 2px;
+        }
+        & .value {
+          text-transform: capitalize;
         }
       }
       footer {
-        padding: 30px 20px;
+        padding: 50px 20px 10px;
         text-align: justify;
         margin-top: auto;
+        line-height: 25px;
         & h3 {
           display: inline-block;
         }
@@ -114,11 +116,11 @@
         <h1>8,314</h1>
         <h5>.00</h5>
       </div>
-      <span class="status pending">Successful</span>
+      <span class="status pending">successful</span>
       <section>
         <div>
           <h3>key</h3>
-          <p>Value</p>
+          <p class="value">Value</p>
         </div>
       </section>
 

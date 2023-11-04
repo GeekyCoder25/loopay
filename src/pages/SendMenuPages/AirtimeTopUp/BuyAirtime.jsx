@@ -247,7 +247,6 @@ const BuyAirtime = ({ navigation }) => {
             }}
             inputMode="tel"
             onChangeText={text => handlePhoneInput(text)}
-            onBlur={() => {}}
             maxLength={11}
             value={formData.phoneNo}
           />

@@ -1,4 +1,5 @@
 export const hideTabRoutes = [
+  'Success',
   'AddMoney',
   'AddMoneyConfirm',
   'AddNewCard',
