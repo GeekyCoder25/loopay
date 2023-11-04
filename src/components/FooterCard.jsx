@@ -77,6 +77,12 @@ const FooterCard = ({ userToSendTo, airtime, amountInput, dataPlan, fee }) => {
               </BoldText>
             </View>
           )}
+          {airtime.reference && (
+            <View style={styles.cardLine}>
+              <RegularText style={styles.cardKey}>Reference ID</RegularText>
+              <BoldText style={styles.cardValue}>{airtime.reference}</BoldText>
+            </View>
+          )}
           <View style={styles.cardLine}>
             <RegularText style={styles.cardKey}>Payment Method</RegularText>
             <BoldText style={{ ...styles.cardValue, color: '#006E53' }}>

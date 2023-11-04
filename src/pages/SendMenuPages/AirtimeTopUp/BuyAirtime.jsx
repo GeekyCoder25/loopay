@@ -23,6 +23,7 @@ import { addingDecimal } from '../../../../utils/AddingZero';
 import { AppContext } from '../../../components/AppContext';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { randomUUID } from 'expo-crypto';
+import { getFetchData } from '../../../../utils/fetchAPI';
 
 const BuyAirtime = ({ navigation }) => {
   const { selectedCurrency } = useContext(AppContext);
@@ -63,10 +64,10 @@ const BuyAirtime = ({ navigation }) => {
   }, [formData]);
 
   const networkProviders = [
-    { network: 'mtn', locale: 'ng' },
-    { network: 'airtel', locale: 'ng' },
-    { network: 'glo', locale: 'ng' },
-    { network: '9mobile', locale: 'ng' },
+    { network: '9mobile', locale: 'ng', operatorId: 340 },
+    { network: 'mtn', locale: 'ng', operatorId: 341 },
+    { network: 'airtel', locale: 'ng', operatorId: 342 },
+    { network: 'glo', locale: 'ng', operatorId: 344 },
   ];
 
   const handleModal = () => {
@@ -74,10 +75,14 @@ const BuyAirtime = ({ navigation }) => {
   };
 
   const handleNetworkSelect = provider => {
-    handleModal();
-    setNetworkToBuy({ network: provider.network, locale: provider.locale });
+    setModalOpen(false);
+    setNetworkToBuy(provider);
     setFormData(prev => {
-      return { ...prev, network: provider.network };
+      return {
+        ...prev,
+        network: provider.network,
+        operatorId: provider.operatorId,
+      };
     });
   };
 
@@ -103,12 +108,23 @@ const BuyAirtime = ({ navigation }) => {
     }
   };
 
-  const handlePhoneInput = phoneNo => {
+  const handlePhoneInput = async phoneNo => {
     setFormData(prev => {
       return { ...prev, phoneNo };
     });
     setErrorMessage('');
     setErrorKey('');
+    if (phoneNo.length === 11) {
+      const response = await getFetchData(
+        `user/get-network?phone=${phoneNo}&country=${'NG'}`,
+      );
+      if (response.status === 200) {
+        const network = response.data.name.toLowerCase();
+        handleNetworkSelect(
+          networkProviders.find(index => network.startsWith(index.network)),
+        );
+      }
+    }
   };
 
   const handleInputPin = async () => {
@@ -210,6 +226,21 @@ const BuyAirtime = ({ navigation }) => {
             </View>
           </View>
         </Modal>
+        <Text style={styles.topUp}>Phone Number</Text>
+        <View style={styles.textInputContainer}>
+          <TextInput
+            style={{
+              ...styles.textInput,
+              ...styles.textInputStyles,
+              borderColor: errorKey === 'phoneInput' ? 'red' : '#ccc',
+            }}
+            inputMode="tel"
+            onChangeText={text => handlePhoneInput(text)}
+            maxLength={11}
+            value={formData.phoneNo}
+          />
+        </View>
+        <ErrorMessage errorMessage={errorMessage2} />
         <View style={styles.topUpContainer}>
           <Text style={styles.topUp}>Amount to be credited</Text>
           <Text style={styles.topUp}>
@@ -236,22 +267,6 @@ const BuyAirtime = ({ navigation }) => {
             </View>
           )}
         </View>
-
-        <Text style={styles.topUp}>Phone Number</Text>
-        <View style={styles.textInputContainer}>
-          <TextInput
-            style={{
-              ...styles.textInput,
-              ...styles.textInputStyles,
-              borderColor: errorKey === 'phoneInput' ? 'red' : '#ccc',
-            }}
-            inputMode="tel"
-            onChangeText={text => handlePhoneInput(text)}
-            maxLength={11}
-            value={formData.phoneNo}
-          />
-        </View>
-        <ErrorMessage errorMessage={errorMessage2} />
 
         <Button text={'Buy Airtime'} onPress={handleInputPin} />
       </ScrollView>

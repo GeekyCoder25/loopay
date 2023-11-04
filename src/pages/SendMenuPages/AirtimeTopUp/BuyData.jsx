@@ -20,6 +20,7 @@ import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
 import Button from '../../../components/Button';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { randomUUID } from 'expo-crypto';
+import { getFetchData } from '../../../../utils/fetchAPI';
 
 const BuyData = ({ navigation }) => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -54,10 +55,10 @@ const BuyData = ({ navigation }) => {
   ];
 
   const networkProviders = [
-    { network: 'mtn', locale: 'ng' },
-    { network: 'airtel', locale: 'ng' },
-    { network: 'glo', locale: 'ng' },
-    { network: '9mobile', locale: 'ng' },
+    { network: '9mobile', locale: 'ng', operatorId: 340 },
+    { network: 'mtn', locale: 'ng', operatorId: 341 },
+    { network: 'airtel', locale: 'ng', operatorId: 342 },
+    { network: 'glo', locale: 'ng', operatorId: 344 },
   ];
 
   const handleModal = () => {
@@ -66,18 +67,33 @@ const BuyData = ({ navigation }) => {
   };
   const handleNetworkSelect = provider => {
     handleModal();
-    setNetworkToBuy({ network: provider.network, locale: provider.locale });
+    setNetworkToBuy(provider);
     setFormData(prev => {
-      return { ...prev, network: provider.network };
+      return {
+        ...prev,
+        network: provider.network,
+        operatorId: provider.operatorId,
+      };
     });
   };
 
-  const handlePhoneInput = phoneNo => {
+  const handlePhoneInput = async phoneNo => {
     setFormData(prev => {
       return { ...prev, phoneNo };
     });
     setErrorMessage('');
     setErrorKey('');
+    if (phoneNo.length === 11) {
+      const response = await getFetchData(
+        `user/get-network?phone=${phoneNo}&country=${'NG'}`,
+      );
+      if (response.status === 200) {
+        const network = response.data.name.toLowerCase();
+        handleNetworkSelect(
+          networkProviders.find(index => network.startsWith(index.network)),
+        );
+      }
+    }
   };
 
   const handleInputPin = async () => {

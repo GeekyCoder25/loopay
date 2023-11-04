@@ -79,7 +79,7 @@ const Success = ({ navigation, route }) => {
           { key: 'Debit Account', value: debitAccount },
           { key: 'Network', value: networkProvider },
           { key: 'Phone Number', value: phoneNo },
-          { key: 'Reference Id', value: reference },
+          { key: 'Reference ID', value: reference },
           { key: 'Status', value: status },
         ];
       }
@@ -92,7 +92,7 @@ const Success = ({ navigation, route }) => {
           key: [transactionType === 'credit' ? 'Sender Bank' : 'Receiver Bank'],
           value: transactionType === 'credit' ? sourceBank : destinationBank,
         },
-        { key: 'Reference Id', value: reference },
+        { key: 'Reference ID', value: reference },
         { key: 'Narration', value: description, noTransform: true },
         { key: 'Status', value: status },
       ];

@@ -22,7 +22,7 @@ const TransferAirtime = ({ navigation, route }) => {
     }
     setWalletRefresh(prev => !prev);
     navigation.navigate('Success', {
-      airtime: formData,
+      airtime: { ...formData, reference: response.data.reference },
       amountInput: formData.amount,
       dataPlan: formData.plan,
     });
@@ -65,7 +65,7 @@ const TransferAirtime = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.content}>
-          <InputPin customFunc={handlePay}>
+          <InputPin customFunc={handlePay} buttonText={'Buy Now'}>
             <View style={styles.footer}>
               <FooterCard
                 airtime={formData}

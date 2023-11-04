@@ -153,7 +153,7 @@ const TransactionHistoryParams = ({ route }) => {
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
-          <style>
+            <style>
         * {
           padding: 0;
           margin: 0;
@@ -218,7 +218,9 @@ const TransactionHistoryParams = ({ route }) => {
         .pending {
           color: #ffa500;
         }
-        .blocked {
+        .blocked,
+        .declined,
+        .abandoned {
           color: #ed4c5c;
         }
         section {

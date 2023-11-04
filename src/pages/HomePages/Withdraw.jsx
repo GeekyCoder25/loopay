@@ -86,12 +86,13 @@ const Withdraw = ({ navigation }) => {
 
   const initiateWithdrawal = async () => {
     try {
+      const id = randomUUID();
       const response = await postFetchData('user/transfer', {
         ...bankSelected,
         reason: 'Withdrawal to local NGN account',
         amount: amountInput,
         senderPhoto: appData.photoURL,
-        id: randomUUID(),
+        id,
       });
       if (response.status === 200) {
         setWalletRefresh(prev => !prev);
@@ -99,6 +100,7 @@ const Withdraw = ({ navigation }) => {
           userToSendTo: bankSelected,
           amountInput,
           fee,
+          id,
         });
       }
       typeof response === 'string'
