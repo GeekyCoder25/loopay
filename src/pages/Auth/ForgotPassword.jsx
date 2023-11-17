@@ -113,7 +113,8 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
 
   useEffect(() => {
     isLoggedIn && setFormData({ email: appData.email });
-    isSessionTimedOut &&
+    isLoggedIn &&
+      isSessionTimedOut &&
       postFetchData('auth/forget-password', { email: appData.email }).then(
         result => {
           result = result.data;

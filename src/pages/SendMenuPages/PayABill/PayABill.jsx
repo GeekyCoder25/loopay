@@ -1,13 +1,14 @@
-import { Pressable, StyleSheet, View } from 'react-native';
-import PageContainer from '../../components/PageContainer';
-import BoldText from '../../components/fonts/BoldText';
-import TVIcon from '../../../assets/images/billTv.svg';
-import InternetIcon from '../../../assets/images/billInternet.svg';
-import SchoolIcon from '../../../assets/images/billSchool.svg';
-import ElectricityIcon from '../../../assets/images/billElectricity.svg';
-import RegularText from '../../components/fonts/RegularText';
 import { useContext } from 'react';
-import { AppContext } from '../../components/AppContext';
+import { Pressable, StyleSheet, View } from 'react-native';
+import PageContainer from '../../../components/PageContainer';
+import BoldText from '../../../components/fonts/BoldText';
+import TVIcon from '../../../../assets/images/billTv.svg';
+import InternetIcon from '../../../../assets/images/billInternet.svg';
+import SchoolIcon from '../../../../assets/images/billSchool.svg';
+import ElectricityIcon from '../../../../assets/images/billElectricity.svg';
+import RegularText from '../../../components/fonts/RegularText';
+import { AppContext } from '../../../components/AppContext';
+import { postFetchData } from '../../../../utils/fetchAPI';
 
 const PayABill = ({ navigation }) => {
   function VerifyCardNumber(stateFields, setErrorMessage) {
@@ -44,6 +45,13 @@ const PayABill = ({ navigation }) => {
     console.log('shit');
   };
 
+  const payElectricity = async (stateFields, setErrorMessage) => {
+    if (Object.values(stateFields).includes('')) {
+      return setErrorMessage('Please provide all required fields');
+    }
+    const response = await postFetchData('user/bill?electricity', stateFields);
+    console.log(response);
+  };
   const bills = [
     {
       title: 'TV',
@@ -66,38 +74,38 @@ const PayABill = ({ navigation }) => {
         },
       ],
     },
-    {
-      title: 'internet',
-      desc: 'Internet',
-      headerText: 'Internet',
-      buttonText: 'Make Payment',
-      data: [
-        {
-          title: 'Select Provider',
-          type: 'select',
-          placeholder: 'Select Provider',
-          id: 'provider',
-          apiUrl: 'https://jsonplaceholder.typicode.com/todos',
-        },
-        {
-          title: 'Package',
-          type: 'select',
-          placeholder: 'Select Package',
-          id: 'package',
-        },
-        {
-          title: 'Customer ID',
-          type: 'input',
-          id: 'customerID',
-        },
-        {
-          title: 'Amount',
-          type: 'input',
-          id: 'amount',
-          balance: true,
-        },
-      ],
-    },
+    // {
+    //   title: 'internet',
+    //   desc: 'Internet',
+    //   headerText: 'Internet',
+    //   buttonText: 'Make Payment',
+    //   data: [
+    //     {
+    //       title: 'Select Provider',
+    //       type: 'select',
+    //       placeholder: 'Select Provider',
+    //       id: 'provider',
+    //       apiUrl: 'https://jsonplaceholder.typicode.com/todos',
+    //     },
+    //     {
+    //       title: 'Package',
+    //       type: 'select',
+    //       placeholder: 'Select Package',
+    //       id: 'package',
+    //     },
+    //     {
+    //       title: 'Customer ID',
+    //       type: 'input',
+    //       id: 'customerID',
+    //     },
+    //     {
+    //       title: 'Amount',
+    //       type: 'input',
+    //       id: 'amount',
+    //       balance: true,
+    //     },
+    //   ],
+    // },
     {
       title: 'school',
       desc: 'School payment',
@@ -116,7 +124,7 @@ const PayABill = ({ navigation }) => {
           type: 'select',
           placeholder: 'Select Locality',
           id: 'locality',
-          apiUrl: '',
+          apiUrl: 'user/bill?electricity',
         },
         {
           title: 'Enter Matric Number',
@@ -131,32 +139,33 @@ const PayABill = ({ navigation }) => {
       desc: 'Electricity',
       headerText: 'Electricity',
       buttonText: 'Make Payment',
+      buttonFunc: payElectricity,
       data: [
         {
           title: 'Select Provider',
           type: 'select',
           placeholder: 'Select Provider',
           id: 'provider',
-          apiUrl: '',
+          apiUrl: 'user/bill?electricity',
         },
-        {
-          title: 'Package',
-          type: 'select',
-          placeholder: 'Select Package',
-          id: 'package',
-        },
+        // {
+        //   title: 'Package',
+        //   type: 'select',
+        //   placeholder: 'Select Package',
+        //   id: 'package',
+        // },
         {
           title: 'Meter number',
           type: 'input',
           placeholder: 'Enter Meter number',
           id: 'meterNo',
         },
-        {
-          title: 'User',
-          type: 'select',
-          placeholder: 'Select User',
-          id: 'user',
-        },
+        // {
+        //   title: 'User',
+        //   type: 'select',
+        //   placeholder: 'Select User',
+        //   id: 'user',
+        // },
         {
           title: 'Amount',
           type: 'input',

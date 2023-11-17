@@ -48,12 +48,14 @@ const TransactionHistoryParams = ({ route }) => {
   } = history;
 
   const currencySymbol = allCurrencies.find(
-    id => currency === id.currency,
+    id => currency === id.currency || currency === id.acronym,
   )?.symbol;
 
   const transactionDate = `${new Date(
-    createdAt,
-  ).toLocaleDateString()} ${new Date(createdAt).toLocaleTimeString()}
+    createdAt || history.transactionDate,
+  ).toLocaleDateString()} ${new Date(
+    createdAt || history.transactionDate,
+  ).toLocaleTimeString()}
   `;
 
   const swapFromSymbol = allCurrencies.find(
@@ -183,7 +185,7 @@ const TransactionHistoryParams = ({ route }) => {
           width: 100%;
           margin-bottom: 50px;
 
-          & span {
+          & span {3
             display: inline-block;
             padding-top: 6px;
           }
@@ -618,7 +620,7 @@ const TransactionHistoryParams = ({ route }) => {
                 </View>
                 <View style={styles.cardLine}>
                   <RegularText style={styles.cardKey}>Data Plan</RegularText>
-                  <BoldText style={styles.cardValue}>{dataPlan}</BoldText>
+                  <BoldText style={styles.cardValue}>{dataPlan.value}</BoldText>
                 </View>
                 <View style={styles.cardLine}>
                   <RegularText style={styles.cardKey}>Reference</RegularText>

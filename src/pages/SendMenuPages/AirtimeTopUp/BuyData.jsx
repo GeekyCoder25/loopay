@@ -21,6 +21,7 @@ import Button from '../../../components/Button';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { randomUUID } from 'expo-crypto';
 import { getFetchData } from '../../../../utils/fetchAPI';
+import ToastMessage from '../../../components/ToastMessage';
 
 const BuyData = ({ navigation }) => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -32,7 +33,7 @@ const BuyData = ({ navigation }) => {
   const [formData, setFormData] = useState({
     network: '',
     phoneNo: '',
-    plan: '30gb',
+    plan: null,
   });
   const [planToBuy, setPlanToBuy] = useState(formData.plan);
   const dataBeneficiaries = [
@@ -65,16 +66,24 @@ const BuyData = ({ navigation }) => {
     setModalOpen(false);
     setPlanModalOpen(false);
   };
-  const handleNetworkSelect = provider => {
+  const handleNetworkSelect = async provider => {
     handleModal();
     setNetworkToBuy(provider);
     setFormData(prev => {
       return {
         ...prev,
         network: provider.network,
-        operatorId: provider.operatorId,
+        plan: null,
       };
     });
+    setPlanToBuy(null);
+    setErrorMessage('');
+    setErrorKey('');
+    const plansResponse = await getFetchData(
+      `user/get-data-plans?provider=${provider.network}&country=NG`,
+    );
+    const plans = plansResponse.data;
+    setDataPlans(plans);
   };
 
   const handlePhoneInput = async phoneNo => {
@@ -89,11 +98,34 @@ const BuyData = ({ navigation }) => {
       );
       if (response.status === 200) {
         const network = response.data.name.toLowerCase();
-        handleNetworkSelect(
-          networkProviders.find(index => network.startsWith(index.network)),
+        const operator = networkProviders.find(index =>
+          network.startsWith(index.network),
         );
+        handleNetworkSelect(operator);
       }
     }
+  };
+
+  const handlePlanModal = () => {
+    if (!formData.network) {
+      return ToastMessage('Please select a network first');
+    }
+    setPlanModalOpen(true);
+  };
+
+  const handlePlanSelect = plan => {
+    setFormData(prev => {
+      return {
+        ...prev,
+        plan,
+        amount: plan.amount,
+        operatorId: plan.operatorId,
+      };
+    });
+    setPlanToBuy(`${Math.ceil(plan.amount)} - ${plan.value}`);
+    setPlanModalOpen(false);
+    setErrorMessage('');
+    setErrorKey('');
   };
 
   const handleInputPin = async () => {
@@ -205,19 +237,15 @@ const BuyData = ({ navigation }) => {
                       ))
                     : dataPlans.map(plan => (
                         <Pressable
-                          key={plan.id}
+                          key={plan.value}
                           style={{
                             ...styles.modalList,
                             backgroundColor:
                               planToBuy === plan ? '#e4e2e2' : 'transparent',
                           }}
-                          onPress={() =>
-                            setFormData(prev => {
-                              return { ...prev, plan };
-                            })
-                          }>
-                          <BoldText style={styles.networkToBuySelected}>
-                            {plan}
+                          onPress={() => handlePlanSelect(plan)}>
+                          <BoldText style={styles.dataPlan}>
+                            {Math.ceil(plan.amount)} - {plan.value}
                           </BoldText>
                         </Pressable>
                       ))}
@@ -245,7 +273,7 @@ const BuyData = ({ navigation }) => {
         </View>
         <View style={styles.textInputContainer}>
           <Pressable
-            onPress={() => setPlanModalOpen(true)}
+            onPress={handlePlanModal}
             style={styles.textInputContainer}>
             <View
               style={{
@@ -320,8 +348,6 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   textInput: {
-    borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 5,
     backgroundColor: '#f9f9f9',
     height: 50,
@@ -399,6 +425,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingHorizontal: 5 + '%',
     gap: 20,
+  },
+  dataPlan: {
+    width: 100 + '%',
+    borderBottomWidth: 2,
+    borderBottomColor: '#ddd',
+    paddingBottom: 10,
   },
   networkIcon: {
     gap: 20,

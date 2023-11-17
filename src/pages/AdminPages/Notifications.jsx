@@ -1,14 +1,24 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import PageContainer from '../../components/PageContainer';
-import { Image, StyleSheet, TextInput, View } from 'react-native';
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+  Modal,
+} from 'react-native';
 import { AppContext } from '../../components/AppContext';
 import UserIcon from '../../components/UserIcon';
 import { putFetchData } from '../../../utils/fetchAPI';
 import { useAdminDataContext } from '../../context/AdminContext';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
+import Back from '../../components/Back';
+import TransactionHistoryParams from '../MenuPages/TransactionHistoryParams';
 
 const Notifications = () => {
   const { vh, setWalletRefresh } = useContext(AppContext);
@@ -18,6 +28,8 @@ const Notifications = () => {
   const [searchHistory, setSearchHistory] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchInput, setSearchInput] = useState('');
+  const [modalData, setModalData] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -108,6 +120,8 @@ const Notifications = () => {
                           <Message
                             key={notification.id}
                             notification={notification}
+                            setShowModal={setShowModal}
+                            setModalData={setModalData}
                           />
                         ),
                     )
@@ -115,6 +129,8 @@ const Notifications = () => {
                       <Message
                         key={notification.id}
                         notification={notification}
+                        setShowModal={setShowModal}
+                        setModalData={setModalData}
                       />
                     ))}
               </View>
@@ -128,6 +144,21 @@ const Notifications = () => {
           </BoldText>
         </View>
       )}
+      <Modal
+        visible={showModal}
+        animationType="slide"
+        onRequestClose={() => {
+          setShowModal(false);
+          setModalData(null);
+        }}>
+        <Back
+          onPress={() => {
+            setShowModal(false);
+            setModalData(null);
+          }}
+        />
+        <TransactionHistoryParams route={{ params: modalData }} />
+      </Modal>
     </PageContainer>
   );
 };
@@ -215,9 +246,15 @@ const styles = StyleSheet.create({
 
 export default Notifications;
 
-const Message = ({ notification }) => {
-  const { header, adminMessage, photo, createdAt, adminStatus } = notification;
+const Message = ({ notification, setModalData, setShowModal }) => {
+  const [transactionTypeIcon, setTransactionTypeIcon] = useState(
+    <Image source={require('../../../assets/icon.png')} style={styles.image} />,
+  );
+  const { header, adminMessage, photo, createdAt, adminStatus, type } =
+    notification;
+  const { navigate } = useNavigation();
   const date = new Date(createdAt);
+
   const historyTime = convertTo12HourFormat(
     `${date.getHours()}:${date.getMinutes()}`,
   );
@@ -240,22 +277,61 @@ const Message = ({ notification }) => {
     return `${hours}:${minutes} ${period}`;
   }
 
+  const handleNavigate = async () => {
+    if (type === 'request') {
+      navigate('PendingRequest');
+    } else if (type === 'request_confirm') {
+      navigate('Home');
+    } else if (type === 'transfer' || type === 'airtime' || type === 'data') {
+      setModalData(notification.metadata);
+      setShowModal(true);
+    }
+  };
+
+  useEffect(() => {
+    switch (type) {
+      case 'airtime':
+        setTransactionTypeIcon(networkProvidersIcon(photo));
+        break;
+      case 'data':
+        setTransactionTypeIcon(networkProvidersIcon(photo));
+        break;
+      case 'transfer':
+        setTransactionTypeIcon(
+          photo ? (
+            <UserIcon uri={photo} />
+          ) : (
+            <Image
+              source={require('../../../assets/icon.png')}
+              style={styles.image}
+            />
+          ),
+        );
+        break;
+      default:
+        setTransactionTypeIcon(
+          photo ? (
+            <UserIcon uri={photo} />
+          ) : (
+            <Image
+              source={require('../../../assets/icon.png')}
+              style={styles.image}
+            />
+          ),
+        );
+        break;
+    }
+  }, [photo, type]);
+
   return (
-    <View style={styles.history}>
-      {photo ? (
-        <UserIcon uri={photo} />
-      ) : (
-        <Image
-          source={require('../../../assets/icon.png')}
-          style={styles.image}
-        />
-      )}
+    <Pressable style={styles.history} onPress={handleNavigate}>
+      {transactionTypeIcon}
       <View style={styles.historyContent}>
         <BoldText>{header}</BoldText>
         <RegularText>{adminMessage}</RegularText>
         <RegularText>{historyTime}</RegularText>
       </View>
       {adminStatus === 'unread' && <View style={styles.unread} />}
-    </View>
+    </Pressable>
   );
 };

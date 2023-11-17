@@ -216,7 +216,7 @@ const User = ({ status, userSession: user }) => {
   const { email, userProfile } = user;
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const lastSeen = new Date(user.sessions[0]?.lastSeen || user.updatedAt);
+  const lastSeen = new Date(user.updatedAt);
 
   return (
     <View style={styles.userExpanded}>

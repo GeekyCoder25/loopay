@@ -39,7 +39,6 @@ const SwapFunds = ({ navigation }) => {
   const [swapToCurrency] = useState(
     swapFrom.currency === 'naira' ? 'dollar' : 'naira',
   );
-  const [canSwap, setCanSwap] = useState(10);
   const [showSwapFromCurrencies, setShowSwapFromCurrencies] = useState(false);
   const [showSwapToCurrencies, setShowSwapToCurrencies] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
@@ -165,7 +164,7 @@ const SwapFunds = ({ navigation }) => {
 
   const handleSwapToSelect = currency => {
     setRateRefetch(prev => !prev);
-    setSwapTo(prev => {
+    setSwapTo(() => {
       return {
         ...currency,
         balance: wallet[`${currency.currency}Balance`],
@@ -241,7 +240,6 @@ const SwapFunds = ({ navigation }) => {
       return handleGoBack();
     }
     setModalOpen(false);
-    setCanSwap(10);
   };
 
   const handleContinue = () => {
@@ -265,7 +263,9 @@ const SwapFunds = ({ navigation }) => {
   const transactionDetails = [
     {
       title: 'Transaction Fees',
-      value: currencyFee() ? swapFrom.symbol + value * currencyFee() : 'Free',
+      value: currencyFee()
+        ? swapFrom.symbol + addingDecimal(fee.toLocaleString())
+        : 'Free',
     },
     {
       title: 'Pay From',
@@ -278,13 +278,6 @@ const SwapFunds = ({ navigation }) => {
       )} ${swapTo.acronym}`,
     },
   ];
-
-  useEffect(() => {
-    modalOpen &&
-      setTimeout(() => {
-        canSwap > 1 ? setCanSwap(prev => prev - 1) : setCanSwap(true);
-      }, 1000);
-  }, [canSwap, modalOpen]);
 
   const handleSwap = async () => {
     try {
@@ -440,10 +433,10 @@ const SwapFunds = ({ navigation }) => {
           <View style={styles.rate}>
             <BoldText>Current Rate:</BoldText>
             <RegularText>
-              1{swapFrom.symbol} = {swapTo.symbol}
+              {swapFrom.symbol}1 = {swapTo.symbol}
               {currencyRate()?.startsWith('0')
-                ? Number(currencyRate()).toFixed(4)
-                : Number(currencyRate()).toFixed(2)}
+                ? Number(currencyRate()).toLocaleString()
+                : addingDecimal(Number(currencyRate()).toLocaleString())}
             </RegularText>
           </View>
           <View style={styles.swapInputContainer}>
@@ -547,19 +540,12 @@ const SwapFunds = ({ navigation }) => {
                   </View>
                 ))}
               </View>
-              {canSwap === true ? (
-                <Button
-                  text="Swap"
-                  onPress={handleSwap}
-                  style={styles.modalButton}
-                />
-              ) : (
-                <Button
-                  text={`Swap (${canSwap}s)`}
-                  disabled={true}
-                  style={styles.modalButton}
-                />
-              )}
+              <Button
+                text="Swap"
+                onPress={handleSwap}
+                style={styles.modalButton}
+              />
+
               <Pressable onPress={handleModal}>
                 <BoldText>Back</BoldText>
               </Pressable>

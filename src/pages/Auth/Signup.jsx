@@ -31,8 +31,9 @@ import SuccessMessage from '../../components/SuccessMessage';
 import saveSessionOptions from '../../services/Savesession';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { CountryPicker } from 'react-native-country-codes-picker';
-import { Flag } from '@mfauzanap/react-native-svg-flagkit';
+// import { Flag } from '@mfauzanap/react-native-svg-flagkit';
 import * as Haptics from 'expo-haptics';
+import ToastMessage from '../../components/ToastMessage.jsx';
 
 const Signup = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -403,12 +404,12 @@ const FormField = ({
           {countryCodeData ? (
             <>
               <View style={styles.icon}>
-                <Flag
+                {/* <Flag
                   id={countryCodeData.code}
                   width={25}
                   height={25}
                   style={styles.icon}
-                />
+                /> */}
               </View>
             </>
           ) : (
@@ -524,7 +525,7 @@ const EmailVerify = ({
           }, 500);
         }
       } catch (err) {
-        console.log(err.message);
+        ToastMessage(err.message);
       }
     }
   };

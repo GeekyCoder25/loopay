@@ -251,7 +251,7 @@ const Message = ({ notification }) => {
       navigate('PendingRequest');
     } else if (type === 'request_confirm') {
       navigate('Home');
-    } else if (type === 'transaction') {
+    } else if (type === 'transfer' || type === 'airtime') {
       navigate('TransactionHistoryDetails', notification.metadata);
     }
     const response = await putFetchData(`user/notification/${_id}`);

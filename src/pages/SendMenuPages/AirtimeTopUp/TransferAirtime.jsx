@@ -24,7 +24,7 @@ const TransferAirtime = ({ navigation, route }) => {
     navigation.navigate('Success', {
       airtime: { ...formData, reference: response.data.reference },
       amountInput: formData.amount,
-      dataPlan: formData.plan,
+      dataPlan: formData.plan.value,
     });
   };
 
@@ -74,7 +74,7 @@ const TransferAirtime = ({ navigation, route }) => {
                     ? ''
                     : '.00'
                 }`}
-                dataPlan={formData.plan}
+                dataPlan={formData.plan && formData.plan.value}
               />
             </View>
           </InputPin>

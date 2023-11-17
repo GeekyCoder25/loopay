@@ -11,7 +11,9 @@
       "resizeMode": "cover",
       "backgroundColor": "#cccccc"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },

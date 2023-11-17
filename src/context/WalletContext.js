@@ -39,15 +39,15 @@ const WalletContextComponent = ({ children }) => {
 
     const walletToSet = result => {
       const otherWalletBalances = {
-        nairaBalance: result.walletNaira?.balance,
+        localBalance: result.walletLocal?.balance,
         dollarBalance: result.walletDollar?.balance,
         euroBalance: result.walletEuro?.balance,
         poundBalance: result.walletPound?.balance,
+        [`${result.walletLocal.currency}Balance`]: result.walletLocal?.balance,
       };
-
       switch (selectedCurrency.currency) {
         case 'naira':
-          return setWallet({ ...result.walletNaira, ...otherWalletBalances });
+          return setWallet({ ...result.walletLocal, ...otherWalletBalances });
         case 'dollar':
           return setWallet({ ...result.walletDollar, ...otherWalletBalances });
         case 'euro':
@@ -55,7 +55,7 @@ const WalletContextComponent = ({ children }) => {
         case 'pound':
           return setWallet({ ...result.walletPound, ...otherWalletBalances });
         default:
-          return setWallet({ ...result.walletNaira, ...otherWalletBalances });
+          return setWallet({ ...result.walletLocal, ...otherWalletBalances });
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

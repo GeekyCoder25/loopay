@@ -35,20 +35,27 @@ export default function SelectInputField({
   useEffect(() => {
     const setModalDataFunc = async () => {
       try {
-        const response = await fetch(apiUrl);
-        const json = await response.json();
-        console.log(json.slice(0, 2));
-        setModalData(json.slice(0, 20));
+        if (apiUrl.startsWith('https')) {
+          const response = await fetch(apiUrl);
+          const json = await response.json();
+          console.log(json.slice(0, 2));
+          return setModalData(json.slice(0, 20));
+        }
+        const response = await getFetchData(apiUrl);
+        if (response.status === 200) {
+          const data = response.data;
+          return setModalData(data);
+        }
       } catch (error) {
         console.log(error.message);
       }
     };
+
     if (type === 'select' && apiUrl) {
       setModalDataFunc();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   return (
     <View>
       <View style={styles.labelContainer}>
@@ -127,7 +134,7 @@ const LocalModal = ({
   };
 
   const handleModalSelect = provider => {
-    setSelected(provider.title);
+    setSelected(provider.title || provider.name);
     setModalOpen(false);
     setErrorMessage(null);
     setStateFields(prev => {
@@ -137,6 +144,7 @@ const LocalModal = ({
       };
     });
   };
+
   return (
     <Modal
       visible={modalOpen}
@@ -153,11 +161,13 @@ const LocalModal = ({
                 style={{
                   ...styles.modalList,
                   backgroundColor:
-                    selected === provider.title ? '#e4e2e2' : 'transparent',
+                    selected === (provider.title || provider.name)
+                      ? '#e4e2e2'
+                      : 'transparent',
                 }}
                 onPress={() => handleModalSelect(provider)}>
                 <BoldText style={styles.modalSelected}>
-                  {provider.title}
+                  {provider.title || provider.name}
                 </BoldText>
               </Pressable>
             ))}
@@ -231,7 +241,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     elevation: 10,
-    alignItems: 'center',
     gap: 10,
   },
   modalBorder: {

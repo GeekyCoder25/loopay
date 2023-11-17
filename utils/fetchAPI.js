@@ -1,16 +1,17 @@
 import { getToken } from './storage';
 
 // export const apiUrl = 'http://10.0.2.2:8000/api';
-// export const apiUrl = 'http://192.168.182.8:8000/api';
-export const apiUrl = 'https://loopay-api.cyclic.app/api';
+export const apiUrl = 'http://192.168.0.101:8000/api';
+// export const apiUrl = 'https://loopay-api.cyclic.app/api';
 
+const timeoutSeconds = 15;
 export const getFetchData = async apiEndpoint => {
   const API_URL = `${apiUrl}/${apiEndpoint}`;
   const controller = new AbortController();
   const timeout = setTimeout(() => {
     controller.abort();
     return { data: "Couldn't connect to server", status: 404 };
-  }, 10000);
+  }, timeoutSeconds * 1000);
   const token = await getToken();
 
   try {
@@ -35,7 +36,7 @@ export const postFetchData = async (apiEndpoint, bodyData, token) => {
   const timeout = setTimeout(() => {
     controller.abort();
     return { data: "Couldn't connect to server", status: 404 };
-  }, 10000);
+  }, timeoutSeconds * 1000);
   token = token || (await getToken());
 
   function removeTrailingWhiteSpace(obj) {
@@ -81,7 +82,7 @@ export const putFetchData = async (apiEndpoint, bodyData) => {
   const timeout = setTimeout(() => {
     controller.abort();
     return { data: "Couldn't connect to server", status: 404 };
-  }, 10000);
+  }, timeoutSeconds * 1000);
   const token = await getToken();
 
   try {
@@ -109,7 +110,7 @@ export const deleteFetchData = async (apiEndpoint, bodyData) => {
   const timeout = setTimeout(() => {
     controller.abort();
     return { data: "Couldn't connect to server", status: 404 };
-  }, 10000);
+  }, timeoutSeconds * 1000);
   const token = await getToken();
 
   try {

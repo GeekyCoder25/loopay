@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
 import {
   Modal,
@@ -20,13 +20,11 @@ import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
 import Button from '../../../components/Button';
 import { useWalletContext } from '../../../context/WalletContext';
 import { addingDecimal } from '../../../../utils/AddingZero';
-import { AppContext } from '../../../components/AppContext';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { randomUUID } from 'expo-crypto';
 import { getFetchData } from '../../../../utils/fetchAPI';
 
 const BuyAirtime = ({ navigation }) => {
-  const { selectedCurrency } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [networkToBuy, setNetworkToBuy] = useState('');
@@ -39,7 +37,7 @@ const BuyAirtime = ({ navigation }) => {
     amount: '',
     phoneNo: '',
   });
-  const { nairaBalance } = wallet;
+  const { localBalance } = wallet;
   const airtimeBeneficiaries = [
     // {
     //   phoneNo: '09073002599',
@@ -88,7 +86,7 @@ const BuyAirtime = ({ navigation }) => {
 
   const handleAmountInput = amount => {
     setAmountInput(amount);
-    if (amount > nairaBalance) {
+    if (amount > localBalance) {
       setErrorMessage('Insufficient Funds');
       setErrorKey('amountInput');
     } else {
@@ -244,9 +242,7 @@ const BuyAirtime = ({ navigation }) => {
         <View style={styles.topUpContainer}>
           <Text style={styles.topUp}>Amount to be credited</Text>
           <Text style={styles.topUp}>
-            Balance:{' '}
-            {selectedCurrency.symbol +
-              addingDecimal(`${nairaBalance.toLocaleString()}`)}
+            Balance: {'₦' + addingDecimal(`${localBalance.toLocaleString()}`)}
           </Text>
         </View>
         <View style={styles.textInputContainer}>

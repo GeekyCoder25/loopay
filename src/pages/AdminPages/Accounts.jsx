@@ -8,13 +8,13 @@ import CurrencyCard from '../../components/CurrencyCard';
 
 const Accounts = () => {
   const { adminData } = useAdminDataContext();
-  const { nairaBalance, dollarBalance, poundBalance, euroBalance } = adminData;
+  const { localBalance, dollarBalance, poundBalance, euroBalance } = adminData;
 
   const currencies = [
     {
       currency: 'naira',
       fullName: 'Nigerian Naira',
-      balance: nairaBalance,
+      balance: localBalance,
       acronym: 'NGN',
       symbol: '₦',
       color: '#006E53',

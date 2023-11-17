@@ -209,11 +209,9 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
       </View>
       {wallet && (
         <RegularText style={styles.currencyAmount}>
-          {wallet.currency === selected.currency
-            ? addingDecimal(wallet?.balance?.toLocaleString())
-            : addingDecimal(
-                wallet[`${selected.currency}Balance`]?.toLocaleString(),
-              )}
+          {addingDecimal(
+            wallet[`${selected.currency}Balance`]?.toLocaleString(),
+          )}
         </RegularText>
       )}
     </Pressable>

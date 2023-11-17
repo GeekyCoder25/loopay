@@ -63,20 +63,19 @@ const FooterCard = ({ userToSendTo, airtime, amountInput, dataPlan, fee }) => {
             <RegularText style={styles.cardKey}>Phone Number</RegularText>
             <BoldText style={styles.cardValue}>{airtime.phoneNo}</BoldText>
           </View>
-          {dataPlan ? (
+          {dataPlan && (
             <View style={styles.cardLine}>
               <RegularText style={styles.cardKey}>Data Plan</RegularText>
               <BoldText style={styles.cardValue}>{dataPlan}</BoldText>
             </View>
-          ) : (
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>Amount</RegularText>
-              <BoldText style={styles.cardValue}>
-                {currency}
-                {amountInput}
-              </BoldText>
-            </View>
           )}
+          <View style={styles.cardLine}>
+            <RegularText style={styles.cardKey}>Amount</RegularText>
+            <BoldText style={styles.cardValue}>
+              {currency}
+              {amountInput}
+            </BoldText>
+          </View>
           {airtime.reference && (
             <View style={styles.cardLine}>
               <RegularText style={styles.cardKey}>Reference ID</RegularText>
@@ -111,6 +110,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     fontSize: 24,
     marginBottom: 30,
+    textAlign: 'center',
   },
   cardLine: {
     flexDirection: 'row',

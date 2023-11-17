@@ -170,8 +170,9 @@ const RequestStatus = ({ navigation, route }) => {
           />
           <RegularText style={styles.headerText}>
             <BoldText>#{tagName} </BoldText> has requested the sum of{' '}
-            {symbol + Number(amount).toLocaleString()} and will be debited from
-            you account, you can accept, decline or edit original amount to
+            {symbol + addingDecimal(Number(amount).toLocaleString())} and will
+            be debited from you account, you can accept, decline or edit
+            original amount to
             <BoldText> #{tagName}</BoldText>.
           </RegularText>
         </View>
@@ -255,7 +256,7 @@ const RequestStatus = ({ navigation, route }) => {
       <View style={styles.body}>
         <RegularText style={styles.topText}>
           You’ve successfully accepted the request of{' '}
-          {symbol + amount.toLocaleString()} from
+          {symbol + addingDecimal(Number(amount).toLocaleString())} from
           <BoldText> #{tagName}</BoldText>
         </RegularText>
       </View>
@@ -276,7 +277,7 @@ const RequestStatus = ({ navigation, route }) => {
             <View style={styles.body}>
               <RegularText style={styles.topText}>
                 You’re about cancelling the request of{' '}
-                {symbol + amount.toLocaleString()} from
+                {symbol + addingDecimal(Number(amount).toLocaleString())} from
                 <BoldText> #{tagName}</BoldText>
               </RegularText>
             </View>

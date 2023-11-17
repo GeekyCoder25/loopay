@@ -28,7 +28,7 @@ export const signUpData = [
     placeholder: 'Phone number',
     type: 'tel',
     inputMode: 'tel',
-    countryCode: true
+    countryCode: true,
   },
   {
     name: 'password',
@@ -80,7 +80,7 @@ export const allCurrencies = [
     amount: 0.0,
     symbol: '₦',
     minimumAmountToAdd: 100,
-    fee: 5,
+    isLocal: true,
   },
   {
     currency: 'dollar',
@@ -89,7 +89,6 @@ export const allCurrencies = [
     amount: 0.0,
     symbol: '$',
     minimumAmountToAdd: 1,
-    fee: 1,
   },
   {
     currency: 'euro',
@@ -98,7 +97,6 @@ export const allCurrencies = [
     amount: 0.0,
     symbol: '€',
     minimumAmountToAdd: 1,
-    fee: 1,
   },
   {
     currency: 'pound',
@@ -107,7 +105,6 @@ export const allCurrencies = [
     amount: 0.0,
     symbol: '£',
     minimumAmountToAdd: 2,
-    fee: 1,
   },
 ];
 

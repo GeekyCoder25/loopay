@@ -76,7 +76,7 @@ const AccStatement = () => {
     }
   };
 
-  const handleGenerate = async () => {
+  const handleGenerate = async saveType => {
     const { start, end, format } = generateData;
     if (!start || !end || !format) {
       return ToastMessage('Please provide all the required data');
@@ -105,6 +105,7 @@ const AccStatement = () => {
         label: 'Balance',
         value:
           selectedCurrency.symbol +
+          ' ' +
           addingDecimal(Number(wallet.balance).toLocaleString()),
       },
       {
@@ -187,10 +188,11 @@ const AccStatement = () => {
             <img
               src="https://res.cloudinary.com/geekycoder/image/upload/v1688782340/loopay/logo.png"
               style="width: 50px; height: 50px; border-radius: 50%"
-              alt="" />
+              alt="icon" />
             <img
               src="https://res.cloudinary.com/geekycoder/image/upload/v1688782340/loopay/appIcon.png"
-              style="width: 200px; margin: 50px 0" />
+              style="width: 200px; margin: 50px 0" 
+              alt="loopay logo"/>
             <span>Generated on ${new Date(Date.now()).toLocaleDateString(
               'en-US',
               dateOptions,
@@ -324,17 +326,21 @@ const AccStatement = () => {
         </body>
       </html>
     `;
-    createPDF(html);
+    createPDF(html, saveType);
     // } else {
     createCSV();
   };
 
   const createCSV = () => {};
 
-  const createPDF = async html => {
+  const createPDF = async (html, saveType) => {
     const filename = 'statement.pdf';
     const mimeType = 'application/pdf';
     const { uri } = await Print.printToFileAsync({ html });
+    if (saveType === 'share') {
+      await shareAsync(uri, { UTI: '.pdf', mimeType });
+      return setIsLoading(false);
+    }
     if (Platform.OS === 'android') {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
@@ -381,6 +387,10 @@ const AccStatement = () => {
         return new Date(Date.now());
     }
   };
+
+  const handleSave = () => handleGenerate('save');
+  const handleShare = () => handleGenerate('share');
+
   return (
     <PageContainer padding paddingTop={0} style={styles.body} scroll>
       <AccInfoCard />
@@ -464,7 +474,18 @@ const AccStatement = () => {
           </Pressable>
         ))}
       </View>
-      <Button text={'Generate Statement'} onPress={handleGenerate} />
+      <View style={styles.buttons}>
+        <Button
+          text={'Generate Statement'}
+          onPress={handleSave}
+          style={styles.button}
+        />
+        <Button
+          text={'Share Statement'}
+          onPress={handleShare}
+          style={styles.button}
+        />
+      </View>
     </PageContainer>
   );
 };
@@ -548,6 +569,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     textTransform: 'uppercase',
     backgroundColor: '#f9f9f9',
+  },
+  buttons: {},
+  button: {
+    // maxWidth: 50 + '%',
   },
 });
 export default AccStatement;

@@ -11,7 +11,7 @@ const AccountDetails = () => {
   const { wallet } = useWalletContext();
   const {
     loopayAccNo: accNo,
-    nairaBalance,
+    localBalance,
     dollarBalance,
     poundBalance,
     euroBalance,
@@ -22,7 +22,7 @@ const AccountDetails = () => {
       accNo,
       currency: 'naira',
       fullName: 'Nigerian Naira',
-      balance: nairaBalance,
+      balance: localBalance,
       acronym: 'NGN',
       symbol: '₦',
       color: '#006E53',
