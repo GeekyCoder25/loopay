@@ -16,6 +16,7 @@ import { addingDecimal } from '../../../utils/AddingZero';
 import { groupTransactionsByDate } from '../../../utils/groupTransactions';
 import TransactionHistoryParams from '../MenuPages/TransactionHistoryParams';
 import Back from '../../components/Back';
+import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
 
 const Transactions = ({ navigation, route }) => {
   const { selectedCurrency } = useContext(AppContext);
@@ -366,6 +367,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5 + '%',
     paddingVertical: 50,
   },
+  historyTitle: {
+    textTransform: 'capitalize',
+  },
 });
 export default Transactions;
 
@@ -388,6 +392,8 @@ const Transaction = ({
     transactionType,
     receiverPhoto,
     receiverName,
+    networkProvider,
+    dataPlan,
   } = transaction;
 
   const currencySymbol = allCurrencies.find(
@@ -436,7 +442,7 @@ const Transaction = ({
           setTransactionsModal(true);
         }}
         style={styles.transaction}>
-        {transactionType?.toLowerCase() === 'credit' ? (
+        {transactionType?.toLowerCase() === 'credit' && (
           <>
             <UserIcon uri={senderPhoto} />
             <View style={styles.historyContent}>
@@ -465,7 +471,8 @@ const Transaction = ({
               )}
             </Pressable>
           </>
-        ) : (
+        )}
+        {transactionType?.toLowerCase() === 'debit' && (
           <>
             <UserIcon uri={receiverPhoto} />
             <View style={styles.historyContent}>
@@ -493,6 +500,53 @@ const Transaction = ({
                 </Pressable>
               )}
             </Pressable>
+          </>
+        )}
+        {transactionType?.toLowerCase() === 'airtime' && (
+          <>
+            {networkProvidersIcon(networkProvider)}
+            <View style={styles.historyContent}>
+              <BoldText style={styles.historyTitle}>
+                {networkProvider} - {transaction.phoneNo}
+              </BoldText>
+              <RegularText>Airtime Recharge</RegularText>
+            </View>
+            <View style={styles.amount}>
+              <BoldText style={styles.debitAmount}>
+                -
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+              <RegularText> {historyTime}</RegularText>
+              {status === 'pending' && (
+                <Pressable
+                  onPress={() => setIsExpanded(prev => !prev)}
+                  style={{
+                    transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
+                  }}>
+                  <ChevronDown />
+                </Pressable>
+              )}
+            </View>
+          </>
+        )}
+        {transactionType?.toLowerCase() === 'data' && (
+          <>
+            {networkProvidersIcon(networkProvider)}
+            <View style={styles.historyContent}>
+              <BoldText style={styles.historyTitle}>
+                {networkProvider} - {transaction.phoneNo}
+              </BoldText>
+              <RegularText>Data Recharge - {dataPlan.value}</RegularText>
+            </View>
+            <View style={styles.amount}>
+              <BoldText style={styles.debitAmount}>
+                -
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+              <RegularText> {historyTime}</RegularText>
+            </View>
           </>
         )}
       </Pressable>

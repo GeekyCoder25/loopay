@@ -83,12 +83,12 @@ const TransferFunds = ({ navigation, route }) => {
         `Minimum transfer amount is ${selectedCurrency.symbol}${minimumAmountToAdd}`,
       );
       setErrorKey('amountInput');
-    } else if (!description) {
-      setErrorMessage('Please provide transaction description');
-      setErrorKey('desc');
     } else if (amountInput > wallet.balance) {
       setErrorKey('amountInput');
       setErrorMessage('Insufficient funds');
+    } else if (!description) {
+      setErrorMessage('Please provide transaction description');
+      setErrorKey('desc');
     } else {
       setCanContinue(true);
     }
@@ -186,7 +186,7 @@ const TransferFunds = ({ navigation, route }) => {
                           borderColor:
                             errorKey === 'amountInput' ? 'red' : '#ccc',
                         }}
-                        inputMode="numeric"
+                        inputMode="decimal"
                         value={amountInput}
                         onChangeText={text => handleChange(text)}
                         onBlur={handleBlur}

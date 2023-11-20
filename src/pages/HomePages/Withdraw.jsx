@@ -183,7 +183,7 @@ const Withdraw = ({ navigation }) => {
                   ...styles.textInput,
                   borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
                 }}
-                inputMode="numeric"
+                inputMode="decimal"
                 value={amountInput}
                 onChangeText={text => handleChange(text)}
                 onBlur={handleBlur}

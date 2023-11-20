@@ -540,6 +540,7 @@ const History = ({ history, navigation, showAmount, setShowAmount }) => {
     swapFromAmount,
     swapToAmount,
     networkProvider,
+    billType,
   } = history;
 
   useEffect(() => {
@@ -578,8 +579,12 @@ const History = ({ history, navigation, showAmount, setShowAmount }) => {
         setTransactionTypeIcon(networkProvidersIcon(networkProvider));
         setTransactionTypeTitle('Data Purchase');
         break;
+      case 'bill':
+        setTransactionTypeIcon(billIcon(billType));
+        setTransactionTypeTitle('Bill Purchase');
+        break;
     }
-  }, [createdAt, networkProvider, transactionType]);
+  }, [createdAt, networkProvider, transactionType, billType]);
 
   const currencySymbol = allCurrencies.find(
     id => currency === id.currency,
@@ -591,6 +596,18 @@ const History = ({ history, navigation, showAmount, setShowAmount }) => {
 
   const swapToSymbol = allCurrencies.find(id => swapTo === id.currency)?.symbol;
 
+  const billIcon = key => {
+    switch (key) {
+      case 'electricity':
+        return <FaIcon name="bolt" size={18} />;
+      case 'school':
+        return <FaIcon name="graduation-cap" size={18} />;
+      case 'tv':
+        return <FaIcon name="tv" size={18} />;
+      default:
+        return <FaIcon name="send" size={18} />;
+    }
+  };
   return (
     <Pressable
       onPress={() => navigation.navigate('TransactionHistoryDetails', history)}
@@ -623,7 +640,8 @@ const History = ({ history, navigation, showAmount, setShowAmount }) => {
           )}
           {(transactionType?.toLowerCase() === 'debit' ||
             transactionType?.toLowerCase() === 'airtime' ||
-            transactionType?.toLowerCase() === 'data') && (
+            transactionType?.toLowerCase() === 'data' ||
+            transactionType?.toLowerCase() === 'bill') && (
             <Pressable onPress={() => setShowAmount(false)}>
               <BoldText
                 style={{

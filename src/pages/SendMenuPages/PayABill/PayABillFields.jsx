@@ -1,5 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import {
+  ActivityIndicator,
   Modal,
   Pressable,
   ScrollView,
@@ -16,13 +17,16 @@ import { AppContext } from '../../../components/AppContext';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import { useWalletContext } from '../../../context/WalletContext';
 import { getFetchData } from '../../../../utils/fetchAPI';
+import { randomUUID } from 'expo-crypto';
 
 export default function SelectInputField({
   selectInput,
   setStateFields,
   customFunc,
   showBalance,
+  errorKey,
   setErrorMessage,
+  setErrorKey,
 }) {
   const { selectedCurrency } = useContext(AppContext);
   const { wallet } = useWalletContext();
@@ -31,6 +35,7 @@ export default function SelectInputField({
   const { title, type, placeholder, id, apiUrl } = selectInput;
   const { balance } = wallet;
   const [modalOpen, setModalOpen] = useState(false);
+  const [inputText, setInputText] = useState('');
 
   useEffect(() => {
     const setModalDataFunc = async () => {
@@ -56,6 +61,19 @@ export default function SelectInputField({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleBlur = () => {
+    if (id === 'amount') {
+      setInputText(prev => addingDecimal(prev));
+      setStateFields(prev => {
+        return {
+          ...prev,
+          [id]: addingDecimal(inputText),
+        };
+      });
+    }
+  };
+
   return (
     <View>
       <View style={styles.labelContainer}>
@@ -71,10 +89,16 @@ export default function SelectInputField({
       {type === 'input' ? (
         <View style={styles.textInputContainer}>
           <TextInput
-            style={{ ...styles.textInput, ...styles.textInputStyles }}
+            style={{
+              ...styles.textInput,
+              ...styles.textInputStyles,
+              borderColor: errorKey === id ? 'red' : '#ccc',
+            }}
             inputMode="tel"
             onChangeText={text => {
+              setInputText(text);
               setErrorMessage(null);
+              setErrorKey(null);
               setStateFields(prev => {
                 return {
                   ...prev,
@@ -83,6 +107,8 @@ export default function SelectInputField({
               });
             }}
             placeholder={placeholder}
+            onBlur={handleBlur}
+            value={inputText}
           />
         </View>
       ) : (
@@ -111,6 +137,7 @@ export default function SelectInputField({
             modalData={modalData}
             setStateFields={setStateFields}
             setErrorMessage={setErrorMessage}
+            setErrorKey={setErrorKey}
             id={id}
           />
         </>
@@ -127,6 +154,7 @@ const LocalModal = ({
   setSelected,
   setStateFields,
   setErrorMessage,
+  setErrorKey,
   id,
 }) => {
   const handleModal = () => {
@@ -137,10 +165,12 @@ const LocalModal = ({
     setSelected(provider.title || provider.name);
     setModalOpen(false);
     setErrorMessage(null);
+    setErrorKey(null);
     setStateFields(prev => {
       return {
         ...prev,
         [id]: provider,
+        referenceId: randomUUID(),
       };
     });
   };
@@ -155,22 +185,30 @@ const LocalModal = ({
       <View style={styles.modalContainer}>
         <View style={styles.modal}>
           <ScrollView>
-            {modalData.map(provider => (
-              <Pressable
-                key={provider.title}
-                style={{
-                  ...styles.modalList,
-                  backgroundColor:
-                    selected === (provider.title || provider.name)
-                      ? '#e4e2e2'
-                      : 'transparent',
-                }}
-                onPress={() => handleModalSelect(provider)}>
-                <BoldText style={styles.modalSelected}>
-                  {provider.title || provider.name}
-                </BoldText>
-              </Pressable>
-            ))}
+            {modalData.length ? (
+              modalData.map(provider => (
+                <Pressable
+                  key={provider.title || provider.name}
+                  style={{
+                    ...styles.modalList,
+                    backgroundColor:
+                      selected === (provider.title || provider.name)
+                        ? '#e4e2e2'
+                        : 'transparent',
+                  }}
+                  onPress={() => handleModalSelect(provider)}>
+                  <BoldText style={styles.modalSelected}>
+                    {provider.title || provider.name}
+                  </BoldText>
+                </Pressable>
+              ))
+            ) : (
+              <ActivityIndicator
+                color={'#1e1e1e'}
+                style={styles.activity}
+                size="large"
+              />
+            )}
           </ScrollView>
         </View>
       </View>

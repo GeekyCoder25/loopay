@@ -7,7 +7,15 @@ import { AppContext } from './AppContext';
 import { addingDecimal } from '../../utils/AddingZero';
 import { allCurrencies } from '../database/data';
 
-const FooterCard = ({ userToSendTo, airtime, amountInput, dataPlan, fee }) => {
+const FooterCard = ({
+  userToSendTo,
+  airtime,
+  amountInput,
+  dataPlan,
+  fee,
+  billPlan,
+  reference,
+}) => {
   const { selectedCurrency } = useContext(AppContext);
   amountInput = addingDecimal(
     Number(airtime ? airtime.amount : amountInput).toLocaleString(),
@@ -22,7 +30,7 @@ const FooterCard = ({ userToSendTo, airtime, amountInput, dataPlan, fee }) => {
   return (
     <View style={styles.footerCard}>
       <BoldText style={styles.cardAmount}>
-        {dataPlan || currency + amountInput}
+        {billPlan || dataPlan || currency + amountInput}
       </BoldText>
       {userToSendTo ? (
         <View style={styles.footerCardDetails}>
@@ -40,7 +48,7 @@ const FooterCard = ({ userToSendTo, airtime, amountInput, dataPlan, fee }) => {
             <RegularText style={styles.cardKey}>Amount</RegularText>
             <BoldText style={styles.cardValue}>
               {selectedCurrency.symbol}
-              {amountInput}
+              {addingDecimal(amountInput.toLocaleString())}
             </BoldText>
           </View>
           <View style={styles.cardLine}>
@@ -53,35 +61,48 @@ const FooterCard = ({ userToSendTo, airtime, amountInput, dataPlan, fee }) => {
             <RegularText style={styles.cardKey}>Transaction Fees</RegularText>
             <BoldText
               style={{ ...styles.cardValue, color: fee ? 'red' : '#006E53' }}>
-              {fee ? selectedCurrency.symbol + fee : 'free'}
+              {fee
+                ? selectedCurrency.symbol + addingDecimal(fee.toLocaleString())
+                : 'free'}
             </BoldText>
           </View>
         </View>
       ) : (
         <View style={styles.footerCardDetails}>
-          <View style={styles.cardLine}>
-            <RegularText style={styles.cardKey}>Phone Number</RegularText>
-            <BoldText style={styles.cardValue}>{airtime.phoneNo}</BoldText>
-          </View>
+          {!billPlan && (
+            <View style={styles.cardLine}>
+              <RegularText style={styles.cardKey}>Phone Number</RegularText>
+              <BoldText style={styles.cardValue}>{airtime.phoneNo}</BoldText>
+            </View>
+          )}
           {dataPlan && (
             <View style={styles.cardLine}>
               <RegularText style={styles.cardKey}>Data Plan</RegularText>
               <BoldText style={styles.cardValue}>{dataPlan}</BoldText>
             </View>
           )}
+          {billPlan && (
+            <View style={styles.cardLine}>
+              <RegularText style={styles.cardKey}>Bill Plan</RegularText>
+              <BoldText style={styles.cardValue}>{billPlan}</BoldText>
+            </View>
+          )}
           <View style={styles.cardLine}>
             <RegularText style={styles.cardKey}>Amount</RegularText>
             <BoldText style={styles.cardValue}>
               {currency}
-              {amountInput}
+              {addingDecimal(amountInput)}
             </BoldText>
           </View>
-          {airtime.reference && (
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>Reference ID</RegularText>
-              <BoldText style={styles.cardValue}>{airtime.reference}</BoldText>
-            </View>
-          )}
+          {airtime?.reference ||
+            (reference && (
+              <View style={styles.cardLine}>
+                <RegularText style={styles.cardKey}>Reference ID</RegularText>
+                <BoldText style={styles.cardValue}>
+                  {airtime?.reference || reference}
+                </BoldText>
+              </View>
+            ))}
           <View style={styles.cardLine}>
             <RegularText style={styles.cardKey}>Payment Method</RegularText>
             <BoldText style={{ ...styles.cardValue, color: '#006E53' }}>
@@ -108,7 +129,7 @@ const styles = StyleSheet.create({
   },
   cardAmount: {
     marginTop: 30,
-    fontSize: 24,
+    fontSize: 22,
     marginBottom: 30,
     textAlign: 'center',
   },

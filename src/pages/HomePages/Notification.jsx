@@ -176,6 +176,9 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 3,
   },
+  title: {
+    textTransform: 'capitalize',
+  },
   unread: {
     width: 8,
     height: 8,
@@ -297,7 +300,7 @@ const Message = ({ notification }) => {
     <Pressable style={styles.history} onPress={handleNavigate}>
       {transactionTypeIcon}
       <View style={styles.historyContent}>
-        <BoldText>{header}</BoldText>
+        <BoldText style={styles.title}>{header}</BoldText>
         <RegularText>{message}</RegularText>
         <RegularText>{historyTime}</RegularText>
       </View>

@@ -1,15 +1,15 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import PageContainer from '../../components/PageContainer';
-import UserIconSVG from '../../../assets/images/userMenu.svg';
+import UserIconSVG from '../../../assets/images/user-grey.svg';
 import HistoryIcon from '../../../assets/images/history.svg';
 import CardIcon from '../../../assets/images/cardMenu.svg';
 import ShieldIcon from '../../../assets/images/shield.svg';
 import LockIcon from '../../../assets/images/lockMenu.svg';
 import DevicesIcon from '../../../assets/images/devices.svg';
 import KeyIcon from '../../../assets/images/key.svg';
-import DualUSerIcon from '../../../assets/images/dualUser.svg';
+import DualUserIcon from '../../../assets/images/dualUser.svg';
 import LogOut from '../../../assets/images/logOut.svg';
 import { AppContext } from '../../components/AppContext';
 import Button from '../../components/Button';
@@ -158,7 +158,7 @@ const RouteLink = ({ route, navigation }) => {
       case 'key':
         return <KeyIcon />;
       case 'dualUser':
-        return <DualUSerIcon />;
+        return <DualUserIcon />;
       default:
         break;
     }

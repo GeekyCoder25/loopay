@@ -128,8 +128,8 @@ export const sendMenuRoutes = [
     routeNavigate: 'SwapFunds',
   },
   {
-    routeName: 'Request Fund',
-    routeDetails: 'Request fund using loopay tag',
+    routeName: 'Request Money',
+    routeDetails: 'Request money using loopay tag',
     routeIcon: 'wallet',
     routeNavigate: 'RequestFund',
   },
@@ -153,7 +153,7 @@ export const sendMenuRoutes = [
   },
   {
     routeName: 'Account Statement',
-    routeDetails: 'Generate account statement for USD  account',
+    routeDetails: 'Generate account statement for account',
     routeIcon: 'statement',
     routeNavigate: 'AccStatement',
   },

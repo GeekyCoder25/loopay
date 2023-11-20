@@ -5,6 +5,7 @@ export const hideTabRoutes = [
   'AddNewCard',
   'ChangePassword',
   'TransactionHistory',
+  'TransactionHistoryDetails',
   'Notification',
   'VerifyImage',
   'Profile',

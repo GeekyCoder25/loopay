@@ -16,7 +16,8 @@ import { allCurrencies } from '../../database/data';
 const Success = ({ navigation, route }) => {
   const { isAdmin, setShowTabBar, vh } = useContext(AppContext);
   const { transactions } = useWalletContext();
-  const { userToSendTo, amountInput, fee, airtime, dataPlan } = route.params;
+  const { userToSendTo, amountInput, fee, airtime, dataPlan, billPlan } =
+    route.params;
 
   useFocusEffect(
     React.useCallback(() => {
@@ -41,12 +42,13 @@ const Success = ({ navigation, route }) => {
     };
     playSound();
   }, []);
-
   const handleShare = async () => {
     const transaction = transactions.find(
-      index => route.params.id === index.id || route.params.airtime?.id,
+      index =>
+        route.params.id === index.id ||
+        route.params.airtime?.id ||
+        route.params.reference === index.reference,
     );
-
     const {
       status,
       receiverName,
@@ -63,6 +65,8 @@ const Success = ({ navigation, route }) => {
       networkProvider,
       phoneNo,
       debitAccount,
+      billType,
+      billName,
     } = transaction;
 
     const currencySymbol = allCurrencies.find(
@@ -80,6 +84,18 @@ const Success = ({ navigation, route }) => {
           { key: 'Network', value: networkProvider },
           { key: 'Phone Number', value: phoneNo },
           { key: 'Reference ID', value: reference },
+          { key: 'Status', value: status },
+        ];
+      } else if (transactionType === 'bill') {
+        return [
+          {
+            key: 'Transaction type',
+            value: `${transactionType} Payment - Debit`,
+          },
+          { key: 'Debit Account', value: debitAccount },
+          { key: 'Bill Type', value: billType },
+          { key: 'Bill Service', value: billName },
+          { key: 'Reference Id', value: reference },
           { key: 'Status', value: status },
         ];
       }
@@ -280,6 +296,7 @@ const Success = ({ navigation, route }) => {
             fee={fee || null}
             airtime={airtime}
             dataPlan={dataPlan}
+            billPlan={billPlan}
           />
         </View>
         <View style={styles.button}>

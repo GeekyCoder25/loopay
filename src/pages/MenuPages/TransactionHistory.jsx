@@ -17,6 +17,7 @@ import { allCurrencies } from '../../database/data';
 import UserIcon from '../../components/UserIcon';
 import { addingDecimal } from '../../../utils/AddingZero';
 import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
+import FaIcon from '@expo/vector-icons/FontAwesome';
 
 const TransactionHistory = ({ navigation }) => {
   const { vh } = useContext(AppContext);
@@ -243,6 +244,18 @@ const styles = StyleSheet.create({
   historyEmptyText: {
     textAlign: 'center',
   },
+  historyIconText: {
+    backgroundColor: '#ccc',
+    fontSize: 18,
+    fontFamily: 'OpenSans-800',
+    width: 40,
+    height: 40,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+  },
 });
 export default TransactionHistory;
 
@@ -258,6 +271,8 @@ export const History = ({ history, navigation }) => {
     currency,
     networkProvider,
     dataPlan,
+    billType,
+    billName,
   } = history;
   const date = new Date(createdAt);
   const historyTime = convertTo12HourFormat(
@@ -344,7 +359,24 @@ export const History = ({ history, navigation }) => {
             <BoldText style={styles.historyTitle}>
               {networkProvider} - {history.phoneNo}
             </BoldText>
-            <RegularText>Data Recharge - {dataPlan}</RegularText>
+            <RegularText>Data Recharge - {dataPlan.value}</RegularText>
+          </View>
+          <View style={styles.amount}>
+            <BoldText style={styles.debitAmount}>
+              -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
+            </BoldText>
+            <RegularText> {historyTime}</RegularText>
+          </View>
+        </>
+      )}
+      {transactionType?.toLowerCase() === 'bill' && (
+        <>
+          <View style={styles.historyIconText}>{billIcon(billType)}</View>
+          <View style={styles.historyContent}>
+            <BoldText style={styles.historyTitle}>{billName} </BoldText>
+            <RegularText style={styles.historyTitle}>
+              {billType} bill
+            </RegularText>
           </View>
           <View style={styles.amount}>
             <BoldText style={styles.debitAmount}>
@@ -356,4 +388,16 @@ export const History = ({ history, navigation }) => {
       )}
     </Pressable>
   );
+};
+export const billIcon = key => {
+  switch (key) {
+    case 'electricity':
+      return <FaIcon name="bolt" size={18} />;
+    case 'school':
+      return <FaIcon name="graduation-cap" size={18} />;
+    case 'tv':
+      return <FaIcon name="tv" size={18} />;
+    default:
+      return <FaIcon name="send" size={18} />;
+  }
 };

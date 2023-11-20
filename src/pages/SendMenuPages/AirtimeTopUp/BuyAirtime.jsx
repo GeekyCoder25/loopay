@@ -92,10 +92,10 @@ const BuyAirtime = ({ navigation }) => {
     } else {
       setErrorMessage('');
       setErrorKey('');
-      setFormData(prev => {
-        return { ...prev, amount };
-      });
     }
+    setFormData(prev => {
+      return { ...prev, amount };
+    });
   };
 
   const handleBlur = () => {
@@ -136,6 +136,9 @@ const BuyAirtime = ({ navigation }) => {
     } else if (formData.phoneNo.length < 11) {
       setErrorMessage2('Incomplete phone number');
       return setErrorKey('phoneInput');
+    } else if (formData.amount > wallet.localBalance) {
+      setErrorMessage('Insufficient balance');
+      return setErrorKey('amountInput');
     }
     navigation.navigate('TransferAirtime', {
       formData: {

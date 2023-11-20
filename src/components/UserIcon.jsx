@@ -19,8 +19,8 @@ const UserIcon = props => {
     ) : (
       <View style={{ ...styles.nonUserIconStyle, ...props.style }}>
         <UserIconSVG
-          width={props.style?.width / 2 || 25}
-          height={props.style?.height / 2 || 25}
+          width={props.style?.width || 60}
+          height={props.style?.height || 60}
         />
       </View>
     )
@@ -36,8 +36,8 @@ const UserIcon = props => {
   ) : (
     <View style={{ ...styles.nonUserIconStyle, ...props.style }}>
       <UserIconSVG
-        width={props.style?.width / 2 || 25}
-        height={props.style?.height / 2 || 25}
+        width={props.style?.width || 60}
+        height={props.style?.height || 60}
       />
     </View>
   );
@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
 });
 export default UserIcon;

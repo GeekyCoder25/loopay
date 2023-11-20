@@ -18,6 +18,7 @@ import RequestConfirm from '../pages/SendMenuPages/RequestFunds/RequestConfirm';
 import RequestSuccess from '../pages/SendMenuPages/RequestFunds/RequestSuccess';
 import AddNewCard from '../pages/SendMenuPages/AddMoney/AddNewCard';
 import AirtimeTopUpNavigator from './AirtimeTopUpNavigator';
+import TransferBill from '../pages/SendMenuPages/PayABill/TransferBill';
 
 const SendMenuNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -80,6 +81,13 @@ const SendMenuNavigator = () => {
         }}
       />
       <Stack.Screen name="PayABill" component={PayABill} />
+      <Stack.Screen
+        name="TransferBill"
+        component={TransferBill}
+        options={{
+          headerShown: false,
+        }}
+      />
       <Stack.Screen name="VirtualCard" component={VirtualCard} />
       <Stack.Screen name="VirtualCardDetails" component={VirtualCardDetails} />
       <Stack.Screen name="PayABillParams" component={PayABillParams} />

@@ -8,57 +8,14 @@ import SchoolIcon from '../../../../assets/images/billSchool.svg';
 import ElectricityIcon from '../../../../assets/images/billElectricity.svg';
 import RegularText from '../../../components/fonts/RegularText';
 import { AppContext } from '../../../components/AppContext';
-import { postFetchData } from '../../../../utils/fetchAPI';
 
 const PayABill = ({ navigation }) => {
-  function VerifyCardNumber(stateFields, setErrorMessage) {
-    if (Object.values(stateFields).includes('')) {
-      return setErrorMessage('Please provide all required fields');
-    }
-    navigation.push('PayABillParams', {
-      headerText: 'Cable TV',
-      data: [
-        {
-          title: 'User Info',
-          type: 'select',
-          placeholder: 'User Info',
-          id: 'userInfo',
-        },
-        {
-          title: 'Package',
-          type: 'select',
-          placeholder: 'Select Package',
-          id: 'package',
-        },
-        {
-          title: 'Duration',
-          type: 'select',
-          placeholder: 'Duration',
-          id: 'duration',
-        },
-      ],
-      buttonText: 'Pay',
-      buttonFunc: PayCableTv,
-    });
-  }
-  const PayCableTv = () => {
-    console.log('shit');
-  };
-
-  const payElectricity = async (stateFields, setErrorMessage) => {
-    if (Object.values(stateFields).includes('')) {
-      return setErrorMessage('Please provide all required fields');
-    }
-    const response = await postFetchData('user/bill?electricity', stateFields);
-    console.log(response);
-  };
   const bills = [
     {
       title: 'TV',
       desc: 'TV Cable',
       headerText: 'Cable TV',
       buttonText: 'Verify Card Number',
-      buttonFunc: VerifyCardNumber,
       data: [
         {
           title: 'Select a Provider',
@@ -139,7 +96,6 @@ const PayABill = ({ navigation }) => {
       desc: 'Electricity',
       headerText: 'Electricity',
       buttonText: 'Make Payment',
-      buttonFunc: payElectricity,
       data: [
         {
           title: 'Select Provider',
@@ -158,7 +114,7 @@ const PayABill = ({ navigation }) => {
           title: 'Meter number',
           type: 'input',
           placeholder: 'Enter Meter number',
-          id: 'meterNo',
+          id: 'subscriberAccountNumber',
         },
         // {
         //   title: 'User',
@@ -236,14 +192,14 @@ const Bill = ({ bill, navigation }) => {
         break;
     }
   };
-  const { headerText, data, buttonText, buttonFunc } = bill;
+  const { headerText, data, buttonText, title } = bill;
 
   const handleNavigate = () => {
     navigation.navigate('PayABillParams', {
       headerText,
       data,
       buttonText,
-      buttonFunc,
+      title,
     });
   };
   return (

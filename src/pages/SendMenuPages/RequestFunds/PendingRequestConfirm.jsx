@@ -7,7 +7,6 @@ import InputPin from '../../../components/InputPin';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import ToastMessage from '../../../components/ToastMessage';
 import { postFetchData } from '../../../../utils/fetchAPI';
-import Button from '../../../components/Button';
 import { useContext } from 'react';
 import { AppContext } from '../../../components/AppContext';
 import { randomUUID } from 'expo-crypto';

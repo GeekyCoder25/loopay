@@ -1,13 +1,10 @@
 import React, { useContext } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
-import Logo from '../../components/Logo';
+import { StyleSheet, View } from 'react-native';
 import { AppContext } from '../../components/AppContext';
 import Header from '../../components/Header';
-import Button from '../../components/Button';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
-import FaIcon from '@expo/vector-icons/FontAwesome';
 import { addingDecimal } from '../../../utils/AddingZero';
 
 const Limit = () => {

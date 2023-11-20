@@ -1,5 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
-import NoPInSet from './NoPinSet';
+import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
 import { PINInputFields } from './InputPinPage';
 import RegularText from './fonts/RegularText';
 import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
@@ -15,15 +14,25 @@ const InputPin = ({
   customFunc,
   style,
 }) => {
-  const { setIsLoading, vh } = useContext(AppContext);
+  const { setIsLoading, vh, setShowTabBar } = useContext(AppContext);
   const [errorKey, setErrorKey] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [pinCode, setPinCode] = useState('');
   const inputRef = useRef();
 
   const codeLengths = [1, 2, 3, 4];
+  useLayoutEffect(() => {
+    setShowTabBar(false);
+  }, [setShowTabBar]);
 
   const handlePay = async () => {
+    if (!pinCode) {
+      setErrorKey('pinCode');
+      return setErrorMessage('No pin is provided');
+    } else if (pinCode.length < 4) {
+      setErrorKey('pinCode');
+      return setErrorMessage('Incomplete pin');
+    }
     setIsLoading(true);
     try {
       const result = await postFetchData('user/check-pin', {

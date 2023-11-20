@@ -16,6 +16,7 @@ import { allCurrencies } from '../../database/data';
 import { addingDecimal } from '../../../utils/AddingZero';
 import UserIcon from '../../components/UserIcon';
 import { groupTransactionsByDate } from '../../../utils/groupTransactions';
+import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
 
 const History = ({ navigation }) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -172,6 +173,9 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 3,
   },
+  historyTitle: {
+    textTransform: 'capitalize',
+  },
   creditAmount: {
     color: '#006E53',
     fontSize: 16,
@@ -181,6 +185,9 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 16,
     marginRight: 5,
+  },
+  amount: {
+    alignItems: 'center',
   },
   loading: {
     marginTop: 15 + '%',
@@ -201,6 +208,8 @@ const HistoryComp = ({ history, navigation }) => {
     transactionType,
     createdAt,
     currency,
+    networkProvider,
+    dataPlan,
   } = history;
   const date = new Date(createdAt);
   const historyTime = convertTo12HourFormat(
@@ -230,6 +239,42 @@ const HistoryComp = ({ history, navigation }) => {
   )?.symbol;
 
   return (
+    // <Pressable
+    //   onPress={() =>
+    //     navigation.navigate('TransactionHistoryDetails', {
+    //       previousScreen: 'History',
+    //       ...history,
+    //     })
+    //   }
+    //   style={styles.history}>
+    //   {transactionType?.toLowerCase() === 'credit' ? (
+    //     <>
+    //       <UserIcon uri={senderPhoto} />
+    //       <View style={styles.historyContent}>
+    //         <BoldText>{senderName}</BoldText>
+    //         <RegularText>{historyTime}</RegularText>
+    //       </View>
+    //       <View style={styles.amount}>
+    //         <BoldText style={styles.creditAmount}>
+    //           +{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
+    //         </BoldText>
+    //       </View>
+    //     </>
+    //   ) : (
+    //     <>
+    //       <UserIcon uri={receiverPhoto} />
+    //       <View style={styles.historyContent}>
+    //         <BoldText>{receiverName}</BoldText>
+    //         <RegularText>{historyTime}</RegularText>
+    //       </View>
+    //       <View style={styles.amount}>
+    //         <BoldText style={styles.debitAmount}>
+    //           -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
+    //         </BoldText>
+    //       </View>
+    //     </>
+    //   )}
+    // </Pressable>
     <Pressable
       onPress={() =>
         navigation.navigate('TransactionHistoryDetails', {
@@ -238,30 +283,67 @@ const HistoryComp = ({ history, navigation }) => {
         })
       }
       style={styles.history}>
-      {transactionType?.toLowerCase() === 'credit' ? (
+      {transactionType?.toLowerCase() === 'credit' && (
         <>
           <UserIcon uri={senderPhoto} />
           <View style={styles.historyContent}>
             <BoldText>{senderName}</BoldText>
-            <RegularText>{historyTime}</RegularText>
+            <RegularText>Transfer</RegularText>
           </View>
           <View style={styles.amount}>
             <BoldText style={styles.creditAmount}>
               +{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
             </BoldText>
+            <RegularText>{historyTime}</RegularText>
           </View>
         </>
-      ) : (
+      )}
+      {transactionType?.toLowerCase() === 'debit' && (
         <>
           <UserIcon uri={receiverPhoto} />
           <View style={styles.historyContent}>
             <BoldText>{receiverName}</BoldText>
-            <RegularText>{historyTime}</RegularText>
+            <RegularText>Transfer</RegularText>
           </View>
           <View style={styles.amount}>
             <BoldText style={styles.debitAmount}>
               -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
             </BoldText>
+            <RegularText> {historyTime}</RegularText>
+          </View>
+        </>
+      )}
+      {transactionType?.toLowerCase() === 'airtime' && (
+        <>
+          {networkProvidersIcon(networkProvider)}
+          <View style={styles.historyContent}>
+            <BoldText style={styles.historyTitle}>
+              {networkProvider} - {history.phoneNo}
+            </BoldText>
+            <RegularText>Airtime Recharge</RegularText>
+          </View>
+          <View style={styles.amount}>
+            <BoldText style={styles.debitAmount}>
+              -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
+            </BoldText>
+            <RegularText> {historyTime}</RegularText>
+          </View>
+        </>
+      )}
+      {transactionType?.toLowerCase() === 'data' && (
+        <>
+          {networkProvidersIcon(networkProvider)}
+          <View style={styles.historyContent}>
+            <BoldText style={styles.historyTitle}>
+              {networkProvider} - {history.phoneNo}
+            </BoldText>
+            <RegularText>Data Recharge - {dataPlan.value}</RegularText>
+          </View>
+          <View style={styles.amount}>
+            <BoldText style={styles.debitAmount}>
+              -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
+            </BoldText>
+            <RegularText> {historyTime}</RegularText>
           </View>
         </>
       )}

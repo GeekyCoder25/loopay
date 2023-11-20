@@ -5,14 +5,20 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_SERVER_URL": "http://10.0.2.2:8000/api"
+      }
     },
     "preview": {
       "distribution": "internal",
       "channel": "preview"
     },
     "production": {
-      "channel": "production"
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_SERVER_URL": "https://loopay-api.cyclic.app/api"
+      }
     }
   },
   "submit": {

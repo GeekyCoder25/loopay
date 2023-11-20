@@ -4,15 +4,19 @@ import SendIcon from '../../assets/images/send.svg';
 import MenuIcon from '../../assets/images/menu.svg';
 import { useContext } from 'react';
 import { AppContext } from './AppContext';
+import BoldText from './fonts/BoldText';
 const tabRoutes = [
   {
     route: 'HomeNavigator',
+    label: 'Home',
   },
   {
     route: 'SendMenuNavigator',
+    label: 'Send',
   },
   {
     route: 'MenuNavigator',
+    label: 'Menu',
   },
 ];
 
@@ -38,11 +42,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#fff',
-    padding: 15,
+    paddingHorizontal: 15,
+    paddingTop: 10,
+    paddingBottom: 5,
     elevation: 30,
   },
   routeIcon: {
     paddingHorizontal: 25,
+    alignItems: 'center',
+    gap: 2,
   },
 });
 export default TabBar;
@@ -72,6 +80,7 @@ const TabRoute = ({ routePage, navigation, state, index }) => {
       }}
       style={styles.routeIcon}>
       <View>{routeIcon(fillColor)}</View>
+      <BoldText style={{ color: fillColor }}>{routePage.label}</BoldText>
     </TouchableOpacity>
   );
 };

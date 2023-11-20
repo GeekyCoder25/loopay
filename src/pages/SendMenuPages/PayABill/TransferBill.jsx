@@ -3,43 +3,37 @@ import { View, Pressable, StyleSheet, ScrollView, Text } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
 import InputPin from '../../../components/InputPin';
 import FooterCard from '../../../components/FooterCard';
-import GLOIcon from '../../../../assets/images/glo.svg';
-import MTNIcon from '../../../../assets/images/mtn.svg';
-import AirtelIcon from '../../../../assets/images/airtel.svg';
-import NineMobileIcon from '../../../../assets/images/9mobile.svg';
 import { postFetchData } from '../../../../utils/fetchAPI';
 import PageContainer from '../../../components/PageContainer';
 import BackArrow from '../../../../assets/images/backArrowWhite.svg';
 import { AppContext } from '../../../components/AppContext';
+import FaIcon from '@expo/vector-icons/FontAwesome';
+import ToastMessage from '../../../components/ToastMessage';
 
-const TransferAirtime = ({ navigation, route }) => {
-  const { formData } = route.params;
-  const { setWalletRefresh } = useContext(AppContext);
+const TransferBill = ({ navigation, route }) => {
+  const formData = route.params;
+  const { setIsLoading, setWalletRefresh } = useContext(AppContext);
+
   const handlePay = async setErrorMessage => {
-    const response = await postFetchData(`user/${formData.type}`, formData);
-    if (!response.status || response.status !== 200) {
-      return setErrorMessage(response.data.message || response.data);
-    }
-    setWalletRefresh(prev => !prev);
-    navigation.navigate('Success', {
-      airtime: { ...formData, reference: response.data.reference },
-      amountInput: formData.amount,
-      dataPlan: formData.plan?.value || undefined,
-    });
-  };
-
-  const networkProvidersIcon = network => {
-    switch (network) {
-      case 'glo':
-        return <GLOIcon />;
-      case 'mtn':
-        return <MTNIcon />;
-      case 'airtel':
-        return <AirtelIcon />;
-      case '9mobile':
-        return <NineMobileIcon />;
-      default:
-        break;
+    try {
+      setIsLoading(true);
+      const response = await postFetchData(
+        `user/bill?${formData.routeId}`,
+        formData,
+      );
+      if (response.status === 200) {
+        setWalletRefresh(prev => !prev);
+        return navigation.navigate('Success', {
+          amountInput: formData.amount,
+          billPlan: formData.provider.name,
+          reference: response.data.referenceId,
+        });
+      }
+      setErrorMessage(response.data);
+    } catch (error) {
+      ToastMessage(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -55,11 +49,11 @@ const TransferAirtime = ({ navigation, route }) => {
       </View>
       <ScrollView style={styles.body}>
         <View style={styles.headerContainer}>
-          <BoldText style={styles.pinHeader}>Airtime Recharge</BoldText>
+          <BoldText style={styles.pinHeader}>Bill Recharge</BoldText>
           <View style={styles.userIconContainer}>
-            {networkProvidersIcon(formData.network)}
+            {billIcon(formData.routeId)}
             <View>
-              <BoldText style={styles.pinPhone}>{formData.phoneNo}</BoldText>
+              <BoldText style={styles.pinPhone}>{formData.routeId}</BoldText>
             </View>
             <View style={styles.modalBorder} />
           </View>
@@ -68,13 +62,8 @@ const TransferAirtime = ({ navigation, route }) => {
           <InputPin customFunc={handlePay} buttonText={'Buy Now'}>
             <View style={styles.footer}>
               <FooterCard
-                airtime={formData}
-                amountInput={`${Number(formData.amount).toLocaleString()}${
-                  Number(formData.amount).toLocaleString().includes('.')
-                    ? ''
-                    : '.00'
-                }`}
-                dataPlan={formData.plan && formData.plan.value}
+                amountInput={formData.amount}
+                billPlan={formData.provider.name}
               />
             </View>
           </InputPin>
@@ -112,6 +101,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 10,
     color: '#fff',
+    textTransform: 'capitalize',
   },
   userIconContainer: {
     marginVertical: 40,
@@ -126,6 +116,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#979797',
   },
   pinPhone: {
+    textTransform: 'capitalize',
     color: '#fff',
   },
   modalBorder: {
@@ -143,4 +134,17 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
 });
-export default TransferAirtime;
+export default TransferBill;
+
+const billIcon = key => {
+  switch (key) {
+    case 'electricity':
+      return <FaIcon name="bolt" size={24} color={'#fff'} />;
+    case 'school':
+      return <FaIcon name="graduation-cap" size={24} color={'#fff'} />;
+    case 'tv':
+      return <FaIcon name="tv" size={24} color={'#fff'} />;
+    default:
+      return <FaIcon name="send" size={24} color={'#fff'} />;
+  }
+};

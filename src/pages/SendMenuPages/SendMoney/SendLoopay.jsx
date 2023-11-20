@@ -153,7 +153,7 @@ const SendLoopay = ({ navigation, route }) => {
                 />
               ) : (
                 <View style={styles.nonUserIconStyle}>
-                  <UserIconSVG width={25} height={25} />
+                  <UserIconSVG width={60} height={60} />
                 </View>
               )}
               <View style={styles.userFoundDetails}>
@@ -274,6 +274,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(160, 160, 160, 0.6)',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   userFoundDetails: {
     gap: 5,

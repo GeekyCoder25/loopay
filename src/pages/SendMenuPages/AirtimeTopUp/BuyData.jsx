@@ -1,7 +1,8 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
 import {
+  ActivityIndicator,
   Modal,
   Pressable,
   ScrollView,
@@ -22,8 +23,10 @@ import ErrorMessage from '../../../components/ErrorMessage';
 import { randomUUID } from 'expo-crypto';
 import { getFetchData } from '../../../../utils/fetchAPI';
 import ToastMessage from '../../../components/ToastMessage';
+import { useWalletContext } from '../../../context/WalletContext';
 
 const BuyData = ({ navigation }) => {
+  const { wallet } = useWalletContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [planModalOpen, setPlanModalOpen] = useState(false);
   const [networkToBuy, setNetworkToBuy] = useState(null);
@@ -139,6 +142,9 @@ const BuyData = ({ navigation }) => {
     } else if (formData.phoneNo.length < 11) {
       setErrorMessage('Incomplete phone number');
       return setErrorKey('phoneInput');
+    } else if (formData.amount > wallet.localBalance) {
+      setErrorMessage('Insufficient balance');
+      return setErrorKey('amountInput');
     }
     navigation.navigate('TransferAirtime', {
       formData: {
@@ -215,40 +221,48 @@ const BuyData = ({ navigation }) => {
               <View style={styles.modalBorder} />
               <ScrollView style={{ width: 100 + '%' }}>
                 <View style={styles.modalLists}>
-                  {modalOpen
-                    ? networkProviders.map(provider => (
-                        <Pressable
-                          key={provider.network}
-                          style={{
-                            ...styles.modalList,
-                            backgroundColor:
-                              networkToBuy?.network === provider.network
-                                ? '#e4e2e2'
-                                : 'transparent',
-                          }}
-                          onPress={() => handleNetworkSelect(provider)}>
-                          <View style={styles.networkIcon}>
-                            {networkProvidersIcon(provider.network)}
-                          </View>
-                          <BoldText style={styles.networkToBuySelected}>
-                            {`${provider.network}-${provider.locale}`}
-                          </BoldText>
-                        </Pressable>
-                      ))
-                    : dataPlans.map(plan => (
-                        <Pressable
-                          key={plan.value}
-                          style={{
-                            ...styles.modalList,
-                            backgroundColor:
-                              planToBuy === plan ? '#e4e2e2' : 'transparent',
-                          }}
-                          onPress={() => handlePlanSelect(plan)}>
-                          <BoldText style={styles.dataPlan}>
-                            {Math.ceil(plan.amount)} - {plan.value}
-                          </BoldText>
-                        </Pressable>
-                      ))}
+                  {modalOpen ? (
+                    networkProviders.map(provider => (
+                      <Pressable
+                        key={provider.network}
+                        style={{
+                          ...styles.modalList,
+                          backgroundColor:
+                            networkToBuy?.network === provider.network
+                              ? '#e4e2e2'
+                              : 'transparent',
+                        }}
+                        onPress={() => handleNetworkSelect(provider)}>
+                        <View style={styles.networkIcon}>
+                          {networkProvidersIcon(provider.network)}
+                        </View>
+                        <BoldText style={styles.networkToBuySelected}>
+                          {`${provider.network}-${provider.locale}`}
+                        </BoldText>
+                      </Pressable>
+                    ))
+                  ) : dataPlans.length ? (
+                    dataPlans.map(plan => (
+                      <Pressable
+                        key={plan.value}
+                        style={{
+                          ...styles.modalList,
+                          backgroundColor:
+                            planToBuy === plan ? '#e4e2e2' : 'transparent',
+                        }}
+                        onPress={() => handlePlanSelect(plan)}>
+                        <BoldText style={styles.dataPlan}>
+                          {Math.ceil(plan.amount)} - {plan.value}
+                        </BoldText>
+                      </Pressable>
+                    ))
+                  ) : (
+                    <ActivityIndicator
+                      color={'#1e1e1e'}
+                      style={styles.activity}
+                      size="large"
+                    />
+                  )}
                 </View>
               </ScrollView>
             </View>
@@ -278,7 +292,8 @@ const BuyData = ({ navigation }) => {
             <View
               style={{
                 ...styles.textInput,
-                borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
+                ...styles.textInputStyles,
+                borderColor: errorKey === 'amountInput' ? 'red' : '#f9f9f9',
               }}>
               {planToBuy ? (
                 <BoldText style={styles.networkToBuySelected}>
@@ -359,7 +374,6 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-600',
   },
   textInputStyles: {
-    paddingVertical: 10,
     borderWidth: 1,
     borderColor: '#ccc',
   },

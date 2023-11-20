@@ -14,6 +14,7 @@ import Button from '../../components/Button';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import { AppContext } from '../../components/AppContext';
+import { billIcon } from './TransactionHistory';
 
 const TransactionHistoryParams = ({ route }) => {
   const { vh } = useContext(AppContext);
@@ -45,6 +46,8 @@ const TransactionHistoryParams = ({ route }) => {
     phoneNo,
     dataPlan,
     debitAccount,
+    billName,
+    billType,
   } = history;
 
   const currencySymbol = allCurrencies.find(
@@ -128,6 +131,18 @@ const TransactionHistoryParams = ({ route }) => {
           { key: 'Debit Account', value: debitAccount },
           { key: 'Network', value: networkProvider },
           { key: 'Phone Number', value: phoneNo },
+          { key: 'Reference Id', value: reference },
+          { key: 'Status', value: status },
+        ];
+      } else if (transactionType === 'bill') {
+        return [
+          {
+            key: 'Transaction type',
+            value: `${transactionType} Payment - Debit`,
+          },
+          { key: 'Debit Account', value: debitAccount },
+          { key: 'Bill Type', value: billType },
+          { key: 'Bill Service', value: billName },
           { key: 'Reference Id', value: reference },
           { key: 'Status', value: status },
         ];
@@ -650,6 +665,77 @@ const TransactionHistoryParams = ({ route }) => {
             </View>
           </>
         )}
+        {transactionType?.toLowerCase() === 'bill' && (
+          <>
+            <View style={styles.headerContainer}>
+              <View style={styles.historyIconText}>{billIcon(billType)}</View>
+              <View>
+                <BoldText style={styles.name}>{billName}</BoldText>
+                <RegularText style={styles.accNo}>Bill Payment</RegularText>
+              </View>
+            </View>
+
+            <View style={styles.modalBorder} />
+
+            <View style={styles.footerCard}>
+              <BoldText style={styles.cardAmount}>
+                -{' '}
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+
+              <View style={styles.footerCardDetails}>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Status</RegularText>
+                  {statusColor()}
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Transaction type
+                  </RegularText>
+                  <BoldText style={{ ...styles.cardValue, color: '#ff0000' }}>
+                    Debit
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Amount</RegularText>
+                  <BoldText style={styles.cardValue}>
+                    {currencySymbol +
+                      addingDecimal(Number(amount).toLocaleString())}
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Bill Plan</RegularText>
+                  <BoldText style={styles.cardValue}>{billName}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Reference</RegularText>
+                  <BoldText style={styles.cardValue}>{reference}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Payment Method
+                  </RegularText>
+                  <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
+                    Balance
+                  </BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>
+                    Transaction Date
+                  </RegularText>
+                  <BoldText
+                    style={{
+                      ...styles.cardValue,
+                      textTransform: 'uppercase',
+                    }}>
+                    {transactionDate}
+                  </BoldText>
+                </View>
+              </View>
+            </View>
+          </>
+        )}
 
         {transactionType?.toLowerCase() === 'swap' && (
           <>
@@ -775,6 +861,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
+  historyIconText: {
+    backgroundColor: '#ccc',
+    fontSize: 18,
+    fontFamily: 'OpenSans-800',
+    width: 40,
+    height: 40,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+  },
   accNo: {
     marginTop: 3,
   },
@@ -829,6 +927,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     justifyContent: 'flex-end',
+    marginBottom: 20,
   },
   status: {
     flexDirection: 'row',
