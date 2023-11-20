@@ -255,7 +255,7 @@ const BuyAirtime = ({ navigation }) => {
               ...styles.textInputStyles,
               borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
             }}
-            inputMode="numeric"
+            inputMode="decimal"
             onChangeText={text => handleAmountInput(text)}
             onBlur={handleBlur}
             value={amountInput}

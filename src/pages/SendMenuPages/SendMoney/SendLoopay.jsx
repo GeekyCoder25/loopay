@@ -117,7 +117,7 @@ const SendLoopay = ({ navigation, route }) => {
               onChangeText={text => setInputValue(text)}
               onBlur={handleCheck}
               value={inputValue}
-              placeholder="#username"
+              placeholder="#username or account no"
               placeholderTextColor={'#525252'}
               maxLength={maximum}
             />

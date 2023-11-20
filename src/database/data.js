@@ -104,7 +104,7 @@ export const allCurrencies = [
     acronym: 'GBP',
     amount: 0.0,
     symbol: '£',
-    minimumAmountToAdd: 2,
+    minimumAmountToAdd: 1,
   },
 ];
 

@@ -32,7 +32,13 @@ const AdminTransfer = ({ navigation }) => {
   const { recents } = adminData;
   const [transferCurrency, setTransferCurrency] = useState(selectedCurrency);
   const [balance, setBalance] = useState(
-    adminData[`${selectedCurrency.currency}Balance`],
+    adminData[
+      `${
+        ['dollar', 'euro', 'pound'].includes(selectedCurrency.currency)
+          ? selectedCurrency.currency
+          : 'local'
+      }Balance`
+    ],
   );
   const [errorKey, setErrorKey] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);

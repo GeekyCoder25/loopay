@@ -9,4 +9,7 @@ export const hideTabRoutes = [
   'Notification',
   'VerifyImage',
   'Profile',
+  'Biometric',
 ];
+
+export const timeForInactivityInSecond = 120;

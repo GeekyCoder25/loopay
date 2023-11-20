@@ -13,7 +13,13 @@ const BalanceCard = () => {
 
   useEffect(() => {
     if (adminData) {
-      setBalance(adminData[`${selectedCurrency.currency}Balance`]);
+      const currency = ['dollar', 'euro', 'pound'].includes(
+        selectedCurrency.currency,
+      )
+        ? selectedCurrency.currency
+        : 'local';
+
+      setBalance(adminData[`${currency}Balance`]);
     }
   }, [adminData, selectedCurrency.currency]);
 

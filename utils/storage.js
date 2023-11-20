@@ -9,6 +9,7 @@ const StorageKeys = {
   SHOW_BALANCE: 'SHOW_BALANCE',
   DEFAULT_CURRENCY: 'DEFAULT_CURRENCY',
   ROLE: 'ROLE',
+  BIOMETRIC: 'BIOMETRIC',
 };
 
 export const loginUser = async (data, session) => {
@@ -65,6 +66,13 @@ export const setDefaultCurrency = async currency => {
 };
 export const getDefaultCurrency = async () => {
   return await AsyncStorage.getItem(StorageKeys.DEFAULT_CURRENCY);
+};
+export const setBiometric = async state => {
+  return await AsyncStorage.setItem(StorageKeys.BIOMETRIC, `${state}`);
+};
+export const getBiometric = async () => {
+  const stringifiedState = await AsyncStorage.getItem(StorageKeys.BIOMETRIC);
+  return JSON.parse(stringifiedState);
 };
 
 const getAllKeys = async () => {

@@ -14,8 +14,6 @@ import Phone from '../../../assets/images/phone.svg';
 import Lock from '../../../assets/images/lock.svg';
 import Eye from '../../../assets/images/eye.svg';
 import EyeClosed from '../../../assets/images/eye-slash.svg';
-// import Apple from '../../../assets/images/apple.svg';
-// import Google from '../../../assets/images/google.svg';
 import { signUpData } from '../../database/data.js';
 import Logo from '../../components/Logo';
 import Button from '../../components/Button';

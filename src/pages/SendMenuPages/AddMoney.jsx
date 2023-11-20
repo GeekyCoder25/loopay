@@ -451,6 +451,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 20,
+    zIndex: 9,
   },
   modal: {
     backgroundColor: '#fff',

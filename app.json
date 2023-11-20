@@ -11,9 +11,7 @@
       "resizeMode": "cover",
       "backgroundColor": "#cccccc"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -26,6 +24,14 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "plugins": [
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow Loopay to use Biometric to authenticate you"
+        }
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "b24b1981-cbbb-496d-b3e2-4f61e985c360"

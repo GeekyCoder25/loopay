@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import Tag from '../../../assets/images/tag.svg';
@@ -22,7 +22,7 @@ import BiometricIcon from '../../../assets/images/biometric.svg';
 import ToastMessage from '../../components/ToastMessage';
 
 const Profile = ({ navigation, children, route }) => {
-  const { appData, setAppData } = useContext(AppContext);
+  const { appData, setAppData, isBiometricSupported } = useContext(AppContext);
   const { email } = appData;
   const { firstName, lastName } = appData.userProfile;
   const fullName = `${firstName} ${lastName}`;
@@ -130,12 +130,6 @@ const Profile = ({ navigation, children, route }) => {
       routeIcon: 'questions',
       routeDetails: 'Set up your secret questions',
     },
-    {
-      routeName: 'Biometric Authentication',
-      routeNavigate: 'Biometric',
-      routeIcon: 'biometric',
-      routeDetails: 'Delete your biometric authentication method',
-    },
   ];
 
   return (
@@ -205,7 +199,6 @@ const Profile = ({ navigation, children, route }) => {
             </>
           )}
         </View>
-
         <View style={styles.childComponent}>{children}</View>
         {route?.name === 'Profile' &&
           profileRoutes.map(routePage => (
@@ -215,6 +208,17 @@ const Profile = ({ navigation, children, route }) => {
               navigation={navigation}
             />
           ))}
+        {route?.name === 'Profile' && isBiometricSupported && (
+          <RouteLink
+            route={{
+              routeName: 'Biometric Authentication',
+              routeNavigate: 'Biometric',
+              routeIcon: 'biometric',
+              routeDetails: 'Enable/Disable biometric authentication method',
+            }}
+            navigation={navigation}
+          />
+        )}
       </View>
     </PageContainer>
   );

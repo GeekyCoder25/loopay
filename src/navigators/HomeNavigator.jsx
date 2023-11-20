@@ -25,6 +25,7 @@ import RequestSuccess from '../pages/SendMenuPages/RequestFunds/RequestSuccess';
 import AddMoney from '../pages/SendMenuPages/AddMoney';
 import AddMoneyConfirm from '../pages/SendMenuPages/AddMoney/AddMoneyConfirm';
 import AddNewCard from '../pages/SendMenuPages/AddMoney/AddNewCard';
+import Biometric from '../pages/HomePages/Biometric';
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -125,6 +126,11 @@ const HomeNavigator = () => {
           options={({ navigation, route }) => screenHeader(navigation, route)}
         />
         <Stack.Screen name="RequestStatus" component={RequestStatus} />
+        <Stack.Screen
+          name="Biometric"
+          component={Biometric}
+          options={({ navigation, route }) => screenHeader(navigation, route)}
+        />
       </Stack.Navigator>
     </NotificationsContextComponent>
   );

@@ -163,7 +163,9 @@ const RequestFund = ({ navigation, route }) => {
       <BoldText style={styles.headerText}>Request Money</BoldText>
       <View style={{ ...styles.body, minHeight: vh * 0.75 }}>
         <View style={styles.labelContainer}>
-          <RegularText style={styles.label}>Enter user Loopay tag</RegularText>
+          <RegularText style={styles.label}>
+            Enter user Loopay tag or account number
+          </RegularText>
         </View>
         <View style={styles.textInputContainer}>
           <TextInput
@@ -213,7 +215,7 @@ const RequestFund = ({ navigation, route }) => {
                 ...styles.textInputStyles,
                 borderColor: errorKey === 'amount' ? 'red' : '#ccc',
               }}
-              inputMode="numeric"
+              inputMode="decimal"
               onChangeText={text => handlePriceInput(text)}
               onBlur={handleAutoFill}
               value={value}

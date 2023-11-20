@@ -20,6 +20,7 @@ import { getDefaultCurrency } from './utils/storage';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import BoldText from './src/components/fonts/BoldText';
+import { timeForInactivityInSecond } from './src/config/config';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -38,9 +39,10 @@ export default function App() {
   const [canChangeRole, setCanChangeRole] = useState(false);
   const [noReload, setNoReload] = useState(false);
   const [isSessionTimedOut, setIsSessionTimedOut] = useState(true);
-  const [timeForInactivityInSecond] = useState(120);
   const [showConnected, setShowConnected] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [isBiometricSupported, setIsBiometricSupported] = useState(false);
+  const [enableBiometric, setEnableBiometric] = useState(false);
   const timerId = useRef(false);
   const vw = useWindowDimensions().width;
   const vh = useWindowDimensions().height;
@@ -48,6 +50,7 @@ export default function App() {
   const contextValue = {
     vw,
     vh,
+    timerId,
     selectedCurrency,
     setSelectedCurrency,
     verified,
@@ -80,6 +83,10 @@ export default function App() {
     setShowConnected,
     refreshing,
     setRefreshing,
+    isBiometricSupported,
+    setIsBiometricSupported,
+    enableBiometric,
+    setEnableBiometric,
   };
 
   useEffect(() => {

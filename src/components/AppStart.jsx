@@ -9,7 +9,8 @@ import { View } from 'react-native';
 import LockScreen from '../pages/GlobalPages/LockScreen';
 
 const AppStart = () => {
-  const { internetStatus, setInternetStatus } = useContext(AppContext);
+  const { internetStatus, setInternetStatus, isLoggedIn, isSessionTimedOut } =
+    useContext(AppContext);
 
   useEffect(() => {
     const getFetchData = async () => {
@@ -63,7 +64,7 @@ const AppStart = () => {
     <>
       <View onLayout={onLayoutRootView} />
       <AppPagesNavigator />
-      {/* <LockScreen /> */}
+      {isSessionTimedOut && isLoggedIn && <LockScreen />}
       <NoInternet modalOpen={!internetStatus} />
     </>
   );

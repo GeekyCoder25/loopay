@@ -371,6 +371,7 @@ export const History = ({ history, navigation }) => {
       )}
       {transactionType?.toLowerCase() === 'bill' && (
         <>
+          {console.log(history)}
           <View style={styles.historyIconText}>{billIcon(billType)}</View>
           <View style={styles.historyContent}>
             <BoldText style={styles.historyTitle}>{billName} </BoldText>

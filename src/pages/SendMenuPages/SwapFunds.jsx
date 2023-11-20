@@ -1,6 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import { useContext, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View, Modal } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+  Modal,
+  TouchableOpacity,
+} from 'react-native';
 import { AppContext } from '../../components/AppContext';
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
@@ -211,7 +218,6 @@ const SwapFunds = ({ navigation }) => {
         fee: transactionFee,
       };
     });
-
     setToReceive(
       toReceiveCalculate > 0
         ? addingDecimal(toReceiveCalculate.toLocaleString())
@@ -225,14 +231,15 @@ const SwapFunds = ({ navigation }) => {
     setErrorMessage(false);
   };
 
-  const handleAutoFill = () => {
-    if (value && value < minimumAmountToAdd) {
+  const handleAutoFill = ({ params }) => {
+    const amount = params || value;
+    if (amount && amount < minimumAmountToAdd) {
       setErrorKey(true);
       setErrorMessage(
         `Minimum amount to swap is ${swapFrom.symbol}${minimumAmountToAdd}`,
       );
     }
-    value && setValue(addingDecimal(value));
+    amount && setValue(addingDecimal(amount));
   };
 
   const handleModal = () => {
@@ -441,7 +448,9 @@ const SwapFunds = ({ navigation }) => {
           </View>
           <View style={styles.swapInputContainer}>
             <View>
-              <RegularText style={styles.label}>Amount to top up</RegularText>
+              <View>
+                <RegularText style={styles.label}>Amount to swap</RegularText>
+              </View>
               <View style={styles.textInputContainer}>
                 <BoldText style={styles.symbol}>{swapFrom.symbol}</BoldText>
                 <TextInput
@@ -456,6 +465,16 @@ const SwapFunds = ({ navigation }) => {
                   placeholder="Amount to swap"
                   placeholderTextColor={'#525252'}
                 />
+                <TouchableOpacity
+                  style={styles.swapAll}
+                  onPress={() => {
+                    handlePriceInput(swapFrom.balance.toFixed(2));
+                    handleAutoFill({ params: swapFrom.balance.toFixed(2) });
+                  }}>
+                  <BoldText style={styles.swapAllText}>
+                    Swap all {swapFrom.acronym} balance to {swapTo.acronym}
+                  </BoldText>
+                </TouchableOpacity>
                 {errorMessage && (
                   <ErrorMessage
                     errorMessage={errorMessage}
@@ -684,6 +703,17 @@ const styles = StyleSheet.create({
     gap: 10,
     padding: 5 + '%',
     zIndex: 1,
+  },
+  swapAll: {
+    backgroundColor: '#1e1e1e',
+    marginTop: 20,
+    padding: 10,
+    borderRadius: 15,
+    alignSelf: 'flex-start',
+  },
+  swapAllText: {
+    color: '#fff',
+    textAlign: 'center',
   },
   swapInputContainer: {
     paddingHorizontal: 5 + '%',
