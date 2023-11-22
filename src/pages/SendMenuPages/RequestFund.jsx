@@ -190,82 +190,79 @@ const RequestFund = ({ navigation, route }) => {
         <View style={styles.labelContainer}>
           <RegularText style={styles.label}>Select Currency</RegularText>
         </View>
-        <View style={styles.textInputContainer}>
-          <Pressable
-            onPress={() => setModalOpen(true)}
-            style={styles.textInputContainer}>
-            <View style={{ ...styles.textInput, ...styles.selectInput }}>
-              <View style={styles.selected}>
-                <FlagSelect country={selected.currency} />
-                <RegularText
-                  style={
-                    styles.selectedText
-                  }>{`${selected.acronym} (${selected.fullName})`}</RegularText>
-              </View>
-              <ChevronDown />
-            </View>
-          </Pressable>
-
-          <RegularText style={styles.label}>Request Amount</RegularText>
-          <View style={styles.textInputContainer}>
-            <BoldText style={styles.symbol}>{selected.symbol}</BoldText>
-            <TextInput
-              style={{
-                ...styles.textInput,
-                ...styles.textInputStyles,
-                borderColor: errorKey === 'amount' ? 'red' : '#ccc',
-              }}
-              inputMode="decimal"
-              onChangeText={text => handlePriceInput(text)}
-              onBlur={handleAutoFill}
-              value={value}
-            />
-          </View>
-
-          <RegularText style={styles.label}>Amount you’ll receive</RegularText>
-          <View style={styles.textInputContainer}>
-            <BoldText style={styles.symbol}>{selected.symbol}</BoldText>
-            <View style={{ ...styles.textInput, ...styles.textInputStyles }}>
+        <Pressable
+          onPress={() => setModalOpen(true)}
+          style={styles.textInputContainer}>
+          <View style={{ ...styles.textInput, ...styles.selectInput }}>
+            <View style={styles.selected}>
+              <FlagSelect country={selected.currency} />
               <RegularText
-                style={{ fontSize: styles.textInputStyles.fontSize }}>
-                {toReceive}
-              </RegularText>
+                style={
+                  styles.selectedText
+                }>{`${selected.acronym} (${selected.fullName})`}</RegularText>
             </View>
-            <View style={styles.fee}>
-              <RegularText style={styles.feeText}>
-                Fee: {fee > 0 && selected.symbol}
-                {fee <= 0 ? 'free' : fee}
-              </RegularText>
-            </View>
+            <ChevronDown />
           </View>
+        </Pressable>
 
-          <RegularText style={styles.label}>Description</RegularText>
-          <View style={styles.textInputContainer}>
-            <TextInput
-              style={{
-                ...styles.textInput,
-                borderColor: errorKey === 'desc' ? 'red' : '#ccc',
-              }}
-              onChangeText={text => {
-                setErrorMessage('');
-                setErrorKey('');
-                setStateFields(prev => {
-                  return {
-                    ...prev,
-                    description: text,
-                  };
-                });
-              }}
-            />
-          </View>
-          {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
-        </View>
-        <View style={styles.button}>
-          <Button
-            text="Request Funds"
-            onPress={() => handleContinue(selectedCurrency)}
+        <RegularText style={styles.label}>Request Amount</RegularText>
+        <View style={styles.textInputContainer}>
+          <BoldText style={styles.symbol}>{selected.symbol}</BoldText>
+          <TextInput
+            style={{
+              ...styles.textInput,
+              ...styles.textInputStyles,
+              borderColor: errorKey === 'amount' ? 'red' : '#ccc',
+            }}
+            inputMode="decimal"
+            onChangeText={text => handlePriceInput(text)}
+            onBlur={handleAutoFill}
+            value={value}
           />
         </View>
+
+        <RegularText style={styles.label}>Amount you’ll receive</RegularText>
+        <View style={styles.textInputContainer}>
+          <BoldText style={styles.symbol}>{selected.symbol}</BoldText>
+          <View style={{ ...styles.textInput, ...styles.textInputStyles }}>
+            <RegularText style={{ fontSize: styles.textInputStyles.fontSize }}>
+              {toReceive}
+            </RegularText>
+          </View>
+          <View style={styles.fee}>
+            <RegularText style={styles.feeText}>
+              Fee: {fee > 0 && selected.symbol}
+              {fee <= 0 ? 'free' : fee}
+            </RegularText>
+          </View>
+        </View>
+
+        <RegularText style={styles.label}>Description</RegularText>
+        <View style={styles.textInputContainer}>
+          <TextInput
+            style={{
+              ...styles.textInput,
+              borderColor: errorKey === 'desc' ? 'red' : '#ccc',
+            }}
+            onChangeText={text => {
+              setErrorMessage('');
+              setErrorKey('');
+              setStateFields(prev => {
+                return {
+                  ...prev,
+                  description: text,
+                };
+              });
+            }}
+          />
+        </View>
+        {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
+      </View>
+      <View style={styles.button}>
+        <Button
+          text="Request Funds"
+          onPress={() => handleContinue(selectedCurrency)}
+        />
       </View>
       <Modal
         visible={modalOpen}

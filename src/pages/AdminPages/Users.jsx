@@ -70,7 +70,7 @@ const Users = ({ navigation }) => {
     setActiveUsers([]);
     setInactiveUsers([]);
     adminData.lastActiveSessions.forEach(session => {
-      const userSession = session.sessions[0]?.lastSeen;
+      const userSession = session.updatedAt;
       if (checkSameDateAndTime(userSession)) {
         setActiveUsers(prev => [
           ...prev,
@@ -440,7 +440,7 @@ const User = ({ user, userData, activeStatus }) => {
     adminData.lastActiveSessions
       .filter(session => session.email === user.email)
       .forEach(userSession => {
-        userSession = userSession.sessions[0]?.lastSeen;
+        userSession = userSession.updatedAt;
         checkSameDateAndTime(userSession) && setStatus(true);
       });
   }, [adminData.lastActiveSessions, user.email]);

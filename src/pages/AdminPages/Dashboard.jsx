@@ -74,8 +74,7 @@ const Dashboard = ({ navigation }) => {
         }
       };
       adminData.lastActiveSessions.forEach(userSession => {
-        userSession =
-          userSession.sessions[0]?.lastSeen || userSession.updatedAt;
+        userSession = userSession.updatedAt;
         checkSameDateAndTime(userSession) &&
           setActiveUsers(prev => [...prev, userSession]);
       });

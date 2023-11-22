@@ -347,7 +347,9 @@ const SwapFunds = ({ navigation }) => {
                   <BoldText>{swapFrom.acronym} Balance</BoldText>
                   <RegularText style={styles.swapBalance}>
                     {swapFrom.symbol}{' '}
-                    {Number(swapFrom.balance.toFixed(2)).toLocaleString()}
+                    {addingDecimal(
+                      Number(swapFrom.balance.toFixed(2)).toLocaleString(),
+                    )}
                   </RegularText>
                 </View>
                 <ChevronDown />
@@ -396,7 +398,9 @@ const SwapFunds = ({ navigation }) => {
                   <BoldText>{swapTo.acronym} Balance</BoldText>
                   <RegularText style={styles.swapBalance}>
                     {swapTo.symbol}{' '}
-                    {Number(swapTo.balance.toFixed(2)).toLocaleString()}
+                    {addingDecimal(
+                      Number(swapTo.balance.toFixed(2)).toLocaleString(),
+                    )}
                   </RegularText>
                 </View>
                 <ChevronDown />
@@ -440,10 +444,17 @@ const SwapFunds = ({ navigation }) => {
           <View style={styles.rate}>
             <BoldText>Current Rate:</BoldText>
             <RegularText>
-              {swapFrom.symbol}1 = {swapTo.symbol}
-              {currencyRate()?.startsWith('0')
-                ? Number(currencyRate()).toLocaleString()
-                : addingDecimal(Number(currencyRate()).toLocaleString())}
+              {currencyRate() < 1 ? (
+                <>
+                  {swapTo.symbol}1 = {swapFrom.symbol}
+                  {addingDecimal(Number(1 / currencyRate()).toLocaleString())}
+                </>
+              ) : (
+                <>
+                  {swapFrom.symbol}1 = {swapTo.symbol}
+                  {addingDecimal(Number(currencyRate()).toLocaleString())}
+                </>
+              )}
             </RegularText>
           </View>
           <View style={styles.swapInputContainer}>
@@ -639,7 +650,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   arrow: {
-    marginRight: -10,
+    position: 'absolute',
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: -30,
+    left: 90 + '%',
   },
   swapTitle: {
     flex: 1,

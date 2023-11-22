@@ -14,7 +14,7 @@ const VerificationStatus = ({ navigation }) => {
           <BoldText style={styles.headerText}>Identity Verification</BoldText>
           <View style={styles.card}>
             <View style={styles.rowContainer}>
-              <BoldText style={styles.cardHeaderText}>Requirements</BoldText>
+              <BoldText style={styles.cardHeaderText}>Benefits</BoldText>
               <View style={styles.row}>
                 <RegularText>Deposit</RegularText>
                 <RegularText>Unlimited</RegularText>

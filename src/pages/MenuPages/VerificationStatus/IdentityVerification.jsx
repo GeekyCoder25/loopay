@@ -52,7 +52,7 @@ const IdentityVerification = ({ navigation }) => {
   }, []);
 
   const handleNext = () => {
-    if (Object.values(stateFields).includes('')) {
+    if (!Object.values(stateFields).includes('')) {
       setErrorMessage('Please provide all required fields');
       return setErrorKey(true);
     }
@@ -60,7 +60,7 @@ const IdentityVerification = ({ navigation }) => {
   };
 
   return (
-    <PageContainer PageContainer padding justify={true}>
+    <PageContainer padding justify={true}>
       <View
         style={{
           ...styles.container,
@@ -85,7 +85,7 @@ const IdentityVerification = ({ navigation }) => {
             </View>
           )}
         </View>
-        <Button text="Next" onPress={handleNext} />
+        <Button text="Next" onPress={handleNext} style={styles.button} />
       </View>
     </PageContainer>
   );
@@ -94,6 +94,7 @@ const IdentityVerification = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'space-between',
+    flex: 1,
   },
   headerText: {
     fontSize: 20,
@@ -186,6 +187,9 @@ const styles = StyleSheet.create({
   },
   error: {
     textAlign: 'center',
+  },
+  button: {
+    marginBottom: 15 + '%',
   },
 });
 export default IdentityVerification;

@@ -18,26 +18,36 @@ import UserIcon from '../../components/UserIcon';
 import { addingDecimal } from '../../../utils/AddingZero';
 import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
 import FaIcon from '@expo/vector-icons/FontAwesome';
+import IonIcon from '@expo/vector-icons/Ionicons';
+import FilterModal from '../../components/FilterModal';
+import { useWalletContext } from '../../context/WalletContext';
+import { groupTransactionsByDate } from '../../../utils/groupTransactions';
+import SwapIcon from '../../../assets/images/swap.svg';
+import FlagSelect from '../../components/FlagSelect';
 
 const TransactionHistory = ({ navigation }) => {
   const { vh } = useContext(AppContext);
+  const { transactions, wallet } = useWalletContext();
   const [focused, setFocused] = useState(false);
   const [transactionHistory, setTransactionHistory] = useState([]);
   const [searchData, setSearchData] = useState(null);
   const [searchHistory, setSearchHistory] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isLocalLoading, setIsLocalLoading] = useState(true);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [accNoAsterisk, setAccNoAsterisk] = useState([]);
 
   useEffect(() => {
-    const getTransactions = async () => {
-      const response = await getFetchData('user/transaction?date=true');
-      if (response.status === 200) {
-        setTransactionHistory(response.data);
-      }
-      setIsLocalLoading(false);
-    };
-    getTransactions();
-  }, []);
+    setTransactionHistory(groupTransactionsByDate(transactions));
+    setIsLocalLoading(false);
+  }, [transactions]);
+
+  useEffect(() => {
+    setAccNoAsterisk([]);
+    for (let i = 0; i < wallet.loopayAccNo.length - 3; i++) {
+      setAccNoAsterisk(prev => [...prev, '*']);
+    }
+  }, [wallet.loopayAccNo.length]);
 
   const handleSearchFocus = async () => {
     setFocused(true);
@@ -77,8 +87,23 @@ const TransactionHistory = ({ navigation }) => {
     }
   };
 
+  const handleFilter = () => {
+    setShowFilterModal(true);
+  };
+
   return (
-    <PageContainer justify={true}>
+    <PageContainer justify={true} scroll>
+      <View style={styles.headerContainer}>
+        <BoldText style={styles.historyHeader}>Transaction history</BoldText>
+        <Pressable onPress={handleFilter}>
+          <IonIcon name="filter-sharp" size={20} />
+        </Pressable>
+        <FilterModal
+          showModal={showFilterModal}
+          setShowModal={setShowFilterModal}
+          setTransactionHistory={setTransactionHistory}
+        />
+      </View>
       {transactionHistory.length ? (
         <ScrollView>
           <View
@@ -86,9 +111,6 @@ const TransactionHistory = ({ navigation }) => {
               ...styles.container,
               minHeight: vh * 0.65,
             }}>
-            <BoldText style={styles.historyHeader}>
-              Transaction history
-            </BoldText>
             <View
               style={{
                 ...styles.textInputContainer,
@@ -112,7 +134,11 @@ const TransactionHistory = ({ navigation }) => {
                     {searchHistory.map(
                       history =>
                         history && (
-                          <History key={history.id} history={history} />
+                          <History
+                            key={history.id}
+                            history={history}
+                            accNoAsterisk={accNoAsterisk}
+                          />
                         ),
                     )}
                   </View>
@@ -127,6 +153,7 @@ const TransactionHistory = ({ navigation }) => {
                           key={history.id}
                           history={history}
                           navigation={navigation}
+                          accNoAsterisk={accNoAsterisk}
                         />
                       ))}
                     </View>
@@ -143,11 +170,9 @@ const TransactionHistory = ({ navigation }) => {
           </View>
         </ScrollView>
       ) : isLocalLoading ? (
-        <ActivityIndicator
-          size={'large'}
-          color={'#1e1e1e'}
-          style={styles.loadingPage}
-        />
+        <View style={{ ...styles.loadingPage, minHeight: vh * 0.5 }}>
+          <ActivityIndicator size={'large'} color={'#1e1e1e'} />
+        </View>
       ) : (
         <View style={styles.historyEmpty}>
           <BoldText style={styles.historyEmptyText}>
@@ -159,8 +184,13 @@ const TransactionHistory = ({ navigation }) => {
   );
 };
 const styles = StyleSheet.create({
-  historyHeader: {
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 3 + '%',
+  },
+  historyHeader: {
     marginTop: 10,
     fontSize: 17,
     fontFamily: 'OpenSans-600',
@@ -228,7 +258,8 @@ const styles = StyleSheet.create({
     marginTop: 15 + '%',
   },
   loadingPage: {
-    marginTop: 50 + '%',
+    flex: 1,
+    justifyContent: 'center',
   },
   searchList: {
     marginTop: 20,
@@ -259,7 +290,9 @@ const styles = StyleSheet.create({
 });
 export default TransactionHistory;
 
-export const History = ({ history, navigation }) => {
+export const History = ({ history, navigation, accNoAsterisk }) => {
+  const { vw } = useContext(AppContext);
+  const { wallet } = useWalletContext();
   const {
     senderName,
     receiverName,
@@ -273,6 +306,10 @@ export const History = ({ history, navigation }) => {
     dataPlan,
     billType,
     billName,
+    swapFrom,
+    swapTo,
+    swapFromAmount,
+    swapToAmount,
   } = history;
   const date = new Date(createdAt);
   const historyTime = convertTo12HourFormat(
@@ -300,6 +337,12 @@ export const History = ({ history, navigation }) => {
   const currencySymbol = allCurrencies.find(
     id => currency === id.currency,
   )?.symbol;
+
+  const swapFromSymbol = allCurrencies.find(
+    id => swapFrom === id.currency,
+  )?.symbol;
+
+  const swapToSymbol = allCurrencies.find(id => swapTo === id.currency)?.symbol;
 
   return (
     <Pressable
@@ -371,7 +414,6 @@ export const History = ({ history, navigation }) => {
       )}
       {transactionType?.toLowerCase() === 'bill' && (
         <>
-          {console.log(history)}
           <View style={styles.historyIconText}>{billIcon(billType)}</View>
           <View style={styles.historyContent}>
             <BoldText style={styles.historyTitle}>{billName} </BoldText>
@@ -385,6 +427,46 @@ export const History = ({ history, navigation }) => {
             </BoldText>
             <RegularText> {historyTime}</RegularText>
           </View>
+        </>
+      )}
+      {transactionType === 'swap' && (
+        <>
+          <View style={styles.historyIconText}>
+            <FlagSelect country={currency} style={{ width: 40, height: 40 }} />
+          </View>
+          <View style={styles.historyContent}>
+            <BoldText style={styles.historyTitle}>Swap</BoldText>
+            <RegularText style={styles.historyTitle}>
+              {accNoAsterisk}
+              {wallet.loopayAccNo.slice(
+                wallet.loopayAccNo.length - 3,
+                wallet.loopayAccNo.length,
+              )}
+            </RegularText>
+          </View>
+          <BoldText
+            style={{
+              ...styles.transactionAmountText,
+              ...styles.debitAmount,
+            }}>
+            {`${swapFromSymbol}${addingDecimal(
+              Number(swapFromAmount).toLocaleString(),
+            )}`}
+          </BoldText>
+          <SwapIcon
+            width={14}
+            height={14}
+            style={vw > 360 ? styles.swap : styles.swapIcon}
+          />
+          <BoldText
+            style={{
+              ...styles.transactionAmountText,
+              ...styles.creditAmount,
+            }}>
+            {`${swapToSymbol}${addingDecimal(
+              Number(swapToAmount).toLocaleString(),
+            )}`}
+          </BoldText>
         </>
       )}
     </Pressable>

@@ -65,37 +65,39 @@ const VerifyImage = () => {
     selectImage();
   };
   return (
-    <PageContainer PageContainer padding justify={true}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.bodyContent}>
-          <RegularText style={styles.side}>
-            {side === 'front' ? 'Front' : 'Back'} side
-          </RegularText>
-          {preview ? (
-            <Image
-              source={{ uri: preview }}
-              style={{ ...styles.preview, width: vw * 0.8, height: vh * 0.3 }}
-            />
-          ) : (
-            <View style={styles.IDCard}>
-              <IDcard width={vw * 0.7} />
-            </View>
-          )}
-          <Pressable style={styles.capture} onPress={handleCapture}>
-            <Capture />
-          </Pressable>
-        </View>
-        {errorMessage && (
-          <View>
-            <ErrorMessage errorMessage={errorMessage} />
+    <PageContainer padding justify={true}>
+      {/* <ScrollView showsVerticalScrollIndicator={false}> */}
+      <View style={styles.bodyContent}>
+        <RegularText style={styles.side}>
+          {side === 'front' ? 'Front' : 'Back'} side
+        </RegularText>
+        {preview ? (
+          <Image
+            source={{ uri: preview }}
+            style={{ ...styles.preview, width: vw * 0.8, height: vh * 0.3 }}
+          />
+        ) : (
+          <View style={styles.IDCard}>
+            <IDcard width={vw * 0.7} />
           </View>
         )}
+        <Pressable style={styles.capture} onPress={handleCapture}>
+          <Capture />
+        </Pressable>
+      </View>
+      {errorMessage && (
+        <View>
+          <ErrorMessage errorMessage={errorMessage} />
+        </View>
+      )}
+      <View style={styles.button}>
         {side === 'front' ? (
           <Button text="Next" onPress={handleNext} />
         ) : (
           <Button text="Verify" onPress={handleVerify} />
         )}
-      </ScrollView>
+      </View>
+      {/* </ScrollView> */}
     </PageContainer>
   );
 };
@@ -108,6 +110,7 @@ const styles = StyleSheet.create({
   bodyContent: {
     alignItems: 'center',
     gap: 20,
+    flex: 1,
   },
   side: {
     color: '#868585',
@@ -118,6 +121,9 @@ const styles = StyleSheet.create({
   },
   capture: {
     marginBottom: 30,
+  },
+  button: {
+    marginBottom: 15 + '%',
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Image, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
 import PageContainer from '../../../components/PageContainer';
 import Card from '../../../../assets/images/atmCard.svg';

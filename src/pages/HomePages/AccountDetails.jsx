@@ -63,9 +63,11 @@ const AccountDetails = () => {
     <PageContainer padding scroll>
       <View style={styles.balances}>
         <BoldText>Balance from all accounts</BoldText>
-        {currencies.map(currency => (
-          <CurrencyCard key={currency.currency} currencyIndex={currency} />
-        ))}
+        <View>
+          {currencies.map(currency => (
+            <CurrencyCard key={currency.currency} currencyIndex={currency} />
+          ))}
+        </View>
       </View>
     </PageContainer>
   );

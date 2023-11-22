@@ -8,6 +8,7 @@ import SchoolIcon from '../../../../assets/images/billSchool.svg';
 import ElectricityIcon from '../../../../assets/images/billElectricity.svg';
 import RegularText from '../../../components/fonts/RegularText';
 import { AppContext } from '../../../components/AppContext';
+import FaIcon from '@expo/vector-icons/Ionicons';
 
 const PayABill = ({ navigation }) => {
   const bills = [
@@ -130,6 +131,45 @@ const PayABill = ({ navigation }) => {
         },
       ],
     },
+    {
+      title: 'water',
+      desc: 'Water',
+      headerText: 'Water',
+      buttonText: 'Make Payment',
+      data: [
+        {
+          title: 'Select Provider',
+          type: 'select',
+          placeholder: 'Select Provider',
+          id: 'provider',
+          apiUrl: 'user/bill?water',
+        },
+        // {
+        //   title: 'Package',
+        //   type: 'select',
+        //   placeholder: 'Select Package',
+        //   id: 'package',
+        // },
+        {
+          title: 'Meter number',
+          type: 'input',
+          placeholder: 'Enter Meter number',
+          id: 'subscriberAccountNumber',
+        },
+        // {
+        //   title: 'User',
+        //   type: 'select',
+        //   placeholder: 'Select User',
+        //   id: 'user',
+        // },
+        {
+          title: 'Amount',
+          type: 'input',
+          id: 'amount',
+          balance: true,
+        },
+      ],
+    },
   ];
 
   return (
@@ -188,6 +228,8 @@ const Bill = ({ bill, navigation }) => {
         return <SchoolIcon width={width} height={height} />;
       case 'electricity':
         return <ElectricityIcon width={width} height={height} />;
+      case 'water':
+        return <FaIcon name="water" color={'#525252'} size={40} />;
       default:
         break;
     }

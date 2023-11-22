@@ -42,8 +42,7 @@ const ActiveUsers = ({ navigation, route }) => {
     };
 
     adminData.lastActiveSessions.forEach(userSession => {
-      const sessionTimestamp =
-        userSession.sessions[0]?.lastSeen || userSession.updatedAt;
+      const sessionTimestamp = userSession.updatedAt;
       if (checkSameDateAndTime(sessionTimestamp)) {
         setActiveUsers(prev => [...prev, userSession]);
       } else {
@@ -205,19 +204,17 @@ const styles = StyleSheet.create({
 
 export default ActiveUsers;
 
-const User = ({ status, userSession: user }) => {
+const User = ({ status, userSession }) => {
   const { adminData } = useAdminDataContext();
   const { users, userDatas } = adminData;
-  user = {
-    ...user,
-    ...users.find(i => i.email === user.email),
-    ...userDatas.find(i => i.email === user.email),
+  const userData = {
+    ...users.find(i => i.email === userSession.email),
+    ...userDatas.find(i => i.email === userSession.email),
   };
-  const { email, userProfile } = user;
+  const { email, userProfile } = userData;
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const lastSeen = new Date(user.updatedAt);
-
+  const lastSeen = new Date(userSession.updatedAt);
   return (
     <View style={styles.userExpanded}>
       <View style={styles.user}>
@@ -251,46 +248,46 @@ const User = ({ status, userSession: user }) => {
         <View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Email</BoldText>
-            <RegularText style={styles.rowValue}>{user.email}</RegularText>
+            <RegularText style={styles.rowValue}>{userData.email}</RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Phone Number</BoldText>
             <RegularText style={styles.rowValue}>
-              {user.userProfile.phoneNumber}
+              {userData.userProfile.phoneNumber}
             </RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Role</BoldText>
-            <RegularText style={styles.rowValue}>{user.role}</RegularText>
+            <RegularText style={styles.rowValue}>{userData.role}</RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Account Type</BoldText>
             <RegularText style={styles.rowValue}>
-              {user.accountType}
+              {userData.accountType}
             </RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Pin set</BoldText>
             <RegularText style={styles.rowValue}>
-              {user.pin ? 'true' : 'false'}
+              {userData.pin ? 'true' : 'false'}
             </RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Tag Name</BoldText>
             <RegularText style={styles.rowValue}>
-              {user.tagName || user.userProfile.userName}
+              {userData.tagName || userData.userProfile.userName}
             </RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Referral Code</BoldText>
             <RegularText style={styles.rowValue}>
-              {user.referralCode}
+              {userData.referralCode}
             </RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>User Photo</BoldText>
             <View style={styles.rowValue}>
-              <UserIcon uri={user.photoURL} />
+              <UserIcon uri={userData.photoURL} />
             </View>
           </View>
         </View>

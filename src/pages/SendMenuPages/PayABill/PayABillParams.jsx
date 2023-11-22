@@ -102,6 +102,9 @@ const PayABillParams = ({ route, navigation }) => {
       case 'electricity':
         payElectricity();
         break;
+      case 'water':
+        payElectricity();
+        break;
       case 'TV':
         VerifyCardNumber();
         break;
