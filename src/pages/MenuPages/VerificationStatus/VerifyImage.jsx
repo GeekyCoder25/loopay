@@ -1,4 +1,4 @@
-import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import PageContainer from '../../../components/PageContainer';
 import Button from '../../../components/Button';
 import { useContext, useState } from 'react';
@@ -9,15 +9,19 @@ import * as ImagePicker from 'expo-image-picker';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { AppContext } from '../../../components/AppContext';
 import ToastMessage from '../../../components/ToastMessage';
+import { apiUrl } from '../../../../utils/fetchAPI';
+import { getToken } from '../../../../utils/storage';
 
-const VerifyImage = () => {
-  const { vw, vh } = useContext(AppContext);
+const VerifyImage = ({ route, navigation }) => {
+  const { vw, vh, setIsLoading, setVerified } = useContext(AppContext);
+  const params = route.params;
   const [side, setSide] = useState('front');
   const [errorMessage, setErrorMessage] = useState('');
   const [preview, setPreview] = useState('');
   const [formData, setFormData] = useState({
     front: '',
     back: '',
+    ...params,
   });
 
   const handleNext = () => {
@@ -27,9 +31,68 @@ const VerifyImage = () => {
     setPreview('');
     setSide('back');
   };
-  const handleVerify = () => {
-    if (!formData.back) {
-      return setErrorMessage('Please upload first');
+
+  const handleVerify = async () => {
+    try {
+      if (!formData.back) {
+        return setErrorMessage('Please upload first');
+      }
+      const frontImage = formData.front;
+      const backImage = formData.back;
+      const frontFileName = frontImage.split('/').pop();
+      const fileType = frontFileName.split('.').pop();
+      const backFileName = backImage.split('/').pop();
+      const imageFormData = new FormData();
+      clearTimeout(timeout);
+
+      imageFormData.append('front', {
+        uri: frontImage,
+        name: frontFileName,
+        type: `image/${fileType}`,
+      });
+      imageFormData.append('back', {
+        uri: backImage,
+        name: backFileName,
+        type: `image/${fileType}`,
+      });
+      imageFormData.append('data', JSON.stringify(params));
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
+      const token = await getToken();
+
+      const options = {
+        method: 'POST',
+        signal: controller.signal,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: imageFormData,
+      };
+      setIsLoading(true);
+      const response = await fetch(`${apiUrl}/user/verify`, options);
+      clearTimeout(timeout);
+      const data = await response.text();
+      const result = JSON.parse(data);
+      if (response.status === 200) {
+        setVerified('pending');
+        ToastMessage('Submitted successfully, verification is pending');
+        navigation.popToTop();
+        navigation.navigate('HomeNavigator');
+        navigation.navigate('Home');
+      } else {
+        const errormessage = result.message.includes(
+          'Please upload an image less than',
+        )
+          ? result.message
+          : 'Image upload failed';
+        ToastMessage(errormessage);
+      }
+    } catch (err) {
+      ToastMessage(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -59,14 +122,12 @@ const VerifyImage = () => {
           });
         }
         setErrorMessage('');
-        // uploadImage(result.assets[0].uri);
       }
     };
     selectImage();
   };
   return (
     <PageContainer padding justify={true}>
-      {/* <ScrollView showsVerticalScrollIndicator={false}> */}
       <View style={styles.bodyContent}>
         <RegularText style={styles.side}>
           {side === 'front' ? 'Front' : 'Back'} side
@@ -75,6 +136,7 @@ const VerifyImage = () => {
           <Image
             source={{ uri: preview }}
             style={{ ...styles.preview, width: vw * 0.8, height: vh * 0.3 }}
+            resizeMode="stretch"
           />
         ) : (
           <View style={styles.IDCard}>
@@ -84,6 +146,7 @@ const VerifyImage = () => {
         <Pressable style={styles.capture} onPress={handleCapture}>
           <Capture />
         </Pressable>
+        <View />
       </View>
       {errorMessage && (
         <View>
@@ -97,7 +160,6 @@ const VerifyImage = () => {
           <Button text="Verify" onPress={handleVerify} />
         )}
       </View>
-      {/* </ScrollView> */}
     </PageContainer>
   );
 };
@@ -109,6 +171,7 @@ const styles = StyleSheet.create({
   },
   bodyContent: {
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: 20,
     flex: 1,
   },

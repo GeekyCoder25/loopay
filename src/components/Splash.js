@@ -28,6 +28,7 @@ const Splash = ({ navigation }) => {
     setIsAdmin,
     setCanChangeRole,
     setIsSessionTimedOut,
+    setVerified,
     vw,
   } = useContext(AppContext);
 
@@ -44,7 +45,7 @@ const Splash = ({ navigation }) => {
           const sessionID = await getSessionID();
           if (isLoggedIn) {
             const data = await getFetchData('user');
-            await setAppData(data);
+            setAppData(data);
             if (
               !data ||
               Object.entries(data).length === 0 ||
@@ -56,6 +57,7 @@ const Splash = ({ navigation }) => {
               setIsSessionTimedOut(false);
               return navigation.replace('FirstPage');
             }
+            setVerified(data.verificationStatus || false);
             const response = await getFetchData('user/role');
             if (response.role === 'admin') {
               setIsAdmin(true);

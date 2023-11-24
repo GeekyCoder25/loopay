@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     height: 220,
     borderRadius: 15,
     position: 'relative',
-    elevation: 20,
+    // elevation: 20,
   },
   bg: {
     position: 'absolute',

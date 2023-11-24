@@ -24,7 +24,9 @@ const Transactions = ({ navigation, route }) => {
   const { transactions: allTransactions } = adminData;
   // const selectedIds = new Set();
   const transactions = allTransactions.filter(
-    transaction => transaction.currency === selectedCurrency.currency,
+    transaction =>
+      transaction.currency === selectedCurrency.currency &&
+      transaction.transactionType !== 'swap',
     // !selectedIds.has(transaction.id) &&
     // selectedIds.add(transaction.id),
   );
@@ -63,47 +65,36 @@ const Transactions = ({ navigation, route }) => {
     {
       label: 'All Transactions',
       label2: '',
-      select: transactions,
-      slug: '',
+      status: '',
     },
     {
       label: 'Successful Transactions',
       label2: 'successful',
-      select: transactions.filter(
-        transaction => transaction.status === 'success',
-      ),
-      slug: 'success',
+      status: 'success',
     },
     {
       label: 'Pending Transactions',
       label2: 'pending',
-      select: transactions.filter(
-        transaction => transaction.status === 'pending',
-      ),
-
-      slug: 'pending',
+      status: 'pending',
     },
     {
       label: 'Blocked Transactions',
       label2: 'blocked',
-      select: transactions.filter(
-        transaction => transaction.status === 'blocked',
-      ),
-      slug: 'blocked',
+      status: 'blocked',
     },
   ];
   const label = selectOptions.find(
-    option => option.slug === transactionStatus,
+    option => option.status === transactionStatus,
   ).label;
 
   const handleModal = selected => {
     setModalOpen(false);
     setSelectedLabel(selected.label);
     setLabel2(selected.label2);
-    selected.slug
+    selected.status
       ? setSelectedTransaction(
           transactions.filter(
-            transaction => transaction.status === selected.slug,
+            transaction => transaction.status === selected.status,
           ),
         )
       : setSelectedTransaction(transactions);
@@ -121,30 +112,6 @@ const Transactions = ({ navigation, route }) => {
         <BoldText style={styles.inputText}>{selectedLabel || label}</BoldText>
         <ChevronDown />
       </Pressable>
-      <Modal
-        visible={modalOpen}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setModalOpen(prev => !prev)}>
-        <Pressable
-          style={styles.overlay}
-          onPress={() => setModalOpen(prev => !prev)}>
-          <View style={styles.modal}>
-            <View style={styles.modal}>
-              <View style={styles.modal}>
-                {selectOptions.map(option => (
-                  <Pressable
-                    key={option.slug}
-                    style={styles.select}
-                    onPress={() => handleModal(option)}>
-                    <RegularText>{option.label}</RegularText>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
-          </View>
-        </Pressable>
-      </Modal>
       <View style={styles.transactions}>
         {selectedTransaction.length ? (
           <>
@@ -193,6 +160,30 @@ const Transactions = ({ navigation, route }) => {
           <TransactionHistoryParams route={{ params: modalData }} />
         </Modal>
       </View>
+      <Modal
+        visible={modalOpen}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setModalOpen(prev => !prev)}>
+        <Pressable
+          style={styles.overlay}
+          onPress={() => setModalOpen(prev => !prev)}>
+          <View style={styles.modal}>
+            <View style={styles.modal}>
+              <View style={styles.modal}>
+                {selectOptions.map(option => (
+                  <Pressable
+                    key={option.status}
+                    style={styles.select}
+                    onPress={() => handleModal(option)}>
+                    <RegularText>{option.label}</RegularText>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+          </View>
+        </Pressable>
+      </Modal>
     </PageContainer>
   );
 };

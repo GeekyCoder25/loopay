@@ -1,22 +1,23 @@
-import { StyleSheet, View } from 'react-native';
-import PageContainer from '../../components/PageContainer';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import BalanceCard from './components/BalanceCard';
 import BoldText from '../../components/fonts/BoldText';
 import { useAdminDataContext } from '../../context/AdminContext';
 
 import CurrencyCard from '../../components/CurrencyCard';
+import { allCurrencies } from '../../database/data';
 
 const Accounts = () => {
   const { adminData } = useAdminDataContext();
   const { localBalance, dollarBalance, poundBalance, euroBalance } = adminData;
 
+  const localCurrency = allCurrencies[0];
   const currencies = [
     {
-      currency: 'naira',
-      fullName: 'Nigerian Naira',
+      currency: localCurrency.currency,
+      fullName: localCurrency.fullName,
       balance: localBalance,
-      acronym: 'NGN',
-      symbol: '₦',
+      acronym: localCurrency.acronym,
+      symbol: localCurrency.symbol,
       color: '#006E53',
     },
     {
@@ -46,7 +47,7 @@ const Accounts = () => {
   ];
 
   return (
-    <PageContainer style={styles.body} scroll>
+    <ScrollView style={styles.body}>
       <BalanceCard />
       <View style={styles.balances}>
         <BoldText>Balance from all accounts</BoldText>
@@ -54,7 +55,7 @@ const Accounts = () => {
           <CurrencyCard key={currency.currency} currencyIndex={currency} />
         ))}
       </View>
-    </PageContainer>
+    </ScrollView>
   );
 };
 
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
   balances: {
     marginTop: 30,
     marginBottom: 50,
-    gap: 20,
+    gap: 30,
   },
 });
 

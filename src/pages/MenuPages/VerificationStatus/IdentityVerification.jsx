@@ -1,10 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
 import {
   ActivityIndicator,
+  Image,
   Modal,
   Pressable,
   ScrollView,
   StyleSheet,
+  TextInput,
   View,
 } from 'react-native';
 import PageContainer from '../../../components/PageContainer';
@@ -15,10 +17,11 @@ import RegularText from '../../../components/fonts/RegularText';
 import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
 import Button from '../../../components/Button';
 import ErrorMessage from '../../../components/ErrorMessage';
+import { allCountries } from '../../../../utils/allCountries';
 
 const IdentityVerification = ({ navigation }) => {
   const { vh } = useContext(AppContext);
-  const [stateFields, setStateFields] = useState({});
+  const [formData, setFormData] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
   const [errorKey, setErrorKey] = useState(null);
 
@@ -29,19 +32,24 @@ const IdentityVerification = ({ navigation }) => {
       id: 'country',
       type: 'select',
       apiUrl: 'https://jsonplaceholder.typicode.com/todos',
+      apiData: allCountries,
     },
     {
       title: 'ID type',
       placeholder: 'Select ID type',
-      id: 'id',
+      id: 'idType',
       type: 'select',
       apiUrl: 'https://jsonplaceholder.typicode.com/users',
+      apiData: [
+        { name: 'Bank Verification Number (BVN)' },
+        { name: 'National ID' },
+      ],
     },
   ];
 
   useEffect(() => {
     fields.forEach(element => {
-      setStateFields(prev => {
+      setFormData(prev => {
         return {
           ...prev,
           [element.id]: '',
@@ -52,11 +60,11 @@ const IdentityVerification = ({ navigation }) => {
   }, []);
 
   const handleNext = () => {
-    if (!Object.values(stateFields).includes('')) {
+    if (Object.values(formData).includes('')) {
       setErrorMessage('Please provide all required fields');
       return setErrorKey(true);
     }
-    navigation.navigate('VerificationInformation');
+    navigation.navigate('VerificationInformation', formData);
   };
 
   return (
@@ -72,7 +80,7 @@ const IdentityVerification = ({ navigation }) => {
             <SelectInputField
               key={field.id}
               selectInput={field}
-              setStateFields={setStateFields}
+              setFormData={setFormData}
               showBalance={field.balance}
               setErrorMessage={setErrorMessage}
               errorKey={errorKey}
@@ -107,6 +115,19 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: 'OpenSans-600',
   },
+  searchTextInputContainer: {
+    paddingHorizontal: 3 + '%',
+    marginBottom: 20,
+  },
+  searchTextInput: {
+    borderWidth: 1,
+    borderColor: '#E2F3F5',
+    marginTop: 20,
+    borderRadius: 5,
+    height: 35,
+    fontFamily: 'OpenSans-400',
+    paddingLeft: 10,
+  },
   textInputContainer: {
     position: 'relative',
     marginTop: 5,
@@ -121,16 +142,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 10,
     fontFamily: 'OpenSans-600',
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderColor: '#1e1e1e',
   },
-  textInputStyles: {
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
   modalSelected: {
-    textTransform: 'capitalize',
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
@@ -196,14 +211,14 @@ export default IdentityVerification;
 
 const SelectInputField = ({
   selectInput,
-  setStateFields,
+  setFormData,
   setErrorMessage,
   errorKey,
   setErrorKey,
 }) => {
   const [selected, setSelected] = useState(false);
   const [modalData, setModalData] = useState([]);
-  const { title, type, placeholder, id, apiUrl } = selectInput;
+  const { title, type, placeholder, id, apiUrl, apiData } = selectInput;
   const [modalOpen, setModalOpen] = useState(false);
   const [isLocalLoading, setIsLocalLoading] = useState(true);
 
@@ -221,11 +236,14 @@ const SelectInputField = ({
         setIsLocalLoading(false);
       }
     };
-    if (type === 'select' && apiUrl) {
+
+    if (type === 'select' && apiData) {
+      setModalData(apiData);
+    } else if (type === 'select' && apiUrl) {
       setModalDataFunc();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [apiData, apiUrl, type]);
+
   return (
     <View>
       <RegularText style={styles.label}>{title}</RegularText>
@@ -236,7 +254,6 @@ const SelectInputField = ({
           <View
             style={{
               ...styles.textInput,
-              borderWidth: errorKey ? 1 : 0.5,
               borderColor: errorKey ? 'red' : '#1e1e1e',
             }}>
             {selected ? (
@@ -256,7 +273,7 @@ const SelectInputField = ({
         selected={selected}
         setSelected={setSelected}
         modalData={modalData}
-        setStateFields={setStateFields}
+        setFormData={setFormData}
         setErrorMessage={setErrorMessage}
         setErrorKey={setErrorKey}
         isLocalLoading={isLocalLoading}
@@ -271,18 +288,18 @@ const LocalModal = ({
   modalData,
   selected,
   setSelected,
-  setStateFields,
+  setFormData,
   isLocalLoading,
   setErrorMessage,
   setErrorKey,
   id,
 }) => {
   const handleModalSelect = provider => {
-    setSelected(provider.title);
+    setSelected(provider.title || provider.name);
     setModalOpen(false);
     setErrorMessage(null);
     setErrorKey(null);
-    setStateFields(prev => {
+    setFormData(prev => {
       return {
         ...prev,
         [id]: provider,
@@ -295,39 +312,147 @@ const LocalModal = ({
       animationType="slide"
       transparent
       onRequestClose={() => setModalOpen(false)}>
-      <Pressable style={styles.overlay} onPress={() => setModalOpen(false)} />
-      <View style={styles.modalContainer}>
-        <View style={styles.modal}>
-          <ScrollView>
-            {modalData.length ? (
-              modalData.map(provider => (
-                <Pressable
-                  key={provider.title}
-                  style={{
-                    ...styles.modalList,
-                    backgroundColor:
-                      selected === provider.title ? '#e4e2e2' : 'transparent',
-                  }}
-                  onPress={() => handleModalSelect(provider)}>
-                  <BoldText style={styles.modalSelected}>
-                    {provider.title}
+      {id !== 'country' ? (
+        <>
+          <Pressable
+            style={styles.overlay}
+            onPress={() => setModalOpen(false)}
+          />
+          <View style={styles.modalContainer}>
+            <View style={styles.modal}>
+              <ScrollView>
+                {modalData.length ? (
+                  modalData.map(provider => (
+                    <Pressable
+                      key={provider.title || provider.name}
+                      style={{
+                        ...styles.modalList,
+                        backgroundColor:
+                          selected === provider.title
+                            ? '#e4e2e2'
+                            : 'transparent',
+                      }}
+                      onPress={() => handleModalSelect(provider)}>
+                      <BoldText>{provider.title || provider.name}</BoldText>
+                    </Pressable>
+                  ))
+                ) : isLocalLoading ? (
+                  <ActivityIndicator
+                    size={'large'}
+                    color={'#1e1e1e'}
+                    style={styles.loading}
+                  />
+                ) : (
+                  <BoldText style={styles.error}>
+                    Couldn&apos;t connect to server
                   </BoldText>
-                </Pressable>
-              ))
-            ) : isLocalLoading ? (
-              <ActivityIndicator
-                size={'large'}
-                color={'#1e1e1e'}
-                style={styles.loading}
-              />
-            ) : (
-              <BoldText style={styles.error}>
-                Couldn&apos;t connect to server
-              </BoldText>
-            )}
-          </ScrollView>
-        </View>
-      </View>
+                )}
+              </ScrollView>
+            </View>
+          </View>
+        </>
+      ) : (
+        <CountriesSelect
+          modalData={modalData}
+          selected={selected}
+          handleModalSelect={handleModalSelect}
+          isLocalLoading={isLocalLoading}
+        />
+      )}
     </Modal>
+  );
+};
+
+const CountriesSelect = ({ modalData, selected, handleModalSelect }) => {
+  const { appData } = useContext(AppContext);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [countries, setCountries] = useState(modalData);
+
+  const handleSearchFocus = async () => {
+    setIsSearchFocused(true);
+  };
+
+  const handleSearchBlur = () => {
+    setIsSearchFocused(false);
+  };
+
+  const handleSearch = text => {
+    const foundHistories = modalData.filter(data =>
+      Object.values(data).toString().toLowerCase().includes(text.toLowerCase()),
+    );
+    setCountries(foundHistories);
+  };
+
+  return (
+    <PageContainer paddingTop={5}>
+      <View style={styles.searchTextInputContainer}>
+        <TextInput
+          style={{
+            ...styles.searchTextInput,
+          }}
+          placeholder={isSearchFocused ? '' : 'Search'}
+          onFocus={handleSearchFocus}
+          onBlur={handleSearchBlur}
+          onChangeText={text => handleSearch(text)}
+        />
+      </View>
+      <ScrollView>
+        {countries.length ? (
+          <View>
+            {countries
+              .filter(
+                country =>
+                  country.code === appData.localCurrencyCode.slice(0, 2),
+              )
+              .map(provider => (
+                <Country
+                  key={provider.name}
+                  provider={provider}
+                  selected={selected}
+                  handleModalSelect={handleModalSelect}
+                />
+              ))}
+            {countries
+              .filter(
+                country =>
+                  country.code !== appData.localCurrencyCode.slice(0, 2),
+              )
+              .map(provider => (
+                <Country
+                  key={provider.name}
+                  provider={provider}
+                  selected={selected}
+                  handleModalSelect={handleModalSelect}
+                />
+              ))}
+          </View>
+        ) : (
+          <BoldText style={styles.error}>No country found</BoldText>
+        )}
+      </ScrollView>
+    </PageContainer>
+  );
+};
+
+const Country = ({ provider, selected, handleModalSelect }) => {
+  return (
+    <Pressable
+      style={{
+        ...styles.modalList,
+        backgroundColor: selected === provider.name ? '#e4e2e2' : 'transparent',
+      }}
+      onPress={() => handleModalSelect(provider)}>
+      <Image
+        source={{
+          uri: `https://flagcdn.com/w160/${provider.code.toLowerCase()}.png`,
+        }}
+        width={32}
+        height={25}
+        style={{ borderRadius: 5 }}
+      />
+      <BoldText style={styles.modalSelected}>
+        {provider.title || provider.name}
+      </BoldText>
+    </Pressable>
   );
 };

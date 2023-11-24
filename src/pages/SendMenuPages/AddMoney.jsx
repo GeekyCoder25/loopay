@@ -247,31 +247,6 @@ const AddMoney = ({ navigation, route }) => {
               <ChevronDown />
             </View>
           </Pressable>
-          <Modal
-            visible={paymentModal}
-            animationType="slide"
-            transparent
-            onRequestClose={() => setPaymentModal(prev => !prev)}>
-            <Pressable
-              style={styles.overlay}
-              onPress={() => setPaymentModal(prev => !prev)}>
-              <View style={styles.paymentModal}>
-                <View style={styles.paymentModal}>
-                  <View style={styles.paymentModal}>
-                    {paymentMethods.map(payment => (
-                      <Pressable
-                        key={payment.method}
-                        style={styles.method}
-                        onPress={() => handlePaymentMethod(payment)}>
-                        <View>{selectIcon(payment.icon)}</View>
-                        <RegularText>{payment.label}</RegularText>
-                      </Pressable>
-                    ))}
-                  </View>
-                </View>
-              </View>
-            </Pressable>
-          </Modal>
 
           {paymentMethod === 'bankTransfer' && (
             <>
@@ -388,6 +363,31 @@ const AddMoney = ({ navigation, route }) => {
           )}
         </>
       </View>
+      <Modal
+        visible={paymentModal}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setPaymentModal(prev => !prev)}>
+        <Pressable
+          style={styles.overlay}
+          onPress={() => setPaymentModal(prev => !prev)}>
+          <View style={styles.paymentModal}>
+            <View style={styles.paymentModal}>
+              <View style={styles.paymentModal}>
+                {paymentMethods.map(payment => (
+                  <Pressable
+                    key={payment.method}
+                    style={styles.method}
+                    onPress={() => handlePaymentMethod(payment)}>
+                    <View>{selectIcon(payment.icon)}</View>
+                    <RegularText>{payment.label}</RegularText>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+          </View>
+        </Pressable>
+      </Modal>
     </PageContainer>
   );
 };

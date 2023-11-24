@@ -27,6 +27,7 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
     vh,
     setAppData,
     isLoggedIn,
+    setVerified,
   } = useContext(AppContext);
   const [codeSent, setCodeSent] = useState(false);
   const [formData, setFormData] = useState({
@@ -89,8 +90,9 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
       }
       const sessionData = saveSessionOptions();
       await loginUser(result.data, sessionData.deviceID);
-      const data = await getFetchData('user');
-      setAppData(data.data);
+      const response = await getFetchData('user');
+      setAppData(response.data);
+      setVerified(response.data.verificationStatus || false);
       setCanChange ? setCanChange(true) : navigation.replace('ChangePassword');
     } catch (err) {
       setErrorMessage(err.message);

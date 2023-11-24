@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Image,
   Modal,
@@ -179,7 +179,7 @@ export default AdminSelectCurrencyModal;
 const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
   const { selectedCurrency, setSelectedCurrency } = useContext(AppContext);
   const { adminData, modalFunc, setModalFunc } = useAdminDataContext();
-
+  const [balance, setBalance] = useState('');
   const handleCurrencyChange = async newSelect => {
     setShowSearchBox(false);
     setModalOpen(false);
@@ -187,6 +187,16 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
     setModalFunc(null);
     await setDefaultCurrency(`${newSelect.currency}`);
   };
+
+  useEffect(() => {
+    if (adminData) {
+      const currency = ['dollar', 'euro', 'pound'].includes(selected.currency)
+        ? selected.currency
+        : 'local';
+
+      setBalance(adminData[`${currency}Balance`]);
+    }
+  }, [adminData, selected.currency]);
 
   return (
     <Pressable
@@ -210,9 +220,7 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
       </View>
       {adminData && (
         <RegularText style={styles.currencyAmount}>
-          {addingDecimal(
-            adminData[`${selected.currency}Balance`]?.toLocaleString(),
-          )}
+          {addingDecimal(balance.toLocaleString())}
         </RegularText>
       )}
     </Pressable>

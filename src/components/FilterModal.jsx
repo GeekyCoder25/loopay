@@ -165,7 +165,7 @@ const FilterModal = ({ showModal, setShowModal, setTransactionHistory }) => {
           selectedCurrencies.includes(transaction.currency) ||
           allCurrencies
             .filter(currency => selectedCurrencies.includes(currency.acronym))
-            .map(currency => currency.currency)
+            .map(currency => currency.acronym)
             .includes(transaction.currency),
       );
     const periodFilter = filterCurrencies => {
@@ -365,7 +365,7 @@ const FilterModal = ({ showModal, setShowModal, setTransactionHistory }) => {
               <View style={styles.currencies}>
                 {allCurrencies
                   .filter(
-                    currency => currency.currency === selectedCurrency.currency,
+                    currency => currency.acronym === selectedCurrency.acronym,
                   )
                   .map(selected => (
                     <Currency
@@ -378,7 +378,7 @@ const FilterModal = ({ showModal, setShowModal, setTransactionHistory }) => {
                   ))}
                 {allCurrencies
                   .filter(
-                    currency => currency.currency !== selectedCurrency.currency,
+                    currency => currency.acronym !== selectedCurrency.acronym,
                   )
                   .map(selected => (
                     <Currency

@@ -1,8 +1,8 @@
 import { getToken } from './storage';
 
 // export const apiUrl = 'http://10.0.2.2:8000/api';
-// export const apiUrl = 'http://192.168.38.8:8000/api';
-export const apiUrl = 'https://loopay-api.cyclic.app/api';
+export const apiUrl = 'http://192.168.0.101:8000/api';
+// export const apiUrl = 'https://loopay-api.cyclic.app/api';
 
 const timeoutSeconds = 15;
 export const getFetchData = async apiEndpoint => {

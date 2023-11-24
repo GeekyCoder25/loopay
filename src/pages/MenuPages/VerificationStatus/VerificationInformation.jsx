@@ -6,9 +6,9 @@ import IDcard from '../../../../assets/images/idCard.svg';
 import RegularText from '../../../components/fonts/RegularText';
 import Check from '../../../../assets/images/mark.svg';
 
-const VerificationInformation = ({ navigation }) => {
+const VerificationInformation = ({ navigation, route }) => {
   const handleNext = () => {
-    navigation.navigate('VerifyImage');
+    navigation.navigate('VerifyImage', route.params);
   };
 
   const infos = [

@@ -94,15 +94,14 @@ const FooterCard = ({
               {addingDecimal(amountInput)}
             </BoldText>
           </View>
-          {airtime?.reference ||
-            (reference && (
-              <View style={styles.cardLine}>
-                <RegularText style={styles.cardKey}>Reference ID</RegularText>
-                <BoldText style={styles.cardValue}>
-                  {airtime?.reference || reference}
-                </BoldText>
-              </View>
-            ))}
+          {(airtime?.reference || reference) && (
+            <View style={styles.cardLine}>
+              <RegularText style={styles.cardKey}>Reference ID</RegularText>
+              <BoldText style={styles.cardValue}>
+                {airtime?.reference || reference}
+              </BoldText>
+            </View>
+          )}
           <View style={styles.cardLine}>
             <RegularText style={styles.cardKey}>Payment Method</RegularText>
             <BoldText style={{ ...styles.cardValue, color: '#006E53' }}>

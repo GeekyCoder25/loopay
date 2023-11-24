@@ -1,9 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PageContainer from '../../components/PageContainer';
 import { View, StyleSheet } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import Button from '../../components/Button';
-import { AppContext } from '../../components/AppContext';
 import RegularText from '../../components/fonts/RegularText';
 
 const VerificationStatus = ({ navigation }) => {

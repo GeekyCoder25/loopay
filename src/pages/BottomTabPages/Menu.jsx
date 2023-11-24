@@ -31,6 +31,7 @@ const Menu = ({ navigation }) => {
     setAppData,
     setShowTabBar,
     setCanChangeRole,
+    setVerified,
   } = useContext(AppContext);
 
   const handleLogout = async () => {
@@ -38,6 +39,7 @@ const Menu = ({ navigation }) => {
       setIsLoading(true);
       const sessionID = await getSessionID();
       await deleteFetchData(`user/session/${sessionID}`);
+      setVerified(false);
       logoutUser();
       setIsLoggedIn(false);
       setAppData({});
@@ -164,6 +166,13 @@ const RouteLink = ({ route, navigation }) => {
     }
   };
   const handleNavigate = () => {
+    if (verified && route.routeNavigate === 'VerificationStatus') {
+      return verified === 'pending'
+        ? ToastMessage(
+            'Verification has been submitted and will soon be confirmed',
+          )
+        : ToastMessage('Verification has been completed');
+    }
     navigation.navigate(route.routeNavigate);
   };
   return (
@@ -176,9 +185,16 @@ const RouteLink = ({ route, navigation }) => {
         <View
           style={{
             ...styles.verified,
-            backgroundColor: verified ? '#a2f247' : 'red',
+            backgroundColor:
+              verified === 'pending'
+                ? 'orange'
+                : verified === 'verified'
+                ? '#a2f247'
+                : 'red',
           }}>
-          {verified ? (
+          {verified === 'pending' ? (
+            <BoldText style={styles.verifiedText}>Pending</BoldText>
+          ) : verified === 'verified' ? (
             <BoldText style={styles.verifiedText}>Verified</BoldText>
           ) : (
             <BoldText style={styles.verifiedText}>Not Verified</BoldText>

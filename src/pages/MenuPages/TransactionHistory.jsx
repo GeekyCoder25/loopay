@@ -91,7 +91,7 @@ const TransactionHistory = ({ navigation }) => {
     setShowFilterModal(true);
   };
 
-  return (
+  return transactionHistory.length ? (
     <PageContainer justify={true} scroll>
       <View style={styles.headerContainer}>
         <BoldText style={styles.historyHeader}>Transaction history</BoldText>
@@ -104,73 +104,86 @@ const TransactionHistory = ({ navigation }) => {
           setTransactionHistory={setTransactionHistory}
         />
       </View>
-      {transactionHistory.length ? (
-        <ScrollView>
+      <ScrollView>
+        <View
+          style={{
+            ...styles.container,
+            minHeight: vh * 0.65,
+          }}>
           <View
             style={{
-              ...styles.container,
-              minHeight: vh * 0.65,
+              ...styles.textInputContainer,
             }}>
-            <View
+            <TextInput
               style={{
-                ...styles.textInputContainer,
-              }}>
-              <TextInput
-                style={{
-                  ...styles.textInput,
-                  textAlign: focused ? 'left' : 'center',
-                  paddingLeft: focused ? 10 : 0,
-                }}
-                placeholder={focused ? '' : 'Search, e.g Beneficiary'}
-                onFocus={handleSearchFocus}
-                onBlur={handleSearchBlur}
-                onChangeText={text => handleSearch(text)}
-              />
-            </View>
-            {!isLocalLoading ? (
-              <View style={styles.body}>
-                {isSearching ? (
-                  <View style={styles.searchList}>
-                    {searchHistory.map(
-                      history =>
-                        history && (
-                          <History
-                            key={history.id}
-                            history={history}
-                            accNoAsterisk={accNoAsterisk}
-                          />
-                        ),
-                    )}
-                  </View>
-                ) : (
-                  transactionHistory.map(dayHistory => (
-                    <View key={dayHistory.date} style={styles.dateHistory}>
-                      <RegularText style={styles.date}>
-                        {dayHistory.date}
-                      </RegularText>
-                      {dayHistory.histories.map(history => (
+                ...styles.textInput,
+                textAlign: focused ? 'left' : 'center',
+                paddingLeft: focused ? 10 : 0,
+              }}
+              placeholder={focused ? '' : 'Search, e.g Beneficiary'}
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
+              onChangeText={text => handleSearch(text)}
+            />
+          </View>
+          {!isLocalLoading ? (
+            <View style={styles.body}>
+              {isSearching ? (
+                <View style={styles.searchList}>
+                  {searchHistory.map(
+                    history =>
+                      history && (
                         <History
                           key={history.id}
                           history={history}
-                          navigation={navigation}
                           accNoAsterisk={accNoAsterisk}
                         />
-                      ))}
-                    </View>
-                  ))
-                )}
-              </View>
-            ) : (
-              <ActivityIndicator
-                size={'large'}
-                color={'#1e1e1e'}
-                style={styles.loading}
-              />
-            )}
-          </View>
-        </ScrollView>
-      ) : isLocalLoading ? (
-        <View style={{ ...styles.loadingPage, minHeight: vh * 0.5 }}>
+                      ),
+                  )}
+                </View>
+              ) : (
+                transactionHistory.map(dayHistory => (
+                  <View key={dayHistory.date} style={styles.dateHistory}>
+                    <RegularText style={styles.date}>
+                      {dayHistory.date}
+                    </RegularText>
+                    {dayHistory.histories.map(history => (
+                      <History
+                        key={history.id}
+                        history={history}
+                        navigation={navigation}
+                        accNoAsterisk={accNoAsterisk}
+                      />
+                    ))}
+                  </View>
+                ))
+              )}
+            </View>
+          ) : (
+            <ActivityIndicator
+              size={'large'}
+              color={'#1e1e1e'}
+              style={styles.loading}
+            />
+          )}
+        </View>
+      </ScrollView>
+    </PageContainer>
+  ) : (
+    <PageContainer justify={true}>
+      <View style={styles.headerContainer}>
+        <BoldText style={styles.historyHeader}>Transaction history</BoldText>
+        <Pressable onPress={handleFilter}>
+          <IonIcon name="filter-sharp" size={20} />
+        </Pressable>
+        <FilterModal
+          showModal={showFilterModal}
+          setShowModal={setShowFilterModal}
+          setTransactionHistory={setTransactionHistory}
+        />
+      </View>
+      {isLocalLoading ? (
+        <View style={styles.loadingPage}>
           <ActivityIndicator size={'large'} color={'#1e1e1e'} />
         </View>
       ) : (
@@ -183,6 +196,7 @@ const TransactionHistory = ({ navigation }) => {
     </PageContainer>
   );
 };
+
 const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
@@ -260,6 +274,7 @@ const styles = StyleSheet.create({
   loadingPage: {
     flex: 1,
     justifyContent: 'center',
+    marginBottom: 50 + '%',
   },
   searchList: {
     marginTop: 20,

@@ -299,9 +299,17 @@ const Success = ({ navigation, route }) => {
             billPlan={billPlan}
           />
         </View>
-        <View style={styles.button}>
-          <Button text={'Share Receipt'} onPress={handleShare} />
-          <Button text={'Back Home'} onPress={handleHome} />
+        <View style={styles.buttons}>
+          <Button
+            text={'Share Receipt'}
+            onPress={handleShare}
+            style={styles.button}
+          />
+          <Button
+            text={'Back Home'}
+            onPress={handleHome}
+            style={styles.button}
+          />
         </View>
       </View>
     </PageContainer>
@@ -327,9 +335,18 @@ const styles = StyleSheet.create({
     marginHorizontal: 5 + '%',
     marginTop: 50,
   },
+  buttons: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+    paddingHorizontal: 3 + '%',
+  },
   button: {
     flex: 1,
+    flexDirection: 'row',
     justifyContent: 'center',
+    borderRadius: 24,
   },
 });
 export default Success;

@@ -90,7 +90,7 @@ const VirtualCard = ({ navigation }) => {
             </View>
             <Text style={styles.title}>Virtual Debit Card</Text>
             <RegularText style={styles.text}>
-              Instantly create a USD virtual Debit card to spend online anytime,
+              Instantly create a virtual Debit card to spend online anytime,
               anywhere
             </RegularText>
           </View>

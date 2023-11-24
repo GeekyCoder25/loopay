@@ -31,6 +31,7 @@ const Dashboard = ({ navigation }) => {
           transaction =>
             transaction.currency === selectedCurrency.currency &&
             transaction.status === 'success' &&
+            transaction.transactionType !== 'swap' &&
             !selectedIds.has(transaction.id) &&
             selectedIds.add(transaction.id),
         ),
@@ -40,6 +41,7 @@ const Dashboard = ({ navigation }) => {
           transaction =>
             transaction.currency === selectedCurrency.currency &&
             transaction.status === 'pending' &&
+            transaction.transactionType !== 'swap' &&
             !selectedIds.has(transaction.id) &&
             selectedIds.add(transaction.id),
         ),
@@ -50,6 +52,7 @@ const Dashboard = ({ navigation }) => {
             transaction.currency === selectedCurrency.currency &&
             (transaction.status === 'blocked' ||
               transaction.status === 'declined') &&
+            transaction.transactionType !== 'swap' &&
             !selectedIds.has(transaction.id) &&
             selectedIds.add(transaction.id),
         ),

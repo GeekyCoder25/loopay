@@ -36,6 +36,7 @@ const Signin = ({ navigation }) => {
     setIsLoading,
     setIsAdmin,
     setCanChangeRole,
+    setVerified,
   } = useContext(AppContext);
 
   const handleLogin = async () => {
@@ -52,13 +53,15 @@ const Signin = ({ navigation }) => {
         if (result?.data?.email === formData.email) {
           await postFetchData('user/session', sessionData, result.data.token);
           await loginUser(result.data, sessionData.deviceID);
+          setErrorMessage('');
           setSuccessMessage('Login Successful');
-          const data = await getFetchData('user');
+          const response = await getFetchData('user');
           if (result.data.role === 'admin') {
             setIsAdmin(true);
             setCanChangeRole(true);
           }
-          setAppData(data.data);
+          setAppData(response.data);
+          setVerified(response.data.verificationStatus || false);
           setIsLoggedIn(true);
           setIsLoading(false);
           setSuccessMessage('');

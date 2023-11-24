@@ -1,3 +1,6 @@
+import { CurrencyFullDetails } from '../../utils/allCountries';
+import { getCurrencyCode } from '../../utils/storage';
+
 export const signUpData = [
   {
     name: 'firstName',
@@ -74,19 +77,9 @@ export const accountType = [
 
 export const allCurrencies = [
   {
-    currency: 'naira',
-    fullName: 'Nigerian Naira',
-    acronym: 'NGN',
-    amount: 0.0,
-    symbol: '₦',
-    minimumAmountToAdd: 100,
-    isLocal: true,
-  },
-  {
     currency: 'dollar',
     fullName: 'United State Dollar',
     acronym: 'USD',
-    amount: 0.0,
     symbol: '$',
     minimumAmountToAdd: 1,
   },
@@ -94,7 +87,6 @@ export const allCurrencies = [
     currency: 'euro',
     fullName: 'European Dollar',
     acronym: 'EUR',
-    amount: 0.0,
     symbol: '€',
     minimumAmountToAdd: 1,
   },
@@ -102,12 +94,28 @@ export const allCurrencies = [
     currency: 'pound',
     fullName: 'Great British Pound',
     acronym: 'GBP',
-    amount: 0.0,
     symbol: '£',
     minimumAmountToAdd: 1,
   },
 ];
-
+getCurrencyCode().then(currency => {
+  if (currency) {
+    const localCurrency = CurrencyFullDetails[currency];
+    const checkCurrency = allCurrencies.filter(
+      index => index.acronym === currency,
+    );
+    if (!checkCurrency.length) {
+      allCurrencies.unshift({
+        currency: localCurrency.name.split(' ').pop().toLowerCase(),
+        fullName: localCurrency.name,
+        acronym: localCurrency.code,
+        symbol: localCurrency.symbol_native,
+        minimumAmountToAdd: 100,
+        isLocal: true,
+      });
+    }
+  }
+});
 export const sendMenuRoutes = [
   {
     routeName: 'Add Money',

@@ -8,11 +8,28 @@ import SwitchOn from '../../../assets/images/switch.svg';
 import SwitchOff from '../../../assets/images/switchOff.svg';
 import { AppContext } from '../../components/AppContext';
 import { setBiometric } from '../../../utils/storage';
+import * as LocalAuthentication from 'expo-local-authentication';
+import ToastMessage from '../../components/ToastMessage';
 
 const Biometric = () => {
   const { enableBiometric, setEnableBiometric } = useContext(AppContext);
 
   const handleSwitchBiometric = async () => {
+    if (!enableBiometric) {
+      const options = {
+        promptMessage: 'Login with Biometrics',
+        cancelLabel: 'Cancel',
+        disableDeviceFallback: true,
+      };
+      const { success } = await LocalAuthentication.authenticateAsync(options);
+      if (success) {
+        setEnableBiometric(prev => !prev);
+        return await setBiometric(!enableBiometric);
+      } else {
+        await LocalAuthentication.cancelAuthenticate();
+        return ToastMessage("Couldn't authenticate user");
+      }
+    }
     await setBiometric(!enableBiometric);
     setEnableBiometric(prev => !prev);
   };

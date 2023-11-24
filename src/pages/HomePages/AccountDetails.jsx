@@ -1,10 +1,10 @@
 import React, { useContext, useEffect } from 'react';
-import PageContainer from '../../components/PageContainer';
-import { View, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import CurrencyCard from '../../components/CurrencyCard';
 import { useWalletContext } from '../../context/WalletContext';
 import BoldText from '../../components/fonts/BoldText';
 import { AppContext } from '../../components/AppContext';
+import { allCurrencies } from '../../database/data';
 
 const AccountDetails = () => {
   const { setWalletRefresh } = useContext(AppContext);
@@ -17,14 +17,15 @@ const AccountDetails = () => {
     euroBalance,
   } = wallet;
 
+  const localCurrency = allCurrencies[0];
   const currencies = [
     {
       accNo,
-      currency: 'naira',
-      fullName: 'Nigerian Naira',
+      currency: localCurrency.currency,
+      fullName: localCurrency.fullName,
       balance: localBalance,
-      acronym: 'NGN',
-      symbol: '₦',
+      acronym: localCurrency.acronym,
+      symbol: localCurrency.symbol,
       color: '#006E53',
     },
     {
@@ -60,28 +61,26 @@ const AccountDetails = () => {
     setWalletRefresh(prev => !prev);
   }, [setWalletRefresh]);
   return (
-    <PageContainer padding scroll>
+    <ScrollView style={styles.body}>
       <View style={styles.balances}>
         <BoldText>Balance from all accounts</BoldText>
-        <View>
-          {currencies.map(currency => (
-            <CurrencyCard key={currency.currency} currencyIndex={currency} />
-          ))}
-        </View>
+        {currencies.map(currency => (
+          <CurrencyCard key={currency.currency} currencyIndex={currency} />
+        ))}
       </View>
-    </PageContainer>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   body: {
     paddingBottom: 50,
-    paddingHorizontal: 5 + '%',
+    paddingHorizontal: 3 + '%',
   },
   balances: {
     marginTop: 30,
     marginBottom: 50,
-    gap: 20,
+    gap: 30,
   },
 });
 export default AccountDetails;

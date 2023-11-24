@@ -116,7 +116,7 @@ const Limit = () => {
                 // onBlur={() => setInputFocus(false)}
               />
             </View>
-          </View>
+          </View>x
         </View> */}
         {/* <View style={styles.button}>
           <Button text={'Update Limit'} />

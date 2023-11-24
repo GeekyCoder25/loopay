@@ -77,7 +77,11 @@ const Signup = ({ navigation }) => {
         const sessionData = saveSessionOptions();
         const { email, phoneNumber } = formData;
         const response = await postFetchData('auth/register', {
-          formData: { ...formData, phoneNumber: countryCode + phoneNumber },
+          formData: {
+            ...formData,
+            phoneNumber: countryCode + phoneNumber,
+            localCurrencyCode: countryCodeData.code,
+          },
           sessionData,
         });
         const result = response.data;
@@ -401,13 +405,21 @@ const FormField = ({
           onPress={() => setShowPicker(true)}>
           {countryCodeData ? (
             <>
-              <View style={styles.icon}>
+              <View style={{ ...styles.icon, left: 5 }}>
                 {/* <Flag
                   id={countryCodeData.code}
                   width={25}
                   height={25}
                   style={styles.icon}
                 /> */}
+                <Image
+                  source={{
+                    uri: `https://flagcdn.com/w160/${countryCodeData.code.toLowerCase()}.png`,
+                  }}
+                  width={32}
+                  height={25}
+                  style={{ borderRadius: 5 }}
+                />
               </View>
             </>
           ) : (
@@ -489,7 +501,7 @@ const EmailVerify = ({
     setInputCode(prev => `${prev}${input}`);
     if (inputCode.length + 1 >= codeLength.length) {
       try {
-        const response = await putFetchData('auth/register/', {
+        const response = await putFetchData('auth/register', {
           otp: `${inputCode}${input}`,
           email,
         });

@@ -29,7 +29,11 @@ const History = ({ navigation }) => {
   const { transactions } = adminData;
 
   useEffect(() => {
-    const groupedTransactions = groupTransactionsByDate(transactions);
+    const groupedTransactions = groupTransactionsByDate(
+      transactions
+        .filter(transaction => transaction.transactionType !== 'swap')
+        .slice(0, 5),
+    );
     setHistories(groupedTransactions);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -211,6 +215,7 @@ const HistoryComp = ({ history, navigation }) => {
     networkProvider,
     dataPlan,
   } = history;
+  const [currencySymbol, setCurrencySymbol] = useState('');
   const date = new Date(createdAt);
   const historyTime = convertTo12HourFormat(
     `${date.getHours()}:${date.getMinutes()}`,
@@ -234,47 +239,13 @@ const HistoryComp = ({ history, navigation }) => {
     return `${hours}:${minutes} ${period}`;
   }
 
-  const currencySymbol = allCurrencies.find(
-    id => currency === id.currency,
-  )?.symbol;
+  useEffect(() => {
+    setCurrencySymbol(
+      allCurrencies.find(id => currency === id.currency)?.symbol || '',
+    );
+  }, [currency]);
 
   return (
-    // <Pressable
-    //   onPress={() =>
-    //     navigation.navigate('TransactionHistoryDetails', {
-    //       previousScreen: 'History',
-    //       ...history,
-    //     })
-    //   }
-    //   style={styles.history}>
-    //   {transactionType?.toLowerCase() === 'credit' ? (
-    //     <>
-    //       <UserIcon uri={senderPhoto} />
-    //       <View style={styles.historyContent}>
-    //         <BoldText>{senderName}</BoldText>
-    //         <RegularText>{historyTime}</RegularText>
-    //       </View>
-    //       <View style={styles.amount}>
-    //         <BoldText style={styles.creditAmount}>
-    //           +{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
-    //         </BoldText>
-    //       </View>
-    //     </>
-    //   ) : (
-    //     <>
-    //       <UserIcon uri={receiverPhoto} />
-    //       <View style={styles.historyContent}>
-    //         <BoldText>{receiverName}</BoldText>
-    //         <RegularText>{historyTime}</RegularText>
-    //       </View>
-    //       <View style={styles.amount}>
-    //         <BoldText style={styles.debitAmount}>
-    //           -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
-    //         </BoldText>
-    //       </View>
-    //     </>
-    //   )}
-    // </Pressable>
     <Pressable
       onPress={() =>
         navigation.navigate('TransactionHistoryDetails', {
