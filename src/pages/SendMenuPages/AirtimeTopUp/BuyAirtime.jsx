@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
 import {
   Modal,
@@ -23,8 +23,10 @@ import { addingDecimal } from '../../../../utils/AddingZero';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { randomUUID } from 'expo-crypto';
 import { getFetchData } from '../../../../utils/fetchAPI';
+import { AppContext } from '../../../components/AppContext';
 
 const BuyAirtime = ({ navigation }) => {
+  const { appData } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [networkToBuy, setNetworkToBuy] = useState('');
@@ -38,6 +40,7 @@ const BuyAirtime = ({ navigation }) => {
     phoneNo: '',
   });
   const { localBalance } = wallet;
+  const countryCode = appData.country.code;
   const airtimeBeneficiaries = [
     // {
     //   phoneNo: '09073002599',
@@ -114,7 +117,7 @@ const BuyAirtime = ({ navigation }) => {
     setErrorKey('');
     if (phoneNo.length === 11) {
       const response = await getFetchData(
-        `user/get-network?phone=${phoneNo}&country=${'NG'}`,
+        `user/get-network?phone=${phoneNo}&country=${countryCode}`,
       );
       if (response.status === 200) {
         const network = response.data.name.toLowerCase();
@@ -145,6 +148,7 @@ const BuyAirtime = ({ navigation }) => {
         ...formData,
         id: randomUUID(),
         currency: 'naira',
+        countryCode,
         type: 'airtime',
       },
     });

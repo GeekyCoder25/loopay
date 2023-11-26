@@ -103,7 +103,7 @@ const PayABill = ({ navigation }) => {
           type: 'select',
           placeholder: 'Select Provider',
           id: 'provider',
-          apiUrl: 'user/bill?electricity',
+          apiUrl: 'user/bill?type=electricity&country=NG',
         },
         // {
         //   title: 'Package',
@@ -151,9 +151,9 @@ const PayABill = ({ navigation }) => {
         //   id: 'package',
         // },
         {
-          title: 'Meter number',
+          title: 'Registration number',
           type: 'input',
-          placeholder: 'Enter Meter number',
+          placeholder: 'Enter registration number',
           id: 'subscriberAccountNumber',
         },
         // {

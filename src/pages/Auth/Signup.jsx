@@ -174,7 +174,11 @@ const Signup = ({ navigation }) => {
           setShowPicker(false);
           setCountryCodeData(item);
           setFormData(prev => {
-            return { ...prev, phoneNumber: '' };
+            return {
+              ...prev,
+              phoneNumber: '',
+              country: { code: item.code, name: item.name.en },
+            };
           });
         }}
         searchMessage={'Search here'}

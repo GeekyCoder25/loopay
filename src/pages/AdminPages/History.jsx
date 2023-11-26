@@ -1,6 +1,6 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import React, { useEffect, useState } from 'react';
-import PageContainer from '../../components/PageContainer';
 import {
   ActivityIndicator,
   Pressable,
@@ -17,117 +17,123 @@ import { addingDecimal } from '../../../utils/AddingZero';
 import UserIcon from '../../components/UserIcon';
 import { groupTransactionsByDate } from '../../../utils/groupTransactions';
 import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
+import { FlatList } from 'react-native-gesture-handler';
+import FilterModal from '../../components/FilterModal';
+import IonIcon from '@expo/vector-icons/Ionicons';
 
 const History = ({ navigation }) => {
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { adminData } = useAdminDataContext();
+  const { transactions: allTransactions } = adminData;
   const [histories, setHistories] = useState([]);
   const [searchHistory, setSearchHistory] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isLocalLoading, setIsLocalLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [reloading, setReloading] = useState(false);
 
-  const { transactions } = adminData;
+  const transactions = allTransactions.filter(
+    transaction => transaction.transactionType !== 'swap',
+  );
+
+  const [activeHistories, setActiveHistories] = useState(transactions);
 
   useEffect(() => {
     const groupedTransactions = groupTransactionsByDate(
-      transactions
-        .filter(transaction => transaction.transactionType !== 'swap')
-        .slice(0, 5),
+      activeHistories.slice(0, 10),
     );
     setHistories(groupedTransactions);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSearchFocus = async () => {
-    setIsSearchFocused(true);
+  const handleScrollMore = () => {
+    setReloading(true);
+    setPage(prev => prev + 1);
+    setHistories(
+      groupTransactionsByDate(activeHistories.slice(0, (page + 1) * 10)),
+    );
+    setReloading(false);
   };
 
-  const handleSearchBlur = () => {
-    setIsSearchFocused(false);
-    // setIsSearching(false);
-  };
-
-  const handleSearch = async text => {
-    try {
-      setIsLocalLoading(true);
-
-      const foundHistories = transactions.map(history =>
-        Object.values(history)
-          .toString()
-          .toLowerCase()
-          .includes(text.toLowerCase())
-          ? history
-          : null,
-      );
-      text && foundHistories.length
-        ? setIsSearching(true)
-        : setIsSearching(false);
-
-      foundHistories.length && setSearchHistory(foundHistories);
-    } finally {
-      setIsLocalLoading(false);
-    }
-  };
   return (
-    <PageContainer scroll>
-      <View style={styles.container}>
-        <BalanceCard />
-      </View>
-
-      <View style={styles.body}>
-        <View style={styles.container}>
-          <BoldText>Transaction history</BoldText>
-          <TextInput
-            style={{
-              ...styles.textInput,
-              textAlign: isSearchFocused ? 'left' : 'center',
-              paddingLeft: isSearchFocused ? 10 : 0,
-            }}
-            placeholder={isSearchFocused ? '' : 'Search, e.g Username'}
-            onFocus={handleSearchFocus}
-            onBlur={handleSearchBlur}
-            onChangeText={text => handleSearch(text)}
+    <View style={styles.body}>
+      <FilterModal
+        showModal={showFilterModal}
+        setShowModal={setShowFilterModal}
+        setTransactionHistory={setHistories}
+        transactions={transactions}
+        setActiveTransactions={setActiveHistories}
+      />
+      {isSearching ? (
+        <View style={styles.searchList}>
+          <FlatList
+            data={searchHistory}
+            renderItem={({ item }) => (
+              <HistoryComp history={item} navigation={navigation} />
+            )}
+            keyExtractor={({ id, transactionType }) => transactionType + id}
           />
         </View>
-        {isSearching ? (
-          <View style={styles.searchList}>
-            {searchHistory.map(
-              history =>
-                history && (
-                  <HistoryComp
-                    key={history._id}
-                    history={history}
-                    navigation={navigation}
-                  />
-                ),
-            )}
-          </View>
-        ) : !isLocalLoading ? (
-          histories.map(dayHistory => (
+      ) : !isLocalLoading ? (
+        <FlatList
+          keyExtractor={({ date }) => date}
+          data={histories}
+          renderItem={({ item: dayHistory }) => (
             <View key={dayHistory.date} style={styles.dateHistory}>
               <RegularText style={styles.date}>{dayHistory.date}</RegularText>
-              {dayHistory.histories.map(history => (
-                <HistoryComp
-                  key={history._id}
-                  history={history}
-                  navigation={navigation}
-                />
-              ))}
+
+              <FlatList
+                data={dayHistory.histories}
+                renderItem={({ item }) => (
+                  <HistoryComp
+                    history={item}
+                    navigation={navigation}
+                    // accNoAsterisk={accNoAsterisk}
+                  />
+                )}
+                keyExtractor={({ id, transactionType }) => transactionType + id}
+              />
             </View>
-          ))
-        ) : (
-          <ActivityIndicator
-            size={'large'}
-            color={'#1e1e1e'}
-            style={styles.loading}
-          />
-        )}
-      </View>
-    </PageContainer>
+          )}
+          ListHeaderComponent={() => (
+            <Header
+              setIsSearching={setIsSearching}
+              setSearchHistory={setSearchHistory}
+              setIsLocalLoading={setIsLocalLoading}
+              setShowFilterModal={setShowFilterModal}
+              transactions={transactions}
+              setActiveHistories={setActiveHistories}
+            />
+          )}
+          ListFooterComponent={() =>
+            reloading && <ActivityIndicator color={'#1e1e1e'} />
+          }
+          onEndReachedThreshold={0.7}
+          onEndReached={handleScrollMore}
+        />
+      ) : (
+        <ActivityIndicator
+          size={'large'}
+          color={'#1e1e1e'}
+          style={styles.loading}
+        />
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 3 + '%',
+  },
+  historyHeader: {
+    marginTop: 10,
+    fontSize: 17,
+    fontFamily: 'OpenSans-600',
+  },
   container: {
     paddingHorizontal: 5 + '%',
   },
@@ -319,5 +325,83 @@ const HistoryComp = ({ history, navigation }) => {
         </>
       )}
     </Pressable>
+  );
+};
+
+const Header = ({
+  setIsSearching,
+  setSearchHistory,
+  setIsLocalLoading,
+  setShowFilterModal,
+  hideSearch,
+  transactions,
+  setActiveHistories,
+}) => {
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+  const handleSearchFocus = async () => {
+    setIsSearchFocused(true);
+  };
+
+  const handleSearchBlur = () => {
+    setIsSearchFocused(false);
+    // setIsSearching(false);
+  };
+
+  const handleSearch = async text => {
+    try {
+      setIsLocalLoading(true);
+
+      const foundHistories = transactions.map(history =>
+        Object.values(history)
+          .toString()
+          .toLowerCase()
+          .includes(text.toLowerCase())
+          ? history
+          : null,
+      );
+      text && foundHistories.length
+        ? setIsSearching(true)
+        : setIsSearching(false);
+
+      foundHistories.length &&
+        setSearchHistory(foundHistories) &&
+        setActiveHistories(foundHistories);
+    } finally {
+      setIsLocalLoading(false);
+    }
+  };
+
+  const handleFilter = () => {
+    setShowFilterModal(true);
+  };
+
+  return (
+    <View>
+      <View style={styles.container}>
+        <BalanceCard />
+      </View>
+      <View style={styles.headerContainer}>
+        <BoldText style={styles.historyHeader}>Transaction history</BoldText>
+        <Pressable onPress={handleFilter}>
+          <IonIcon name="filter-sharp" size={20} />
+        </Pressable>
+      </View>
+      {!hideSearch && (
+        <View style={styles.textInputContainer}>
+          <TextInput
+            style={{
+              ...styles.textInput,
+              textAlign: isSearchFocused ? 'left' : 'center',
+              paddingLeft: isSearchFocused ? 10 : 0,
+            }}
+            placeholder={isSearchFocused ? '' : 'Search, e.g Beneficiary'}
+            onFocus={handleSearchFocus}
+            onBlur={handleSearchBlur}
+            onChangeText={text => handleSearch(text)}
+          />
+        </View>
+      )}
+    </View>
   );
 };

@@ -71,7 +71,7 @@ const VerifyImage = ({ route, navigation }) => {
         body: imageFormData,
       };
       setIsLoading(true);
-      const response = await fetch(`${apiUrl}/user/verify`, options);
+      const response = await fetch(`${apiUrl}/user/verify?image`, options);
       clearTimeout(timeout);
       const data = await response.text();
       const result = JSON.parse(data);

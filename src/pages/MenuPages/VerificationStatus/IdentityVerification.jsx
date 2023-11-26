@@ -42,7 +42,9 @@ const IdentityVerification = ({ navigation }) => {
       apiUrl: 'https://jsonplaceholder.typicode.com/users',
       apiData: [
         { name: 'Bank Verification Number (BVN)' },
-        { name: 'National ID' },
+        { name: 'National ID', type: 'photo' },
+        { name: 'Passport ID', type: 'photo' },
+        { name: 'Driver License ID', type: 'photo' },
       ],
     },
   ];
@@ -64,7 +66,9 @@ const IdentityVerification = ({ navigation }) => {
       setErrorMessage('Please provide all required fields');
       return setErrorKey(true);
     }
-    navigation.navigate('VerificationInformation', formData);
+    formData.idType.type === 'photo'
+      ? navigation.navigate('VerificationInformation', formData)
+      : navigation.navigate('VerifyInput', formData);
   };
 
   return (
@@ -400,10 +404,7 @@ const CountriesSelect = ({ modalData, selected, handleModalSelect }) => {
         {countries.length ? (
           <View>
             {countries
-              .filter(
-                country =>
-                  country.code === appData.localCurrencyCode.slice(0, 2),
-              )
+              .filter(country => country.code === appData.country.code)
               .map(provider => (
                 <Country
                   key={provider.name}
@@ -413,10 +414,7 @@ const CountriesSelect = ({ modalData, selected, handleModalSelect }) => {
                 />
               ))}
             {countries
-              .filter(
-                country =>
-                  country.code !== appData.localCurrencyCode.slice(0, 2),
-              )
+              .filter(country => country.code !== appData.country.code)
               .map(provider => (
                 <Country
                   key={provider.name}

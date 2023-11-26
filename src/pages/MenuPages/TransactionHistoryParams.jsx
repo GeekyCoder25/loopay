@@ -146,6 +146,27 @@ const TransactionHistoryParams = ({ route }) => {
           { key: 'Reference Id', value: reference },
           { key: 'Status', value: status },
         ];
+      } else if (transactionType === 'swap') {
+        return [
+          { key: 'Transaction type', value: 'Swap' },
+          { key: 'Account', value: accNo },
+          { key: 'Swap from currency', value: swapFrom },
+          { key: 'Swap to currency', value: swapTo },
+          {
+            key: 'Swap from amount',
+            value: `${swapFromSymbol}${addingDecimal(
+              Number(swapFromAmount).toLocaleString(),
+            )}`,
+          },
+          {
+            key: 'Swap to amount',
+            value: `${swapToSymbol}${addingDecimal(
+              Number(swapToAmount).toLocaleString(),
+            )}`,
+          },
+          { key: 'Reference Id', value: reference },
+          { key: 'Status', value: status },
+        ];
       }
       return [
         { key: 'Receiver Account', value: receiverAccount },
@@ -279,7 +300,11 @@ const TransactionHistoryParams = ({ route }) => {
           </header>
           <div class="amount">
             <h4>${currencySymbol}</h4>
-            <h1>${Number(amount).toLocaleString().split('.')[0]}</h1>
+            <h1>${
+              Number(amount || swapToAmount)
+                .toLocaleString()
+                .split('.')[0]
+            }</h1>
             <h5>.${Number(amount).toLocaleString().split('.')[1] || '00'}</h5>
           </div>
           <span class="statusHeader ${status}">${status}</span>
@@ -907,7 +932,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   swapIcon: {
-    marginTop: 6,
+    marginTop: 2,
   },
   cardLine: {
     flexDirection: 'row',

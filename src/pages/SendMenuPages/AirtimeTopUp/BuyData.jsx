@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
 import {
   ActivityIndicator,
@@ -24,8 +24,10 @@ import { randomUUID } from 'expo-crypto';
 import { getFetchData } from '../../../../utils/fetchAPI';
 import ToastMessage from '../../../components/ToastMessage';
 import { useWalletContext } from '../../../context/WalletContext';
+import { AppContext } from '../../../components/AppContext';
 
 const BuyData = ({ navigation }) => {
+  const { appData } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [planModalOpen, setPlanModalOpen] = useState(false);
@@ -39,6 +41,7 @@ const BuyData = ({ navigation }) => {
     plan: null,
   });
   const [planToBuy, setPlanToBuy] = useState(formData.plan);
+  const countryCode = appData.country.code;
   const dataBeneficiaries = [
     // {
     //   phoneNo: '09073002599',
@@ -72,6 +75,7 @@ const BuyData = ({ navigation }) => {
   const handleNetworkSelect = async provider => {
     handleModal();
     setNetworkToBuy(provider);
+    setPlanToBuy(null);
     setFormData(prev => {
       return {
         ...prev,
@@ -79,14 +83,14 @@ const BuyData = ({ navigation }) => {
         plan: null,
       };
     });
-    setPlanToBuy(null);
     setErrorMessage('');
     setErrorKey('');
     const plansResponse = await getFetchData(
-      `user/get-data-plans?provider=${provider.network}&country=NG`,
+      `user/get-data-plans?provider=${provider.network}&country=${countryCode}`,
     );
     const plans = plansResponse.data;
-    setDataPlans(plans);
+    console.log(plansResponse);
+    setDataPlans(plans || []);
   };
 
   const handlePhoneInput = async phoneNo => {
@@ -97,7 +101,7 @@ const BuyData = ({ navigation }) => {
     setErrorKey('');
     if (phoneNo.length === 11) {
       const response = await getFetchData(
-        `user/get-network?phone=${phoneNo}&country=${'NG'}`,
+        `user/get-network?phone=${phoneNo}&country=${countryCode}`,
       );
       if (response.status === 200) {
         const network = response.data.name.toLowerCase();
@@ -125,7 +129,7 @@ const BuyData = ({ navigation }) => {
         operatorId: plan.operatorId,
       };
     });
-    setPlanToBuy(`${Math.ceil(plan.amount)} - ${plan.value}`);
+    setPlanToBuy(`${Math.ceil(plan.amount).toLocaleString()} - ${plan.value}`);
     setPlanModalOpen(false);
     setErrorMessage('');
     setErrorKey('');
@@ -151,6 +155,7 @@ const BuyData = ({ navigation }) => {
         ...formData,
         id: randomUUID(),
         currency: 'naira',
+        countryCode,
         type: 'data',
       },
     });
@@ -252,7 +257,8 @@ const BuyData = ({ navigation }) => {
                         }}
                         onPress={() => handlePlanSelect(plan)}>
                         <BoldText style={styles.dataPlan}>
-                          {Math.ceil(plan.amount)} - {plan.value}
+                          {Math.ceil(plan.amount).toLocaleString()} -{' '}
+                          {plan.value}
                         </BoldText>
                       </Pressable>
                     ))

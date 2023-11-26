@@ -25,9 +25,14 @@ import { useWalletContext } from '../context/WalletContext';
 import ToastMessage from './ToastMessage';
 import { groupTransactionsByDate } from '../../utils/groupTransactions';
 
-const FilterModal = ({ showModal, setShowModal, setTransactionHistory }) => {
+const FilterModal = ({
+  showModal,
+  setShowModal,
+  setTransactionHistory,
+  transactions,
+  setActiveTransactions,
+}) => {
   const { selectedCurrency } = useContext(AppContext);
-  const { transactions } = useWalletContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectAll, setSelectAll] = useState(true);
   const [selectedCurrencies, setSelectedCurrencies] = useState(
@@ -165,7 +170,7 @@ const FilterModal = ({ showModal, setShowModal, setTransactionHistory }) => {
           selectedCurrencies.includes(transaction.currency) ||
           allCurrencies
             .filter(currency => selectedCurrencies.includes(currency.acronym))
-            .map(currency => currency.acronym)
+            .map(currency => currency.currency)
             .includes(transaction.currency),
       );
     const periodFilter = filterCurrencies => {
@@ -192,10 +197,12 @@ const FilterModal = ({ showModal, setShowModal, setTransactionHistory }) => {
       ToastMessage('No currency selected in filter');
     } else if (!selectedPeriod.label) {
       setTransactionHistory(groupTransactionsByDate(currencyFilter()));
+      setActiveTransactions(currencyFilter());
     } else {
       const currencyFilters = currencyFilter();
       const periodFilters = periodFilter(currencyFilters);
       setTransactionHistory(groupTransactionsByDate(periodFilters));
+      setActiveTransactions(periodFilters);
     }
     hideFilter();
   };
@@ -365,7 +372,7 @@ const FilterModal = ({ showModal, setShowModal, setTransactionHistory }) => {
               <View style={styles.currencies}>
                 {allCurrencies
                   .filter(
-                    currency => currency.acronym === selectedCurrency.acronym,
+                    currency => currency.currency === selectedCurrency.currency,
                   )
                   .map(selected => (
                     <Currency
@@ -378,7 +385,7 @@ const FilterModal = ({ showModal, setShowModal, setTransactionHistory }) => {
                   ))}
                 {allCurrencies
                   .filter(
-                    currency => currency.acronym !== selectedCurrency.acronym,
+                    currency => currency.currency !== selectedCurrency.currency,
                   )
                   .map(selected => (
                     <Currency

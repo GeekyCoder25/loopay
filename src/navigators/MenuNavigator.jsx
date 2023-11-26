@@ -15,6 +15,7 @@ import TransactionHistoryParams from '../pages/MenuPages/TransactionHistoryParam
 import IdentityVerification from '../pages/MenuPages/VerificationStatus/IdentityVerification';
 import VerificationInformation from '../pages/MenuPages/VerificationStatus/VerificationInformation';
 import VerifyImage from '../pages/MenuPages/VerificationStatus/VerifyImage';
+import VerifyInputNumber from '../pages/MenuPages/VerificationStatus/VerifyInputNumber';
 
 const MenuNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -42,6 +43,7 @@ const MenuNavigator = () => {
         name="VerificationInformation"
         component={VerificationInformation}
       />
+      <Stack.Screen name="VerifyInput" component={VerifyInputNumber} />
       <Stack.Screen name="VerifyImage" component={VerifyImage} />
       <Stack.Screen name="TransactionHistory" component={TransactionHistory} />
       <Stack.Screen

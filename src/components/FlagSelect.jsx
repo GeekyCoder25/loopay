@@ -46,9 +46,7 @@ const FlagSelect = ({ country, style }) => {
       return (
         <Image
           source={{
-            uri: `https://flagcdn.com/w160/${appData.localCurrencyCode
-              ?.toLowerCase()
-              .slice(0, 2)}.png`,
+            uri: `https://flagcdn.com/w160/${appData.country.code?.toLowerCase()}.png`,
           }}
           width={30}
           height={30}

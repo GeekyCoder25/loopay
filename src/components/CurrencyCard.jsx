@@ -73,6 +73,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     position: 'relative',
     // elevation: 20,
+
+    marginBottom: 50,
   },
   bg: {
     position: 'absolute',

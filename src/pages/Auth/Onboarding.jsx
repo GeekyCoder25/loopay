@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import Image1 from '../../../assets/images/onboarding1.svg';
 import Image2 from '../../../assets/images/onboarding2.svg';
 import Image3 from '../../../assets/images/onboarding3.svg';
@@ -14,7 +14,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import Button from '../../components/Button';
-import LogoIcon from '../../../assets/images/logoDark.svg';
+import Logo from '../../components/Logo';
 
 const onboardings = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -106,9 +106,7 @@ const OnboardingMaps = ({ route, navigation }) => {
   );
   return (
     <View style={styles.body}>
-      <View style={styles.logo}>
-        <LogoIcon height={40} width={250} />
-      </View>
+      <Logo />
       {currentPage.image}
       <BoldText style={styles.title}>{currentPage.title}</BoldText>
       {currentPage.uri !== 1 ? (
@@ -170,12 +168,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 15 + '%',
     paddingHorizontal: 5 + '%',
-  },
-
-  logo: {
-    alignItems: 'center',
-    minHeight: 70,
-    maxWidth: 100 + '%',
   },
   title: {
     fontSize: 20,

@@ -19,7 +19,7 @@ const VerificationInformation = ({ navigation, route }) => {
   return (
     <PageContainer PageContainer padding justify={true}>
       <BoldText style={styles.headerText}>
-        Get your National ID card ready
+        Get your {route.params.idType.name} card ready
       </BoldText>
       <View style={styles.body}>
         <View style={styles.bodyContent}>

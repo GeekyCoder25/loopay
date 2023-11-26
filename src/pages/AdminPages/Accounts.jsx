@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import BalanceCard from './components/BalanceCard';
 import BoldText from '../../components/fonts/BoldText';
 import { useAdminDataContext } from '../../context/AdminContext';
@@ -47,27 +47,33 @@ const Accounts = () => {
   ];
 
   return (
-    <ScrollView style={styles.body}>
-      <BalanceCard />
-      <View style={styles.balances}>
-        <BoldText>Balance from all accounts</BoldText>
-        {currencies.map(currency => (
-          <CurrencyCard key={currency.currency} currencyIndex={currency} />
-        ))}
-      </View>
-    </ScrollView>
+    <View style={styles.body}>
+      <FlatList
+        data={currencies}
+        renderItem={({ item }) => (
+          <CurrencyCard key={item.currency} currencyIndex={item} />
+        )}
+        keyExtractor={({ currency }) => currency}
+        ListHeaderComponent={
+          <>
+            <BalanceCard />
+            <BoldText style={styles.header}>Balance from all accounts</BoldText>
+          </>
+        }
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  body: {
-    paddingBottom: 50,
-    paddingHorizontal: 5 + '%',
+  header: {
+    marginTop: 20,
+    marginBottom: 30,
   },
-  balances: {
-    marginTop: 30,
-    marginBottom: 50,
-    gap: 30,
+
+  body: {
+    paddingHorizontal: 5 + '%',
   },
 });
 

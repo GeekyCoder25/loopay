@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useEffect, useState } from 'react';
 import BoldText from '../../components/fonts/BoldText';
@@ -5,8 +6,8 @@ import RegularText from '../../components/fonts/RegularText';
 import PageContainer from '../../components/PageContainer';
 import {
   ActivityIndicator,
+  FlatList,
   Pressable,
-  ScrollView,
   StyleSheet,
   TextInput,
   View,
@@ -26,21 +27,33 @@ import SwapIcon from '../../../assets/images/swap.svg';
 import FlagSelect from '../../components/FlagSelect';
 
 const TransactionHistory = ({ navigation }) => {
-  const { vh } = useContext(AppContext);
   const { transactions, wallet } = useWalletContext();
-  const [focused, setFocused] = useState(false);
+  const [activeTransactions, setActiveTransactions] = useState(transactions);
   const [transactionHistory, setTransactionHistory] = useState([]);
-  const [searchData, setSearchData] = useState(null);
   const [searchHistory, setSearchHistory] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isLocalLoading, setIsLocalLoading] = useState(true);
-  const [showFilterModal, setShowFilterModal] = useState(false);
   const [accNoAsterisk, setAccNoAsterisk] = useState([]);
+  const [page, setPage] = useState(1);
+  const [refreshing, setRefreshing] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
 
   useEffect(() => {
-    setTransactionHistory(groupTransactionsByDate(transactions));
+    setTransactionHistory(
+      groupTransactionsByDate(activeTransactions.slice(0, 10)),
+    );
     setIsLocalLoading(false);
-  }, [transactions]);
+    setRefreshing(false);
+  }, [activeTransactions]);
+
+  const handleScrollMore = () => {
+    setRefreshing(true);
+    setPage(prev => prev + 1);
+    setTransactionHistory(
+      groupTransactionsByDate(activeTransactions.slice(0, (page + 1) * 10)),
+    );
+    setRefreshing(false);
+  };
 
   useEffect(() => {
     setAccNoAsterisk([]);
@@ -49,139 +62,89 @@ const TransactionHistory = ({ navigation }) => {
     }
   }, [wallet.loopayAccNo.length]);
 
-  const handleSearchFocus = async () => {
-    setFocused(true);
-    if (!searchData) {
-      const response = await getFetchData('user/transaction');
-      if (response.status === 200) {
-        return setSearchData(response.data.transactions);
-      }
-      return setSearchData([]);
-    }
-  };
-
-  const handleSearchBlur = () => {
-    setFocused(false);
-    setIsSearching(false);
-  };
-
-  const handleSearch = async text => {
-    try {
-      setIsLocalLoading(true);
-
-      const foundHistories = searchData.map(history =>
-        Object.values(history)
-          .toString()
-          .toLowerCase()
-          .includes(text.toLowerCase())
-          ? history
-          : null,
-      );
-      text && foundHistories.length
-        ? setIsSearching(true)
-        : setIsSearching(false);
-
-      foundHistories.length && setSearchHistory(foundHistories);
-    } finally {
-      setIsLocalLoading(false);
-    }
-  };
-
-  const handleFilter = () => {
-    setShowFilterModal(true);
-  };
-
   return transactionHistory.length ? (
-    <PageContainer justify={true} scroll>
-      <View style={styles.headerContainer}>
-        <BoldText style={styles.historyHeader}>Transaction history</BoldText>
-        <Pressable onPress={handleFilter}>
-          <IonIcon name="filter-sharp" size={20} />
-        </Pressable>
-        <FilterModal
-          showModal={showFilterModal}
-          setShowModal={setShowFilterModal}
-          setTransactionHistory={setTransactionHistory}
-        />
-      </View>
-      <ScrollView>
-        <View
-          style={{
-            ...styles.container,
-            minHeight: vh * 0.65,
-          }}>
-          <View
-            style={{
-              ...styles.textInputContainer,
-            }}>
-            <TextInput
-              style={{
-                ...styles.textInput,
-                textAlign: focused ? 'left' : 'center',
-                paddingLeft: focused ? 10 : 0,
-              }}
-              placeholder={focused ? '' : 'Search, e.g Beneficiary'}
-              onFocus={handleSearchFocus}
-              onBlur={handleSearchBlur}
-              onChangeText={text => handleSearch(text)}
-            />
-          </View>
-          {!isLocalLoading ? (
-            <View style={styles.body}>
-              {isSearching ? (
-                <View style={styles.searchList}>
-                  {searchHistory.map(
-                    history =>
-                      history && (
-                        <History
-                          key={history.id}
-                          history={history}
-                          accNoAsterisk={accNoAsterisk}
-                        />
-                      ),
-                  )}
-                </View>
-              ) : (
-                transactionHistory.map(dayHistory => (
-                  <View key={dayHistory.date} style={styles.dateHistory}>
-                    <RegularText style={styles.date}>
-                      {dayHistory.date}
-                    </RegularText>
-                    {dayHistory.histories.map(history => (
-                      <History
-                        key={history.id}
-                        history={history}
-                        navigation={navigation}
-                        accNoAsterisk={accNoAsterisk}
-                      />
-                    ))}
-                  </View>
-                ))
+    <>
+      <FilterModal
+        showModal={showFilterModal}
+        setShowModal={setShowFilterModal}
+        setTransactionHistory={setTransactionHistory}
+        transactions={transactions}
+        setActiveTransactions={setActiveTransactions}
+      />
+      {!isLocalLoading ? (
+        <View style={styles.body}>
+          {isSearching ? (
+            <View style={styles.searchList}>
+              {searchHistory.map(
+                history =>
+                  history && (
+                    <History
+                      key={history.id}
+                      history={history}
+                      accNoAsterisk={accNoAsterisk}
+                    />
+                  ),
               )}
             </View>
           ) : (
-            <ActivityIndicator
-              size={'large'}
-              color={'#1e1e1e'}
-              style={styles.loading}
+            <FlatList
+              keyExtractor={({ date }) => date}
+              data={transactionHistory}
+              renderItem={({ item: dayHistory }) => (
+                <View key={dayHistory.date} style={styles.dateHistory}>
+                  <RegularText style={styles.date}>
+                    {dayHistory.date}
+                  </RegularText>
+
+                  <FlatList
+                    data={dayHistory.histories}
+                    renderItem={({ item }) => (
+                      <History
+                        history={item}
+                        navigation={navigation}
+                        accNoAsterisk={accNoAsterisk}
+                      />
+                    )}
+                    keyExtractor={({ id }) => id}
+                  />
+                </View>
+              )}
+              ListHeaderComponent={() => (
+                <Header
+                  setIsLocalLoading={setIsLocalLoading}
+                  setIsSearching={setIsSearching}
+                  setSearchHistory={setSearchHistory}
+                  setTransactionHistory={setTransactionHistory}
+                  transactions={transactions}
+                  setShowFilterModal={setShowFilterModal}
+                />
+              )}
+              ListFooterComponent={() =>
+                refreshing && <ActivityIndicator color={'#1e1e1e'} />
+              }
+              onEndReachedThreshold={0.7}
+              onEndReached={handleScrollMore}
+              refreshing={refreshing}
             />
           )}
         </View>
-      </ScrollView>
-    </PageContainer>
+      ) : (
+        <ActivityIndicator
+          size={'large'}
+          color={'#1e1e1e'}
+          style={styles.loading}
+        />
+      )}
+    </>
   ) : (
     <PageContainer justify={true}>
-      <View style={styles.headerContainer}>
-        <BoldText style={styles.historyHeader}>Transaction history</BoldText>
-        <Pressable onPress={handleFilter}>
-          <IonIcon name="filter-sharp" size={20} />
-        </Pressable>
-        <FilterModal
-          showModal={showFilterModal}
-          setShowModal={setShowFilterModal}
-          setTransactionHistory={setTransactionHistory}
-        />
-      </View>
+      <Header
+        setIsLocalLoading={setIsLocalLoading}
+        setIsSearching={setIsSearching}
+        setSearchHistory={setSearchHistory}
+        setTransactionHistory={setTransactionHistory}
+        hideSearch
+      />
       {isLocalLoading ? (
         <View style={styles.loadingPage}>
           <ActivityIndicator size={'large'} color={'#1e1e1e'} />
@@ -498,4 +461,84 @@ export const billIcon = key => {
     default:
       return <FaIcon name="send" size={18} />;
   }
+};
+
+const Header = ({
+  setIsSearching,
+  setSearchHistory,
+  setIsLocalLoading,
+  setShowFilterModal,
+  hideSearch,
+  transactions,
+}) => {
+  const [searchData, setSearchData] = useState(null);
+  const [focused, setFocused] = useState(false);
+
+  const handleSearchFocus = async () => {
+    setFocused(true);
+    if (!searchData) {
+      const response = await getFetchData('user/transaction');
+      if (response.status === 200) {
+        return setSearchData(response.data.transactions);
+      }
+      return setSearchData([]);
+    }
+  };
+
+  const handleSearchBlur = () => {
+    setFocused(false);
+    setIsSearching(false);
+  };
+
+  const handleSearch = async text => {
+    try {
+      setIsLocalLoading(true);
+
+      const foundHistories = searchData.map(history =>
+        Object.values(history)
+          .toString()
+          .toLowerCase()
+          .includes(text.toLowerCase())
+          ? history
+          : null,
+      );
+      text && foundHistories.length
+        ? setIsSearching(true)
+        : setIsSearching(false);
+
+      foundHistories.length && setSearchHistory(foundHistories);
+    } finally {
+      setIsLocalLoading(false);
+    }
+  };
+
+  const handleFilter = () => {
+    setShowFilterModal(true);
+  };
+
+  return (
+    <View>
+      <View style={styles.headerContainer}>
+        <BoldText style={styles.historyHeader}>Transaction history</BoldText>
+        <Pressable onPress={handleFilter}>
+          <IonIcon name="filter-sharp" size={20} />
+        </Pressable>
+      </View>
+      {!hideSearch && (
+        <View style={styles.textInputContainer}>
+          <TextInput
+            style={{
+              ...styles.textInput,
+              textAlign: focused ? 'left' : 'center',
+              paddingLeft: focused ? 10 : 0,
+            }}
+            placeholder={focused ? '' : 'Search, e.g Beneficiary'}
+            onFocus={handleSearchFocus}
+            onBlur={handleSearchBlur}
+            onChangeText={text => handleSearch(text)}
+          />
+        </View>
+      )}
+    </View>
+  );
 };

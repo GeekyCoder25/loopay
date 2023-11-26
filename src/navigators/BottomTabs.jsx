@@ -8,6 +8,7 @@ import HomeNavigator from './HomeNavigator';
 import WalletContextComponent from '../context/WalletContext';
 import BeneficiaryContextComponent from '../context/BeneficiariesContext';
 import RequestFundsContextComponent from '../context/RequestContext';
+import { allCurrencies } from '../database/data';
 
 const BottomTabs = () => {
   const { showTabBar, appData, setAppData } = useContext(AppContext);
@@ -23,7 +24,7 @@ const BottomTabs = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <WalletContextComponent>
+    <WalletContextComponent key={allCurrencies.length}>
       <BeneficiaryContextComponent>
         <RequestFundsContextComponent>
           <Tab.Navigator

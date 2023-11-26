@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, FlatList } from 'react-native';
 import CurrencyCard from '../../components/CurrencyCard';
 import { useWalletContext } from '../../context/WalletContext';
 import BoldText from '../../components/fonts/BoldText';
@@ -61,26 +61,31 @@ const AccountDetails = () => {
     setWalletRefresh(prev => !prev);
   }, [setWalletRefresh]);
   return (
-    <ScrollView style={styles.body}>
-      <View style={styles.balances}>
-        <BoldText>Balance from all accounts</BoldText>
-        {currencies.map(currency => (
-          <CurrencyCard key={currency.currency} currencyIndex={currency} />
-        ))}
-      </View>
-    </ScrollView>
+    <View style={styles.body}>
+      <FlatList
+        data={currencies}
+        renderItem={({ item }) => (
+          <CurrencyCard key={item.currency} currencyIndex={item} />
+        )}
+        keyExtractor={({ currency }) => currency}
+        ListHeaderComponent={
+          <BoldText style={styles.header}>Balance from all accounts</BoldText>
+        }
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  header: {
+    marginTop: 20,
+    marginBottom: 30,
+  },
+
   body: {
-    paddingBottom: 50,
-    paddingHorizontal: 3 + '%',
+    paddingHorizontal: 5 + '%',
   },
-  balances: {
-    marginTop: 30,
-    marginBottom: 50,
-    gap: 30,
-  },
+  balances: {},
 });
 export default AccountDetails;
