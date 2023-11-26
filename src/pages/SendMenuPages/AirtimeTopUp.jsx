@@ -22,6 +22,12 @@ const AirtimeTopUp = ({ navigation }) => {
       routeNavigate: 'BuyData',
     },
     {
+      routeName: 'Buy International Airtime',
+      routeDetails: 'Recharge any network worldwide easily',
+      routeIcon: 'globe',
+      routeNavigate: 'AirtimeTopUpInternational',
+    },
+    {
       routeName: 'Airtime History',
       routeDetails: `Generate account statement for ${selectedCurrency.acronym} account`,
       routeIcon: 'statement',

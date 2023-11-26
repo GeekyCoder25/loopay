@@ -25,6 +25,7 @@ import { AppContext } from '../../components/AppContext';
 import { useFocusEffect } from '@react-navigation/native';
 import UserIcon from '../../components/UserIcon';
 import { useBeneficiaryContext } from '../../context/BeneficiariesContext';
+import FaIcon from '@expo/vector-icons/FontAwesome';
 
 const SendMenu = ({ navigation }) => {
   const { setShowTabBar } = useContext(AppContext);
@@ -188,6 +189,8 @@ export const RouteLink = ({ route, navigation }) => {
         return <Recipient />;
       case 'wallet':
         return <WalletIcon />;
+      case 'globe':
+        return <FaIcon name="globe" size={24} color={'#5c5c5c'} />;
       default:
         break;
     }

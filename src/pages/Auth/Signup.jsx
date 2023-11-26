@@ -29,9 +29,9 @@ import SuccessMessage from '../../components/SuccessMessage';
 import saveSessionOptions from '../../services/Savesession';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { CountryPicker } from 'react-native-country-codes-picker';
-// import { Flag } from '@mfauzanap/react-native-svg-flagkit';
 import * as Haptics from 'expo-haptics';
 import ToastMessage from '../../components/ToastMessage.jsx';
+import { CurrencyFullDetails } from '../../../utils/allCountries.js';
 
 const Signup = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -62,7 +62,6 @@ const Signup = ({ navigation }) => {
   const [verifyEmail, setVerifyEmail] = useState(false);
 
   const handleSignUp = async () => {
-    setIsLoading(true);
     if (Object.values(formData).includes('')) {
       setErrorMessage('Please input all fields');
     } else if (formData.password !== formData.confirmPassword) {
@@ -73,14 +72,36 @@ const Signup = ({ navigation }) => {
       setErrorKey('phoneNumber');
     } else {
       editInput();
+      const localCurrencyCode = Object.values(CurrencyFullDetails).find(
+        currency =>
+          currency.name
+            .split(' ')[0]
+            ?.slice(0, 4)
+            ?.startsWith(countryCodeData.name.en?.slice(0, 4)) ||
+          currency.name
+            .split(' ')[1]
+            ?.slice(0, 4)
+            ?.startsWith(countryCodeData.name.en?.slice(0, 4)) ||
+          countryCodeData.name.en
+            ?.slice(0, 4)
+            .startsWith(currency.name.split(' ')[1]?.slice(0, 4)) ||
+          countryCodeData.name.en
+            ?.slice(0, 4)
+            .startsWith(currency.name.split(' ')[2]?.slice(0, 4)),
+      )?.code;
+
+      if (!localCurrencyCode) {
+        return setErrorMessage("This region isn't supported yet");
+      }
       try {
+        setIsLoading(true);
         const sessionData = saveSessionOptions();
         const { email, phoneNumber } = formData;
         const response = await postFetchData('auth/register', {
           formData: {
             ...formData,
             phoneNumber: countryCode + phoneNumber,
-            localCurrencyCode: countryCodeData.code,
+            localCurrencyCode,
           },
           sessionData,
         });
@@ -104,9 +125,10 @@ const Signup = ({ navigation }) => {
       } catch (err) {
         setErrorMessage(err);
         setIsLoading(false);
+      } finally {
+        setIsLoading(false);
       }
     }
-    setIsLoading(false);
   };
 
   const editInput = () => {
@@ -410,12 +432,6 @@ const FormField = ({
           {countryCodeData ? (
             <>
               <View style={{ ...styles.icon, left: 5 }}>
-                {/* <Flag
-                  id={countryCodeData.code}
-                  width={25}
-                  height={25}
-                  style={styles.icon}
-                /> */}
                 <Image
                   source={{
                     uri: `https://flagcdn.com/w160/${countryCodeData.code.toLowerCase()}.png`,
@@ -502,6 +518,7 @@ const EmailVerify = ({
   const { vw, vh, setAppData, setIsLoading } = useContext(AppContext);
 
   const handleInput = async input => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setInputCode(prev => `${prev}${input}`);
     if (inputCode.length + 1 >= codeLength.length) {
       try {
@@ -513,7 +530,7 @@ const EmailVerify = ({
           setIsLoading(true);
           setVerifyEmail(false);
           const result = response.data;
-          const { firstName, lastName, userName, phoneNumber } = result;
+          const { firstName, lastName, userName, phoneNumber } = result.data;
           setSuccessMessage(Object.values(result)[0]);
           await loginUser(result.data, deviceID);
           const data = {
@@ -540,6 +557,9 @@ const EmailVerify = ({
         }
       } catch (err) {
         ToastMessage(err.message);
+        console.log(err);
+      } finally {
+        setIsLoading(false);
       }
     }
   };

@@ -360,14 +360,18 @@ const LocalModal = ({
           modalData={modalData}
           selected={selected}
           handleModalSelect={handleModalSelect}
-          isLocalLoading={isLocalLoading}
         />
       )}
     </Modal>
   );
 };
 
-const CountriesSelect = ({ modalData, selected, handleModalSelect }) => {
+export const CountriesSelect = ({
+  modalData,
+  selected,
+  handleModalSelect,
+  hideLocal,
+}) => {
   const { appData } = useContext(AppContext);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [countries, setCountries] = useState(modalData);
@@ -403,16 +407,17 @@ const CountriesSelect = ({ modalData, selected, handleModalSelect }) => {
       <ScrollView>
         {countries.length ? (
           <View>
-            {countries
-              .filter(country => country.code === appData.country.code)
-              .map(provider => (
-                <Country
-                  key={provider.name}
-                  provider={provider}
-                  selected={selected}
-                  handleModalSelect={handleModalSelect}
-                />
-              ))}
+            {!hideLocal &&
+              countries
+                .filter(country => country.code === appData.country.code)
+                .map(provider => (
+                  <Country
+                    key={provider.name}
+                    provider={provider}
+                    selected={selected}
+                    handleModalSelect={handleModalSelect}
+                  />
+                ))}
             {countries
               .filter(country => country.code !== appData.country.code)
               .map(provider => (
@@ -432,7 +437,7 @@ const CountriesSelect = ({ modalData, selected, handleModalSelect }) => {
   );
 };
 
-const Country = ({ provider, selected, handleModalSelect }) => {
+export const Country = ({ provider, selected, handleModalSelect }) => {
   return (
     <Pressable
       style={{

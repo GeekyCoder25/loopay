@@ -17,6 +17,7 @@ import { groupTransactionsByDate } from '../../../utils/groupTransactions';
 import TransactionHistoryParams from '../MenuPages/TransactionHistoryParams';
 import Back from '../../components/Back';
 import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
+import { billIcon } from '../MenuPages/TransactionHistory';
 
 const Transactions = ({ navigation, route }) => {
   const { selectedCurrency } = useContext(AppContext);
@@ -257,6 +258,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     borderRadius: 25,
   },
+  historyIconText: {
+    backgroundColor: '#ccc',
+    fontSize: 18,
+    fontFamily: 'OpenSans-800',
+    width: 40,
+    height: 40,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+  },
   historyContent: {
     flex: 1,
     gap: 3,
@@ -385,6 +398,8 @@ const Transaction = ({
     receiverName,
     networkProvider,
     dataPlan,
+    billType,
+    billName,
   } = transaction;
 
   const currencySymbol = allCurrencies.find(
@@ -529,6 +544,26 @@ const Transaction = ({
                 {networkProvider} - {transaction.phoneNo}
               </BoldText>
               <RegularText>Data Recharge - {dataPlan.value}</RegularText>
+            </View>
+            <View style={styles.amount}>
+              <BoldText style={styles.debitAmount}>
+                -
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+              <RegularText> {historyTime}</RegularText>
+            </View>
+          </>
+        )}
+
+        {transactionType?.toLowerCase() === 'bill' && (
+          <>
+            <View style={styles.historyIconText}>{billIcon(billType)}</View>
+            <View style={styles.historyContent}>
+              <BoldText style={styles.historyTitle}>{billName} </BoldText>
+              <RegularText style={styles.historyTitle}>
+                {billType} bill
+              </RegularText>
             </View>
             <View style={styles.amount}>
               <BoldText style={styles.debitAmount}>

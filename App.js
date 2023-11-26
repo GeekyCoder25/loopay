@@ -16,11 +16,12 @@ import * as SplashScreen from 'expo-splash-screen';
 import { allCurrencies } from './src/database/data';
 import AppStart from './src/components/AppStart';
 import LoadingModal from './src/components/LoadingModal';
-import { getDefaultCurrency } from './utils/storage';
+import { getCurrencyCode, getDefaultCurrency } from './utils/storage';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import BoldText from './src/components/fonts/BoldText';
 import { timeForInactivityInSecond } from './src/config/config';
+import { CurrencyFullDetails } from './utils/allCountries';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -88,6 +89,27 @@ export default function App() {
     enableBiometric,
     setEnableBiometric,
   };
+
+  useEffect(() => {
+    getCurrencyCode().then(currencyCode => {
+      if (currencyCode) {
+        const localCurrency = CurrencyFullDetails[currencyCode];
+        const checkCurrency = allCurrencies.filter(
+          index => index.acronym === currencyCode,
+        );
+        if (!checkCurrency.length) {
+          allCurrencies.unshift({
+            currency: localCurrency.name.split(' ').pop().toLowerCase(),
+            fullName: localCurrency.name,
+            acronym: localCurrency.code,
+            symbol: localCurrency.symbol_native,
+            minimumAmountToAdd: 100,
+            isLocal: true,
+          });
+        }
+      }
+    });
+  }, [appData]);
 
   useEffect(() => {
     getDefaultCurrency().then(defaultCurrency => {

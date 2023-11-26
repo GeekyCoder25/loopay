@@ -48,7 +48,7 @@ const Home = ({ navigation }) => {
   const { transactions, wallet } = useWalletContext();
   const { requestFunds: requests } = useRequestFundsContext();
   const [modalOpen, setModalOpen] = useState(false);
-  const fullName = appData.userProfile.fullName;
+  const firstName = appData.userProfile.firstName;
   const [showAmount, setShowAmount] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const [requestsLength, setRequestsLength] = useState(0);
@@ -147,7 +147,7 @@ const Home = ({ navigation }) => {
               onPress={() => navigation.navigate('ProfileNavigator')}
               style={styles.userImageContainer}>
               <UserIcon />
-              <RegularText>{fullName}</RegularText>
+              <RegularText>Hello, {firstName}</RegularText>
             </Pressable>
             <Pressable onPress={() => navigation.navigate('Notification')}>
               {unread.length ? <BellActive /> : <Bell />}

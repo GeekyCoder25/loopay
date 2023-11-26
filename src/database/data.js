@@ -75,25 +75,6 @@ export const accountType = [
   },
 ];
 
-getCurrencyCode().then(currency => {
-  if (currency) {
-    const localCurrency = CurrencyFullDetails[currency];
-    const checkCurrency = allCurrencies.filter(
-      index => index.acronym === currency,
-    );
-    if (!checkCurrency.length) {
-      allCurrencies.unshift({
-        currency: localCurrency.name.split(' ').pop().toLowerCase(),
-        fullName: localCurrency.name,
-        acronym: localCurrency.code,
-        symbol: localCurrency.symbol_native,
-        minimumAmountToAdd: 100,
-        isLocal: true,
-      });
-    }
-  }
-});
-
 export const allCurrencies = [
   {
     currency: 'dollar',

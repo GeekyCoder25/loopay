@@ -17,7 +17,7 @@ const Biometric = () => {
   const handleSwitchBiometric = async () => {
     if (!enableBiometric) {
       const options = {
-        promptMessage: 'Login with Biometrics',
+        promptMessage: 'Setup login with Biometrics',
         cancelLabel: 'Cancel',
         disableDeviceFallback: true,
       };

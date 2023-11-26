@@ -1,5 +1,12 @@
 import React, { useContext } from 'react';
-import { View, Pressable, StyleSheet, ScrollView, Text } from 'react-native';
+import {
+  Image,
+  View,
+  Pressable,
+  StyleSheet,
+  ScrollView,
+  Text,
+} from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
 import InputPin from '../../../components/InputPin';
 import FooterCard from '../../../components/FooterCard';
@@ -13,7 +20,7 @@ import BackArrow from '../../../../assets/images/backArrowWhite.svg';
 import { AppContext } from '../../../components/AppContext';
 
 const TransferAirtime = ({ navigation, route }) => {
-  const { formData } = route.params;
+  const { formData, isInternational } = route.params;
   const { setWalletRefresh } = useContext(AppContext);
   const handlePay = async setErrorMessage => {
     const response = await postFetchData(`user/${formData.type}`, formData);
@@ -57,7 +64,14 @@ const TransferAirtime = ({ navigation, route }) => {
         <View style={styles.headerContainer}>
           <BoldText style={styles.pinHeader}>Airtime Recharge</BoldText>
           <View style={styles.userIconContainer}>
-            {networkProvidersIcon(formData.network)}
+            {isInternational ? (
+              <Image
+                source={{ uri: formData.icon }}
+                style={styles.networkIcon}
+              />
+            ) : (
+              networkProvidersIcon(formData.network)
+            )}
             <View>
               <BoldText style={styles.pinPhone}>{formData.phoneNo}</BoldText>
             </View>
@@ -118,6 +132,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 15,
+  },
+  networkIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#eee',
   },
   userIconStyle: {
     width: 100,

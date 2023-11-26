@@ -34,6 +34,7 @@ export const logoutUser = async () => {
   await AsyncStorage.removeItem(StorageKeys.ROLE);
   await AsyncStorage.removeItem(StorageKeys.LOCAL_CURRENCY);
   await AsyncStorage.removeItem(StorageKeys.DEFAULT_CURRENCY);
+  await AsyncStorage.removeItem(StorageKeys.SHOW_BALANCE);
   await AsyncStorage.setItem(StorageKeys.LOGGED_IN, 'false');
 };
 

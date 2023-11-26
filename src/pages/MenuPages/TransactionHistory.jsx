@@ -62,7 +62,7 @@ const TransactionHistory = ({ navigation }) => {
     }
   }, [wallet.loopayAccNo.length]);
 
-  return transactionHistory.length ? (
+  return (
     <>
       <FilterModal
         showModal={showFilterModal}
@@ -71,92 +71,92 @@ const TransactionHistory = ({ navigation }) => {
         transactions={transactions}
         setActiveTransactions={setActiveTransactions}
       />
-      {!isLocalLoading ? (
-        <View style={styles.body}>
-          {isSearching ? (
-            <View style={styles.searchList}>
-              {searchHistory.map(
-                history =>
-                  history && (
-                    <History
-                      key={history.id}
-                      history={history}
-                      accNoAsterisk={accNoAsterisk}
-                    />
-                  ),
-              )}
-            </View>
-          ) : (
-            <FlatList
-              keyExtractor={({ date }) => date}
-              data={transactionHistory}
-              renderItem={({ item: dayHistory }) => (
-                <View key={dayHistory.date} style={styles.dateHistory}>
-                  <RegularText style={styles.date}>
-                    {dayHistory.date}
-                  </RegularText>
-
-                  <FlatList
-                    data={dayHistory.histories}
-                    renderItem={({ item }) => (
+      {transactionHistory.length ? (
+        !isLocalLoading ? (
+          <View style={styles.body}>
+            {isSearching ? (
+              <View style={styles.searchList}>
+                {searchHistory.map(
+                  history =>
+                    history && (
                       <History
-                        history={item}
-                        navigation={navigation}
+                        key={history.id}
+                        history={history}
                         accNoAsterisk={accNoAsterisk}
                       />
-                    )}
-                    keyExtractor={({ id }) => id}
+                    ),
+                )}
+              </View>
+            ) : (
+              <FlatList
+                keyExtractor={({ date }) => date}
+                data={transactionHistory}
+                renderItem={({ item: dayHistory }) => (
+                  <View key={dayHistory.date} style={styles.dateHistory}>
+                    <RegularText style={styles.date}>
+                      {dayHistory.date}
+                    </RegularText>
+
+                    <FlatList
+                      data={dayHistory.histories}
+                      renderItem={({ item }) => (
+                        <History
+                          history={item}
+                          navigation={navigation}
+                          accNoAsterisk={accNoAsterisk}
+                        />
+                      )}
+                      keyExtractor={({ id }) => id}
+                    />
+                  </View>
+                )}
+                ListHeaderComponent={() => (
+                  <Header
+                    setIsLocalLoading={setIsLocalLoading}
+                    setIsSearching={setIsSearching}
+                    setSearchHistory={setSearchHistory}
+                    setShowFilterModal={setShowFilterModal}
                   />
-                </View>
-              )}
-              ListHeaderComponent={() => (
-                <Header
-                  setIsLocalLoading={setIsLocalLoading}
-                  setIsSearching={setIsSearching}
-                  setSearchHistory={setSearchHistory}
-                  setTransactionHistory={setTransactionHistory}
-                  transactions={transactions}
-                  setShowFilterModal={setShowFilterModal}
-                />
-              )}
-              ListFooterComponent={() =>
-                refreshing && <ActivityIndicator color={'#1e1e1e'} />
-              }
-              onEndReachedThreshold={0.7}
-              onEndReached={handleScrollMore}
-              refreshing={refreshing}
-            />
-          )}
-        </View>
+                )}
+                ListFooterComponent={() =>
+                  refreshing && <ActivityIndicator color={'#1e1e1e'} />
+                }
+                onEndReachedThreshold={0.7}
+                onEndReached={handleScrollMore}
+                refreshing={refreshing}
+              />
+            )}
+          </View>
+        ) : (
+          <ActivityIndicator
+            size={'large'}
+            color={'#1e1e1e'}
+            style={styles.loading}
+          />
+        )
       ) : (
-        <ActivityIndicator
-          size={'large'}
-          color={'#1e1e1e'}
-          style={styles.loading}
-        />
+        <PageContainer justify={true}>
+          <Header
+            setIsLocalLoading={setIsLocalLoading}
+            setIsSearching={setIsSearching}
+            setSearchHistory={setSearchHistory}
+            setShowFilterModal={setShowFilterModal}
+            hideSearch
+          />
+          {isLocalLoading ? (
+            <View style={styles.loadingPage}>
+              <ActivityIndicator size={'large'} color={'#1e1e1e'} />
+            </View>
+          ) : (
+            <View style={styles.historyEmpty}>
+              <BoldText style={styles.historyEmptyText}>
+                Your transaction histories will appear here
+              </BoldText>
+            </View>
+          )}
+        </PageContainer>
       )}
     </>
-  ) : (
-    <PageContainer justify={true}>
-      <Header
-        setIsLocalLoading={setIsLocalLoading}
-        setIsSearching={setIsSearching}
-        setSearchHistory={setSearchHistory}
-        setTransactionHistory={setTransactionHistory}
-        hideSearch
-      />
-      {isLocalLoading ? (
-        <View style={styles.loadingPage}>
-          <ActivityIndicator size={'large'} color={'#1e1e1e'} />
-        </View>
-      ) : (
-        <View style={styles.historyEmpty}>
-          <BoldText style={styles.historyEmptyText}>
-            Your transaction histories will appear here
-          </BoldText>
-        </View>
-      )}
-    </PageContainer>
   );
 };
 
@@ -469,7 +469,6 @@ const Header = ({
   setIsLocalLoading,
   setShowFilterModal,
   hideSearch,
-  transactions,
 }) => {
   const [searchData, setSearchData] = useState(null);
   const [focused, setFocused] = useState(false);

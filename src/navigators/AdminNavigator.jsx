@@ -18,7 +18,6 @@ import AdminSelectCurrencyModal from '../pages/AdminPages/components/AdminSelect
 import Profile from '../pages/HomePages/Profile';
 import Notifications from '../pages/AdminPages/Notifications';
 import Rate from '../pages/AdminPages/Rate';
-import { allCurrencies } from '../database/data';
 
 const AdminNavigator = () => {
   const Drawer = createDrawerNavigator();
@@ -38,7 +37,7 @@ const AdminNavigator = () => {
     };
   };
   return (
-    <AdminContextComponent key={allCurrencies.length}>
+    <AdminContextComponent>
       <Drawer.Navigator
         drawerContent={CustomDrawer}
         screenOptions={{

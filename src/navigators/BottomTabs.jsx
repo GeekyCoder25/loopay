@@ -24,7 +24,7 @@ const BottomTabs = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <WalletContextComponent key={allCurrencies.length}>
+    <WalletContextComponent>
       <BeneficiaryContextComponent>
         <RequestFundsContextComponent>
           <Tab.Navigator

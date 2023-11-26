@@ -21,7 +21,6 @@ import Button from './Button';
 import ChevronDown from '../../assets/images/chevron-down-fill.svg';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CalendarIcon from '../../assets/images/calendar.svg';
-import { useWalletContext } from '../context/WalletContext';
 import ToastMessage from './ToastMessage';
 import { groupTransactionsByDate } from '../../utils/groupTransactions';
 
@@ -69,10 +68,22 @@ const FilterModal = ({
   const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
 
   currentWeekStart.setDate(today.getDate() - today.getDay()); // Set to the beginning of the current week (Sunday)
+  currentWeekStart.setHours(0); // Set to the beginning of the current week (Sunday)
+  currentWeekStart.setMinutes(0); // Set to the beginning of the current week (Sunday)
+  currentWeekStart.setSeconds(0); // Set to the beginning of the current week (Sunday)
+
   currentWeekEnd.setDate(today.getDate()); // Set to the end of the current week (Saturday)
 
   lastWeekStart.setDate(today.getDate() - today.getDay() - 7); // Set to the beginning of the last week (Sunday)
+  lastWeekStart.setHours(0); // Set to the beginning of the last week (Sunday)
+  lastWeekStart.setMinutes(0); // Set to the beginning of the last week (Sunday)
+  lastWeekStart.setSeconds(0); // Set to the beginning of the last week (Sunday)
+  lastWeekStart.setDate(today.getDate() - today.getDay() - 7); // Set to the beginning of the last week (Sunday)
+
   lastWeekEnd.setDate(today.getDate() - today.getDay() - 1); // Set to the end of the last week (Saturday)
+  lastWeekEnd.setHours(24); // Set to the end of the last week (Saturday)
+  lastWeekEnd.setMinutes(0); // Set to the end of the last week (Saturday)
+  lastWeekEnd.setSeconds(0); // Set to the end of the last week (Saturday)
 
   const periods = [
     {
@@ -201,6 +212,7 @@ const FilterModal = ({
     } else {
       const currencyFilters = currencyFilter();
       const periodFilters = periodFilter(currencyFilters);
+      console.log(selectedPeriod);
       setTransactionHistory(groupTransactionsByDate(periodFilters));
       setActiveTransactions(periodFilters);
     }

@@ -26,23 +26,22 @@ import { randomUUID } from 'expo-crypto';
 import { getFetchData } from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
 import { allCurrencies } from '../../../database/data';
+import { CountriesSelect } from '../../MenuPages/VerificationStatus/IdentityVerification';
+import { allCountries } from '../../../../utils/allCountries';
+import ToastMessage from '../../../components/ToastMessage';
 
 const BuyAirtime = ({ navigation }) => {
-  const { appData } = useContext(AppContext);
+  const { appData, setIsLoading } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const countryCode = appData.country.code;
   const [modalOpen, setModalOpen] = useState(false);
   const [networkToBuy, setNetworkToBuy] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [errorMessage2, setErrorMessage2] = useState('');
   const [errorKey, setErrorKey] = useState('');
   const [amountInput, setAmountInput] = useState('');
-  const [networkProviders] = useState([
-    { network: '9mobile', locale: 'ng', operatorId: 340 },
-    { network: 'mtn', locale: 'ng', operatorId: 341 },
-    { network: 'airtel', locale: 'ng', operatorId: 342 },
-    { network: 'glo', locale: 'ng', operatorId: 344 },
-  ]);
+  const [countrySelected, setCountrySelected] = useState('');
+  const [openCountryModal, setOpenCountryModal] = useState(false);
+  const [networkProviders, setNetworkProviders] = useState([]);
   const [formData, setFormData] = useState({
     network: '',
     amount: '',
@@ -54,23 +53,36 @@ const BuyAirtime = ({ navigation }) => {
     //   phoneNo: '09073002599',
     //   network: 'airtel',
     // },
-    // {
-    //   phoneNo: '+2349054343663',
-    //   network: '9mobile',
-    // },
-    // {
-    //   phoneNo: '09066487855',
-    //   network: 'mtn',
-    // },
-    // {
-    //   phoneNo: '09063555855',
-    //   network: 'glo',
-    // },
   ];
 
   useEffect(() => {
-    setErrorMessage2('');
+    setErrorMessage('');
   }, [formData]);
+  useEffect(() => {
+    const getInternationalOperators = async () => {
+      try {
+        setIsLoading(true);
+        const response = await getFetchData(
+          `user/airtime/operators?country=${countrySelected.code}`,
+        );
+        if (response.status === 200) {
+          const data = response.data.map(({ name, operatorId, logoUrls }) => {
+            return { network: name, locale: '', operatorId, icon: logoUrls[0] };
+          });
+          return setNetworkProviders(data);
+        }
+        throw new Error(response.data);
+      } catch (err) {
+        ToastMessage(err.message);
+        setNetworkProviders([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (countrySelected) {
+      getInternationalOperators();
+    }
+  }, [countrySelected, setIsLoading]);
 
   const handleModal = () => {
     setModalOpen(prev => !prev);
@@ -136,15 +148,12 @@ const BuyAirtime = ({ navigation }) => {
 
   const handleInputPin = async () => {
     if (Object.values(formData).includes('')) {
-      return setErrorMessage2(
+      return setErrorMessage(
         'Please provide all required fields before progressing',
       );
     } else if (amountInput < 50) {
       setErrorMessage(`Minimum recharge amount is ₦${50}`);
       return setErrorKey('amountInput');
-    } else if (formData.phoneNo.length < 11) {
-      setErrorMessage2('Incomplete phone number');
-      return setErrorKey('phoneInput');
     } else if (formData.amount > wallet.localBalance) {
       setErrorMessage('Insufficient balance');
       return setErrorKey('amountInput');
@@ -157,9 +166,18 @@ const BuyAirtime = ({ navigation }) => {
         countryCode,
         type: 'airtime',
       },
+      isInternational: true,
     });
   };
 
+  const handleCountrySelect = selected => {
+    setCountrySelected(selected);
+    setOpenCountryModal(false);
+    setNetworkProviders([]);
+  };
+  const handleOpenNetwork = () => {
+    setModalOpen(true);
+  };
   return (
     <PageContainer padding paddingTop={0}>
       <ScrollView style={styles.body}>
@@ -181,15 +199,61 @@ const BuyAirtime = ({ navigation }) => {
             />
           ))}
         </ScrollView>
-        <BoldText style={styles.headerText}>Buy Airtime</BoldText>
+        <BoldText style={styles.headerText}>Buy International Airtime</BoldText>
+        <RegularText style={styles.headerSubText}>Select Country</RegularText>
+        <Pressable
+          onPress={() => setOpenCountryModal(true)}
+          style={styles.textInputContainer}>
+          <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
+            {countrySelected ? (
+              <View style={styles.networkToBuySelected}>
+                <Image
+                  source={{
+                    uri: `https://flagcdn.com/w160/${countrySelected.code.toLowerCase()}.png`,
+                  }}
+                  width={32}
+                  height={25}
+                  style={{ borderRadius: 5 }}
+                />
+                <BoldText style={styles.networkToBuySelected}>
+                  {countrySelected.name}
+                </BoldText>
+              </View>
+            ) : (
+              <RegularText style={styles.networkToBuy}>
+                Select a Country
+              </RegularText>
+            )}
+            <ChevronDown />
+          </View>
+        </Pressable>
+        <Modal
+          visible={openCountryModal}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setOpenCountryModal(false)}>
+          <CountriesSelect
+            modalData={allCountries}
+            selected={countrySelected}
+            handleModalSelect={selected => handleCountrySelect(selected)}
+            hideLocal
+          />
+        </Modal>
         <RegularText style={styles.headerSubText}>Network</RegularText>
         <Pressable
-          onPress={() => setModalOpen(true)}
+          onPress={handleOpenNetwork}
           style={styles.textInputContainer}>
           <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
             {networkToBuy ? (
               <View style={styles.networkToBuySelected}>
-                {networkToBuy && networkProvidersIcon(networkToBuy.network)}
+                {networkToBuy && countrySelected.code !== 'NG' ? (
+                  <Image
+                    source={{ uri: networkToBuy.icon }}
+                    style={styles.networkIcon}
+                  />
+                ) : (
+                  networkProvidersIcon(networkToBuy.network)
+                )}
                 <BoldText style={styles.networkToBuySelected}>
                   {networkToBuy.network} - {networkToBuy.locale}
                 </BoldText>
@@ -224,11 +288,12 @@ const BuyAirtime = ({ navigation }) => {
                             : 'transparent',
                       }}
                       onPress={() => handleNetworkSelect(provider)}>
-                      <View style={styles.networkIcon}>
-                        {networkProvidersIcon(provider.network)}
-                      </View>
+                      <Image
+                        source={{ uri: provider.icon }}
+                        style={styles.networkIcon}
+                      />
                       <BoldText style={styles.networkToBuySelected}>
-                        {`${provider.network}-${provider.locale}`}
+                        {provider.network}
                       </BoldText>
                     </Pressable>
                   ))}
@@ -251,7 +316,6 @@ const BuyAirtime = ({ navigation }) => {
             value={formData.phoneNo}
           />
         </View>
-        <ErrorMessage errorMessage={errorMessage2} />
         <View style={styles.topUpContainer}>
           <Text style={styles.topUp}>Amount to be credited</Text>
           <Text style={styles.topUp}>
@@ -368,7 +432,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: 100 + '%',
     height: 100 + '%',
-    paddingTop: 40,
+    paddingVertical: 40,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     elevation: 10,
@@ -401,6 +465,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingHorizontal: 5 + '%',
     gap: 20,
+  },
+  networkIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#eee',
   },
   modalListIcon: {
     gap: 20,
