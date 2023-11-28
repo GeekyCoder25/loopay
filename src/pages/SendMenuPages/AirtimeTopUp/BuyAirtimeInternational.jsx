@@ -30,7 +30,7 @@ import { CountriesSelect } from '../../MenuPages/VerificationStatus/IdentityVeri
 import { allCountries } from '../../../../utils/allCountries';
 import ToastMessage from '../../../components/ToastMessage';
 
-const BuyAirtime = ({ navigation }) => {
+const BuyAirtimeInternational = ({ navigation }) => {
   const { appData, setIsLoading } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const countryCode = appData.country.code;
@@ -84,7 +84,7 @@ const BuyAirtime = ({ navigation }) => {
     }
   }, [countrySelected, setIsLoading]);
 
-  const handleModal = () => {
+  const handleNetworkModal = () => {
     setModalOpen(prev => !prev);
   };
 
@@ -174,8 +174,18 @@ const BuyAirtime = ({ navigation }) => {
     setCountrySelected(selected);
     setOpenCountryModal(false);
     setNetworkProviders([]);
+    setNetworkToBuy('');
+    setFormData(prev => {
+      return {
+        ...prev,
+        network: '',
+        operatorId: '',
+        icon: '',
+      };
+    });
   };
   const handleOpenNetwork = () => {
+    if (!countrySelected) return ToastMessage('Country not provided');
     setModalOpen(true);
   };
   return (
@@ -270,8 +280,8 @@ const BuyAirtime = ({ navigation }) => {
           visible={modalOpen}
           animationType="slide"
           transparent
-          onRequestClose={handleModal}>
-          <Pressable style={styles.overlay} onPress={handleModal} />
+          onRequestClose={handleNetworkModal}>
+          <Pressable style={styles.overlay} onPress={handleNetworkModal} />
           <View style={styles.modalContainer}>
             <View style={styles.modal}>
               <View style={styles.modalBorder} />
@@ -481,7 +491,7 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
 });
-export default BuyAirtime;
+export default BuyAirtimeInternational;
 
 const Beneficiary = ({ beneficiary, networkProvidersIcon }) => {
   return (

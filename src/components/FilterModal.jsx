@@ -212,7 +212,6 @@ const FilterModal = ({
     } else {
       const currencyFilters = currencyFilter();
       const periodFilters = periodFilter(currencyFilters);
-      console.log(selectedPeriod);
       setTransactionHistory(groupTransactionsByDate(periodFilters));
       setActiveTransactions(periodFilters);
     }

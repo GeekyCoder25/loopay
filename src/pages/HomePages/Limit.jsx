@@ -1,128 +1,128 @@
 import React, { useContext } from 'react';
-import PageContainer from '../../components/PageContainer';
-import { StyleSheet, View } from 'react-native';
+import { Image, FlatList, StyleSheet, View } from 'react-native';
 import { AppContext } from '../../components/AppContext';
 import Header from '../../components/Header';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import { addingDecimal } from '../../../utils/AddingZero';
+import { allCurrencies } from '../../database/data';
 
 const Limit = () => {
-  const { selectedCurrency, vh } = useContext(AppContext);
+  const { appData } = useContext(AppContext);
+  const localCurrencySymbol = allCurrencies[0].symbol;
+  const { level = 1 } = appData;
 
   const limitTypes = [
     {
       level: 1,
       type: 'transfer',
-      singleCredit: 900000,
-      dailyCredit: 5000000,
+      singleCredit: 100000,
+      dailyCredit: 500000,
       singleDebit: 50000,
       dailyDebit: 200000,
     },
     {
       level: 2,
       type: 'transfer',
-      singleCredit: 900000,
+      singleCredit: 5000000,
       dailyCredit: 5000000,
-      singleDebit: 50000,
-      dailyDebit: 200000,
+      singleDebit: 900000,
+      dailyDebit: 900000,
     },
     {
       level: 3,
       type: 'transfer',
-      singleCredit: 900000,
-      dailyCredit: 5000000,
-      singleDebit: 50000,
-      dailyDebit: 200000,
+      singleCredit: 'Unlimited',
+      dailyCredit: 'Unlimited',
+      singleDebit: 5000000,
+      dailyDebit: 25000000,
     },
     {
       level: 4,
       type: 'transfer',
-      singleCredit: 900000,
-      dailyCredit: 5000000,
-      singleDebit: 50000,
-      dailyDebit: 200000,
+      singleCredit: 'Unlimited',
+      dailyCredit: 'Unlimited',
+      singleDebit: 5000000,
+      dailyDebit: 25000000,
+    },
+    {
+      level: 5,
+      type: 'transfer',
+      singleCredit: 'Unlimited',
+      dailyCredit: 'Unlimited',
+      singleDebit: 'Unlimited',
+      dailyDebit: 'Unlimited',
     },
   ];
+
   return (
-    <PageContainer padding scroll>
-      <View style={{ ...styles.container, minHeight: vh * 0.5 }}>
-        <View style={styles.header}>
-          <Header
-            title={'Limit Settings'}
-            text={'View all transaction limits'}
-          />
-        </View>
-        <View style={styles.levels}>
-          {limitTypes.map(limit => (
-            <View key={limit.level} style={styles.limit}>
-              <BoldText style={styles.limitHeader}>Lvl {limit.level}</BoldText>
-              <View style={styles.limitContent}>
-                <View style={styles.row}>
-                  <RegularText>Single Credit:</RegularText>
-                  <BoldText>
-                    {selectedCurrency.symbol}
-                    {addingDecimal(limit.singleCredit.toLocaleString())}
-                  </BoldText>
-                </View>
-                <View style={styles.row}>
-                  <RegularText>Daily Credit:</RegularText>
-                  <BoldText>
-                    {selectedCurrency.symbol}
-                    {addingDecimal(limit.dailyCredit.toLocaleString())}
-                  </BoldText>
-                </View>
-                <View style={styles.row}>
-                  <RegularText>Single Debit:</RegularText>
-                  <BoldText>
-                    {selectedCurrency.symbol}
-                    {addingDecimal(limit.singleDebit.toLocaleString())}
-                  </BoldText>
-                </View>
-                <View style={styles.row}>
-                  <RegularText>Daily Debit:</RegularText>
-                  <BoldText>
-                    {selectedCurrency.symbol}
-                    {addingDecimal(limit.dailyDebit.toLocaleString())}
-                  </BoldText>
-                </View>
+    <View style={styles.container}>
+      <FlatList
+        data={limitTypes}
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <Header
+              title={'Limit Settings'}
+              text={'View all transaction limits'}
+            />
+          </View>
+        }
+        renderItem={({ item: limit }) => (
+          <View key={limit.level} style={styles.limit}>
+            {level === limit.level && (
+              <View style={styles.current}>
+                <Image
+                  source={require('../../../assets/images/crown.png')}
+                  style={styles.crown}
+                />
+                <BoldText style={styles.currentText}>Current</BoldText>
+              </View>
+            )}
+            <BoldText style={styles.limitHeader}>Lvl {limit.level}</BoldText>
+            <View style={styles.limitContent}>
+              <View style={styles.row}>
+                <RegularText>Single Credit:</RegularText>
+                <BoldText>
+                  {typeof limit.singleCredit === 'string'
+                    ? limit.singleCredit
+                    : localCurrencySymbol +
+                      addingDecimal(limit.singleCredit.toLocaleString())}
+                </BoldText>
+              </View>
+              <View style={styles.row}>
+                <RegularText>Daily Credit:</RegularText>
+                <BoldText>
+                  {typeof limit.dailyCredit === 'string'
+                    ? limit.dailyCredit
+                    : localCurrencySymbol +
+                      addingDecimal(limit.dailyCredit.toLocaleString())}
+                </BoldText>
+              </View>
+              <View style={styles.row}>
+                <RegularText>Single Debit:</RegularText>
+                <BoldText>
+                  {typeof limit.singleDebit === 'string'
+                    ? limit.singleDebit
+                    : localCurrencySymbol +
+                      addingDecimal(limit.singleDebit.toLocaleString())}
+                </BoldText>
+              </View>
+              <View style={styles.row}>
+                <RegularText>Daily Debit:</RegularText>
+                <BoldText>
+                  {typeof limit.dailyDebit === 'string'
+                    ? limit.dailyDebit
+                    : localCurrencySymbol +
+                      addingDecimal(limit.dailyDebit.toLocaleString())}
+                </BoldText>
               </View>
             </View>
-          ))}
-        </View>
-        {/* <View style={styles.form}>
-          <View>
-            <RegularText>Enter new Transaction Limit:</RegularText>
-            <View style={styles.textInputContainer}>
-              <TextInput
-                style={{
-                  ...styles.textInput,
-                }}
-                onChangeText={text => {}}
-                inputMode={'numeric'}
-              />
-            </View>
           </View>
-          <View>
-            <RegularText>Enter password to continue</RegularText>
-            <View style={styles.textInputContainer}>
-              <TextInput
-                style={{
-                  ...styles.textInput,
-                }}
-                onChangeText={text => {}}
-                inputMode={'numeric'}
-                // onFocus={() => setInputFocus(true)}
-                // onBlur={() => setInputFocus(false)}
-              />
-            </View>
-          </View>x
-        </View> */}
-        {/* <View style={styles.button}>
-          <Button text={'Update Limit'} />
-        </View> */}
-      </View>
-    </PageContainer>
+        )}
+        keyExtractor={item => item.level}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
   );
 };
 
@@ -131,6 +131,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     paddingTop: 4 + '%',
+    marginHorizontal: 3 + '%',
+    paddingBottom: 30,
   },
   header: { gap: 15, marginBottom: 30 },
   form: {
@@ -138,16 +140,33 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     minHeight: 150,
   },
-  levels: {
-    paddingHorizontal: 3 + '%',
-    gap: 50,
-    paddingBottom: 30,
-  },
   limit: {
     elevation: 5,
     padding: 15,
     backgroundColor: '#eee',
     borderRadius: 15,
+    marginBottom: 50,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  current: {
+    position: 'absolute',
+    right: 0,
+    padding: 10,
+    paddingVertical: 5,
+    backgroundColor: '#1e1e1e',
+    elevation: 5,
+    borderRadius: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  currentText: {
+    color: '#fff',
+  },
+  crown: {
+    width: 25,
+    height: 25,
   },
   limitHeader: {
     textTransform: 'capitalize',

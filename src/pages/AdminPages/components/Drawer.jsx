@@ -17,6 +17,7 @@ import { deleteFetchData } from '../../../../utils/fetchAPI';
 import { getSessionID, logoutUser } from '../../../../utils/storage';
 import RegularText from '../../../components/fonts/RegularText';
 import ToastMessage from '../../../components/ToastMessage';
+import FaIcon from '@expo/vector-icons/Ionicons';
 
 const CustomDrawer = props => {
   const { navigation } = props;
@@ -35,6 +36,7 @@ const CustomDrawer = props => {
     'Transfer',
     'Rate & Charges',
     'Users',
+    'Verifications',
     'History',
     'Statement',
   ];
@@ -50,6 +52,10 @@ const CustomDrawer = props => {
         return <RateIcon />;
       case 'Users':
         return <UsersIcon />;
+      case 'Verifications':
+        return (
+          <FaIcon name="checkmark-circle-outline" color={'#868585'} size={24} />
+        );
       case 'History':
         return <HistoryIcon />;
       case 'Statement':
@@ -85,8 +91,7 @@ const CustomDrawer = props => {
           <UserIcon />
         </Pressable>
       </View>
-      <View
-        style={{ ...styles.drawer, minHeight: vh * 0.73, maxHeight: vh * 0.9 }}>
+      <View style={{ ...styles.drawer, minHeight: vh * 0.73 }}>
         <View>
           {adminRoutes.map(route => (
             <DrawerItem
@@ -98,7 +103,7 @@ const CustomDrawer = props => {
             />
           ))}
         </View>
-        <View>
+        <View style={styles.buttons}>
           <Button
             text={'Log Out'}
             style={styles.button}
@@ -136,6 +141,10 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     fontFamily: 'OpenSans-600',
     color: '#525252',
+  },
+  buttons: {
+    marginTop: 30,
+    marginBottom: 50,
   },
   button: {
     borderRadius: 5,

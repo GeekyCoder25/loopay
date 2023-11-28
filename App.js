@@ -44,6 +44,7 @@ export default function App() {
   const [refreshing, setRefreshing] = useState(false);
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [enableBiometric, setEnableBiometric] = useState(false);
+  const [popUp, setPopUp] = useState(false);
   const timerId = useRef(false);
   const vw = useWindowDimensions().width;
   const vh = useWindowDimensions().height;
@@ -88,6 +89,8 @@ export default function App() {
     setIsBiometricSupported,
     enableBiometric,
     setEnableBiometric,
+    popUp,
+    setPopUp,
   };
 
   useEffect(() => {
@@ -125,6 +128,9 @@ export default function App() {
     });
   }, []);
 
+  useEffect(() => {
+    isLoggedIn && !appData.popUp && setPopUp(true);
+  }, [appData.popUp, isLoggedIn]);
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponderCapture: () => {

@@ -26,7 +26,7 @@ import { postFetchData, putFetchData } from '../../../utils/fetchAPI';
 import { loginUser } from '../../../utils/storage';
 import ErrorMessage from '../../components/ErrorMessage';
 import SuccessMessage from '../../components/SuccessMessage';
-import saveSessionOptions from '../../services/Savesession';
+import saveSessionOptions from '../../services/saveSession.js';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { CountryPicker } from 'react-native-country-codes-picker';
 import * as Haptics from 'expo-haptics';

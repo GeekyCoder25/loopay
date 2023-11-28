@@ -167,13 +167,18 @@ const RouteLink = ({ route, navigation }) => {
   };
   const handleNavigate = () => {
     if (verified && route.routeNavigate === 'VerificationStatus') {
-      return verified === 'pending'
-        ? ToastMessage(
+      switch (verified) {
+        case 'verified':
+          return ToastMessage('Verification has been completed');
+        case 'pending':
+          return ToastMessage(
             'Verification has been submitted and will soon be confirmed',
-          )
-        : ToastMessage('Verification has been completed');
+          );
+        default:
+          navigation.navigate(route.routeNavigate);
+          break;
+      }
     }
-    navigation.navigate(route.routeNavigate);
   };
   return (
     <Pressable onPress={handleNavigate} style={styles.route}>

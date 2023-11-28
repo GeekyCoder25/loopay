@@ -8,7 +8,7 @@ import HomeNavigator from './HomeNavigator';
 import WalletContextComponent from '../context/WalletContext';
 import BeneficiaryContextComponent from '../context/BeneficiariesContext';
 import RequestFundsContextComponent from '../context/RequestContext';
-import { allCurrencies } from '../database/data';
+import Popup from '../components/Popup';
 
 const BottomTabs = () => {
   const { showTabBar, appData, setAppData } = useContext(AppContext);
@@ -42,6 +42,7 @@ const BottomTabs = () => {
             />
             <Tab.Screen name="MenuNavigator" component={MenuNavigator} />
           </Tab.Navigator>
+          <Popup />
         </RequestFundsContextComponent>
       </BeneficiaryContextComponent>
     </WalletContextComponent>

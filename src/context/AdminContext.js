@@ -11,6 +11,7 @@ const AdminContextComponent = ({ children }) => {
   const [adminData, setAdminData] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalFunc, setModalFunc] = useState();
+  const [verifications, setVerifications] = useState([]);
 
   const fetchAdminDatas = async () => {
     try {
@@ -45,6 +46,8 @@ const AdminContextComponent = ({ children }) => {
         setModalOpen,
         modalFunc,
         setModalFunc,
+        verifications,
+        setVerifications,
       }}>
       {adminData && children}
     </AdminContext.Provider>

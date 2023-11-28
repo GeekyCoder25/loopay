@@ -18,6 +18,8 @@ import AdminSelectCurrencyModal from '../pages/AdminPages/components/AdminSelect
 import Profile from '../pages/HomePages/Profile';
 import Notifications from '../pages/AdminPages/Notifications';
 import Rate from '../pages/AdminPages/Rate';
+import Verifications from '../pages/AdminPages/Verifications';
+import Verification from '../pages/AdminPages/components/Verification';
 
 const AdminNavigator = () => {
   const Drawer = createDrawerNavigator();
@@ -58,6 +60,7 @@ const AdminNavigator = () => {
         />
         <Drawer.Screen name="History" component={History} />
         <Drawer.Screen name="Statement" component={Statement} />
+        <Drawer.Screen name="Verifications" component={Verifications} />
         <Drawer.Screen
           name="Notifications"
           component={Notifications}
@@ -82,6 +85,11 @@ const AdminNavigator = () => {
         <Drawer.Screen
           name="ProfileNavigator"
           component={Profile}
+          options={({ navigation, route }) => BackHeader(navigation, route)}
+        />
+        <Drawer.Screen
+          name="Verification"
+          component={Verification}
           options={({ navigation, route }) => BackHeader(navigation, route)}
         />
       </Drawer.Navigator>

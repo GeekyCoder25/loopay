@@ -15,7 +15,7 @@ import { AppContext } from '../../components/AppContext';
 import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import { loginUser } from '../../../utils/storage';
 import ErrorMessage from '../../components/ErrorMessage';
-import saveSessionOptions from '../../services/Savesession';
+import saveSessionOptions from '../../services/saveSession';
 import { PINInputFields } from '../../components/InputPinPage';
 
 const ForgotPassword = ({ navigation, setCanChange }) => {

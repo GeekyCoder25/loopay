@@ -25,7 +25,7 @@ const AirtimeTopUp = ({ navigation }) => {
       routeName: 'Buy International Airtime',
       routeDetails: 'Recharge any network worldwide easily',
       routeIcon: 'globe',
-      routeNavigate: 'AirtimeTopUpInternational',
+      routeNavigate: 'BuyAirtimeInternational',
     },
     {
       routeName: 'Airtime History',

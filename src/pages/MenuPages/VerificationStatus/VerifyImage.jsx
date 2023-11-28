@@ -157,7 +157,7 @@ const VerifyImage = ({ route, navigation }) => {
         {side === 'front' ? (
           <Button text="Next" onPress={handleNext} />
         ) : (
-          <Button text="Verify" onPress={handleVerify} />
+          <Button text="Submit" onPress={handleVerify} />
         )}
       </View>
     </PageContainer>

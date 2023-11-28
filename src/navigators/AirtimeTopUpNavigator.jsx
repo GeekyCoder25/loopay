@@ -6,7 +6,7 @@ import BuyAirtime from '../pages/SendMenuPages/AirtimeTopUp/BuyAirtime';
 import BuyData from '../pages/SendMenuPages/AirtimeTopUp/BuyData';
 import TransferAirtime from '../pages/SendMenuPages/AirtimeTopUp/TransferAirtime';
 import AccStatement from '../pages/SendMenuPages/AccStatement';
-import AirtimeTopUpInternational from '../pages/SendMenuPages/AirtimeTopUp/AirtimeTopUpInternational';
+import BuyAirtimeInternational from '../pages/SendMenuPages/AirtimeTopUp/BuyAirtimeInternational';
 
 const AirtimeTopUpNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -22,8 +22,8 @@ const AirtimeTopUpNavigator = () => {
       <Stack.Screen name="BuyAirtime" component={BuyAirtime} />
       <Stack.Screen name="BuyData" component={BuyData} />
       <Stack.Screen
-        name="AirtimeTopUpInternational"
-        component={AirtimeTopUpInternational}
+        name="BuyAirtimeInternational"
+        component={BuyAirtimeInternational}
       />
       <Stack.Screen
         name="TransferAirtime"

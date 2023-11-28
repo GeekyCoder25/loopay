@@ -45,7 +45,7 @@ const Splash = ({ navigation }) => {
           const sessionID = await getSessionID();
           if (isLoggedIn) {
             const data = await getFetchData('user');
-            setAppData(data);
+            setAppData(data || {});
             if (
               !data ||
               Object.entries(data).length === 0 ||

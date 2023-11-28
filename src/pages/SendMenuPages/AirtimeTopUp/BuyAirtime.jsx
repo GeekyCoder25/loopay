@@ -28,7 +28,7 @@ import { AppContext } from '../../../components/AppContext';
 import { allCurrencies } from '../../../database/data';
 
 const BuyAirtime = ({ navigation }) => {
-  const { appData } = useContext(AppContext);
+  const { appData, setIsLoading } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const countryCode = appData.country.code;
   const [modalOpen, setModalOpen] = useState(false);
@@ -122,10 +122,12 @@ const BuyAirtime = ({ navigation }) => {
     setErrorMessage('');
     setErrorKey('');
     if (phoneNo.length === 11) {
+      setIsLoading(true);
       const response = await getFetchData(
         `user/get-network?phone=${phoneNo}&country=${countryCode}`,
       );
       if (response.status === 200) {
+        setIsLoading(false);
         const network = response.data.name.toLowerCase();
         handleNetworkSelect(
           networkProviders.find(index => network.startsWith(index.network)),

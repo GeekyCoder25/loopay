@@ -5,12 +5,17 @@ import { useContext, useEffect, useState } from 'react';
 import { useAdminDataContext } from '../../../context/AdminContext';
 import { AppContext } from '../../../components/AppContext';
 import ChevronDown from '../../../../assets/images/chevron-down.svg';
+import { getShowBalance, setShowBalance } from '../../../../utils/storage';
 
 const BalanceCard = () => {
   const { selectedCurrency } = useContext(AppContext);
   const { adminData, setModalOpen } = useAdminDataContext();
   const [balance, setBalance] = useState('');
+  const [showAmount, setShowAmount] = useState(false);
 
+  useEffect(() => {
+    getShowBalance().then(status => setShowAmount(status));
+  }, []);
   useEffect(() => {
     if (adminData) {
       const currency = ['dollar', 'euro', 'pound'].includes(
@@ -23,6 +28,10 @@ const BalanceCard = () => {
     }
   }, [adminData, selectedCurrency.currency]);
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
   return (
     <View style={{ ...styles.cardHeader }}>
       <Pressable onPress={() => setModalOpen(true)} style={styles.plus}>
@@ -31,11 +40,13 @@ const BalanceCard = () => {
       <View style={styles.cardHeaderBalance}>
         <BoldText>Balance</BoldText>
       </View>
-      <View>
+      <Pressable onPress={handleShow}>
         <BoldText style={styles.cardHeaderAmount}>
-          {selectedCurrency.symbol + addingDecimal(balance.toLocaleString())}
+          {showAmount && balance
+            ? selectedCurrency.symbol + addingDecimal(balance.toLocaleString())
+            : '***'}
         </BoldText>
-      </View>
+      </Pressable>
     </View>
   );
 };

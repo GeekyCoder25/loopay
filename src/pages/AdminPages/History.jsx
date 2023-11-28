@@ -20,6 +20,7 @@ import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
 import { FlatList } from 'react-native-gesture-handler';
 import FilterModal from '../../components/FilterModal';
 import IonIcon from '@expo/vector-icons/Ionicons';
+import { billIcon } from '../MenuPages/TransactionHistory';
 
 const History = ({ navigation }) => {
   const { adminData } = useAdminDataContext();
@@ -205,6 +206,19 @@ const styles = StyleSheet.create({
   searchList: {
     marginTop: 20,
   },
+  historyIconText: {
+    backgroundColor: '#ccc',
+    fontSize: 18,
+    fontFamily: 'OpenSans-800',
+    width: 40,
+    height: 40,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
 });
 export default History;
 
@@ -220,6 +234,8 @@ const HistoryComp = ({ history, navigation }) => {
     currency,
     networkProvider,
     dataPlan,
+    billType,
+    billName,
   } = history;
   const [currencySymbol, setCurrencySymbol] = useState('');
   const date = new Date(createdAt);
@@ -315,6 +331,23 @@ const HistoryComp = ({ history, navigation }) => {
               {networkProvider} - {history.phoneNo}
             </BoldText>
             <RegularText>Data Recharge - {dataPlan.value}</RegularText>
+          </View>
+          <View style={styles.amount}>
+            <BoldText style={styles.debitAmount}>
+              -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
+            </BoldText>
+            <RegularText> {historyTime}</RegularText>
+          </View>
+        </>
+      )}
+      {transactionType?.toLowerCase() === 'bill' && (
+        <>
+          <View style={styles.historyIconText}>{billIcon(billType)}</View>
+          <View style={styles.historyContent}>
+            <BoldText style={styles.historyTitle}>{billName} </BoldText>
+            <RegularText style={styles.historyTitle}>
+              {billType} bill
+            </RegularText>
           </View>
           <View style={styles.amount}>
             <BoldText style={styles.debitAmount}>
