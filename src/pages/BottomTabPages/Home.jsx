@@ -49,7 +49,6 @@ const Home = ({ navigation }) => {
   const { requestFunds: requests } = useRequestFundsContext();
   const [modalOpen, setModalOpen] = useState(false);
   const firstName = appData.userProfile.firstName;
-  const [showAmount, setShowAmount] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const [requestsLength, setRequestsLength] = useState(0);
   const { unread } = useNotificationsContext();
@@ -181,10 +180,7 @@ const Home = ({ navigation }) => {
                   <Text style={styles.symbol}>{selectedCurrency.symbol}</Text>
                 </View>
                 <View>
-                  <WalletAmount
-                    showAmount={showAmount}
-                    setShowAmount={setShowAmount}
-                  />
+                  <WalletAmount />
                   <View style={styles.flagContainer}>
                     <RegularText style={styles.currencyType}>
                       {selectedCurrency.acronym}
@@ -288,8 +284,6 @@ const Home = ({ navigation }) => {
                   key={history.id}
                   history={history}
                   navigation={navigation}
-                  showAmount={showAmount}
-                  setShowAmount={setShowAmount}
                 />
               ))}
             </ScrollView>
@@ -524,8 +518,8 @@ const styles = StyleSheet.create({
 });
 export default Home;
 
-const History = ({ history, navigation, showAmount, setShowAmount }) => {
-  const { vw } = useContext(AppContext);
+const History = ({ history, navigation }) => {
+  const { vw, showAmount, setShowAmount } = useContext(AppContext);
   const [transactionTypeIcon, setTransactionTypeIcon] = useState('');
   const [transactionTypeTitle, setTransactionTypeTitle] = useState('');
   const [transactionDate, setTransactionDate] = useState('');

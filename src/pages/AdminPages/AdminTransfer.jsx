@@ -26,7 +26,7 @@ import FaIcon from '@expo/vector-icons/FontAwesome';
 import { randomUUID } from 'expo-crypto';
 
 const AdminTransfer = ({ navigation }) => {
-  const { selectedCurrency, vw, setIsLoading, setWalletRefetch } =
+  const { selectedCurrency, vw, setIsLoading, setWalletRefresh } =
     useContext(AppContext);
   const { adminData } = useAdminDataContext();
   const { recents } = adminData;
@@ -91,7 +91,7 @@ const AdminTransfer = ({ navigation }) => {
           userToSendTo,
           amountInput,
         });
-        setWalletRefetch(prev => !prev);
+        setWalletRefresh(prev => !prev);
         setAmountInput('');
         setUserFound('');
         return setUserInput('');
@@ -198,6 +198,7 @@ const AdminTransfer = ({ navigation }) => {
             value={userInput}
             placeholder="Input tag name or account number"
             placeholderTextColor={'#525252'}
+            onBlur={handleCheckAccount}
           />
           <Pressable onPress={handleCheckAccount} style={styles.paste}>
             <RegularText style={styles.pasteText}>Check</RegularText>
@@ -281,7 +282,13 @@ const AdminTransfer = ({ navigation }) => {
                       </View>
                     </View>
                     <BoldText>
-                      {adminData[`${currency.currency}Balance`]}
+                      {currency.isLocal
+                        ? addingDecimal(adminData.localBalance.toLocaleString())
+                        : addingDecimal(
+                            adminData[
+                              `${currency.currency}Balance`
+                            ].toLocaleString(),
+                          )}
                     </BoldText>
                   </Pressable>
                 ))}

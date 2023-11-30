@@ -16,7 +16,11 @@ import * as SplashScreen from 'expo-splash-screen';
 import { allCurrencies } from './src/database/data';
 import AppStart from './src/components/AppStart';
 import LoadingModal from './src/components/LoadingModal';
-import { getCurrencyCode, getDefaultCurrency } from './utils/storage';
+import {
+  getCurrencyCode,
+  getDefaultCurrency,
+  getShowBalance,
+} from './utils/storage';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import BoldText from './src/components/fonts/BoldText';
@@ -45,6 +49,7 @@ export default function App() {
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [enableBiometric, setEnableBiometric] = useState(false);
   const [popUp, setPopUp] = useState(false);
+  const [showAmount, setShowAmount] = useState(false);
   const timerId = useRef(false);
   const vw = useWindowDimensions().width;
   const vh = useWindowDimensions().height;
@@ -91,6 +96,8 @@ export default function App() {
     setEnableBiometric,
     popUp,
     setPopUp,
+    showAmount,
+    setShowAmount,
   };
 
   useEffect(() => {
@@ -126,6 +133,7 @@ export default function App() {
       );
       setSelectedCurrency(defaultCurrencyObject);
     });
+    getShowBalance().then(result => setShowAmount(result));
   }, []);
 
   useEffect(() => {

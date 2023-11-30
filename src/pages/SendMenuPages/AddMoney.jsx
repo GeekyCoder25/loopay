@@ -30,8 +30,13 @@ import ErrorMessage from '../../components/ErrorMessage';
 import { getFetchData } from '../../../utils/fetchAPI';
 
 const AddMoney = ({ navigation, route }) => {
-  const { selectedCurrency, setSelectedCurrency, walletRefresh } =
-    useContext(AppContext);
+  const {
+    selectedCurrency,
+    setSelectedCurrency,
+    walletRefresh,
+    showAmount,
+    setShowAmount,
+  } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [value, setValue] = useState('');
@@ -227,12 +232,19 @@ const AddMoney = ({ navigation, route }) => {
                         </RegularText>
                       </View>
                     </View>
-                    <BoldText style={styles.amount}>
-                      {select.symbol +
-                        addingDecimal(
-                          wallet[`${select.currency}Balance`]?.toLocaleString(),
-                        )}
-                    </BoldText>
+
+                    <Pressable onPress={() => setShowAmount(prev => !prev)}>
+                      <BoldText style={styles.amount}>
+                        {showAmount
+                          ? select.symbol +
+                            addingDecimal(
+                              wallet[
+                                `${select.currency}Balance`
+                              ]?.toLocaleString(),
+                            )
+                          : '***'}
+                      </BoldText>
+                    </Pressable>
                   </Pressable>
                 ))}
             </View>

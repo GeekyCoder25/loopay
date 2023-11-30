@@ -11,7 +11,6 @@ const Popup = () => {
   const handleClose = async () => {
     const response = await putFetchData('user', { popUp: true });
     setPopUp(false);
-    console.log(response);
   };
   return (
     <Modal visible={popUp} animationType="fade" transparent>

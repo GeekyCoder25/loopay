@@ -99,57 +99,6 @@ export const allCurrencies = [
   },
 ];
 
-export const sendMenuRoutes = [
-  {
-    routeName: 'Add Money',
-    routeDetails: 'Top your USD Account',
-    routeIcon: 'add',
-    routeNavigate: 'AddMoney',
-  },
-  {
-    routeName: 'Send Money',
-    routeDetails: 'Send Funds to Family and Friends',
-    routeIcon: 'send',
-    routeNavigate: 'SendMoneyNavigator',
-  },
-  {
-    routeName: 'Swap Funds',
-    routeDetails: 'Convert your USD to another currency',
-    routeIcon: 'swap',
-    routeNavigate: 'SwapFunds',
-  },
-  {
-    routeName: 'Request Money',
-    routeDetails: 'Request money using loopay tag',
-    routeIcon: 'wallet',
-    routeNavigate: 'RequestFund',
-  },
-  {
-    routeName: 'Mobile/Virtual Top up',
-    routeDetails: 'Buy airtime and data via VTU',
-    routeIcon: 'airtime',
-    routeNavigate: 'AirtimeTopUpNavigator',
-  },
-  {
-    routeName: 'Pay a Bill',
-    routeDetails: 'Cable, Electricity and School fees',
-    routeIcon: 'bill',
-    routeNavigate: 'PayABill',
-  },
-  {
-    routeName: 'Card',
-    routeDetails: 'Virtual Debit Card',
-    routeIcon: 'card',
-    routeNavigate: 'VirtualCard',
-  },
-  {
-    routeName: 'Account Statement',
-    routeDetails: 'Generate account statement for account',
-    routeIcon: 'statement',
-    routeNavigate: 'AccStatement',
-  },
-];
-
 export const menuRoutes = [
   {
     routeName: 'My Info',

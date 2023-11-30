@@ -108,7 +108,6 @@ const MyInfo = () => {
   return (
     <PageContainer justify={true} style={styles.container} scroll>
       <BoldText style={styles.headerText}>Personal information</BoldText>
-
       <View style={styles.tagContainer}>
         <View>
           <RegularText style={styles.label}>Your unique Loopay tag</RegularText>
@@ -137,8 +136,34 @@ const MyInfo = () => {
           <BoldText style={styles.copyText}>Copy</BoldText>
         </Pressable>
       </View>
-      <RegularText>Account No: {phoneNumber.slice(4)}</RegularText>
-      <RegularText style={styles.label}>Phone No: {phoneNumber}</RegularText>
+      <View style={styles.tagContainer}>
+        <View>
+          <RegularText style={styles.label}>Account No</RegularText>
+          <BoldText style={styles.tagName}>{phoneNumber.slice(4)}</BoldText>
+        </View>
+        <Pressable
+          style={styles.copy}
+          onPress={() => {
+            Clipboard.setString(phoneNumber.slice(4));
+            ToastMessage('Copied to clipboard');
+          }}>
+          <BoldText style={styles.copyText}>Copy</BoldText>
+        </Pressable>
+      </View>
+      <View style={styles.tagContainer}>
+        <View>
+          <RegularText style={styles.label}>Phone No</RegularText>
+          <BoldText style={styles.tagName}>{phoneNumber}</BoldText>
+        </View>
+        <Pressable
+          style={styles.copy}
+          onPress={() => {
+            Clipboard.setString(phoneNumber);
+            ToastMessage('Copied to clipboard');
+          }}>
+          <BoldText style={styles.copyText}>Copy</BoldText>
+        </Pressable>
+      </View>
       {!isEditable && (
         <Pressable onPress={() => setIsEditable(true)} style={styles.edit}>
           <BoldText style={styles.editText}>Edit Profile</BoldText>

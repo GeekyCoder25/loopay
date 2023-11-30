@@ -7,9 +7,11 @@ import { AppContext } from '../../components/AppContext';
 import Header from '../../components/Header';
 import Button from '../../components/Button';
 import BoldText from '../../components/fonts/BoldText';
+import ToastMessage from '../../components/ToastMessage';
+import { postFetchData } from '../../../utils/fetchAPI';
 
-const Questions = () => {
-  const { vh } = useContext(AppContext);
+const Questions = ({ navigation }) => {
+  const { vh, setIsLoading } = useContext(AppContext);
   const [formData, setFormData] = useState({
     sport: '',
     mother: '',
@@ -31,11 +33,18 @@ const Questions = () => {
     },
   ];
 
-  const handleSet = () => {
+  const handleSet = async () => {
     if (Object.values(formData).includes('')) {
       setErrorKey('global');
+      return ToastMessage('Please provide all fields');
     }
+    setIsLoading(true);
+    const response = await postFetchData('user/questions', formData);
+    ToastMessage('Secret questions set successfully');
+    setIsLoading(false);
+    navigation.goBack();
   };
+
   return (
     <PageContainer scroll>
       <View style={{ ...styles.container, minHeight: vh * 0.8 }}>

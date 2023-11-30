@@ -166,7 +166,7 @@ const RouteLink = ({ route, navigation }) => {
     }
   };
   const handleNavigate = () => {
-    if (verified && route.routeNavigate === 'VerificationStatus') {
+    if (route.routeNavigate === 'VerificationStatus') {
       switch (verified) {
         case 'verified':
           return ToastMessage('Verification has been completed');
@@ -178,6 +178,8 @@ const RouteLink = ({ route, navigation }) => {
           navigation.navigate(route.routeNavigate);
           break;
       }
+    } else {
+      navigation.navigate(route.routeNavigate);
     }
   };
   return (

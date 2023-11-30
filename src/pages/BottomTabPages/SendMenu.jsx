@@ -20,15 +20,15 @@ import Send from '../../../assets/images/sendMoney.svg';
 import PageContainer from '../../components/PageContainer';
 import RegularText from '../../components/fonts/RegularText';
 import BoldText from '../../components/fonts/BoldText';
-import { sendMenuRoutes } from '../../database/data';
 import { AppContext } from '../../components/AppContext';
 import { useFocusEffect } from '@react-navigation/native';
 import UserIcon from '../../components/UserIcon';
 import { useBeneficiaryContext } from '../../context/BeneficiariesContext';
 import FaIcon from '@expo/vector-icons/FontAwesome';
+import { allCurrencies } from '../../database/data';
 
 const SendMenu = ({ navigation }) => {
-  const { setShowTabBar } = useContext(AppContext);
+  const { selectedCurrency, setShowTabBar } = useContext(AppContext);
   const { beneficiaryState } = useBeneficiaryContext();
   useFocusEffect(
     React.useCallback(() => {
@@ -39,6 +39,61 @@ const SendMenu = ({ navigation }) => {
   const handleBeneficiaryPress = beneficiary => {
     navigation.navigate('TransferFunds', beneficiary);
   };
+
+  const selectedAcronym = allCurrencies.find(
+    currency => currency.acronym === selectedCurrency.acronym,
+  ).acronym;
+
+  const sendMenuRoutes = [
+    {
+      routeName: 'Add Money',
+      routeDetails: 'Top your USD Account',
+      routeIcon: 'add',
+      routeNavigate: 'AddMoney',
+    },
+    {
+      routeName: 'Send Money',
+      routeDetails: 'Send Funds to Family and Friends',
+      routeIcon: 'send',
+      routeNavigate: 'SendMoneyNavigator',
+    },
+    {
+      routeName: 'Swap Funds',
+      routeDetails: `Convert your ${selectedAcronym} to another currency`,
+      routeIcon: 'swap',
+      routeNavigate: 'SwapFunds',
+    },
+    {
+      routeName: 'Request Money',
+      routeDetails: 'Request money using Loopay tag',
+      routeIcon: 'wallet',
+      routeNavigate: 'RequestFund',
+    },
+    {
+      routeName: 'Mobile/Virtual Top up',
+      routeDetails: 'Buy airtime and data via VTU',
+      routeIcon: 'airtime',
+      routeNavigate: 'AirtimeTopUpNavigator',
+    },
+    {
+      routeName: 'Pay a Bill',
+      routeDetails: 'Cable, Electricity and School fees',
+      routeIcon: 'bill',
+      routeNavigate: 'PayABill',
+    },
+    {
+      routeName: 'Card',
+      routeDetails: 'Virtual Debit Card',
+      routeIcon: 'card',
+      routeNavigate: 'VirtualCard',
+    },
+    {
+      routeName: 'Account Statement',
+      routeDetails: `Generate account statement for ${selectedAcronym} account`,
+      routeIcon: 'statement',
+      routeNavigate: 'AccStatement',
+    },
+  ];
 
   return (
     <View style={styles.container}>

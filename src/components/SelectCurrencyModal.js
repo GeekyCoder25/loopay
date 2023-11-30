@@ -178,7 +178,8 @@ export default SelectCurrencyModal;
 
 const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
   const { wallet } = useWalletContext();
-  const { selectedCurrency, setSelectedCurrency } = useContext(AppContext);
+  const { selectedCurrency, setSelectedCurrency, showAmount, setShowAmount } =
+    useContext(AppContext);
 
   const handleCurrencyChange = async newSelect => {
     setShowSearchBox(false);
@@ -208,11 +209,15 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
         </View>
       </View>
       {wallet && (
-        <RegularText style={styles.currencyAmount}>
-          {addingDecimal(
-            wallet[`${selected.currency}Balance`]?.toLocaleString(),
-          )}
-        </RegularText>
+        <Pressable onPress={() => setShowAmount(prev => !prev)}>
+          <RegularText style={styles.currencyAmount}>
+            {showAmount
+              ? addingDecimal(
+                  wallet[`${selected.currency}Balance`]?.toLocaleString(),
+                )
+              : '***'}
+          </RegularText>
+        </Pressable>
       )}
     </Pressable>
   );

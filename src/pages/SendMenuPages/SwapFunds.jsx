@@ -28,8 +28,14 @@ import ToastMessage from '../../components/ToastMessage';
 import { Audio } from 'expo-av';
 
 const SwapFunds = ({ navigation }) => {
-  const { selectedCurrency, setIsLoading, setWalletRefresh, vh } =
-    useContext(AppContext);
+  const {
+    selectedCurrency,
+    setIsLoading,
+    setWalletRefresh,
+    vh,
+    showAmount,
+    setShowAmount,
+  } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [errorKey, setErrorKey] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
@@ -346,10 +352,11 @@ const SwapFunds = ({ navigation }) => {
                 <View style={styles.swapText}>
                   <BoldText>{swapFrom.acronym} Balance</BoldText>
                   <RegularText style={styles.swapBalance}>
-                    {swapFrom.symbol}{' '}
-                    {addingDecimal(
-                      Number(swapFrom.balance.toFixed(2)).toLocaleString(),
-                    )}
+                    {showAmount
+                      ? `${swapFrom.symbol} ${addingDecimal(
+                          Number(swapFrom.balance.toFixed(2)).toLocaleString(),
+                        )}`
+                      : '***'}
                   </RegularText>
                 </View>
                 <ChevronDown />
@@ -397,10 +404,11 @@ const SwapFunds = ({ navigation }) => {
                 <View style={styles.swapText}>
                   <BoldText>{swapTo.acronym} Balance</BoldText>
                   <RegularText style={styles.swapBalance}>
-                    {swapTo.symbol}{' '}
-                    {addingDecimal(
-                      Number(swapTo.balance.toFixed(2)).toLocaleString(),
-                    )}
+                    {showAmount
+                      ? `${swapTo.symbol} ${addingDecimal(
+                          Number(swapTo.balance.toFixed(2)).toLocaleString(),
+                        )}`
+                      : '***'}
                   </RegularText>
                 </View>
                 <ChevronDown />

@@ -146,9 +146,9 @@ const AccStatement = () => {
               border-bottom: 0.5px solid grey;
               padding-bottom: 50px;
               gap: 20px;
-              & span {
-                margin-left: auto;
-              }
+            }
+            .logo span {
+              margin-left: auto;
             }
             aside {
               display: flex;
@@ -156,24 +156,23 @@ const AccStatement = () => {
               margin-left: auto;
               margin-bottom: 100px;
               gap: 25px;
+            }
 
-              & div {
-                display: flex;
-                justify-content: flex-end;
-                align-items: center;
-                padding-right: 30px;
-                gap: 10px;
-
-                & span {
-                  width: 150px;
-                }
-                & h4 {
-                  width: 150px;
-                  text-align: right;
-                  font-size: 1.2rem;
-                  margin: 0;
-                }
-              }
+            aside div {
+              display: flex;
+              justify-content: flex-end;
+              align-items: center;
+              padding-right: 30px;
+              gap: 10px;
+            }
+            aside span {
+              width: 150px;
+            }
+            aside h4 {
+              width: 150px;
+              text-align: right;
+              font-size: 1.2rem;
+              margin: 0;
             }
             td {
               padding: 10px 0;
@@ -191,12 +190,15 @@ const AccStatement = () => {
               alt="icon" />
             <img
               src="https://res.cloudinary.com/geekycoder/image/upload/v1688782340/loopay/appIcon.png"
-              style="width: 200px; margin: 50px 0" 
-              alt="loopay logo"/>
-            <span>Generated on ${new Date(Date.now()).toLocaleDateString(
-              'en-US',
-              dateOptions,
-            )}</span>
+              style="width: 200px; margin: 50px 0"
+              alt="loopay logo" />
+            <span
+              >Generated on
+              ${new Date(Date.now()).toLocaleDateString(
+                'en-US',
+                dateOptions,
+              )}</span
+            >
           </div>
           <aside>
             ${asideItems
@@ -211,20 +213,24 @@ const AccStatement = () => {
               .join('')}
           </aside>
           <h2 style="">
-            Transaction account statement from  ${new Date(
-              start,
-            ).toLocaleDateString('en-US', dateOptions)} -  ${new Date(
-      end,
-    ).toLocaleDateString('en-US', dateOptions)}
+            Transaction account statement from
+            ${new Date(start).toLocaleDateString('en-US', dateOptions)} -
+            ${new Date(end).toLocaleDateString('en-US', dateOptions)}
           </h2>
           <section>
             <table
               border
               style="border: 1px solid grey; border-collapse: collapse; width: 100%">
               <tr>
-                <th style="width: 33%; height: 35px; font-size: 1.2rem">Date</th>
-                <th style="width: 33%; height: 35px; font-size: 1.2rem">Debit</th>
-                <th style="width: 33%; height: 35px; font-size: 1.2rem">Credit</th>
+                <th style="width: 33%; height: 35px; font-size: 1.2rem">
+                  Date
+                </th>
+                <th style="width: 33%; height: 35px; font-size: 1.2rem">
+                  Debit
+                </th>
+                <th style="width: 33%; height: 35px; font-size: 1.2rem">
+                  Credit
+                </th>
               </tr>
               ${data
                 .map(element => {

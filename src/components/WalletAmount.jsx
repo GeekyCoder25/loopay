@@ -8,8 +8,8 @@ import { getShowBalance, setShowBalance } from '../../utils/storage';
 import { addingDecimal } from '../../utils/AddingZero';
 import { AppContext } from './AppContext';
 
-const WalletAmount = ({ showAmount, setShowAmount }) => {
-  const { vw } = useContext(AppContext);
+const WalletAmount = () => {
+  const { vw, showAmount, setShowAmount } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [walletAmount, setWalletAmount] = useState('****');
 
