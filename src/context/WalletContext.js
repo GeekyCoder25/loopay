@@ -49,13 +49,31 @@ const WalletContextComponent = ({ children }) => {
         case 'naira':
           return setWallet({ ...result.walletLocal, ...otherWalletBalances });
         case 'dollar':
-          return setWallet({ ...result.walletDollar, ...otherWalletBalances });
+          return setWallet({
+            ...result.walletDollar,
+            ...otherWalletBalances,
+            bank: 'Zenith Bank',
+            accNo: '5072353973',
+          });
         case 'euro':
-          return setWallet({ ...result.walletEuro, ...otherWalletBalances });
+          return setWallet({
+            ...result.walletEuro,
+            ...otherWalletBalances,
+            bank: 'Zenith Bank',
+            accNo: '5080557042',
+          });
         case 'pound':
-          return setWallet({ ...result.walletPound, ...otherWalletBalances });
+          return setWallet({
+            ...result.walletPound,
+            ...otherWalletBalances,
+            bank: 'Zenith Bank',
+            accNo: '0615762864',
+          });
         default:
-          return setWallet({ ...result.walletLocal, ...otherWalletBalances });
+          return setWallet({
+            ...result.walletLocal,
+            ...otherWalletBalances,
+          });
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
