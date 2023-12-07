@@ -177,7 +177,8 @@ const styles = StyleSheet.create({
 export default AdminSelectCurrencyModal;
 
 const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
-  const { selectedCurrency, setSelectedCurrency } = useContext(AppContext);
+  const { selectedCurrency, setSelectedCurrency, showAmount } =
+    useContext(AppContext);
   const { adminData, modalFunc, setModalFunc } = useAdminDataContext();
   const [balance, setBalance] = useState('');
   const handleCurrencyChange = async newSelect => {
@@ -218,11 +219,11 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
           </RegularText>
         </View>
       </View>
-      {adminData && (
-        <RegularText style={styles.currencyAmount}>
-          {addingDecimal(balance.toLocaleString())}
-        </RegularText>
-      )}
+      <RegularText style={styles.currencyAmount}>
+        {adminData && showAmount
+          ? addingDecimal(balance.toLocaleString())
+          : '***'}
+      </RegularText>
     </Pressable>
   );
 };

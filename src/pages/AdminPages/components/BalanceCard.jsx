@@ -8,14 +8,14 @@ import ChevronDown from '../../../../assets/images/chevron-down.svg';
 import { getShowBalance, setShowBalance } from '../../../../utils/storage';
 
 const BalanceCard = () => {
-  const { selectedCurrency } = useContext(AppContext);
+  const { selectedCurrency, showAmount, setShowAmount } =
+    useContext(AppContext);
   const { adminData, setModalOpen } = useAdminDataContext();
   const [balance, setBalance] = useState('');
-  const [showAmount, setShowAmount] = useState(false);
 
   useEffect(() => {
     getShowBalance().then(status => setShowAmount(status));
-  }, []);
+  }, [setShowAmount]);
   useEffect(() => {
     if (adminData) {
       const currency = ['dollar', 'euro', 'pound'].includes(

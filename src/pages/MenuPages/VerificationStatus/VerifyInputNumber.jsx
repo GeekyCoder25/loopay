@@ -11,6 +11,7 @@ import ToastMessage from '../../../components/ToastMessage';
 
 const VerifyInputNumber = ({ route, navigation }) => {
   const { setIsLoading, setVerified } = useContext(AppContext);
+  const [errorKey, setErrorKey] = useState();
   const params = route.params;
   const [idType, setIdType] = useState({
     ...params.idType,
@@ -56,16 +57,17 @@ const VerifyInputNumber = ({ route, navigation }) => {
           <TextInput
             style={{
               ...styles.textInput,
-              //   borderColor: errorKey ? 'red' : '#ccc',
+              borderColor: errorKey ? 'red' : '#ccc',
             }}
             inputMode="numeric"
             onChangeText={text =>
               setIdType(prev => {
                 setErrorMessage('');
+                setErrorKey('');
                 return { ...prev, value: text };
               })
             }
-            placeholderTextColor={'#525252'}
+            maxLength={11}
           />
 
           {errorMessage && (

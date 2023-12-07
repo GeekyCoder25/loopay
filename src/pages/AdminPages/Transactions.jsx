@@ -28,8 +28,6 @@ const Transactions = ({ navigation, route }) => {
     transaction =>
       transaction.currency === selectedCurrency.currency &&
       transaction.transactionType !== 'swap',
-    // !selectedIds.has(transaction.id) &&
-    // selectedIds.add(transaction.id),
   );
   const { transactionStatus } = route.params;
   const [selectedTransaction, setSelectedTransaction] = useState(transactions);

@@ -2,6 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
 import {
+  ActivityIndicator,
   Image,
   Modal,
   Pressable,
@@ -26,23 +27,30 @@ import { randomUUID } from 'expo-crypto';
 import { getFetchData } from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
 import { allCurrencies } from '../../../database/data';
+import ToastMessage from '../../../components/ToastMessage';
 
 const BuyAirtime = ({ navigation }) => {
   const { appData, setIsLoading } = useContext(AppContext);
   const { wallet } = useWalletContext();
-  const countryCode = appData.country.code;
+  const { code: countryCode } = appData.country;
   const [modalOpen, setModalOpen] = useState(false);
   const [networkToBuy, setNetworkToBuy] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [errorMessage2, setErrorMessage2] = useState('');
   const [errorKey, setErrorKey] = useState('');
   const [amountInput, setAmountInput] = useState('');
-  const [networkProviders] = useState([
-    { network: '9mobile', locale: 'ng', operatorId: 340 },
-    { network: 'mtn', locale: 'ng', operatorId: 341 },
-    { network: 'airtel', locale: 'ng', operatorId: 342 },
-    { network: 'glo', locale: 'ng', operatorId: 344 },
-  ]);
+  const [isNigeria] = useState(countryCode === 'NG');
+  const [networkProviders, setNetworkProviders] = useState(
+    isNigeria
+      ? [
+          { network: '9mobile', locale: 'ng', operatorId: 340 },
+          { network: 'mtn', locale: 'ng', operatorId: 341 },
+          { network: 'airtel', locale: 'ng', operatorId: 342 },
+          { network: 'glo', locale: 'ng', operatorId: 344 },
+        ]
+      : [],
+  );
+
   const [formData, setFormData] = useState({
     network: '',
     amount: '',
@@ -71,6 +79,24 @@ const BuyAirtime = ({ navigation }) => {
   useEffect(() => {
     setErrorMessage2('');
   }, [formData]);
+
+  useEffect(() => {
+    const getOperators = async () => {
+      const response = await getFetchData(
+        `user/airtime/operators?country=${countryCode}`,
+      );
+      if (response.status === 200) {
+        const data = response.data.map(({ name, operatorId, logoUrls }) => {
+          return { network: name, locale: '', operatorId, icon: logoUrls[0] };
+        });
+        return setNetworkProviders(data);
+      }
+      setNetworkProviders([]);
+    };
+    if (!isNigeria) {
+      getOperators();
+    }
+  }, [countryCode, isNigeria]);
 
   const handleModal = () => {
     setModalOpen(prev => !prev);
@@ -115,26 +141,36 @@ const BuyAirtime = ({ navigation }) => {
     }
   };
 
+  const checkOperator = async () => {
+    const phoneNo = formData.phoneNo;
+    setIsLoading(true);
+    const response = await getFetchData(
+      `user/get-network?phone=${phoneNo}&country=${countryCode}`,
+    );
+    setIsLoading(false);
+    if (response.status === 200) {
+      const network = response.data.name.toLowerCase();
+      return handleNetworkSelect(
+        networkProviders.find(index => network.startsWith(index.network)),
+      );
+    }
+    ToastMessage(`${response.data}`);
+  };
+
   const handlePhoneInput = async phoneNo => {
     setFormData(prev => {
       return { ...prev, phoneNo };
     });
     setErrorMessage('');
     setErrorKey('');
-    if (phoneNo.length === 11) {
-      setIsLoading(true);
-      const response = await getFetchData(
-        `user/get-network?phone=${phoneNo}&country=${countryCode}`,
-      );
-      if (response.status === 200) {
-        setIsLoading(false);
-        const network = response.data.name.toLowerCase();
-        handleNetworkSelect(
-          networkProviders.find(index => network.startsWith(index.network)),
-        );
-      }
+    if (isNigeria && phoneNo.length === 11) {
+      checkOperator();
     }
   };
+
+  const localCurrencySymbol = allCurrencies.find(
+    currency => currency.isLocal,
+  ).symbol;
 
   const handleInputPin = async () => {
     if (Object.values(formData).includes('')) {
@@ -142,9 +178,9 @@ const BuyAirtime = ({ navigation }) => {
         'Please provide all required fields before progressing',
       );
     } else if (amountInput < 50) {
-      setErrorMessage(`Minimum recharge amount is ₦${50}`);
+      setErrorMessage(`Minimum recharge amount is ${localCurrencySymbol + 50}`);
       return setErrorKey('amountInput');
-    } else if (formData.phoneNo.length < 11) {
+    } else if (isNigeria && formData.phoneNo.length < 11) {
       setErrorMessage2('Incomplete phone number');
       return setErrorKey('phoneInput');
     } else if (formData.amount > wallet.localBalance) {
@@ -155,10 +191,13 @@ const BuyAirtime = ({ navigation }) => {
       formData: {
         ...formData,
         id: randomUUID(),
-        currency: 'naira',
+        currency: allCurrencies.find(
+          currency => currency.acronym === appData.localCurrencyCode,
+        ).currency,
         countryCode,
         type: 'airtime',
       },
+      isInternational: !isNigeria,
     });
   };
 
@@ -191,9 +230,18 @@ const BuyAirtime = ({ navigation }) => {
           <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
             {networkToBuy ? (
               <View style={styles.networkToBuySelected}>
-                {networkToBuy && networkProvidersIcon(networkToBuy.network)}
+                {networkToBuy &&
+                  (isNigeria ? (
+                    networkProvidersIcon(networkToBuy.network)
+                  ) : (
+                    <Image
+                      source={{ uri: networkToBuy.icon }}
+                      style={styles.networkIcon}
+                    />
+                  ))}
                 <BoldText style={styles.networkToBuySelected}>
-                  {networkToBuy.network} - {networkToBuy.locale}
+                  {networkToBuy.network}{' '}
+                  {isNigeria ? `-${networkToBuy.locale}` : ''}
                 </BoldText>
               </View>
             ) : (
@@ -215,25 +263,42 @@ const BuyAirtime = ({ navigation }) => {
               <View style={styles.modalBorder} />
               <ScrollView style={{ width: 100 + '%' }}>
                 <View style={styles.modalLists}>
-                  {networkProviders.map(provider => (
-                    <Pressable
-                      key={provider.network}
-                      style={{
-                        ...styles.modalList,
-                        backgroundColor:
-                          networkToBuy?.network === provider.network
-                            ? '#e4e2e2'
-                            : 'transparent',
-                      }}
-                      onPress={() => handleNetworkSelect(provider)}>
-                      <View style={styles.networkIcon}>
-                        {networkProvidersIcon(provider.network)}
-                      </View>
-                      <BoldText style={styles.networkToBuySelected}>
-                        {`${provider.network}-${provider.locale}`}
-                      </BoldText>
-                    </Pressable>
-                  ))}
+                  {networkProviders.length ? (
+                    networkProviders.map(provider => (
+                      <Pressable
+                        key={provider.network}
+                        style={{
+                          ...styles.modalList,
+                          backgroundColor:
+                            networkToBuy?.network === provider.network
+                              ? '#e4e2e2'
+                              : 'transparent',
+                        }}
+                        onPress={() => handleNetworkSelect(provider)}>
+                        <View>
+                          {isNigeria ? (
+                            networkProvidersIcon(provider.network)
+                          ) : (
+                            <Image
+                              source={{ uri: provider.icon }}
+                              style={styles.networkIcon}
+                            />
+                          )}
+                        </View>
+                        <BoldText style={styles.networkToBuySelected}>
+                          {`${provider.network}${
+                            isNigeria ? `-${provider.locale}` : ''
+                          }`}
+                        </BoldText>
+                      </Pressable>
+                    ))
+                  ) : (
+                    <ActivityIndicator
+                      color={'#1e1e1e'}
+                      style={styles.activity}
+                      size="large"
+                    />
+                  )}
                 </View>
               </ScrollView>
             </View>
@@ -249,7 +314,8 @@ const BuyAirtime = ({ navigation }) => {
             }}
             inputMode="tel"
             onChangeText={text => handlePhoneInput(text)}
-            maxLength={11}
+            onBlur={!isNigeria && formData.phoneNo ? checkOperator : undefined}
+            maxLength={isNigeria ? 11 : undefined}
             value={formData.phoneNo}
           />
         </View>
@@ -257,7 +323,9 @@ const BuyAirtime = ({ navigation }) => {
         <View style={styles.topUpContainer}>
           <Text style={styles.topUp}>Amount to be credited</Text>
           <Text style={styles.topUp}>
-            Balance: {'₦' + addingDecimal(`${localBalance?.toLocaleString()}`)}
+            Balance:{' '}
+            {localCurrencySymbol +
+              addingDecimal(`${localBalance?.toLocaleString()}`)}
           </Text>
         </View>
         <View style={styles.textInputContainer}>
@@ -370,7 +438,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: 100 + '%',
     height: 100 + '%',
-    paddingTop: 40,
+    paddingVertical: 40,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     elevation: 10,
@@ -403,6 +471,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingHorizontal: 5 + '%',
     gap: 20,
+  },
+  networkIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#eee',
   },
   modalListIcon: {
     gap: 20,

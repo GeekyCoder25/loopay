@@ -55,7 +55,7 @@ const Signin = ({ navigation }) => {
           await loginUser(result.data, sessionData.deviceID);
           setErrorMessage('');
           setSuccessMessage('Login Successful');
-          const response = await getFetchData('user');
+          const response = await getFetchData('user?popup=true');
           if (result.data.role === 'admin') {
             setIsAdmin(true);
             setCanChangeRole(true);

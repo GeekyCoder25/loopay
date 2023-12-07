@@ -18,7 +18,7 @@ import RegularText from '../../components/fonts/RegularText';
 import { getSessionID, logoutUser } from '../../../utils/storage';
 import UserIcon from '../../components/UserIcon';
 import { deleteFetchData } from '../../../utils/fetchAPI';
-import { menuRoutes } from '../../database/data';
+import { allCurrencies, menuRoutes } from '../../database/data';
 import { useFocusEffect } from '@react-navigation/native';
 import ToastMessage from '../../components/ToastMessage';
 
@@ -44,6 +44,7 @@ const Menu = ({ navigation }) => {
       setIsLoggedIn(false);
       setAppData({});
       setCanChangeRole(false);
+      allCurrencies.shift();
       ToastMessage('Logged Out successfully');
     } finally {
       setIsLoading(false);

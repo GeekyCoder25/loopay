@@ -1,18 +1,29 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
-import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { useAdminDataContext } from '../../context/AdminContext';
 import RegularText from '../../components/fonts/RegularText';
 import ChevronDown from '../../../assets/images/drop-down.svg';
 import { ScrollView } from 'react-native-gesture-handler';
 import UserIcon from '../../components/UserIcon';
-import { allCurrencies } from '../../database/data';
-import { useNavigation } from '@react-navigation/native';
-import { addingDecimal } from '../../../utils/AddingZero';
 import BackIcon from '../../../assets/images/backArrow.svg';
 import SortIcon from '../../../assets/images/sort.svg';
+import Button from '../../components/Button';
+import { postFetchData } from '../../../utils/fetchAPI';
+import ErrorMessage from '../../components/ErrorMessage';
+import ToastMessage from '../../components/ToastMessage';
+import { AppContext } from '../../components/AppContext';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import CalendarIcon from '../../../assets/images/calendar.svg';
 
 const Users = ({ navigation }) => {
   const { adminData } = useAdminDataContext();
@@ -20,8 +31,13 @@ const Users = ({ navigation }) => {
   const [selectedTab, setSelectedTab] = useState(1);
   const [sortStatus, setSortStatus] = useState('date');
   const [modalOpen, setModalOpen] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [offlineUsers, setOfflineUsers] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
-  const [inactiveUsers, setInactiveUsers] = useState([]);
+  const [blockedUsers, setBlockedUsers] = useState([]);
+  const [blockModal, setBlockModal] = useState(false);
+  const [blockTitle, setBlockTitle] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const sortMethods = ['date', 'status'];
 
@@ -67,17 +83,19 @@ const Users = ({ navigation }) => {
         );
       }
     };
-    setActiveUsers([]);
-    setInactiveUsers([]);
+    setOnlineUsers([]);
+    setOfflineUsers([]);
+    setActiveUsers(users.filter(user => user.status === 'active'));
+    setBlockedUsers(users.filter(user => user.status === 'blocked'));
     adminData.lastActiveSessions.forEach(session => {
       const userSession = session.updatedAt;
       if (checkSameDateAndTime(userSession)) {
-        setActiveUsers(prev => [
+        setOnlineUsers(prev => [
           ...prev,
           users.find(user => user.email === session.email),
         ]);
       } else {
-        setInactiveUsers(prev => [
+        setOfflineUsers(prev => [
           ...prev,
           users.find(user => user.email === session.email),
         ]);
@@ -105,7 +123,7 @@ const Users = ({ navigation }) => {
             style={{
               color: selectedTab ? '#fff' : '#1E1E1E',
             }}>
-            Active Users
+            Active User{activeUsers.length !== 1 && 's'} {activeUsers.length}
           </BoldText>
         </Pressable>
         <Pressable
@@ -118,7 +136,7 @@ const Users = ({ navigation }) => {
             style={{
               color: !selectedTab ? '#fff' : '#1E1E1E',
             }}>
-            Blocked Users
+            Blocked User{blockedUsers.length !== 1 && 's'} {blockedUsers.length}
           </BoldText>
         </Pressable>
       </View>
@@ -138,8 +156,7 @@ const Users = ({ navigation }) => {
           </View>
           <ScrollView style={styles.users}>
             {sortStatus === 'date' &&
-              users
-                .filter(user => user.status === 'active')
+              activeUsers
                 .sort(sortFunc)
                 .map(user => (
                   <User
@@ -148,10 +165,13 @@ const Users = ({ navigation }) => {
                     userData={userDatas.find(
                       userData => user.email === userData.email,
                     )}
+                    setBlockTitle={setBlockTitle}
+                    setBlockModal={setBlockModal}
+                    setSelectedUser={setSelectedUser}
                   />
                 ))}
             {sortStatus === 'status' &&
-              activeUsers
+              onlineUsers
                 .filter(user => user.status === 'active')
                 .sort(sortFunc)
                 .map(user => (
@@ -162,10 +182,13 @@ const Users = ({ navigation }) => {
                       userData => user.email === userData.email,
                     )}
                     activeStatus
+                    setBlockTitle={setBlockTitle}
+                    setBlockModal={setBlockModal}
+                    setSelectedUser={setSelectedUser}
                   />
                 ))}
             {sortStatus === 'status' &&
-              inactiveUsers
+              offlineUsers
                 .filter(user => user.status === 'active')
                 .sort(sortFuncInactive)
                 .map(user => (
@@ -176,6 +199,9 @@ const Users = ({ navigation }) => {
                       userData => user.email === userData.email,
                     )}
                     activeStatus
+                    setBlockTitle={setBlockTitle}
+                    setBlockModal={setBlockModal}
+                    setSelectedUser={setSelectedUser}
                   />
                 ))}
           </ScrollView>
@@ -192,17 +218,18 @@ const Users = ({ navigation }) => {
             </View>
           </View>
           <ScrollView style={styles.users}>
-            {users
-              .filter(user => user.status === 'blocked')
-              .map(user => (
-                <User
-                  key={user._id}
-                  user={user}
-                  userData={userDatas.find(
-                    userData => user.email === userData.email,
-                  )}
-                />
-              ))}
+            {blockedUsers.map(user => (
+              <User
+                key={user._id}
+                user={user}
+                userData={userDatas.find(
+                  userData => user.email === userData.email,
+                )}
+                setBlockTitle={setBlockTitle}
+                setBlockModal={setBlockModal}
+                setSelectedUser={setSelectedUser}
+              />
+            ))}
           </ScrollView>
         </>
       )}
@@ -233,6 +260,14 @@ const Users = ({ navigation }) => {
           </View>
         </Pressable>
       </Modal>
+
+      <MessageModal
+        showModal={blockModal}
+        setShowModal={setBlockModal}
+        blockTitle={blockTitle}
+        setBlockTitle={setBlockTitle}
+        user={selectedUser}
+      />
     </PageContainer>
   );
 };
@@ -413,10 +448,83 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 5,
   },
+  blockModal: {
+    padding: 3 + '%',
+    paddingTop: 20,
+  },
+  blockHeaderText: {
+    fontSize: 20,
+    textAlign: 'center',
+    paddingVertical: 10,
+  },
+  label: {
+    fontFamily: 'OpenSans-600',
+    color: '#868585',
+  },
+  textInputContainer: {
+    position: 'relative',
+    marginTop: 5,
+    marginBottom: 40,
+  },
+  textInput: {
+    borderRadius: 5,
+    backgroundColor: '#f9f9f9',
+    height: 50,
+    padding: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+    fontFamily: 'OpenSans-600',
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  textInputMessage: {
+    minHeight: 200,
+  },
+  textInputMessageContainer: {
+    minHeight: 220,
+  },
+  form: {
+    flex: 1,
+    height: 100 + '%',
+    marginVertical: 30,
+  },
+  dateTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 15,
+  },
+  calendarIcon: {
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 30,
+  },
+  newDate: {
+    position: 'absolute',
+    top: 23 + '%',
+  },
+  modalButton: {
+    marginVertical: 20,
+  },
+  suspendHeaderText: {
+    marginTop: 30,
+    marginBottom: 20,
+    fontSize: 20,
+  },
 });
 export default Users;
 
-const User = ({ user, userData, activeStatus }) => {
+const User = ({
+  user,
+  userData,
+  activeStatus,
+  setBlockTitle,
+  setBlockModal,
+  setSelectedUser,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [status, setStatus] = useState();
   const { adminData } = useAdminDataContext();
@@ -444,6 +552,12 @@ const User = ({ user, userData, activeStatus }) => {
         checkSameDateAndTime(userSession) && setStatus(true);
       });
   }, [adminData.lastActiveSessions, user.email]);
+
+  const handleShowBlockModal = async blockType => {
+    setBlockTitle(blockType);
+    setBlockModal(true);
+    setSelectedUser(user);
+  };
 
   return (
     <View style={styles.userExpanded}>
@@ -525,95 +639,214 @@ const User = ({ user, userData, activeStatus }) => {
               <UserIcon uri={userData.photoURL} />
             </View>
           </View>
+
+          <View>
+            {user.status === 'active' ? (
+              <>
+                <Button
+                  text={'Block Account'}
+                  onPress={() => handleShowBlockModal('Block')}
+                />
+                <Button
+                  text={'Suspend Account'}
+                  onPress={() => handleShowBlockModal('Suspend')}
+                />
+              </>
+            ) : user.blockEnd ? (
+              <Button
+                text={'Unsuspend Account'}
+                onPress={() => handleShowBlockModal('Unsuspend')}
+              />
+            ) : (
+              <Button
+                text={'Unblock Account'}
+                onPress={() => handleShowBlockModal('Unblock')}
+              />
+            )}
+          </View>
         </View>
       )}
     </View>
   );
 };
 
-const Transaction = ({ transaction }) => {
-  const navigation = useNavigation();
-  const {
-    senderName,
-    receiverName,
-    senderPhoto,
-    receiverPhoto,
-    amount,
-    transactionType,
-    createdAt,
-    currency,
-  } = transaction;
+const MessageModal = ({ showModal, setShowModal, user, blockTitle }) => {
+  const { setIsLoading, setWalletRefresh } = useContext(AppContext);
+  const [errorKey, setErrorKey] = useState('');
+  const [errorMessage, setErrorMessage] = useState();
+  const [showPicker, setShowPicker] = useState(false);
+  const [endDate, setEndDate] = useState(null);
+  const [endDateLabel, setEndDateLabel] = useState('DD/MM/YYYY');
+  const [mailData, setMailData] = useState({
+    subject: '',
+    message: '',
+  });
 
-  const date = new Date(createdAt);
-  const historyTime = convertTo12HourFormat(
-    `${date.getHours()}:${date.getMinutes()}`,
-  );
+  const handleCancel = () => {
+    setShowModal(false);
+    setErrorMessage('');
+    setErrorKey('');
+  };
 
-  function convertTo12HourFormat(time24) {
-    let [hours, minutes] = time24.split(':');
-    let period = 'AM';
-
-    if (hours >= 12) {
-      period = 'PM';
-      if (hours > 12) {
-        hours -= 12;
+  const handleDatePicker = (event, selectedDate) => {
+    setShowPicker(false);
+    if (event.type === 'set') {
+      if (selectedDate < Date.now()) {
+        selectedDate = new Date(Date.now());
       }
+      selectedDate.setMilliseconds(0);
+      selectedDate.setSeconds(0);
+      selectedDate.setMinutes(0);
+      selectedDate.setHours(0);
+      setEndDateLabel(new Date(selectedDate).toLocaleDateString('en-GB'));
+      setEndDate(selectedDate);
     }
+  };
 
-    if (hours === '00') {
-      hours = 12;
+  const handleSendMessage = async blockType => {
+    try {
+      if (!mailData.message && blockType === 'send') {
+        setErrorKey('message');
+        return setErrorMessage('No message provided');
+      } else if (blockTitle === 'Suspend' && !endDate) {
+        return setErrorMessage(
+          'Please select a suspend end date or rather block instead',
+        );
+      }
+      setIsLoading(true);
+      const response = await postFetchData(
+        `admin/${blockTitle.toLowerCase()}${
+          blockType === 'send' ? '?mail=true' : ''
+        }`,
+        {
+          email: user.email,
+          mailData,
+          blockEnd: endDate,
+        },
+      );
+      if (response.status === 200) {
+        setMailData({});
+        setWalletRefresh(prev => !prev);
+        setEndDate(null);
+        setEndDateLabel('DD/MM/YYYY');
+        setErrorMessage('');
+        setErrorKey('');
+        ToastMessage(`User account ${blockTitle.toLowerCase()}ed`);
+        return setShowModal(false);
+      }
+      throw new Error(response.data?.error || response.data);
+    } catch (error) {
+      ToastMessage(error.message);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    return `${hours}:${minutes} ${period}`;
-  }
+  return (
+    <Modal
+      visible={showModal}
+      animationType="fade"
+      onRequestClose={handleCancel}>
+      <PageContainer padding paddingTop={20} scroll>
+        <Pressable style={styles.back} onPress={handleCancel}>
+          <BackIcon />
+          <BoldText style={styles.headerText}>Back</BoldText>
+        </Pressable>
+        <BoldText style={styles.blockHeaderText}>{blockTitle} User</BoldText>
+        <BoldText style={styles.headerText}>Message Draft</BoldText>
+        <View style={styles.form}>
+          <Text style={styles.label}>Email Subject</Text>
+          <View style={styles.textInputContainer}>
+            <TextInput
+              style={{
+                ...styles.textInput,
+                borderColor: errorKey === 'subject' ? 'red' : '#ccc',
+              }}
+              onChangeText={text =>
+                setMailData(prev => {
+                  return {
+                    ...prev,
+                    subject: text,
+                  };
+                })
+              }
+              maxLength={24}
+              placeholder={`Account ${
+                blockTitle.toLowerCase().startsWith('un')
+                  ? 'Activation'
+                  : 'Deactivation'
+              }`}
+            />
+          </View>
+          <Text style={styles.label}>Message</Text>
+          <View style={styles.textInputMessageContainer}>
+            <View style={styles.textInputContainer}>
+              <TextInput
+                style={{
+                  ...styles.textInput,
+                  ...styles.textInputMessage,
+                  borderColor: errorKey === 'message' ? 'red' : '#ccc',
+                }}
+                onChangeText={text => {
+                  setMailData(prev => {
+                    return {
+                      ...prev,
+                      message: text,
+                    };
+                  });
+                  setErrorMessage('');
+                  setErrorKey('');
+                }}
+                multiline
+                textAlignVertical="top"
+              />
+            </View>
+          </View>
+          <ErrorMessage errorMessage={errorMessage} />
+          {blockTitle === 'Suspend' && (
+            <View style={styles.suspend}>
+              <BoldText style={styles.suspendHeaderText}>
+                Suspend End date
+              </BoldText>
+              {showPicker && (
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  value={endDate || new Date(Date.now())}
+                  onChange={handleDatePicker}
+                />
+              )}
+              <Pressable
+                onPress={() => setShowPicker('start')}
+                style={styles.textInputContainer}>
+                <View
+                  style={{ ...styles.textInput, ...styles.textInputStyles }}>
+                  <View style={styles.dateTextContainer}>
+                    <View style={styles.calendarIcon}>
+                      <CalendarIcon width={30} height={30} />
+                      <RegularText style={styles.newDate}>
+                        {endDate ? endDate.getDate() : new Date().getDate()}
+                      </RegularText>
+                    </View>
+                    <RegularText>{endDateLabel}</RegularText>
+                  </View>
+                </View>
+              </Pressable>
+            </View>
+          )}
 
-  const currencySymbol = allCurrencies.find(
-    id => currency === id.currency,
-  )?.symbol;
-
-  return transactionType?.toLowerCase() === 'credit' ? (
-    <Pressable
-      onPress={() =>
-        navigation.navigate('TransactionHistoryDetails', {
-          previousScreen: 'Users',
-          ...transaction,
-        })
-      }
-      style={styles.history}>
-      <UserIcon uri={senderPhoto} />
-      <View style={styles.historyContent}>
-        <BoldText>{senderName}</BoldText>
-        <RegularText>
-          {date.toLocaleDateString()}, {historyTime}s{' '}
-        </RegularText>
-      </View>
-      <View style={styles.amount}>
-        <BoldText style={styles.creditAmount}>
-          +{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
-        </BoldText>
-      </View>
-    </Pressable>
-  ) : (
-    <Pressable
-      onPress={() =>
-        navigation.navigate('TransactionHistoryDetails', {
-          previousScreen: 'Users',
-          ...transaction,
-        })
-      }
-      style={styles.history}>
-      <UserIcon uri={receiverPhoto} />
-      <View style={styles.historyContent}>
-        <BoldText>{receiverName}</BoldText>
-        <RegularText>
-          {date.toLocaleDateString()}, {historyTime}
-        </RegularText>
-      </View>
-      <View style={styles.amount}>
-        <BoldText style={styles.debitAmount}>
-          -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
-        </BoldText>
-      </View>
-    </Pressable>
+          <View style={styles.modalButton}>
+            <Button
+              text={`${blockTitle} and Send`}
+              onPress={() => handleSendMessage('send')}
+            />
+            <Button
+              text={`${blockTitle}`}
+              onPress={() => handleSendMessage('block')}
+            />
+            <Button text={`Cancel ${blockTitle}`} onPress={handleCancel} />
+          </View>
+        </View>
+      </PageContainer>
+    </Modal>
   );
 };

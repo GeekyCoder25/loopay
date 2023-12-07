@@ -79,7 +79,6 @@ const Withdraw = ({ navigation }) => {
       setErrorKey('amountInput');
       setErrorMessage('Insufficient funds');
     } else {
-      setAmountInput(prev => `${Number(prev) + Number(fee)}`);
       setCanContinue(true);
     }
   };
@@ -91,6 +90,7 @@ const Withdraw = ({ navigation }) => {
         ...bankSelected,
         reason: 'Withdrawal to local NGN account',
         amount: amountInput,
+        fee,
         senderPhoto: appData.photoURL,
         id,
       });
@@ -117,7 +117,7 @@ const Withdraw = ({ navigation }) => {
           i =>
             i.group === 'transferOthers' &&
             i.currency === selectedCurrency.currency,
-        ).amount,
+        )?.amount,
       ),
     );
   }, [selectedCurrency.currency]);
@@ -192,7 +192,7 @@ const Withdraw = ({ navigation }) => {
             <ErrorMessage errorMessage={errorMessage} />
             <View style={styles.feeTextInputContainer}>
               <View style={styles.feeTextInput}>
-                <RegularText>Loopay Withdrawal</RegularText>
+                <RegularText>Send money to other banks</RegularText>
               </View>
               <View style={styles.fee}>
                 <RegularText style={styles.feeText}>
@@ -200,12 +200,12 @@ const Withdraw = ({ navigation }) => {
                 </RegularText>
                 <RegularText style={styles.feeText}>
                   {selectedCurrency.symbol}
-                  {fee}
+                  {addingDecimal(`${fee}`)}
                 </RegularText>
               </View>
             </View>
             <View style={styles.button}>
-              <Button text="Withdraw" onPress={handleWithdraw} />
+              <Button text="Send" onPress={handleWithdraw} />
             </View>
           </View>
         ) : (

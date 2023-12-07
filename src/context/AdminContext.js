@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { getFetchData } from '../../utils/fetchAPI';
 import { AppContext } from '../components/AppContext';
 import useInterval from '../../utils/hooks/useInterval';
+import NoInternet from '../components/NoInternet';
 
 export const AdminContext = createContext();
 
@@ -12,10 +13,11 @@ const AdminContextComponent = ({ children }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalFunc, setModalFunc] = useState();
   const [verifications, setVerifications] = useState([]);
+  const [failToFetch, setFailToFetch] = useState(false);
 
   const fetchAdminDatas = async () => {
     try {
-      !adminData && !isSessionTimedOut && setIsLoading(true);
+      !adminData && isSessionTimedOut && setIsLoading(true);
       const response = await getFetchData('admin');
       if (response.status === 200) {
         return setAdminData(response.data);
@@ -23,6 +25,7 @@ const AdminContextComponent = ({ children }) => {
       throw new Error(response.data);
     } catch (err) {
       console.log('adminFetchError,', err.message);
+      setFailToFetch(true);
     } finally {
       setIsLoading(false);
     }
@@ -49,7 +52,7 @@ const AdminContextComponent = ({ children }) => {
         verifications,
         setVerifications,
       }}>
-      {adminData && children}
+      {adminData ? children : failToFetch && <NoInternet />}
     </AdminContext.Provider>
   );
 };

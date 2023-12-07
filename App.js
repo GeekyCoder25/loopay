@@ -48,7 +48,7 @@ export default function App() {
   const [refreshing, setRefreshing] = useState(false);
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [enableBiometric, setEnableBiometric] = useState(false);
-  const [popUp, setPopUp] = useState(false);
+  const [showPopUp, setShowPopUp] = useState(false);
   const [showAmount, setShowAmount] = useState(false);
   const timerId = useRef(false);
   const vw = useWindowDimensions().width;
@@ -94,8 +94,8 @@ export default function App() {
     setIsBiometricSupported,
     enableBiometric,
     setEnableBiometric,
-    popUp,
-    setPopUp,
+    showPopUp,
+    setShowPopUp,
     showAmount,
     setShowAmount,
   };
@@ -107,7 +107,7 @@ export default function App() {
         const checkCurrency = allCurrencies.filter(
           index => index.acronym === currencyCode,
         );
-        if (!checkCurrency.length) {
+        if (!checkCurrency.length && localCurrency && isLoggedIn) {
           allCurrencies.unshift({
             currency: localCurrency.name.split(' ').pop().toLowerCase(),
             fullName: localCurrency.name,
@@ -119,26 +119,29 @@ export default function App() {
         }
       }
     });
-  }, [appData]);
+  }, [appData, isLoggedIn]);
 
   useEffect(() => {
-    getDefaultCurrency().then(defaultCurrency => {
-      if (!defaultCurrency) {
-        return setSelectedCurrency(
-          allCurrencies.find(currency => currency.currency === 'dollar'),
+    if (isLoggedIn) {
+      getDefaultCurrency().then(defaultCurrency => {
+        if (!defaultCurrency) {
+          return setSelectedCurrency(
+            allCurrencies.find(currency => currency.currency === 'dollar'),
+          );
+        }
+        const defaultCurrencyObject = allCurrencies.find(
+          currency => currency.currency === defaultCurrency,
         );
-      }
-      const defaultCurrencyObject = allCurrencies.find(
-        currency => currency.currency === defaultCurrency,
-      );
-      setSelectedCurrency(defaultCurrencyObject);
-    });
-    getShowBalance().then(result => setShowAmount(result));
-  }, []);
+        setSelectedCurrency(defaultCurrencyObject);
+      });
+      getShowBalance().then(result => setShowAmount(result));
+    }
+  }, [isLoggedIn]);
 
   useEffect(() => {
-    isLoggedIn && !appData.popUp && setPopUp(true);
-  }, [appData.popUp, isLoggedIn]);
+    isLoggedIn && appData.popUps?.length && setShowPopUp(true);
+  }, [appData.popUps?.length, isLoggedIn]);
+
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponderCapture: () => {

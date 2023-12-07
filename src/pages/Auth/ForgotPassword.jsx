@@ -90,7 +90,7 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
       }
       const sessionData = saveSessionOptions();
       await loginUser(result.data, sessionData.deviceID);
-      const response = await getFetchData('user');
+      const response = await getFetchData('user?popup=true');
       setAppData(response.data);
       setVerified(response.data.verificationStatus || false);
       setCanChange ? setCanChange(true) : navigation.replace('ChangePassword');

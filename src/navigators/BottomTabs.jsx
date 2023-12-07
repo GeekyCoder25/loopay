@@ -11,7 +11,8 @@ import RequestFundsContextComponent from '../context/RequestContext';
 import Popup from '../components/Popup';
 
 const BottomTabs = () => {
-  const { showTabBar, appData, setAppData } = useContext(AppContext);
+  const { showTabBar, appData, setAppData, showPopUp, isSessionTimedOut } =
+    useContext(AppContext);
   const Tab = createBottomTabNavigator();
 
   useEffect(() => {
@@ -42,7 +43,7 @@ const BottomTabs = () => {
             />
             <Tab.Screen name="MenuNavigator" component={MenuNavigator} />
           </Tab.Navigator>
-          <Popup />
+          {showPopUp && isSessionTimedOut && <Popup />}
         </RequestFundsContextComponent>
       </BeneficiaryContextComponent>
     </WalletContextComponent>

@@ -32,6 +32,7 @@ const TransferAirtime = ({ navigation, route }) => {
       airtime: { ...formData, reference: response.data.reference },
       amountInput: formData.amount,
       dataPlan: formData.plan?.value || undefined,
+      transaction: response.data.transaction,
     });
   };
 

@@ -44,7 +44,7 @@ const Splash = ({ navigation }) => {
           setIsLoggedIn(isLoggedIn);
           const sessionID = await getSessionID();
           if (isLoggedIn) {
-            const data = await getFetchData('user');
+            const data = await getFetchData('user?popup=true');
             setAppData(data || {});
             if (
               !data ||

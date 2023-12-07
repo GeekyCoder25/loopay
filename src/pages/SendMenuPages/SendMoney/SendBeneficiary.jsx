@@ -26,19 +26,16 @@ const SendBeneficiary = ({ navigation }) => {
   const handleSearch = text => {
     text ? setIsSearching(true) : setIsSearching(false);
     setSearchBeneficiaries(
-      beneficiaryState
-        .map(beneficiary =>
-          Object.values({
-            fullName: beneficiary.fullName,
-            tagName: beneficiary.tagName,
-          })
-            .toString()
-            .toLowerCase()
-            .includes(text.toLowerCase())
-            ? beneficiary
-            : null,
-        )
-        .filter(beneficiary => beneficiary),
+      beneficiaryState.filter(beneficiary =>
+        Object.values({
+          fullName: beneficiary.fullName,
+          tagName: beneficiary.tagName,
+          accNo: beneficiary.accNo,
+        })
+          .toString()
+          .toLowerCase()
+          .includes(text.toLowerCase()),
+      ),
     );
   };
 
@@ -54,7 +51,7 @@ const SendBeneficiary = ({ navigation }) => {
             style={styles.textInput}
             inputMode="text"
             onChangeText={text => handleSearch(text)}
-            placeholder="Search by name or tag name"
+            placeholder="Search"
             placeholderTextColor={'#525252'}
             maxLength={10}
           />

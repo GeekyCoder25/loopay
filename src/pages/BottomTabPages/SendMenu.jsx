@@ -246,6 +246,8 @@ export const RouteLink = ({ route, navigation }) => {
         return <WalletIcon />;
       case 'globe':
         return <FaIcon name="globe" size={24} color={'#5c5c5c'} />;
+      case 'bank':
+        return <FaIcon name="bank" size={24} color={'#5c5c5c'} />;
       default:
         break;
     }

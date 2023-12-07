@@ -41,11 +41,6 @@ const TransferFunds = ({ navigation, route }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
   const [canContinue, setCanContinue] = useState(false);
-  const [haveSetPin] = useState(appData.pin);
-  const [formData] = useState({
-    email: appData.email,
-    otpCodeLength: 6,
-  });
   const { minimumAmountToAdd } = selectedCurrency;
   const editInput = () => {
     setErrorMessage('');
@@ -105,7 +100,7 @@ const TransferFunds = ({ navigation, route }) => {
         id: randomUUID(),
       });
       if (response.status === 200) {
-        const balance = response.data.data.amount;
+        const balance = response.data.amount;
         setWallet(prev => {
           return { ...prev, balance: prev.balance - Number(balance) };
         });
@@ -114,7 +109,11 @@ const TransferFunds = ({ navigation, route }) => {
           setRefetchBeneficiary(prev => !prev);
         }
         setWalletRefresh(prev => !prev);
-        return navigation.navigate('Success', { userToSendTo, amountInput });
+        return navigation.navigate('Success', {
+          userToSendTo,
+          amountInput,
+          transaction: response.data.transaction,
+        });
       }
       ToastMessage(response.data);
     } catch (error) {

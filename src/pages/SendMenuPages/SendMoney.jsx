@@ -7,7 +7,7 @@ import { RouteLink } from '../BottomTabPages/SendMenu';
 import { AppContext } from '../../components/AppContext';
 
 const SendMoney = ({ navigation }) => {
-  const { appData } = useContext(AppContext);
+  const { appData, selectedCurrency } = useContext(AppContext);
 
   const SendMoneyRoutes = [
     {
@@ -30,9 +30,15 @@ const SendMoney = ({ navigation }) => {
       routeIcon: 'recipient',
       routeNavigate: 'SendNew',
     },
+    {
+      routeName: 'Send to other banks',
+      routeDetails: `Send money to other ${selectedCurrency.acronym} bank accounts`,
+      routeIcon: 'bank',
+      routeNavigate: 'SendBank',
+    },
   ];
   return (
-    <PageContainer padding paddingTop={0}>
+    <PageContainer padding paddingTop={0} scroll>
       <View style={styles.body}>
         <AccInfoCard />
         <RegularText style={styles.headerText}>Send Money</RegularText>

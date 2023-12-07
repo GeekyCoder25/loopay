@@ -27,6 +27,7 @@ const TransferBill = ({ navigation, route }) => {
           amountInput: formData.amount,
           billPlan: formData.provider.name,
           reference: response.data.referenceId,
+          transaction: response.data.transaction,
         });
       }
       setErrorMessage(response.data);

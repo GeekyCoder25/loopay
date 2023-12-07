@@ -17,7 +17,7 @@ import { AppContext } from '../../components/AppContext';
 import { billIcon } from './TransactionHistory';
 
 const TransactionHistoryParams = ({ route }) => {
-  const { vh } = useContext(AppContext);
+  const { vh, showAmount, setIsLoading } = useContext(AppContext);
   const history = route.params;
   const {
     status,
@@ -45,9 +45,9 @@ const TransactionHistoryParams = ({ route }) => {
     networkProvider,
     phoneNo,
     dataPlan,
-    debitAccount,
     billName,
     billType,
+    token,
   } = history;
 
   const currencySymbol = allCurrencies.find(
@@ -296,16 +296,27 @@ const TransactionHistoryParams = ({ route }) => {
               class="logo" />
           </header>
           <div class="amount">
-            <h4>${currencySymbol}</h4>
-            <h1>
-              ${
-                Number(amount || swapToAmount)
-                  .toLocaleString()
-                  .split('.')[0]
-              }
-            </h1>
-            <h5>.${Number(amount).toLocaleString().split('.')[1] || '00'}</h5>
-          </div>
+          ${
+            showAmount ? (
+              String.raw`
+                <h4>${currencySymbol}</h4>
+                <h1>
+                  $
+                  {
+                    Number(amount || swapToAmount)
+                      .toLocaleString()
+                      .split('.')[0]
+                  }
+                </h1>
+                <h5>
+                  .${Number(amount).toLocaleString().split('.')[1] || '00'}
+                </h5>
+             `
+            ) : (
+              <h1>***</h1>
+            )
+          }
+            </div>
           <span class="statusHeader ${status}">${status}</span>
           <section>
             ${shareReceiptData()
@@ -343,7 +354,9 @@ const TransactionHistoryParams = ({ route }) => {
   };
 
   const createPDF = async html => {
+    setIsLoading(true);
     const { uri } = await printToFileAsync({ html });
+    setIsLoading(false);
     await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
   };
 
@@ -365,9 +378,11 @@ const TransactionHistoryParams = ({ route }) => {
 
             <View style={styles.footerCard}>
               <BoldText style={styles.cardAmount}>
-                +
-                {currencySymbol +
-                  addingDecimal(Number(amount).toLocaleString())}
+                {!showAmount
+                  ? '***'
+                  : '+' +
+                    currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())}
               </BoldText>
 
               <View style={styles.footerCardDetails}>
@@ -386,8 +401,10 @@ const TransactionHistoryParams = ({ route }) => {
                 <View style={styles.cardLine}>
                   <RegularText style={styles.cardKey}>Amount</RegularText>
                   <BoldText style={styles.cardValue}>
-                    {currencySymbol +
-                      addingDecimal(Number(amount).toLocaleString())}
+                    {showAmount
+                      ? currencySymbol +
+                        addingDecimal(Number(amount).toLocaleString())
+                      : '***'}
                   </BoldText>
                 </View>
                 <View style={styles.cardLine}>
@@ -452,9 +469,11 @@ const TransactionHistoryParams = ({ route }) => {
 
             <View style={styles.footerCard}>
               <BoldText style={styles.cardAmount}>
-                -{' '}
-                {currencySymbol +
-                  addingDecimal(Number(amount).toLocaleString())}
+                {!showAmount
+                  ? '***'
+                  : '-' +
+                    currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())}
               </BoldText>
 
               <View style={styles.footerCardDetails}>
@@ -473,8 +492,10 @@ const TransactionHistoryParams = ({ route }) => {
                 <View style={styles.cardLine}>
                   <RegularText style={styles.cardKey}>Amount</RegularText>
                   <BoldText style={styles.cardValue}>
-                    {currencySymbol +
-                      addingDecimal(Number(amount).toLocaleString())}
+                    {showAmount
+                      ? currencySymbol +
+                        addingDecimal(Number(amount).toLocaleString())
+                      : '***'}
                   </BoldText>
                 </View>
                 <View style={styles.cardLine}>
@@ -545,9 +566,11 @@ const TransactionHistoryParams = ({ route }) => {
 
             <View style={styles.footerCard}>
               <BoldText style={styles.cardAmount}>
-                -{' '}
-                {currencySymbol +
-                  addingDecimal(Number(amount).toLocaleString())}
+                {!showAmount
+                  ? '***'
+                  : '-' +
+                    currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())}
               </BoldText>
 
               <View style={styles.footerCardDetails}>
@@ -566,8 +589,10 @@ const TransactionHistoryParams = ({ route }) => {
                 <View style={styles.cardLine}>
                   <RegularText style={styles.cardKey}>Amount</RegularText>
                   <BoldText style={styles.cardValue}>
-                    {currencySymbol +
-                      addingDecimal(Number(amount).toLocaleString())}
+                    {showAmount
+                      ? currencySymbol +
+                        addingDecimal(Number(amount).toLocaleString())
+                      : '***'}
                   </BoldText>
                 </View>
                 <View style={styles.cardLine}>
@@ -622,9 +647,11 @@ const TransactionHistoryParams = ({ route }) => {
 
             <View style={styles.footerCard}>
               <BoldText style={styles.cardAmount}>
-                -{' '}
-                {currencySymbol +
-                  addingDecimal(Number(amount).toLocaleString())}
+                {!showAmount
+                  ? '***'
+                  : '-' +
+                    currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())}
               </BoldText>
 
               <View style={styles.footerCardDetails}>
@@ -643,8 +670,10 @@ const TransactionHistoryParams = ({ route }) => {
                 <View style={styles.cardLine}>
                   <RegularText style={styles.cardKey}>Amount</RegularText>
                   <BoldText style={styles.cardValue}>
-                    {currencySymbol +
-                      addingDecimal(Number(amount).toLocaleString())}
+                    {showAmount
+                      ? currencySymbol +
+                        addingDecimal(Number(amount).toLocaleString())
+                      : '***'}
                   </BoldText>
                 </View>
                 <View style={styles.cardLine}>
@@ -703,9 +732,11 @@ const TransactionHistoryParams = ({ route }) => {
 
             <View style={styles.footerCard}>
               <BoldText style={styles.cardAmount}>
-                -{' '}
-                {currencySymbol +
-                  addingDecimal(Number(amount).toLocaleString())}
+                {!showAmount
+                  ? '***'
+                  : '-' +
+                    currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())}
               </BoldText>
 
               <View style={styles.footerCardDetails}>
@@ -724,13 +755,21 @@ const TransactionHistoryParams = ({ route }) => {
                 <View style={styles.cardLine}>
                   <RegularText style={styles.cardKey}>Amount</RegularText>
                   <BoldText style={styles.cardValue}>
-                    {currencySymbol +
-                      addingDecimal(Number(amount).toLocaleString())}
+                    {showAmount
+                      ? currencySymbol +
+                        addingDecimal(Number(amount).toLocaleString())
+                      : '***'}
                   </BoldText>
                 </View>
                 <View style={styles.cardLine}>
                   <RegularText style={styles.cardKey}>Bill Plan</RegularText>
                   <BoldText style={styles.cardValue}>{billName}</BoldText>
+                </View>
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Token</RegularText>
+                  <BoldText style={styles.cardValue}>
+                    {token || 'null'}
+                  </BoldText>
                 </View>
                 <View style={styles.cardLine}>
                   <RegularText style={styles.cardKey}>Reference</RegularText>
@@ -775,17 +814,23 @@ const TransactionHistoryParams = ({ route }) => {
 
             <View style={styles.footerCard}>
               <View style={styles.cardAmountContainer}>
-                <BoldText style={{ ...styles.cardAmount }}>
-                  {`${swapFromSymbol}${addingDecimal(
-                    Number(swapFromAmount).toLocaleString(),
-                  )}`}
-                </BoldText>
-                <SwapIcon width={24} height={24} style={styles.swapIcon} />
-                <BoldText style={{ ...styles.cardAmount }}>
-                  {`${swapToSymbol}${addingDecimal(
-                    Number(swapToAmount).toLocaleString(),
-                  )}`}
-                </BoldText>
+                {showAmount ? (
+                  <>
+                    <BoldText style={{ ...styles.cardAmount }}>
+                      {`${swapFromSymbol}${addingDecimal(
+                        Number(swapFromAmount).toLocaleString(),
+                      )}`}
+                    </BoldText>
+                    <SwapIcon width={24} height={24} style={styles.swapIcon} />
+                    <BoldText style={{ ...styles.cardAmount }}>
+                      {`${swapToSymbol}${addingDecimal(
+                        Number(swapToAmount).toLocaleString(),
+                      )}`}
+                    </BoldText>
+                  </>
+                ) : (
+                  <BoldText style={{ ...styles.cardAmount }}>***</BoldText>
+                )}
               </View>
 
               <View style={styles.footerCardDetails}>

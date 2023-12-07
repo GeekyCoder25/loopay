@@ -26,16 +26,11 @@ import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import { randomUUID } from 'expo-crypto';
 import ToastMessage from '../../components/ToastMessage';
 import { Audio } from 'expo-av';
+import FaIcon from '@expo/vector-icons/Ionicons';
 
 const SwapFunds = ({ navigation }) => {
-  const {
-    selectedCurrency,
-    setIsLoading,
-    setWalletRefresh,
-    vh,
-    showAmount,
-    setShowAmount,
-  } = useContext(AppContext);
+  const { selectedCurrency, setIsLoading, setWalletRefresh, vh, showAmount } =
+    useContext(AppContext);
   const { wallet } = useWalletContext();
   const [errorKey, setErrorKey] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
@@ -50,7 +45,9 @@ const SwapFunds = ({ navigation }) => {
   });
   const [swapTo, setSwapTo] = useState(swapToObject);
   const [swapToCurrency] = useState(
-    swapFrom.currency === 'naira' ? 'dollar' : 'naira',
+    swapFrom.isLocal
+      ? 'dollar'
+      : allCurrencies.find(currency => currency.isLocal).currency,
   );
   const [showSwapFromCurrencies, setShowSwapFromCurrencies] = useState(false);
   const [showSwapToCurrencies, setShowSwapToCurrencies] = useState(false);
@@ -60,11 +57,14 @@ const SwapFunds = ({ navigation }) => {
 
   useEffect(() => {
     const getRates = async () => {
-      const response = await getFetchData('user/rate');
+      // setIsLoading(true);
+      const response = await getFetchData(`user/rate/${swapFrom.acronym}`);
       response.status === 200 && setCurrencyRateAPI(response.data);
+      setIsLoading(false);
     };
     getRates();
-  }, [rateRefetch]);
+    setFee(0);
+  }, [rateRefetch, setIsLoading, swapFrom.acronym]);
 
   // const currencyRateAPI = [
   //   {
@@ -141,7 +141,7 @@ const SwapFunds = ({ navigation }) => {
 
   const { minimumAmountToAdd } = swapFrom;
   const firstLetterToCapital = input => {
-    return input.charAt(0).toUpperCase() + input.slice(1);
+    return input?.charAt(0).toUpperCase() + input?.slice(1);
   };
   const currencyToCurrencyDetector = `${firstLetterToCapital(
     swapFrom.currency,
@@ -150,6 +150,10 @@ const SwapFunds = ({ navigation }) => {
   const handleSwitch = () => {
     setSwapFrom(swapTo);
     setSwapTo(swapFrom);
+    setErrorKey('');
+    setErrorMessage('');
+    setValue('');
+    setToReceive('');
   };
 
   const handleSwapFromSelect = currency => {
@@ -168,7 +172,6 @@ const SwapFunds = ({ navigation }) => {
         ...swapToSelect,
         balance: wallet[`${swapToSelect.currency}Balance`],
       });
-    // setSwapToCurrency(swapToSelect.currency);
     setErrorKey('');
     setErrorMessage('');
     setValue('');
@@ -191,27 +194,21 @@ const SwapFunds = ({ navigation }) => {
   };
 
   const currencyRate = () => {
-    return currencyRateAPI
-      .find(currency => currency.currency === currencyToCurrencyDetector)
-      ?.rate.toFixed(4);
+    return currencyRateAPI[swapTo.acronym]?.toFixed(4);
   };
 
   const currencyFee = () => {
-    return currencyRateAPI.find(
-      currency => currency.currency === currencyToCurrencyDetector,
-    )?.fee;
+    const rate = currencyRateAPI[swapTo.acronym];
+    return rate > 1 ? rate : 1 / rate;
   };
 
   const handlePriceInput = text => {
     setValue(text);
     const textInputValue = Number(text);
     text = Number(text);
-    const transactionFee = text * (currencyFee() / 100);
+    const transactionFee = text * (currencyFee() / 1000);
     setFee(transactionFee);
-    const swapFromAmountAfterFee = text - transactionFee;
-    const toReceiveCalculate = Number(
-      (swapFromAmountAfterFee * currencyRate()).toFixed(2),
-    );
+    const toReceiveCalculate = Number((text * currencyRate()).toFixed(2));
 
     setSwapData(prev => {
       return {
@@ -224,11 +221,12 @@ const SwapFunds = ({ navigation }) => {
         fee: transactionFee,
       };
     });
-    setToReceive(
-      toReceiveCalculate > 0
-        ? addingDecimal(toReceiveCalculate.toLocaleString())
-        : 'Amount to receive',
-    );
+    toReceiveCalculate &&
+      setToReceive(
+        toReceiveCalculate > 0
+          ? addingDecimal(toReceiveCalculate.toLocaleString())
+          : 'Amount to receive',
+      );
     if (text > wallet[`${swapFrom.currency}Balance`]) {
       setErrorKey(true);
       return setErrorMessage('Insufficient funds');
@@ -267,6 +265,8 @@ const SwapFunds = ({ navigation }) => {
     } else if (value > wallet[`${swapFrom.currency}Balance`]) {
       setErrorKey(true);
       return setErrorMessage('Insufficient funds');
+    } else if (!toReceive) {
+      return setErrorMessage('Network error');
     }
     setErrorKey('');
     setErrorMessage('');
@@ -296,7 +296,6 @@ const SwapFunds = ({ navigation }) => {
     try {
       setIsLoading(true);
       const response = await postFetchData('user/swap', swapData);
-
       if (response.status === 200) {
         setWalletRefresh(prev => !prev);
         setIsSuccessful(true);
@@ -306,8 +305,9 @@ const SwapFunds = ({ navigation }) => {
           );
           await sound.playAsync();
         };
-        playSound();
+        return playSound();
       }
+      throw new Error(response.data);
     } catch (err) {
       ToastMessage(err.message);
     } finally {
@@ -337,7 +337,11 @@ const SwapFunds = ({ navigation }) => {
                   Account to swap from
                 </RegularText>
                 <Pressable style={styles.arrow} onPress={handleSwitch}>
-                  <Arrow />
+                  <FaIcon
+                    name="swap-horizontal-sharp"
+                    size={28}
+                    color={'#8d8d8d'}
+                  />
                 </Pressable>
               </View>
               <Pressable
@@ -455,12 +459,14 @@ const SwapFunds = ({ navigation }) => {
               {currencyRate() < 1 ? (
                 <>
                   {swapTo.symbol}1 = {swapFrom.symbol}
-                  {addingDecimal(Number(1 / currencyRate()).toLocaleString())}
+                  {addingDecimal(
+                    Number(1 / currencyRate() || 0).toLocaleString(),
+                  )}
                 </>
               ) : (
                 <>
                   {swapFrom.symbol}1 = {swapTo.symbol}
-                  {addingDecimal(Number(currencyRate()).toLocaleString())}
+                  {addingDecimal(Number(currencyRate() || 0).toLocaleString())}
                 </>
               )}
             </RegularText>
@@ -475,6 +481,10 @@ const SwapFunds = ({ navigation }) => {
                 <TextInput
                   style={{
                     ...styles.textInput,
+                    paddingLeft:
+                      swapFrom.symbol.length * 20 > 50
+                        ? swapFrom.symbol.length * 20
+                        : 50,
                     borderColor: errorKey ? 'red' : '#ccc',
                   }}
                   inputMode="numeric"
@@ -507,7 +517,15 @@ const SwapFunds = ({ navigation }) => {
             </RegularText>
             <View style={styles.textInputContainer}>
               <BoldText style={styles.symbol}>{swapTo.symbol}</BoldText>
-              <View style={{ ...styles.textInput, ...styles.toReceive }}>
+              <View
+                style={{
+                  ...styles.textInput,
+                  ...styles.toReceive,
+                  paddingLeft:
+                    swapTo.symbol.length * 20 > 50
+                      ? swapTo.symbol.length * 20
+                      : 50,
+                }}>
                 <RegularText>{toReceive || 'Amount to receive'}</RegularText>
               </View>
               <View style={styles.fee}>
@@ -664,7 +682,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: -30,
-    left: 90 + '%',
+    right: 0,
+    zIndex: 1,
   },
   swapTitle: {
     flex: 1,
@@ -759,7 +778,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 10,
     fontFamily: 'OpenSans-600',
-    paddingLeft: 50,
     paddingVertical: 10,
     borderWidth: 1,
     borderColor: '#ccc',

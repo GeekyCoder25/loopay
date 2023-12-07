@@ -38,6 +38,7 @@ const CustomDrawer = props => {
     'Users',
     'Verifications',
     'History',
+    'Announcement',
     'Statement',
   ];
   const routeIcon = icon => {
@@ -55,6 +56,10 @@ const CustomDrawer = props => {
       case 'Verifications':
         return (
           <FaIcon name="checkmark-circle-outline" color={'#868585'} size={24} />
+        );
+      case 'Announcement':
+        return (
+          <FaIcon name="cloud-upload-outline" color={'#868585'} size={24} />
         );
       case 'History':
         return <HistoryIcon />;

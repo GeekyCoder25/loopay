@@ -14,6 +14,7 @@ const FooterCard = ({
   dataPlan,
   fee,
   billPlan,
+  token,
   reference,
 }) => {
   const { selectedCurrency } = useContext(AppContext);
@@ -63,7 +64,7 @@ const FooterCard = ({
               style={{ ...styles.cardValue, color: fee ? 'red' : '#006E53' }}>
               {fee
                 ? selectedCurrency.symbol + addingDecimal(fee.toLocaleString())
-                : 'free'}
+                : selectedCurrency.symbol + '0.00'}
             </BoldText>
           </View>
         </View>
@@ -82,10 +83,16 @@ const FooterCard = ({
             </View>
           )}
           {billPlan && (
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>Bill Plan</RegularText>
-              <BoldText style={styles.cardValue}>{billPlan}</BoldText>
-            </View>
+            <>
+              <View style={styles.cardLine}>
+                <RegularText style={styles.cardKey}>Bill Plan</RegularText>
+                <BoldText style={styles.cardValue}>{billPlan}</BoldText>
+              </View>
+              <View style={styles.cardLine}>
+                <RegularText style={styles.cardKey}>Token</RegularText>
+                <BoldText style={styles.cardValue}>{token}</BoldText>
+              </View>
+            </>
           )}
           <View style={styles.cardLine}>
             <RegularText style={styles.cardKey}>Amount</RegularText>

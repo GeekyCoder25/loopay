@@ -20,6 +20,7 @@ import Notifications from '../pages/AdminPages/Notifications';
 import Rate from '../pages/AdminPages/Rate';
 import Verifications from '../pages/AdminPages/Verifications';
 import Verification from '../pages/AdminPages/components/Verification';
+import Announcements from '../pages/AdminPages/Announcements';
 
 const AdminNavigator = () => {
   const Drawer = createDrawerNavigator();
@@ -61,6 +62,11 @@ const AdminNavigator = () => {
         <Drawer.Screen name="History" component={History} />
         <Drawer.Screen name="Statement" component={Statement} />
         <Drawer.Screen name="Verifications" component={Verifications} />
+        <Drawer.Screen
+          name="Announcement"
+          component={Announcements}
+          options={({ navigation, route }) => BackHeader(navigation, route)}
+        />
         <Drawer.Screen
           name="Notifications"
           component={Notifications}

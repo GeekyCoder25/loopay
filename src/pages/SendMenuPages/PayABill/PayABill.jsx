@@ -11,6 +11,9 @@ import { AppContext } from '../../../components/AppContext';
 import FaIcon from '@expo/vector-icons/Ionicons';
 
 const PayABill = ({ navigation }) => {
+  const { appData } = useContext(AppContext);
+  const countryCode = appData.country.code;
+
   const bills = [
     {
       title: 'TV',
@@ -103,7 +106,7 @@ const PayABill = ({ navigation }) => {
           type: 'select',
           placeholder: 'Select Provider',
           id: 'provider',
-          apiUrl: 'user/bill?type=electricity&country=NG',
+          apiUrl: `user/bill?type=electricity&country=${countryCode}`,
         },
         // {
         //   title: 'Package',

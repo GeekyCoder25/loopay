@@ -1,8 +1,9 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
 import {
   ActivityIndicator,
+  Image,
   Modal,
   Pressable,
   ScrollView,
@@ -25,23 +26,35 @@ import { getFetchData } from '../../../../utils/fetchAPI';
 import ToastMessage from '../../../components/ToastMessage';
 import { useWalletContext } from '../../../context/WalletContext';
 import { AppContext } from '../../../components/AppContext';
+import { allCurrencies } from '../../../database/data';
 
 const BuyData = ({ navigation }) => {
-  const { appData } = useContext(AppContext);
+  const { appData, setIsLoading } = useContext(AppContext);
   const { wallet } = useWalletContext();
+  const countryCode = appData.country.code;
   const [modalOpen, setModalOpen] = useState(false);
   const [planModalOpen, setPlanModalOpen] = useState(false);
   const [networkToBuy, setNetworkToBuy] = useState(null);
   const [dataPlans, setDataPlans] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
+  const [isNigeria] = useState(countryCode === 'NG');
   const [formData, setFormData] = useState({
     network: '',
     phoneNo: '',
     plan: null,
   });
   const [planToBuy, setPlanToBuy] = useState(formData.plan);
-  const countryCode = appData.country.code;
+  const [networkProviders, setNetworkProviders] = useState(
+    isNigeria
+      ? [
+          { network: '9mobile', locale: 'ng', operatorId: 340 },
+          { network: 'mtn', locale: 'ng', operatorId: 341 },
+          { network: 'airtel', locale: 'ng', operatorId: 342 },
+          { network: 'glo', locale: 'ng', operatorId: 344 },
+        ]
+      : [],
+  );
   const dataBeneficiaries = [
     // {
     //   phoneNo: '09073002599',
@@ -61,12 +74,27 @@ const BuyData = ({ navigation }) => {
     // },
   ];
 
-  const networkProviders = [
-    { network: '9mobile', locale: 'ng', operatorId: 340 },
-    { network: 'mtn', locale: 'ng', operatorId: 341 },
-    { network: 'airtel', locale: 'ng', operatorId: 342 },
-    { network: 'glo', locale: 'ng', operatorId: 344 },
-  ];
+  useEffect(() => {
+    setErrorMessage('');
+  }, [formData]);
+
+  useEffect(() => {
+    const getOperators = async () => {
+      const response = await getFetchData(
+        `user/airtime/operators?country=${countryCode}`,
+      );
+      if (response.status === 200) {
+        const data = response.data.map(({ name, operatorId, logoUrls }) => {
+          return { network: name, locale: '', operatorId, icon: logoUrls[0] };
+        });
+        return setNetworkProviders(data);
+      }
+      setNetworkProviders([]);
+    };
+    if (!isNigeria) {
+      getOperators();
+    }
+  }, [countryCode, isNigeria]);
 
   const handleModal = () => {
     setModalOpen(false);
@@ -75,12 +103,14 @@ const BuyData = ({ navigation }) => {
   const handleNetworkSelect = async provider => {
     handleModal();
     setNetworkToBuy(provider);
+    setDataPlans([]);
     setPlanToBuy(null);
     setFormData(prev => {
       return {
         ...prev,
         network: provider.network,
         plan: null,
+        icon: provider.icon,
       };
     });
     setErrorMessage('');
@@ -89,8 +119,26 @@ const BuyData = ({ navigation }) => {
       `user/get-data-plans?provider=${provider.network}&country=${countryCode}`,
     );
     const plans = plansResponse.data;
-    console.log(plansResponse);
-    setDataPlans(plans || []);
+    setDataPlans(
+      plans?.length ? plans : 'No data plan found for this provider',
+    );
+  };
+
+  const checkOperator = async () => {
+    const phoneNo = formData.phoneNo;
+    setIsLoading(true);
+    const response = await getFetchData(
+      `user/get-network?phone=${phoneNo}&country=${countryCode}`,
+    );
+    setIsLoading(false);
+    if (response.status === 200) {
+      const network = response.data.name.toLowerCase();
+      const operator = networkProviders.find(index =>
+        network.startsWith(index.network),
+      );
+      return handleNetworkSelect(operator);
+    }
+    ToastMessage(response.data);
   };
 
   const handlePhoneInput = async phoneNo => {
@@ -99,17 +147,8 @@ const BuyData = ({ navigation }) => {
     });
     setErrorMessage('');
     setErrorKey('');
-    if (phoneNo.length === 11) {
-      const response = await getFetchData(
-        `user/get-network?phone=${phoneNo}&country=${countryCode}`,
-      );
-      if (response.status === 200) {
-        const network = response.data.name.toLowerCase();
-        const operator = networkProviders.find(index =>
-          network.startsWith(index.network),
-        );
-        handleNetworkSelect(operator);
-      }
+    if (isNigeria && phoneNo.length === 11) {
+      checkOperator();
     }
   };
 
@@ -143,7 +182,7 @@ const BuyData = ({ navigation }) => {
     } else if (!formData.plan) {
       setErrorMessage('Please select a data plan');
       return setErrorKey('amountInput');
-    } else if (formData.phoneNo.length < 11) {
+    } else if (isNigeria && formData.phoneNo.length < 11) {
       setErrorMessage('Incomplete phone number');
       return setErrorKey('phoneInput');
     } else if (formData.amount > wallet.localBalance) {
@@ -154,10 +193,13 @@ const BuyData = ({ navigation }) => {
       formData: {
         ...formData,
         id: randomUUID(),
-        currency: 'naira',
+        currency: allCurrencies.find(
+          currency => currency.acronym === appData.localCurrencyCode,
+        ).currency,
         countryCode,
         type: 'data',
       },
+      isInternational: !isNigeria,
     });
   };
 
@@ -202,9 +244,18 @@ const BuyData = ({ navigation }) => {
           <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
             {networkToBuy ? (
               <View style={styles.networkToBuySelected}>
-                {networkToBuy && networkProvidersIcon(networkToBuy.network)}
+                {networkToBuy &&
+                  (isNigeria ? (
+                    networkProvidersIcon(networkToBuy.network)
+                  ) : (
+                    <Image
+                      source={{ uri: networkToBuy.icon }}
+                      style={styles.networkIcon}
+                    />
+                  ))}
                 <BoldText style={styles.networkToBuySelected}>
-                  {networkToBuy.network} - {networkToBuy.locale}
+                  {networkToBuy.network}{' '}
+                  {isNigeria ? `-${networkToBuy.locale}` : ''}
                 </BoldText>
               </View>
             ) : (
@@ -227,41 +278,64 @@ const BuyData = ({ navigation }) => {
               <ScrollView style={{ width: 100 + '%' }}>
                 <View style={styles.modalLists}>
                   {modalOpen ? (
-                    networkProviders.map(provider => (
-                      <Pressable
-                        key={provider.network}
-                        style={{
-                          ...styles.modalList,
-                          backgroundColor:
-                            networkToBuy?.network === provider.network
-                              ? '#e4e2e2'
-                              : 'transparent',
-                        }}
-                        onPress={() => handleNetworkSelect(provider)}>
-                        <View style={styles.networkIcon}>
-                          {networkProvidersIcon(provider.network)}
-                        </View>
-                        <BoldText style={styles.networkToBuySelected}>
-                          {`${provider.network}-${provider.locale}`}
-                        </BoldText>
-                      </Pressable>
-                    ))
+                    networkProviders.length ? (
+                      networkProviders.map(provider => (
+                        <Pressable
+                          key={provider.network}
+                          style={{
+                            ...styles.modalList,
+                            backgroundColor:
+                              networkToBuy?.network === provider.network
+                                ? '#e4e2e2'
+                                : 'transparent',
+                          }}
+                          onPress={() => handleNetworkSelect(provider)}>
+                          <View>
+                            {isNigeria ? (
+                              networkProvidersIcon(provider.network)
+                            ) : (
+                              <Image
+                                source={{ uri: provider.icon }}
+                                style={styles.networkIcon}
+                              />
+                            )}
+                          </View>
+                          <BoldText style={styles.networkToBuySelected}>
+                            {`${provider.network}${
+                              isNigeria ? `-${provider.locale}` : ''
+                            }`}
+                          </BoldText>
+                        </Pressable>
+                      ))
+                    ) : (
+                      <ActivityIndicator
+                        color={'#1e1e1e'}
+                        style={styles.activity}
+                        size="large"
+                      />
+                    )
                   ) : dataPlans.length ? (
-                    dataPlans.map(plan => (
-                      <Pressable
-                        key={plan.value}
-                        style={{
-                          ...styles.modalList,
-                          backgroundColor:
-                            planToBuy === plan ? '#e4e2e2' : 'transparent',
-                        }}
-                        onPress={() => handlePlanSelect(plan)}>
-                        <BoldText style={styles.dataPlan}>
-                          {Math.ceil(plan.amount).toLocaleString()} -{' '}
-                          {plan.value}
-                        </BoldText>
-                      </Pressable>
-                    ))
+                    typeof dataPlans === 'string' ? (
+                      <BoldText style={styles.dataPlanEmpty}>
+                        {dataPlans}
+                      </BoldText>
+                    ) : (
+                      dataPlans.map(plan => (
+                        <Pressable
+                          key={plan.value}
+                          style={{
+                            ...styles.modalList,
+                            backgroundColor:
+                              planToBuy === plan ? '#e4e2e2' : 'transparent',
+                          }}
+                          onPress={() => handlePlanSelect(plan)}>
+                          <BoldText style={styles.dataPlan}>
+                            {Math.ceil(plan.amount).toLocaleString()} -{' '}
+                            {plan.value}
+                          </BoldText>
+                        </Pressable>
+                      ))
+                    )
                   ) : (
                     <ActivityIndicator
                       color={'#1e1e1e'}
@@ -284,8 +358,9 @@ const BuyData = ({ navigation }) => {
             }}
             inputMode="tel"
             onChangeText={text => handlePhoneInput(text)}
+            onBlur={!isNigeria ? checkOperator : undefined}
+            maxLength={isNigeria ? 11 : undefined}
             value={formData.phoneNo}
-            maxLength={11}
           />
         </View>
         <View style={styles.labelContainer}>
@@ -452,9 +527,15 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ddd',
     paddingBottom: 10,
   },
+  dataPlanEmpty: {
+    width: 100 + '%',
+    padding: 20,
+  },
   networkIcon: {
-    gap: 20,
-    flexDirection: 'row',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#eee',
   },
   currencyAmount: {
     fontSize: 22,

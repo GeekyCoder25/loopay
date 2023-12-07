@@ -8,6 +8,7 @@ import Back from '../components/Back';
 import Success from '../pages/SendMenuPages/Success';
 import Profile from '../pages/HomePages/Profile';
 import LoopayTag from '../pages/HomePages/LoopayTag';
+import Withdraw from '../pages/HomePages/Withdraw';
 
 const SendMoneyNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -22,6 +23,7 @@ const SendMoneyNavigator = () => {
       <Stack.Screen name="SendLoopay" component={SendLoopay} />
       <Stack.Screen name="SendBeneficiary" component={SendBeneficiary} />
       <Stack.Screen name="SendNew" component={SendNew} />
+      <Stack.Screen name="SendBank" component={Withdraw} />
       <Stack.Screen name="SendProfile" component={Profile} />
       <Stack.Screen name="LoopayTag" component={LoopayTag} />
       <Stack.Screen

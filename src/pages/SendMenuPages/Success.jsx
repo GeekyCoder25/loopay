@@ -10,15 +10,19 @@ import { AppContext } from '../../components/AppContext';
 import { Audio } from 'expo-av';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
-import { useWalletContext } from '../../context/WalletContext';
 import { allCurrencies } from '../../database/data';
 
 const Success = ({ navigation, route }) => {
-  const { isAdmin, setShowTabBar, vh } = useContext(AppContext);
-  let transactions = useWalletContext();
-  transactions = isAdmin ? [] : transactions;
-  const { userToSendTo, amountInput, fee, airtime, dataPlan, billPlan } =
-    route.params;
+  const { isAdmin, setShowTabBar, vh, setIsLoading } = useContext(AppContext);
+  const {
+    userToSendTo,
+    amountInput,
+    fee,
+    airtime,
+    dataPlan,
+    billPlan,
+    transaction,
+  } = route.params;
 
   useFocusEffect(
     React.useCallback(() => {
@@ -44,12 +48,6 @@ const Success = ({ navigation, route }) => {
     playSound();
   }, []);
   const handleShare = async () => {
-    const transaction = transactions.find(
-      index =>
-        route.params.id === index.id ||
-        route.params.airtime?.id ||
-        route.params.reference === index.reference,
-    );
     const {
       status,
       receiverName,
@@ -65,7 +63,6 @@ const Success = ({ navigation, route }) => {
       reference,
       networkProvider,
       phoneNo,
-      debitAccount,
       billType,
       billName,
     } = transaction;
@@ -81,7 +78,6 @@ const Success = ({ navigation, route }) => {
             key: 'Transaction type',
             value: `Debit - ${transactionType} `,
           },
-          { key: 'Debit Account', value: debitAccount },
           { key: 'Network', value: networkProvider },
           { key: 'Phone Number', value: phoneNo },
           { key: 'Reference ID', value: reference },
@@ -93,7 +89,6 @@ const Success = ({ navigation, route }) => {
             key: 'Transaction type',
             value: `${transactionType} Payment - Debit`,
           },
-          { key: 'Debit Account', value: debitAccount },
           { key: 'Bill Type', value: billType },
           { key: 'Bill Service', value: billName },
           { key: 'Reference Id', value: reference },
@@ -271,7 +266,9 @@ const Success = ({ navigation, route }) => {
   };
 
   const createPDF = async html => {
+    setIsLoading(true);
     const { uri } = await printToFileAsync({ html });
+    setIsLoading(false);
     await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
   };
 
