@@ -12,4 +12,4 @@ export const hideTabRoutes = [
   'Biometric',
 ];
 
-export const timeForInactivityInSecond = 1200;
+export const timeForInactivityInSecond = 120;

@@ -6,8 +6,6 @@ import Button from '../../components/Button';
 import { signInData } from '../../database/data';
 import Header from '../../components/Header';
 import Email from '../../../assets/images/mail.svg';
-import Apple from '../../../assets/images/apple.svg';
-import Google from '../../../assets/images/google.svg';
 import PageContainer from '../../components/PageContainer';
 import RegularText from '../../components/fonts/RegularText';
 import BoldText from '../../components/fonts/BoldText';
@@ -48,25 +46,34 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
     setIsPinOkay(otpCode.length === codeLengths.length);
   }, [codeLengths.length, otpCode.length]);
 
-  const handlePress = () => {
-    if (Object.values(formData).includes('')) {
-      setErrorMessage('Please input you email');
-      setErrorKey('email');
-    } else {
-      setIsLoading(true);
-      setOtpResend(otpTimeout);
-      setErrorMessage('');
-      postFetchData('auth/forget-password', formData).then(result => {
-        result = result.data;
+  const handlePress = async () => {
+    try {
+      if (Object.values(formData).includes('')) {
+        setErrorMessage('Please input you email');
+        setErrorKey('email');
+      } else {
+        setIsLoading(true);
+        setOtpResend(otpTimeout);
+        setErrorMessage('');
+        setErrorKey('');
+        const response = await postFetchData('auth/forget-password', formData);
+        const result = response.data;
         if (result?.email === formData.email) {
           setCodeSent(true);
           inputRef.current.focus();
         } else {
-          setErrorKey('email');
-          setErrorMessage(result.error);
+          if (typeof response === 'string') {
+            setErrorMessage(response);
+          } else {
+            setErrorKey('email');
+            setErrorMessage(result.error);
+          }
         }
-        setIsLoading(false);
-      });
+      }
+    } catch (err) {
+      setErrorMessage(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -81,9 +88,10 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
       if (fetchResult === "Couldn't connect to server") {
         return setErrorMessage(fetchResult);
       } else if (Object.keys(result).includes('error')) {
-        setErrorKey('otpCode');
+        setErrorKey('pinCode');
         setTimeout(() => {
           setOtpCode('');
+          Keyboard.dismiss();
           setReload(prev => !prev);
         }, 1500);
         return setErrorMessage(result.error);
@@ -133,7 +141,7 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
         <View style={styles.logo}>
           <Logo />
         </View>
-        <View style={styles.form}>
+        <View style={styles.form} key={reload}>
           <Header
             title={'Forgot Password'}
             text={
@@ -158,7 +166,7 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
           />
           {codeSent ? (
             <>
-              <View style={styles.codeLengthsContainer} key={reload}>
+              <View style={styles.codeLengthsContainer}>
                 {codeLengths.map(input => (
                   <PINInputFields
                     key={input}
