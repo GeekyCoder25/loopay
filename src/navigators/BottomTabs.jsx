@@ -43,7 +43,7 @@ const BottomTabs = () => {
             />
             <Tab.Screen name="MenuNavigator" component={MenuNavigator} />
           </Tab.Navigator>
-          {showPopUp && isSessionTimedOut && <Popup />}
+          {showPopUp && !isSessionTimedOut && <Popup />}
         </RequestFundsContextComponent>
       </BeneficiaryContextComponent>
     </WalletContextComponent>

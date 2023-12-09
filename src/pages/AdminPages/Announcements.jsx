@@ -1,6 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import {
+  Linking,
+  Modal,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import { randomUUID } from 'expo-crypto';
@@ -83,7 +90,32 @@ const Announcements = () => {
                     <FaIcon name="edit" size={24} />
                   </Pressable>
                 </View>
-                <RegularText>{item.message}</RegularText>
+                <RegularText>
+                  {item.message.slice(0, 100)}
+                  {item.message.length > 100 && ' . . .'}
+                </RegularText>
+                {item.image && (
+                  <View>
+                    <BoldText style={styles.verticalAlign}>Image URL:</BoldText>
+                    <Pressable onPress={() => Linking.openURL(item.image)}>
+                      <RegularText style={styles.link}>
+                        {item.image.slice(0, 100)}
+                        {item.image.length > 100 && '...'}
+                      </RegularText>
+                    </Pressable>
+                  </View>
+                )}
+                {item.video && (
+                  <View>
+                    <BoldText style={styles.verticalAlign}>Video URL:</BoldText>
+                    <Pressable onPress={() => Linking.openURL(item.video)}>
+                      <RegularText style={styles.link}>
+                        {item.video.slice(0, 100)}
+                        {item.video.length > 100 && '...'}
+                      </RegularText>
+                    </Pressable>
+                  </View>
+                )}
                 <View style={styles.announcementHeader}>
                   <View />
                   <Pressable onPress={() => setToDelete(item)}>
@@ -166,6 +198,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  verticalAlign: {
+    textAlignVertical: 'center',
+  },
+  link: {
+    color: 'blue',
+    textDecorationLine: 'underline',
   },
   form: {
     marginTop: 30,
@@ -265,7 +304,7 @@ const AddNew = ({ editFormData, handleClose, setReload, setModalOpen }) => {
     title: editFormData?.title || '',
     message: editFormData?.message || '',
     image: editFormData?.image || '',
-    video: editFormData?.popUpID || '',
+    video: editFormData?.video || '',
     popUpID: editFormData?.popUpID || '',
   });
 
@@ -280,7 +319,7 @@ const AddNew = ({ editFormData, handleClose, setReload, setModalOpen }) => {
       setErrorMessage('No content');
     } else if (title.length < 3) {
       setErrorMessage('Please provide a longer title');
-    } else if (message.length < 24) {
+    } else if (message && message.length < 24) {
       setErrorMessage('Please provide a longer message content');
     } else {
       try {

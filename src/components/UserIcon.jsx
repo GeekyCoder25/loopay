@@ -8,14 +8,21 @@ const UserIcon = props => {
 
   return Object.keys(props).includes('uri') ? (
     props.uri ? (
-      <Image
-        src={props.uri.replace(
-          '/image/upload',
-          `/image/upload/w_${Math.round(vw)},q_auto,f_auto`,
-        )}
-        loadingIndicatorSource={require('../../assets/images/user.jpg')}
-        style={{ ...styles.userIconStyle, ...props.style }}
-      />
+      props.uri === 'loopay' ? (
+        <Image
+          source={require('../../assets/icon.png')}
+          style={{ ...styles.userIconStyle, ...props.style }}
+        />
+      ) : (
+        <Image
+          src={props.uri.replace(
+            '/image/upload',
+            `/image/upload/w_${Math.round(vw)},q_auto,f_auto`,
+          )}
+          loadingIndicatorSource={require('../../assets/images/user.jpg')}
+          style={{ ...styles.userIconStyle, ...props.style }}
+        />
+      )
     ) : (
       <View style={{ ...styles.nonUserIconStyle, ...props.style }}>
         <UserIconSVG

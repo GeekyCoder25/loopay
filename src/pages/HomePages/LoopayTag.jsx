@@ -13,8 +13,9 @@ import ToastMessage from '../../components/ToastMessage';
 
 const LoopayTag = ({ navigation }) => {
   const { appData, setAppData, setIsLoading } = useContext(AppContext);
-  const [inputValue, setInputValue] = useState('');
   const { userName } = appData.userProfile;
+  const [inputValue, setInputValue] = useState(appData.tagName || '');
+  const [inputFocus, setInputFocus] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isError, setIsError] = useState(false);
   const { minimum, maximum } = tagNameRules;
@@ -36,23 +37,25 @@ const LoopayTag = ({ navigation }) => {
           `Your tag name must be at least ${minimum}-${maximum} characters long`,
         );
       }
-      const fetchedResult = await postFetchData('user/tag-name', {
+      const response = await postFetchData('user/tag-name', {
         tagName: inputValue,
       });
-      if (!fetchedResult.status) throw new Error(fetchedResult);
+      if (!response.status) throw new Error(response);
+      if (response.status === 200) {
+        setAppData(prev => {
+          return { ...prev, tagName: response.data.tagName };
+        });
+        ToastMessage('LoopayTag updated successfully');
+        return navigation.goBack();
+      }
       if (
-        fetchedResult.status === 400 &&
-        fetchedResult.data.tagName.includes(
+        response.data.tagName.includes(
           'value has already been used with another account',
         )
       ) {
         throw new Error('This loopay tag has been used by another user');
       }
-      setAppData(prev => {
-        return { ...prev, tagName: inputValue };
-      });
-      ToastMessage('LoopayTag updated successfully');
-      navigation.goBack();
+      throw new Error(response.data.tagName);
     } catch (err) {
       ToastMessage(err.message);
       setErrorMessage(err.message);
@@ -80,6 +83,8 @@ const LoopayTag = ({ navigation }) => {
             }}
             inputMode="text"
             onChangeText={text => handleChange(text)}
+            onFocus={() => setInputFocus(true)}
+            onBlur={() => setInputFocus(false)}
             value={inputValue}
             placeholder="yourloopaytag"
             placeholderTextColor={'#525252'}
@@ -99,9 +104,14 @@ const LoopayTag = ({ navigation }) => {
           }
         />
       </View>
-      <View style={styles.button}>
-        <Button text={'Create Loopay Tag'} onPress={handleCreate} />
-      </View>
+      {!inputFocus && (
+        <View style={styles.button}>
+          <Button
+            text={`${userName ? 'Update' : 'Create'} Loopay Tag`}
+            onPress={handleCreate}
+          />
+        </View>
+      )}
     </PageContainer>
   );
 };

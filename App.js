@@ -30,7 +30,9 @@ import { CurrencyFullDetails } from './utils/allCountries';
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const [selectedCurrency, setSelectedCurrency] = useState(null);
+  const [selectedCurrency, setSelectedCurrency] = useState(
+    allCurrencies.find(currency => currency.currency === 'dollar'),
+  );
   const [verified, setVerified] = useState(false);
   const [showTabBar, setShowTabBar] = useState(true);
   const [internetStatus, setInternetStatus] = useState('true');
@@ -49,6 +51,7 @@ export default function App() {
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [enableBiometric, setEnableBiometric] = useState(false);
   const [showPopUp, setShowPopUp] = useState(false);
+  const [popUpClosed, setPopUpClosed] = useState(0);
   const [showAmount, setShowAmount] = useState(false);
   const timerId = useRef(false);
   const vw = useWindowDimensions().width;
@@ -98,6 +101,8 @@ export default function App() {
     setShowPopUp,
     showAmount,
     setShowAmount,
+    popUpClosed,
+    setPopUpClosed,
   };
 
   useEffect(() => {
@@ -125,9 +130,7 @@ export default function App() {
     if (isLoggedIn) {
       getDefaultCurrency().then(defaultCurrency => {
         if (!defaultCurrency) {
-          return setSelectedCurrency(
-            allCurrencies.find(currency => currency.currency === 'dollar'),
-          );
+          return;
         }
         const defaultCurrencyObject = allCurrencies.find(
           currency => currency.currency === defaultCurrency,
@@ -139,8 +142,11 @@ export default function App() {
   }, [isLoggedIn]);
 
   useEffect(() => {
-    isLoggedIn && appData.popUps?.length && setShowPopUp(true);
-  }, [appData.popUps?.length, isLoggedIn]);
+    isLoggedIn &&
+      appData.popUps?.length &&
+      popUpClosed < 3 &&
+      setShowPopUp(true);
+  }, [appData.popUps?.length, isLoggedIn, popUpClosed]);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -164,6 +170,7 @@ export default function App() {
     }, 1200 * 1000);
   }, [isSessionTimedOut]);
 
+  new Date('2023-09-13T13:24:46.046+00:00').toLocaleTimeString();
   return (
     <AppContext.Provider value={contextValue}>
       <StatusBar style="auto" translucent={false} backgroundColor="#f5f5f5" />

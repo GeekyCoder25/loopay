@@ -59,7 +59,7 @@ const FooterCard = ({
             </BoldText>
           </View>
           <View style={styles.cardLine}>
-            <RegularText style={styles.cardKey}>Transaction Fees</RegularText>
+            <RegularText style={styles.cardKey}>Transaction Fee</RegularText>
             <BoldText
               style={{ ...styles.cardValue, color: fee ? 'red' : '#006E53' }}>
               {fee

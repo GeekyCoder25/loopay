@@ -30,7 +30,7 @@ import { allCurrencies } from '../../../database/data';
 import ToastMessage from '../../../components/ToastMessage';
 
 const BuyAirtime = ({ navigation }) => {
-  const { appData, setIsLoading } = useContext(AppContext);
+  const { appData, setIsLoading, showAmount } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const { code: countryCode } = appData.country;
   const [modalOpen, setModalOpen] = useState(false);
@@ -304,7 +304,7 @@ const BuyAirtime = ({ navigation }) => {
             </View>
           </View>
         </Modal>
-        <Text style={styles.topUp}>Phone Number</Text>
+        <Text style={styles.label}>Phone Number</Text>
         <View style={styles.textInputContainer}>
           <TextInput
             style={{
@@ -321,11 +321,13 @@ const BuyAirtime = ({ navigation }) => {
         </View>
         <ErrorMessage errorMessage={errorMessage2} />
         <View style={styles.topUpContainer}>
-          <Text style={styles.topUp}>Amount to be credited</Text>
-          <Text style={styles.topUp}>
+          <Text style={styles.label}>Amount to be credited</Text>
+          <Text style={styles.label}>
             Balance:{' '}
-            {localCurrencySymbol +
-              addingDecimal(`${localBalance?.toLocaleString()}`)}
+            {showAmount
+              ? localCurrencySymbol +
+                addingDecimal(`${localBalance?.toLocaleString()}`)
+              : '***'}
           </Text>
         </View>
         <View style={styles.textInputContainer}>
@@ -384,7 +386,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  topUp: {
+  label: {
     fontFamily: 'OpenSans-600',
     color: '#868585',
   },

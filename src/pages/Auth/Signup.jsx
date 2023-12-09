@@ -14,6 +14,7 @@ import Phone from '../../../assets/images/phone.svg';
 import Lock from '../../../assets/images/lock.svg';
 import Eye from '../../../assets/images/eye.svg';
 import EyeClosed from '../../../assets/images/eye-slash.svg';
+import Refer from '../../../assets/images/referral.svg';
 import { signUpData } from '../../database/data.js';
 import Logo from '../../components/Logo';
 import Button from '../../components/Button';
@@ -42,6 +43,7 @@ const Signup = ({ navigation }) => {
     password: '',
     confirmPassword: '',
     phoneNumber: '',
+    referralCode: '',
     // firstName: 'Toyyib',
     // lastName: 'Lawal',
     // userName: 'Geeky Coder',
@@ -62,7 +64,7 @@ const Signup = ({ navigation }) => {
   const [verifyEmail, setVerifyEmail] = useState(false);
 
   const handleSignUp = async () => {
-    if (Object.values(formData).includes('')) {
+    if (Object.values({ ...formData, referralCode: '0' }).includes('')) {
       setErrorMessage('Please input all fields');
     } else if (formData.password !== formData.confirmPassword) {
       setErrorMessage("Passwords doesn't match");
@@ -397,9 +399,8 @@ const FormField = ({
   const [showPassword, setShowPassword] = useState(true);
   const [inputFocus, setInputFocus] = useState(false);
   const [redBorder, setRedBorder] = useState(showRedBorder);
-
   useEffect(() => {
-    showRedBorder && formData[inputForm.name] === ''
+    showRedBorder && formData[inputForm.name] === '' && !inputForm.optional
       ? setRedBorder(true)
       : setRedBorder(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -417,6 +418,8 @@ const FormField = ({
         return <Phone fill={fill} />;
       case 'password':
         return <Lock fill={fill} />;
+      case 'referral':
+        return <Refer fill={fill} />;
       default:
         break;
     }
@@ -482,7 +485,11 @@ const FormField = ({
           });
         }}
         name={inputForm.name}
-        autoComplete={inputForm.eye ? 'off' : inputForm.type}
+        autoComplete={
+          inputForm.eye || inputForm.type === 'referral'
+            ? 'off'
+            : inputForm.type
+        }
         inputMode={inputForm.inputMode}
         autoCapitalize={inputForm.eye ? 'none' : undefined}
         autoCorrect={inputForm.eye || false}

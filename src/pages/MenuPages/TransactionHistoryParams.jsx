@@ -301,8 +301,7 @@ const TransactionHistoryParams = ({ route }) => {
               String.raw`
                 <h4>${currencySymbol}</h4>
                 <h1>
-                  $
-                  {
+                  ${
                     Number(amount || swapToAmount)
                       .toLocaleString()
                       .split('.')[0]

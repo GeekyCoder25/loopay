@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   },
   history: {
     backgroundColor: '#eee',
-    paddingVertical: 20,
+    paddingVertical: 10,
     paddingHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',

@@ -17,7 +17,7 @@ const AdminContextComponent = ({ children }) => {
 
   const fetchAdminDatas = async () => {
     try {
-      !adminData && isSessionTimedOut && setIsLoading(true);
+      !adminData && !isSessionTimedOut && setIsLoading(true);
       const response = await getFetchData('admin');
       if (response.status === 200) {
         return setAdminData(response.data);

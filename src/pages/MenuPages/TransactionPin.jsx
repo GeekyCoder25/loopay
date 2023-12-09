@@ -181,7 +181,11 @@ const ChangePin = ({ navigation, setReload }) => {
         const result = await postFetchData('user/set-pin', { pin: pin1 });
 
         if (result.status === 200) {
-          setSuccessMessage(result.data);
+          setSuccessMessage(
+            appData.pin
+              ? 'Transaction pin updated successfully'
+              : 'Transaction pin set successfully',
+          );
           setAppData(prev => {
             return {
               ...prev,

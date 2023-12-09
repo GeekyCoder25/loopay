@@ -31,7 +31,7 @@ import { allCountries } from '../../../../utils/allCountries';
 import ToastMessage from '../../../components/ToastMessage';
 
 const BuyAirtimeInternational = ({ navigation }) => {
-  const { appData, setIsLoading } = useContext(AppContext);
+  const { appData, setIsLoading, showAmount } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const countryCode = appData.country.code;
   const [modalOpen, setModalOpen] = useState(false);
@@ -188,6 +188,10 @@ const BuyAirtimeInternational = ({ navigation }) => {
     if (!countrySelected) return ToastMessage('Country not provided');
     setModalOpen(true);
   };
+
+  const localCurrencySymbol = allCurrencies.find(
+    currency => currency.isLocal,
+  ).symbol;
   return (
     <PageContainer padding paddingTop={0}>
       <ScrollView style={styles.body}>
@@ -312,7 +316,7 @@ const BuyAirtimeInternational = ({ navigation }) => {
             </View>
           </View>
         </Modal>
-        <Text style={styles.topUp}>Phone Number</Text>
+        <Text style={styles.label}>Phone Number</Text>
         <View style={styles.textInputContainer}>
           <TextInput
             style={{
@@ -326,10 +330,14 @@ const BuyAirtimeInternational = ({ navigation }) => {
             value={formData.phoneNo}
           />
         </View>
-        <View style={styles.topUpContainer}>
-          <Text style={styles.topUp}>Amount to be credited</Text>
-          <Text style={styles.topUp}>
-            Balance: {'₦' + addingDecimal(`${localBalance?.toLocaleString()}`)}
+        <View style={styles.labelContainer}>
+          <Text style={styles.label}>Amount to be credited</Text>
+          <Text style={styles.label}>
+            Balance:{' '}
+            {showAmount
+              ? localCurrencySymbol +
+                addingDecimal(`${localBalance?.toLocaleString()}`)
+              : '***'}
           </Text>
         </View>
         <View style={styles.textInputContainer}>
@@ -384,11 +392,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   headerSubText: { color: '#868585' },
-  topUpContainer: {
+  labelContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  topUp: {
+  label: {
     fontFamily: 'OpenSans-600',
     color: '#868585',
   },

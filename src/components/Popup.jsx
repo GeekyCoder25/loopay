@@ -1,18 +1,27 @@
 import React, { useContext, useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Image,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import BoldText from './fonts/BoldText';
 import FaIcon from '@expo/vector-icons/Ionicons';
 import { AppContext } from './AppContext';
 import RegularText from './fonts/RegularText';
-import { deleteFetchData, putFetchData } from '../../utils/fetchAPI';
+import { deleteFetchData } from '../../utils/fetchAPI';
+import { ResizeMode, Video } from 'expo-av';
 
 const Popup = () => {
-  const { showPopUp, setShowPopUp, appData, setAppData } =
+  const { showPopUp, setShowPopUp, appData, setAppData, setPopUpClosed, vw } =
     useContext(AppContext);
   const [popUps, setPopUps] = useState(appData.popUps);
 
   const handleClose = async popUpID => {
     setShowPopUp(false);
+    setPopUpClosed(prev => prev + 1);
     setAppData(prev => {
       return {
         ...prev,
@@ -20,8 +29,12 @@ const Popup = () => {
       };
     });
     setPopUps(prev => prev.filter(index => index.popUpID !== popUpID));
-    const response = await deleteFetchData(`user/popup/${popUpID}`);
-    console.log(response);
+    await deleteFetchData(`user/popup/${popUpID}`);
+  };
+  const height = {
+    width: vw * 0.7,
+    height: vw * 0.7,
+    maxHeight: 800,
   };
 
   return (
@@ -35,12 +48,36 @@ const Popup = () => {
               onPress={() => handleClose(popUp.popUpID)}>
               <FaIcon name="close-circle" size={40} color={'#fff'} />
             </Pressable>
-            <ScrollView contentContainerStyle={styles.modalScroll}>
-              <View style={styles.body}>
-                <BoldText>{popUp.title}</BoldText>
-                <RegularText>{popUp.message}</RegularText>
-              </View>
-            </ScrollView>
+            <View style={styles.modalScroll}>
+              <ScrollView>
+                <View style={styles.body}>
+                  <BoldText style={styles.headerText}>{popUp.title}</BoldText>
+                  <RegularText>{popUp.message}</RegularText>
+                  {popUp.image && (
+                    <Image
+                      source={{ uri: popUp.image }}
+                      style={height}
+                      resizeMode="contain"
+                    />
+                  )}
+                  {popUp.video && (
+                    <Video
+                      source={{
+                        uri: popUp.video,
+                      }}
+                      style={height}
+                      useNativeControls={false}
+                      resizeMode={ResizeMode.CONTAIN}
+                      isLooping
+                      usePoster
+                      posterSource={require('../../assets/images/video_loading.jpg')}
+                      posterStyle={height}
+                      shouldPlay
+                    />
+                  )}
+                </View>
+              </ScrollView>
+            </View>
           </View>
         </View>
       ))}
@@ -71,6 +108,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
     gap: 30,
+  },
+  headerText: {
+    fontSize: 20,
   },
   modalScroll: {},
   body: {

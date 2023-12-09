@@ -42,6 +42,15 @@ const PendingRequest = ({ navigation }) => {
                   }
                   {addingDecimal(Number(request.amount).toLocaleString())}
                 </RegularText>
+                <RegularText>{request.description}</RegularText>
+              </View>
+              <View style={styles.time}>
+                <RegularText>
+                  {new Date(request.createdAt).toLocaleDateString()}
+                </RegularText>
+                <RegularText>
+                  {new Date(request.createdAt).toLocaleTimeString()}
+                </RegularText>
               </View>
             </Pressable>
           ))
@@ -73,6 +82,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 15,
     alignItems: 'center',
+  },
+  time: {
+    flex: 1,
+    alignItems: 'flex-end',
   },
 });
 

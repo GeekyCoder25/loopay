@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
 import {
   Clipboard,
@@ -10,44 +10,61 @@ import {
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import { AppContext } from '../../components/AppContext';
-import UserIconSVG from '../../../assets/images/referralUser.svg';
 import ToastMessage from '../../components/ToastMessage';
+import { getFetchData } from '../../../utils/fetchAPI';
+import UserIcon from '../../components/UserIcon';
 
-const Referrals = () => {
-  const { selectedCurrency, appData } = useContext(AppContext);
+const Referrals = ({ navigation }) => {
+  const {
+    selectedCurrency,
+    appData,
+    walletRefresh,
+    setWalletRefresh,
+    setIsLoading,
+  } = useContext(AppContext);
   const { referralCode } = appData;
-  const reward = 0;
+  const [referralTeam, setReferralTeam] = useState([]);
+  const [reward, setReward] = useState('');
 
+  useEffect(() => {
+    const getReferrals = async () => {
+      const response = await getFetchData('user/referral');
+      if (response.status === 200) {
+        setReferralTeam(response.data.referrals.reverse());
+        setReward(response.data.balance);
+      }
+    };
+    getReferrals();
+  }, [walletRefresh]);
   const handleShare = () => {
     Clipboard.setString(referralLink);
     ToastMessage('Copied to clipboard');
   };
 
-  const handleClaim = () => {
-    if (reward < 1000) {
-      ToastMessage(`Minimum withdrawal is ${selectedCurrency.symbol}1000`);
+  const handleClaim = async () => {
+    try {
+      if (reward < 5) {
+        return ToastMessage('Minimum withdrawal is $5');
+      }
+
+      setIsLoading(true);
+      const response = await getFetchData('user/withdraw-referral');
+      if (response.status === 200) {
+        setWalletRefresh(prev => !prev);
+        ToastMessage('Withdrawn to dollar account successfully');
+        setIsLoading(false);
+        navigation.popToTop();
+        navigation.navigate('HomeNavigator');
+        return navigation.navigate('Home');
+      }
+      throw new Error(response.data);
+    } catch (error) {
+      return ToastMessage(error.message);
     }
   };
 
-  const referralTeam = [
-    // {
-    //   referralCode: 'lekrj46',
-    //   name: 'Creative Omotayo',
-    //   verificationStatus: true,
-    // },
-    // {
-    //   referralCode: 'lekj4d6',
-    //   name: 'Creative Omotayo',
-    //   verificationStatus: true,
-    // },
-    // {
-    //   referralCode: 'lekrjg46',
-    //   name: 'Creative Omotayo',
-    //   verificationStatus: false,
-    // },
-  ];
-
   const referralLink = `https://play.google.com/store/apps/loopay/details?id=com.loopay.hmghomes&referrer=${referralCode}`;
+
   return (
     <PageContainer padding justify={true}>
       <View style={styles.container}>
@@ -92,13 +109,13 @@ const Referrals = () => {
             ) : (
               <ScrollView>
                 {referralTeam.map(referral => (
-                  <View key={referral.referralCode} style={styles.referral}>
-                    <UserIconSVG />
+                  <View key={referral.tagName} style={styles.referral}>
+                    <UserIcon uri={referral.photo} />
                     <View style={styles.referralContent}>
                       <BoldText style={styles.referralName}>
-                        {referral.name}
+                        {referral.fullName}
                       </BoldText>
-                      {referral.verificationStatus ? (
+                      {referral.verified ? (
                         <BoldText style={styles.verified}>Verified</BoldText>
                       ) : (
                         <BoldText style={styles.notVerified}>
@@ -182,7 +199,7 @@ const styles = StyleSheet.create({
     height: 80,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 30,
+    gap: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#BBBBBB',
   },

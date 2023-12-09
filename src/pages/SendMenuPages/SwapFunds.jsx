@@ -275,7 +275,7 @@ const SwapFunds = ({ navigation }) => {
 
   const transactionDetails = [
     {
-      title: 'Transaction Fees',
+      title: 'Transaction Fee',
       value: currencyFee()
         ? swapFrom.symbol + addingDecimal(fee.toLocaleString())
         : 'Free',

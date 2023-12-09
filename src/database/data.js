@@ -47,6 +47,13 @@ export const signUpData = [
     inputMode: 'numeric',
     eye: true,
   },
+  {
+    name: 'referralCode',
+    placeholder: 'Referral code (optional)',
+    type: 'referral',
+    inputMode: 'text',
+    optional: true,
+  },
 ];
 export const signInData = [
   {

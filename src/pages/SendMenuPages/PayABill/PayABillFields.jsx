@@ -18,6 +18,7 @@ import { addingDecimal } from '../../../../utils/AddingZero';
 import { useWalletContext } from '../../../context/WalletContext';
 import { getFetchData } from '../../../../utils/fetchAPI';
 import { randomUUID } from 'expo-crypto';
+import { allCurrencies } from '../../../database/data';
 
 export default function SelectInputField({
   selectInput,
@@ -28,12 +29,12 @@ export default function SelectInputField({
   setErrorMessage,
   setErrorKey,
 }) {
-  const { selectedCurrency } = useContext(AppContext);
+  const { showAmount } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [selected, setSelected] = useState(false);
   const [modalData, setModalData] = useState([]);
   const { title, type, placeholder, id, apiUrl } = selectInput;
-  const { balance } = wallet;
+  const { localBalance } = wallet;
   const [modalOpen, setModalOpen] = useState(false);
   const [inputText, setInputText] = useState('');
 
@@ -74,6 +75,10 @@ export default function SelectInputField({
     }
   };
 
+  const localCurrencySymbol = allCurrencies.find(
+    currency => currency.isLocal,
+  ).symbol;
+
   return (
     <View>
       <View style={styles.labelContainer}>
@@ -81,8 +86,10 @@ export default function SelectInputField({
         {showBalance && (
           <Text style={styles.label}>
             Balance:{' '}
-            {selectedCurrency.symbol +
-              addingDecimal(`${balance.toLocaleString()}`)}
+            {showAmount
+              ? localCurrencySymbol +
+                addingDecimal(`${localBalance?.toLocaleString()}`)
+              : '***'}
           </Text>
         )}
       </View>

@@ -63,7 +63,7 @@ const AdminNavigator = () => {
         <Drawer.Screen name="Statement" component={Statement} />
         <Drawer.Screen name="Verifications" component={Verifications} />
         <Drawer.Screen
-          name="Announcement"
+          name="Announcements"
           component={Announcements}
           options={({ navigation, route }) => BackHeader(navigation, route)}
         />

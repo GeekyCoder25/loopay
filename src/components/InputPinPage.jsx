@@ -20,10 +20,18 @@ const InputPinPage = ({ setCanContinue, setReload, customPinFunc }) => {
     setIsPinOkay(pinCode.length === codeLengths.length);
   }, [codeLengths.length, pinCode.length]);
 
-  const handlePress = async () => {
+  const handlePress = async paramsPinCode => {
+    const code = paramsPinCode || pinCode;
+    if (!code) {
+      setErrorKey('pinCode');
+      return setErrorMessage('No pin is provided');
+    } else if (code.length < 4) {
+      setErrorKey('pinCode');
+      return setErrorMessage('Incomplete pin');
+    }
     try {
       setIsLoading(true);
-      const result = await postFetchData('user/check-pin', { pin: pinCode });
+      const result = await postFetchData('user/check-pin', { pin: code });
 
       if (result === "Couldn't connect to server") {
         return setErrorMessage(result);
@@ -73,6 +81,7 @@ const InputPinPage = ({ setCanContinue, setReload, customPinFunc }) => {
           onChangeText={text => {
             setPinCode(text);
             text.length === codeLengths.length && Keyboard.dismiss();
+            handlePress(text);
             setErrorMessage('');
             setErrorKey('');
           }}
@@ -138,6 +147,7 @@ export const PINInputFields = ({ codeLength, pinCode, errorKey, inputRef }) => {
   return (
     <Pressable
       onPress={() => {
+        Keyboard.dismiss();
         inputRef.current.focus();
       }}
       style={{
