@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useEffect, useState } from 'react';
-import PageContainer from '../../components/PageContainer';
+import PageContainer from '../../../components/PageContainer';
 import {
   Keyboard,
   Modal,
@@ -10,18 +10,18 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import BoldText from '../../components/fonts/BoldText';
-import Button from '../../components/Button';
-import CheckPassword from '../../components/CheckPassword';
-import Header from '../../components/Header';
-import Logo from '../../components/Logo';
-import LoggedInForgetPassword from '../../components/LoggedInForgetPassword';
-import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
-import RegularText from '../../components/fonts/RegularText';
-import Back from '../../components/Back';
-import ChevronDown from '../../../assets/images/chevron-down-fill.svg';
-import ErrorMessage from '../../components/ErrorMessage';
-import ToastMessage from '../../components/ToastMessage';
+import BoldText from '../../../components/fonts/BoldText';
+import Button from '../../../components/Button';
+import CheckPassword from '../../../components/CheckPassword';
+import Header from '../../../components/Header';
+import Logo from '../../../components/Logo';
+import LoggedInForgetPassword from '../../../components/LoggedInForgetPassword';
+import { getFetchData, postFetchData } from '../../../../utils/fetchAPI';
+import RegularText from '../../../components/fonts/RegularText';
+import Back from '../../../components/Back';
+import ChevronDown from '../../../../assets/images/chevron-down';
+import ErrorMessage from '../../../components/ErrorMessage';
+import ToastMessage from '../../../components/ToastMessage';
 
 const AddWithdraw = ({ navigation }) => {
   const [formData, setFormData] = useState({

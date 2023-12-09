@@ -61,7 +61,7 @@ const InputPin = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handlePay = async paramsPinCode => {
+  const handlePay = async ({ pinCode: paramsPinCode }) => {
     const code = paramsPinCode || pinCode;
     if (!code) {
       setErrorKey('pinCode');
@@ -93,7 +93,7 @@ const InputPin = ({
     setPinCode(text);
     if (text.length === codeLengths.length) {
       Keyboard.dismiss();
-      return handlePay(text);
+      return handlePay({ pinCode: text });
     }
     setErrorMessage('');
     setErrorKey('');
@@ -163,6 +163,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     position: 'absolute',
     transform: [{ translateX: -1000 }],
+  },
+  button: {
+    flex: 1,
+    justifyContent: 'center',
+    marginBottom: 30,
   },
 });
 

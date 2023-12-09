@@ -1,23 +1,22 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useEffect, useState } from 'react';
-import PageContainer from '../../components/PageContainer';
+import PageContainer from '../../../components/PageContainer';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { AppContext } from '../../components/AppContext';
-import Button from '../../components/Button';
-import BoldText from '../../components/fonts/BoldText';
-import FlagSelect from '../../components/FlagSelect';
-import RegularText from '../../components/fonts/RegularText';
+import { AppContext } from '../../../components/AppContext';
+import Button from '../../../components/Button';
+import BoldText from '../../../components/fonts/BoldText';
+import FlagSelect from '../../../components/FlagSelect';
+import RegularText from '../../../components/fonts/RegularText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
-import { addingDecimal } from '../../../utils/AddingZero';
-import ErrorMessage from '../../components/ErrorMessage';
-import { useWalletContext } from '../../context/WalletContext';
-import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
-import FooterCard from '../../components/FooterCard';
+import { addingDecimal } from '../../../../utils/AddingZero';
+import ErrorMessage from '../../../components/ErrorMessage';
+import { useWalletContext } from '../../../context/WalletContext';
+import { getFetchData, postFetchData } from '../../../../utils/fetchAPI';
+import FooterCard from '../../../components/FooterCard';
 import { randomUUID } from 'expo-crypto';
 import { useFocusEffect } from '@react-navigation/native';
-import ToastMessage from '../../components/ToastMessage';
-import AccInfoCard from '../../components/AccInfoCard';
-import InputPin from '../../components/InputPin';
+import AccInfoCard from '../../../components/AccInfoCard';
+import InputPin from '../../../components/InputPin';
 
 const Withdraw = ({ navigation }) => {
   const { appData, vh, selectedCurrency, setWalletRefresh } =
@@ -25,6 +24,7 @@ const Withdraw = ({ navigation }) => {
   const { wallet } = useWalletContext();
   const [bankSelected, setBankSelected] = useState(null);
   const [amountInput, setAmountInput] = useState(null);
+  const [description, setDescription] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
   const [canContinue, setCanContinue] = useState(false);
@@ -57,8 +57,7 @@ const Withdraw = ({ navigation }) => {
     }
   };
 
-  const handleChange = async text => {
-    setAmountInput(text);
+  const editInput = () => {
     setErrorMessage('');
     setErrorKey('');
   };
@@ -78,6 +77,9 @@ const Withdraw = ({ navigation }) => {
     } else if (amountInput > wallet.balance) {
       setErrorKey('amountInput');
       setErrorMessage('Insufficient funds');
+    } else if (!description) {
+      setErrorMessage('Please provide transaction description');
+      setErrorKey('desc');
     } else {
       setCanContinue(true);
     }
@@ -88,7 +90,7 @@ const Withdraw = ({ navigation }) => {
       const id = randomUUID();
       const response = await postFetchData('user/transfer', {
         ...bankSelected,
-        reason: 'Withdrawal to local NGN account',
+        reason: description,
         amount: amountInput,
         fee,
         senderPhoto: appData.photoURL,
@@ -104,21 +106,23 @@ const Withdraw = ({ navigation }) => {
         });
       }
       typeof response === 'string'
-        ? ToastMessage(response)
-        : ToastMessage(response.data);
+        ? setErrorMessage(response)
+        : setErrorMessage(response.data);
     } catch (error) {
       console.log(error.message);
     }
   };
   useEffect(() => {
     getFetchData('user/fees').then(response =>
-      setFee(
-        response.data.find(
-          i =>
-            i.group === 'transferOthers' &&
-            i.currency === selectedCurrency.currency,
-        )?.amount,
-      ),
+      response.status === 200
+        ? setFee(
+            response.data.find(
+              i =>
+                i.group === 'transferOthers' &&
+                i.currency === selectedCurrency.currency,
+            )?.amount,
+          )
+        : setFee(0),
     );
   }, [selectedCurrency.currency]);
 
@@ -161,33 +165,57 @@ const Withdraw = ({ navigation }) => {
             <View style={styles.button}>
               <Button
                 text="Add new Payment Bank"
-                onPress={() => navigation.navigate('AddWithdraw')}
+                onPress={() => navigation.navigate('SendBankAdd')}
               />
             </View>
           </>
         ) : !canContinue ? (
           <View style={styles.form}>
-            <BoldText>Amount</BoldText>
-            <View style={styles.textInputContainer}>
-              <View style={styles.textInputSymbolContainer}>
-                <FlagSelect
-                  country={selectedCurrency.currency}
-                  style={styles.flag}
+            <View>
+              <BoldText>Amount</BoldText>
+              <View style={styles.textInputContainer}>
+                <View style={styles.textInputSymbolContainer}>
+                  <FlagSelect
+                    country={selectedCurrency.currency}
+                    style={styles.flag}
+                  />
+                  <BoldText style={styles.textInputSymbol}>
+                    {selectedCurrency.acronym}
+                  </BoldText>
+                </View>
+                <TextInput
+                  style={{
+                    ...styles.textInput,
+                    borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
+                  }}
+                  inputMode="decimal"
+                  value={amountInput}
+                  onChangeText={text => {
+                    setAmountInput(text);
+                    editInput();
+                  }}
+                  onBlur={handleBlur}
                 />
-                <BoldText style={styles.textInputSymbol}>
-                  {selectedCurrency.acronym}
-                </BoldText>
               </View>
-              <TextInput
-                style={{
-                  ...styles.textInput,
-                  borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
-                }}
-                inputMode="decimal"
-                value={amountInput}
-                onChangeText={text => handleChange(text)}
-                onBlur={handleBlur}
-              />
+            </View>
+            <View>
+              <BoldText>Description</BoldText>
+              <View style={styles.textInputContainer}>
+                <TextInput
+                  style={{
+                    ...styles.textInput,
+                    ...styles.descTextInput,
+                    borderColor: errorKey === 'desc' ? 'red' : '#ccc',
+                  }}
+                  inputMode="text"
+                  onChangeText={text => {
+                    setDescription(text);
+                    editInput();
+                  }}
+                  value={description}
+                  maxLength={40}
+                />
+              </View>
             </View>
             <ErrorMessage errorMessage={errorMessage} />
             <View style={styles.feeTextInputContainer}>
@@ -307,6 +335,7 @@ const styles = StyleSheet.create({
   form: {
     marginTop: 30,
     flex: 1,
+    gap: 30,
   },
   textInputContainer: {
     position: 'relative',

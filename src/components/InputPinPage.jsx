@@ -20,7 +20,7 @@ const InputPinPage = ({ setCanContinue, setReload, customPinFunc }) => {
     setIsPinOkay(pinCode.length === codeLengths.length);
   }, [codeLengths.length, pinCode.length]);
 
-  const handlePress = async paramsPinCode => {
+  const handlePress = async ({ pinCode: paramsPinCode }) => {
     const code = paramsPinCode || pinCode;
     if (!code) {
       setErrorKey('pinCode');
@@ -81,7 +81,7 @@ const InputPinPage = ({ setCanContinue, setReload, customPinFunc }) => {
           onChangeText={text => {
             setPinCode(text);
             text.length === codeLengths.length && Keyboard.dismiss();
-            handlePress(text);
+            handlePress({ pinCode: text });
             setErrorMessage('');
             setErrorKey('');
           }}
@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     justifyContent: 'center',
+    marginBottom: 30,
   },
 });
 

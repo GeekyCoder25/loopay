@@ -8,8 +8,8 @@ import TransactionPin from '../pages/MenuPages/TransactionPin';
 import MyInfo from '../pages/MenuPages/MyInfo';
 import Questions from '../pages/HomePages/Questions';
 import Limit from '../pages/HomePages/Limit';
-import Withdraw from '../pages/HomePages/Withdraw';
-import AddWithdraw from '../pages/HomePages/AddWithdraw';
+import Withdraw from '../pages/SendMenuPages/SendMoney/Withdraw';
+import AddWithdraw from '../pages/SendMenuPages/SendMoney/AddWithdraw';
 
 const ProfileNavigator = () => {
   const Stack = createNativeStackNavigator();

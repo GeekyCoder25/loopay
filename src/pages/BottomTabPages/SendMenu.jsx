@@ -47,7 +47,7 @@ const SendMenu = ({ navigation }) => {
   const sendMenuRoutes = [
     {
       routeName: 'Add Money',
-      routeDetails: 'Top your USD Account',
+      routeDetails: `Top up your ${selectedAcronym} Account`,
       routeIcon: 'add',
       routeNavigate: 'AddMoney',
     },

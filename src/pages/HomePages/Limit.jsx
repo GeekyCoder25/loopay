@@ -5,11 +5,9 @@ import Header from '../../components/Header';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import { addingDecimal } from '../../../utils/AddingZero';
-import { allCurrencies } from '../../database/data';
 
 const Limit = () => {
-  const { appData } = useContext(AppContext);
-  const localCurrencySymbol = allCurrencies[0].symbol;
+  const { appData, selectedCurrency } = useContext(AppContext);
   const { level = 1 } = appData;
 
   const limitTypes = [
@@ -85,7 +83,7 @@ const Limit = () => {
                 <BoldText>
                   {typeof limit.singleCredit === 'string'
                     ? limit.singleCredit
-                    : localCurrencySymbol +
+                    : selectedCurrency.symbol +
                       addingDecimal(limit.singleCredit.toLocaleString())}
                 </BoldText>
               </View>
@@ -94,7 +92,7 @@ const Limit = () => {
                 <BoldText>
                   {typeof limit.dailyCredit === 'string'
                     ? limit.dailyCredit
-                    : localCurrencySymbol +
+                    : selectedCurrency.symbol +
                       addingDecimal(limit.dailyCredit.toLocaleString())}
                 </BoldText>
               </View>
@@ -103,7 +101,7 @@ const Limit = () => {
                 <BoldText>
                   {typeof limit.singleDebit === 'string'
                     ? limit.singleDebit
-                    : localCurrencySymbol +
+                    : selectedCurrency.symbol +
                       addingDecimal(limit.singleDebit.toLocaleString())}
                 </BoldText>
               </View>
@@ -112,7 +110,7 @@ const Limit = () => {
                 <BoldText>
                   {typeof limit.dailyDebit === 'string'
                     ? limit.dailyDebit
-                    : localCurrencySymbol +
+                    : selectedCurrency.symbol +
                       addingDecimal(limit.dailyDebit.toLocaleString())}
                 </BoldText>
               </View>
