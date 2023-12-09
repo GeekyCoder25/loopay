@@ -17,7 +17,7 @@ import { deleteFetchData } from '../../../../utils/fetchAPI';
 import { getSessionID, logoutUser } from '../../../../utils/storage';
 import RegularText from '../../../components/fonts/RegularText';
 import ToastMessage from '../../../components/ToastMessage';
-import FaIcon from '@expo/vector-icons/Ionicons';
+import IonIcon from '@expo/vector-icons/Ionicons';
 
 const CustomDrawer = props => {
   const { navigation } = props;
@@ -55,11 +55,15 @@ const CustomDrawer = props => {
         return <UsersIcon />;
       case 'Verifications':
         return (
-          <FaIcon name="checkmark-circle-outline" color={'#868585'} size={24} />
+          <IonIcon
+            name="checkmark-circle-outline"
+            color={'#868585'}
+            size={24}
+          />
         );
       case 'Announcements':
         return (
-          <FaIcon name="cloud-upload-outline" color={'#868585'} size={24} />
+          <IonIcon name="cloud-upload-outline" color={'#868585'} size={24} />
         );
       case 'History':
         return <HistoryIcon />;

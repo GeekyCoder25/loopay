@@ -124,12 +124,12 @@ const Profile = ({ navigation, children, route }) => {
       routeIcon: 'settings',
       routeDetails: 'Manage your transaction limits',
     },
-    {
-      routeName: 'Secret Questions',
-      routeNavigate: 'Questions',
-      routeIcon: 'questions',
-      routeDetails: 'Set up your secret questions',
-    },
+    // {
+    //   routeName: 'Secret Questions',
+    //   routeNavigate: 'Questions',
+    //   routeIcon: 'questions',
+    //   routeDetails: 'Set up your secret questions',
+    // },
   ];
 
   return (

@@ -43,11 +43,10 @@ const Biometric = () => {
             <BiometricIcon />
           </View>
           <View style={styles.routeTexts}>
-            <BoldText style={styles.routeName}>
-              Use biometric to sign in to app
-            </BoldText>
+            <BoldText style={styles.routeName}>Use biometric</BoldText>
             <RegularText style={styles.routeDetails}>
-              Enable/Disable biometric authentication method
+              Enable/Disable biometric authentication method to sign in to app
+              and complete transactions
             </RegularText>
           </View>
           <Pressable onPress={handleSwitchBiometric}>

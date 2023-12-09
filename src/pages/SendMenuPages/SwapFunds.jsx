@@ -26,7 +26,7 @@ import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import { randomUUID } from 'expo-crypto';
 import ToastMessage from '../../components/ToastMessage';
 import { Audio } from 'expo-av';
-import FaIcon from '@expo/vector-icons/Ionicons';
+import IonIcon from '@expo/vector-icons/Ionicons';
 
 const SwapFunds = ({ navigation }) => {
   const { selectedCurrency, setIsLoading, setWalletRefresh, vh, showAmount } =
@@ -337,7 +337,7 @@ const SwapFunds = ({ navigation }) => {
                   Account to swap from
                 </RegularText>
                 <Pressable style={styles.arrow} onPress={handleSwitch}>
-                  <FaIcon
+                  <IonIcon
                     name="swap-horizontal-sharp"
                     size={28}
                     color={'#8d8d8d'}
@@ -529,9 +529,7 @@ const SwapFunds = ({ navigation }) => {
                 <RegularText>{toReceive || 'Amount to receive'}</RegularText>
               </View>
               <View style={styles.fee}>
-                <RegularText style={styles.feeText}>
-                  Service Charged
-                </RegularText>
+                <RegularText style={styles.feeText}>Service Charge</RegularText>
                 <RegularText style={styles.feeText}>
                   {swapFrom.symbol}
                   {addingDecimal(fee.toLocaleString())}

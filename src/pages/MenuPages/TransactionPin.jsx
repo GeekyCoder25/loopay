@@ -14,13 +14,13 @@ import RegularText from '../../components/fonts/RegularText';
 import InputPinPage, { PINInputFields } from '../../components/InputPinPage';
 import { useWalletContext } from '../../context/WalletContext';
 
-const TransactionPin = ({ navigation }) => {
+const TransactionPin = ({ navigation, route }) => {
   const { vh, appData } = useContext(AppContext);
   const [errorKey, setErrorKey] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [canEditPin, setCanEditPin] = useState(false);
   const [remembersPassword, setRemembersPassword] = useState(true);
-  const [inputOldPin, setInputOldPin] = useState(false);
+  const [inputOldPin, setInputOldPin] = useState(!route.params?.forgotPin);
   const [justEnterRouteState, setJustEnterRouteState] = useState(false);
   const [reload, setReload] = useState(false);
 
@@ -29,7 +29,6 @@ const TransactionPin = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    appData.pin && setInputOldPin(true);
     !remembersPassword && setCanEditPin(true);
     justEnterRouteState &&
       remembersPassword &&
@@ -75,6 +74,7 @@ const TransactionPin = ({ navigation }) => {
             setCanContinue={setCanEditPin}
             key={reload}
             setReload={setReload}
+            setInputOldPin={setInputOldPin}
           />
         )}
       </View>

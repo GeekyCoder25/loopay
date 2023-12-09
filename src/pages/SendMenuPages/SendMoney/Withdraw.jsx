@@ -1,7 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import { AppContext } from '../../../components/AppContext';
 import Button from '../../../components/Button';
 import BoldText from '../../../components/fonts/BoldText';
@@ -17,12 +23,19 @@ import { randomUUID } from 'expo-crypto';
 import { useFocusEffect } from '@react-navigation/native';
 import AccInfoCard from '../../../components/AccInfoCard';
 import InputPin from '../../../components/InputPin';
+import { AddBankFields, BanksModal } from './AddWithdraw';
+import ChevronDown from '../../../../assets/images/chevron-down';
 
 const Withdraw = ({ navigation }) => {
   const { appData, vh, selectedCurrency, setWalletRefresh } =
     useContext(AppContext);
   const { wallet } = useWalletContext();
   const [bankSelected, setBankSelected] = useState(null);
+  const [banks, setBanks] = useState([]);
+  const [selectedBank, setSelectedBank] = useState(null);
+  const [showBankModal, setShowBankModal] = useState(false);
+  const [fullName, setFullName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [amountInput, setAmountInput] = useState(null);
   const [description, setDescription] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -30,6 +43,26 @@ const Withdraw = ({ navigation }) => {
   const [canContinue, setCanContinue] = useState(false);
   const [addedBanks, setAddedBanks] = useState([]);
   const [fee, setFee] = useState(0);
+  const [recipientData, setRecipientData] = useState(null);
+  const [formData, setFormData] = useState({
+    accNo: '',
+    bank: {
+      active: true,
+      code: '033',
+      country: 'Nigeria',
+      createdAt: '2016-07-14T10:04:29.000Z',
+      currency: 'NGN',
+      gateway: 'emandate',
+      id: 18,
+      is_deleted: false,
+      longcode: '033153513',
+      name: 'United Bank For Africa',
+      pay_with_bank: false,
+      slug: 'united-bank-for-africa',
+      type: 'nuban',
+      updatedAt: '2022-03-09T10:28:57.000Z',
+    },
+  });
 
   useFocusEffect(
     React.useCallback(() => {
@@ -46,6 +79,83 @@ const Withdraw = ({ navigation }) => {
       });
     }, [selectedCurrency]),
   );
+
+  useEffect(() => {
+    if (!banks.length) {
+      getFetchData('user/banks').then(response => {
+        if (response.status === 200) {
+          return setBanks(response.data);
+        }
+      });
+    }
+  }, [banks.length, showBankModal]);
+
+  useEffect(() => {
+    if (!Object.values(formData).includes('') && formData.accNo.length === 10) {
+      handleConfirm();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData]);
+
+  useEffect(() => {
+    getFetchData('user/fees').then(response =>
+      response.status === 200
+        ? setFee(
+            response.data.find(
+              i =>
+                i.group === 'transferOthers' &&
+                i.currency === selectedCurrency.currency,
+            )?.amount,
+          )
+        : setFee(0),
+    );
+  }, [selectedCurrency.currency]);
+
+  const formFields = [
+    {
+      label: 'Bank account Number',
+      id: 'accNo',
+      keyboard: 'numeric',
+    },
+  ];
+
+  const handleConfirm = async () => {
+    setFullName('');
+    if (formData.accNo === '') {
+      setErrorMessage('Please provide you bank account number');
+      return setErrorKey('accNo');
+    } else if (!formData.bank) {
+      setErrorMessage('Please select a bank');
+      return setErrorKey('bank');
+    }
+    try {
+      setIsLoading(true);
+      const response = await postFetchData('user/check-recipient', formData);
+      console.log(response.data);
+
+      if (response.status === 200) {
+        setFullName(response.data.name);
+        setRecipientData(response.data);
+      } else {
+        throw new Error(response.data);
+      }
+    } catch (err) {
+      setErrorMessage(err.message);
+      setFullName('');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleContinue = async () => {
+    if (formData.accNo === '') {
+      setErrorMessage('Please provide you bank account number');
+      return setErrorKey('accNo');
+    } else if (!formData.bank) {
+      setErrorMessage('Please select a bank');
+      return setErrorKey('bank');
+    }
+    setBankSelected(recipientData);
+  };
 
   const handleBlur = () => {
     amountInput && setAmountInput(addingDecimal(amountInput));
@@ -97,12 +207,15 @@ const Withdraw = ({ navigation }) => {
         id,
       });
       if (response.status === 200) {
+        const { transaction } = response.data;
         setWalletRefresh(prev => !prev);
+        await postFetchData('user/savedbanks', formData);
         return navigation.replace('Success', {
           userToSendTo: bankSelected,
           amountInput,
           fee,
           id,
+          transaction,
         });
       }
       typeof response === 'string'
@@ -112,63 +225,104 @@ const Withdraw = ({ navigation }) => {
       console.log(error.message);
     }
   };
-  useEffect(() => {
-    getFetchData('user/fees').then(response =>
-      response.status === 200
-        ? setFee(
-            response.data.find(
-              i =>
-                i.group === 'transferOthers' &&
-                i.currency === selectedCurrency.currency,
-            )?.amount,
-          )
-        : setFee(0),
-    );
-  }, [selectedCurrency.currency]);
 
   return (
     <PageContainer scroll>
       <View style={{ ...styles.container, minHeight: vh * 0.75 }}>
         <AccInfoCard disableSwitchCurrency={bankSelected} />
-        {!canContinue && (
-          <RegularText style={styles.headerText}>
-            In cases of insufficient fund, you have to swap to{' '}
-            {selectedCurrency.acronym} before placing withdrawal.
-          </RegularText>
-        )}
+        <RegularText style={styles.headerText}>
+          In cases of insufficient fund, you have to swap to{' '}
+          {selectedCurrency.acronym} before placing withdrawal.
+        </RegularText>
         {!bankSelected ? (
-          <>
-            <BoldText style={styles.paymentHeader}>Payment Bank</BoldText>
-            <View>
-              {addedBanks.length ? (
-                addedBanks.map(bank => (
-                  <Pressable
-                    key={bank.accNo + bank.bankName}
-                    style={styles.bank}
-                    onPress={() => setBankSelected(bank)}>
-                    <View style={styles.bankDetails}>
-                      <RegularText style={styles.bankName}>
-                        {bank.name}
-                      </RegularText>
-                      <BoldText>{bank.accNo}</BoldText>
-                      <RegularText>{bank.bankName}</RegularText>
-                    </View>
-                    <FaIcon name="chevron-right" size={18} />
-                  </Pressable>
-                ))
-              ) : (
-                <View style={styles.noBank}>
-                  <BoldText>No payment bank has been added yet</BoldText>
+          <View>
+            <View style={styles.form}>
+              {formFields.map(field => (
+                <AddBankFields
+                  key={field.id}
+                  field={field}
+                  errorKey={errorKey}
+                  setErrorKey={setErrorKey}
+                  setErrorMessage={setErrorMessage}
+                  setFormData={setFormData}
+                  formData={formData}
+                />
+              ))}
+              <BoldText>Bank Name</BoldText>
+              <Pressable
+                style={styles.textInputContainer}
+                onPress={() => setShowBankModal(true)}>
+                <View
+                  style={{
+                    ...styles.bankInput,
+                    borderColor: errorKey === 'bank' ? 'red' : '#B1B1B1',
+                  }}>
+                  <BoldText>{selectedBank?.name || 'Choose bank'}</BoldText>
+                  <ChevronDown />
                 </View>
+              </Pressable>
+              <BanksModal
+                modalOpen={showBankModal}
+                setModalOpen={setShowBankModal}
+                banks={banks}
+                setSelectedBank={setSelectedBank}
+                setFormData={setFormData}
+                setErrorKey={setErrorKey}
+                setErrorMessage={setErrorMessage}
+              />
+              {!isLoading ? (
+                fullName && (
+                  <BoldText style={styles.name}>
+                    <FaIcon name="check-circle" size={20} color="green" />
+                    {'  '}
+                    {fullName}
+                  </BoldText>
+                )
+              ) : (
+                <BoldText style={styles.name}>
+                  <ActivityIndicator
+                    color={'green'}
+                    style={{ alignItems: 'flex-start' }}
+                  />
+                </BoldText>
               )}
+              <ErrorMessage errorMessage={errorMessage} />
             </View>
+            {!fullName && (
+              <View style={styles.recent}>
+                <BoldText style={styles.headerText}>Recent</BoldText>
+                <View>
+                  {addedBanks.length ? (
+                    addedBanks.map(bank => (
+                      <Pressable
+                        key={bank.accNo + bank.bankName}
+                        style={styles.bank}
+                        onPress={() => setBankSelected(bank)}>
+                        <View style={styles.bankDetails}>
+                          <RegularText style={styles.bankName}>
+                            {bank.name}
+                          </RegularText>
+                          <BoldText>{bank.accNo}</BoldText>
+                          <RegularText>{bank.bankName}</RegularText>
+                        </View>
+                        <FaIcon name="chevron-right" size={18} />
+                      </Pressable>
+                    ))
+                  ) : (
+                    <View style={styles.noBank}>
+                      <BoldText>No recent banks will show here</BoldText>
+                    </View>
+                  )}
+                </View>
+              </View>
+            )}
             <View style={styles.button}>
               <Button
-                text="Add new Payment Bank"
-                onPress={() => navigation.navigate('SendBankAdd')}
+                text={'Continue'}
+                onPress={recipientData ? handleContinue : handleConfirm}
               />
             </View>
-          </>
+          </View>
         ) : !canContinue ? (
           <View style={styles.form}>
             <View>
@@ -223,9 +377,7 @@ const Withdraw = ({ navigation }) => {
                 <RegularText>Send money to other banks</RegularText>
               </View>
               <View style={styles.fee}>
-                <RegularText style={styles.feeText}>
-                  Service Charged
-                </RegularText>
+                <RegularText style={styles.feeText}>Service Charge</RegularText>
                 <RegularText style={styles.feeText}>
                   {selectedCurrency.symbol}
                   {addingDecimal(`${fee}`)}
@@ -316,6 +468,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
   },
+  recent: {
+    marginVertical: 30,
+  },
+  bankInput: {
+    width: 100 + '%',
+    height: 55,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderRadius: 8,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   bank: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -323,7 +488,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#BBBBBB',
     borderBottomWidth: 1,
     paddingBottom: 15,
-    marginTop: 25,
+    marginTop: 15,
   },
   bankDetails: {
     gap: 3,
@@ -332,10 +497,13 @@ const styles = StyleSheet.create({
     marginBottom: 3,
     fontSize: 16,
   },
+  name: {
+    color: 'green',
+    marginVertical: 20,
+  },
   form: {
     marginTop: 30,
     flex: 1,
-    gap: 30,
   },
   textInputContainer: {
     position: 'relative',

@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import PageContainer from './PageContainer';
 import BoldText from './fonts/BoldText';
-import FaIcon from '@expo/vector-icons/Ionicons';
+import IonIcon from '@expo/vector-icons/Ionicons';
+
 import RegularText from './fonts/RegularText';
 import { allCurrencies } from '../database/data';
 import { AppContext } from './AppContext';
@@ -227,7 +228,7 @@ const FilterModal = ({
         onRequestClose={hideFilter}>
         <PageContainer padding paddingTop={20}>
           <Pressable onPress={hideFilter}>
-            <FaIcon name="close" size={20} />
+            <IonIcon name="close" size={20} />
           </Pressable>
           <BoldText style={styles.headerText}>Filter</BoldText>
           <RegularText style={styles.subText}>Accounts</RegularText>
@@ -371,11 +372,11 @@ const FilterModal = ({
                 <View style={styles.checkbox}>
                   {selectAll ? (
                     <Pressable onPress={handleSelectAllClicked}>
-                      <FaIcon name="radio-button-on" size={24} />
+                      <IonIcon name="radio-button-on" size={24} />
                     </Pressable>
                   ) : (
                     <Pressable onPress={handleSelectAllClicked}>
-                      <FaIcon name="radio-button-off" size={24} />
+                      <IonIcon name="radio-button-off" size={24} />
                     </Pressable>
                   )}
                 </View>

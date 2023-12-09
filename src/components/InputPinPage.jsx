@@ -8,7 +8,12 @@ import { AppContext } from './AppContext';
 import Button from './Button';
 import BoldText from './fonts/BoldText';
 
-const InputPinPage = ({ setCanContinue, setReload, customPinFunc }) => {
+const InputPinPage = ({
+  setCanContinue,
+  setReload,
+  setInputOldPin,
+  customPinFunc,
+}) => {
   const codeLengths = [1, 2, 3, 4];
   const [pinCode, setPinCode] = useState('');
   const [errorMessage, setErrorMessage] = useState();
@@ -74,6 +79,9 @@ const InputPinPage = ({ setCanContinue, setReload, customPinFunc }) => {
             />
           ))}
         </View>
+        <Pressable style={styles.forgot} onPress={() => setInputOldPin(false)}>
+          <BoldText>Forgot PIN?</BoldText>
+        </Pressable>
         <TextInput
           autoFocus
           style={{ height: 1 }}
@@ -131,6 +139,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 35,
     fontFamily: 'OpenSans-700',
+  },
+  forgot: {
+    alignItems: 'center',
+    marginVertical: 70,
   },
   errorMessage: {
     marginTop: 20,

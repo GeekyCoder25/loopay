@@ -8,7 +8,8 @@ import {
   View,
 } from 'react-native';
 import BoldText from './fonts/BoldText';
-import FaIcon from '@expo/vector-icons/Ionicons';
+import IonIcon from '@expo/vector-icons/Ionicons';
+
 import { AppContext } from './AppContext';
 import RegularText from './fonts/RegularText';
 import { deleteFetchData } from '../../utils/fetchAPI';
@@ -46,7 +47,7 @@ const Popup = () => {
             <Pressable
               style={styles.close}
               onPress={() => handleClose(popUp.popUpID)}>
-              <FaIcon name="close-circle" size={40} color={'#fff'} />
+              <IonIcon name="close-circle" size={40} color={'#fff'} />
             </Pressable>
             <View style={styles.modalScroll}>
               <ScrollView>

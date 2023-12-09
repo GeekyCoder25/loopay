@@ -27,7 +27,7 @@ const MenuNavigator = () => {
         ),
       }}>
       <Stack.Screen
-        name="SendMenu"
+        name="Menu"
         component={Menu}
         options={{
           headerShown: false,

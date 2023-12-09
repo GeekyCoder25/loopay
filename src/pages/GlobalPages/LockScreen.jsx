@@ -17,7 +17,7 @@ import BoldText from '../../components/fonts/BoldText';
 import Back from '../../components/Back';
 import * as Haptics from 'expo-haptics';
 import * as LocalAuthentication from 'expo-local-authentication';
-import FaIcon from '@expo/vector-icons/Ionicons';
+import IonIcon from '@expo/vector-icons/Ionicons';
 import { timeForInactivityInSecond } from '../../config/config';
 import { getBiometric } from '../../../utils/storage';
 
@@ -288,7 +288,10 @@ const LockScreen = () => {
                     width: vw * 0.2,
                     height: vh * 0.08,
                   }}
-                  onPress={() => setInputCode(prev => prev.slice(0, -1))}>
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setInputCode(prev => prev.slice(0, -1));
+                  }}>
                   <Image
                     source={require('../../../assets/images/delete.png')}
                     style={styles.delete}
@@ -298,10 +301,14 @@ const LockScreen = () => {
             </View>
             {enableBiometric && isBiometricSupported && (
               <Pressable onPress={() => setBiometricSwitch(prev => !prev)}>
-                <FaIcon name="finger-print-sharp" size={50} />
+                <IonIcon name="finger-print-sharp" size={50} />
               </Pressable>
             )}
-            <Pressable onPress={() => setHasForgot(true)}>
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setHasForgot(true);
+              }}>
               <BoldText>Forgot Password?</BoldText>
             </Pressable>
           </View>

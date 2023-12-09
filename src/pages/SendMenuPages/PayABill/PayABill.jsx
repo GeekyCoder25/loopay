@@ -8,7 +8,7 @@ import SchoolIcon from '../../../../assets/images/billSchool.svg';
 import ElectricityIcon from '../../../../assets/images/billElectricity.svg';
 import RegularText from '../../../components/fonts/RegularText';
 import { AppContext } from '../../../components/AppContext';
-import FaIcon from '@expo/vector-icons/Ionicons';
+import IonIcon from '@expo/vector-icons/Ionicons';
 
 const PayABill = ({ navigation }) => {
   const { appData } = useContext(AppContext);
@@ -232,7 +232,7 @@ const Bill = ({ bill, navigation }) => {
       case 'electricity':
         return <ElectricityIcon width={width} height={height} />;
       case 'water':
-        return <FaIcon name="water" color={'#525252'} size={40} />;
+        return <IonIcon name="water" color={'#525252'} size={40} />;
       default:
         break;
     }

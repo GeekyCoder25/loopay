@@ -12,7 +12,8 @@ import {
 import BackIcon from '../../../assets/images/backArrow.svg';
 import ChevronDown from '../../../assets/images/chevron-down-fill.svg';
 import RegularText from '../../components/fonts/RegularText';
-import FaIcon from '@expo/vector-icons/Ionicons';
+import IonIcon from '@expo/vector-icons/Ionicons';
+
 import { useAdminDataContext } from '../../context/AdminContext';
 import Verification from './components/Verification';
 import Back from '../../components/Back';
@@ -185,7 +186,7 @@ const Verifications = ({ navigation, route }) => {
                 <BoldText>{item.idType}</BoldText>
               </View>
             </View>
-            <FaIcon name="arrow-forward" size={24} />
+            <IonIcon name="arrow-forward" size={24} />
           </View>
         </Pressable>
       )}
