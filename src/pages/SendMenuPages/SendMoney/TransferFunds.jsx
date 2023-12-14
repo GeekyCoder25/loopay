@@ -22,7 +22,6 @@ import { addingDecimal } from '../../../../utils/AddingZero';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { postFetchData } from '../../../../utils/fetchAPI';
 import BackArrow from '../../../../assets/images/backArrowWhite.svg';
-import FooterCard from '../../../components/FooterCard';
 import { useWalletContext } from '../../../context/WalletContext';
 import { randomUUID } from 'expo-crypto';
 import InputPin from '../../../components/InputPin';
@@ -120,6 +119,7 @@ const TransferFunds = ({ navigation, route }) => {
       console.log(error);
     }
   };
+
   return (
     <>
       <PageContainer paddingTop={0}>
@@ -220,14 +220,10 @@ const TransferFunds = ({ navigation, route }) => {
                 />
               </>
             ) : (
-              <InputPin customFunc={initiateTransfer}>
-                <View style={styles.footer}>
-                  <FooterCard
-                    userToSendTo={userToSendTo}
-                    amountInput={amountInput}
-                  />
-                </View>
-              </InputPin>
+              <InputPin
+                customFunc={initiateTransfer}
+                handleCancel={() => setCanContinue(false)}
+              />
             )}
           </View>
         </ScrollView>

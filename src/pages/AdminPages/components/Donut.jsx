@@ -1,18 +1,11 @@
-import * as React from 'react';
-import {
-  Easing,
-  TextInput,
-  Animated,
-  Text,
-  View,
-  StyleSheet,
-} from 'react-native';
+import { Easing, TextInput, Animated, View, StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
 import Svg, { G, Circle, Rect } from 'react-native-svg';
 import { AppContext } from '../../../components/AppContext';
 import BoldText from '../../../components/fonts/BoldText';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import RegularText from '../../../components/fonts/RegularText';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
@@ -23,16 +16,16 @@ export default function Donut({
   max,
   income,
   outcome,
-  onhold,
+  onHold,
 }) {
-  const { vw, selectedCurrency } = React.useContext(AppContext);
+  const { vw, selectedCurrency, showAmount } = useContext(AppContext);
   const strokeWidth = 20;
   const radius = vw * 0.2;
-  const animated = React.useRef(new Animated.Value(0)).current;
-  const inputRef = React.useRef();
+  const animated = useRef(new Animated.Value(0)).current;
+  const inputRef = useRef();
   const circumference = 2 * Math.PI * radius;
   const halfCircle = radius + strokeWidth;
-  const [maxLabel, setMaxLabel] = React.useState(1);
+  const [maxLabel, setMaxLabel] = useState(1);
 
   //   const animation = toValue => {
   //     return Animated.timing(animated, {
@@ -48,8 +41,8 @@ export default function Donut({
 
   const data = [
     {
-      status: 'onhold',
-      amount: income + outcome + onhold,
+      status: 'onHold',
+      amount: income + outcome + onHold,
       color: '#bec2c7',
     },
     {
@@ -64,7 +57,7 @@ export default function Donut({
     },
   ];
 
-  React.useEffect(() => {
+  useEffect(() => {
     // setMaxLabel(0);
     setTimeout(() => {
       maxLabel < max && setMaxLabel(prev => prev + max * 0.2);
@@ -104,8 +97,9 @@ export default function Donut({
       </Svg>
       <View style={[StyleSheet.absoluteFillObject, styles.text]}>
         <BoldText style={{ fontSize: radius / 5.5 }}>
-          {selectedCurrency.symbol}
-          {addingDecimal(maxLabel.toLocaleString())}
+          {showAmount
+            ? selectedCurrency.symbol + addingDecimal(maxLabel.toLocaleString())
+            : '***'}
         </BoldText>
         <RegularText>Label</RegularText>
       </View>
@@ -118,7 +112,7 @@ const styles = StyleSheet.create({
 });
 
 const EachDonut = ({ max, circumference, radius, strokeWidth, p }) => {
-  const circleRef = React.useRef();
+  const circleRef = useRef();
   const maxPerc = (100 * p.amount) / max;
   const strokeDashoffset = circumference - (circumference * maxPerc) / 100;
   return (

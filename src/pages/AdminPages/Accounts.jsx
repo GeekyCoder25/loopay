@@ -8,7 +8,8 @@ import { allCurrencies } from '../../database/data';
 
 const Accounts = () => {
   const { adminData } = useAdminDataContext();
-  const { localBalance, dollarBalance, poundBalance, euroBalance } = adminData;
+  const { localBalance, dollarBalance, poundBalance, euroBalance } =
+    adminData?.allBalances;
 
   const localCurrency = allCurrencies[0];
   const currencies = [

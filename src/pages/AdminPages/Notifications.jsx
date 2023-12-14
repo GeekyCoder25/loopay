@@ -1,43 +1,60 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useEffect, useState } from 'react';
+import React, { memo, useContext, useEffect, useState } from 'react';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import PageContainer from '../../components/PageContainer';
 import {
+  ActivityIndicator,
   Image,
   Pressable,
   StyleSheet,
   TextInput,
   View,
   Modal,
+  FlatList,
 } from 'react-native';
 import { AppContext } from '../../components/AppContext';
 import UserIcon from '../../components/UserIcon';
-import { putFetchData } from '../../../utils/fetchAPI';
-import { useAdminDataContext } from '../../context/AdminContext';
+import { getFetchData, putFetchData } from '../../../utils/fetchAPI';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
 import Back from '../../components/Back';
 import TransactionHistoryParams from '../MenuPages/TransactionHistoryParams';
 
 const Notifications = () => {
-  const { vh, setWalletRefresh } = useContext(AppContext);
-  const [focused, setFocused] = useState(false);
-  const { adminData } = useAdminDataContext();
-  const { notifications } = adminData;
+  const { vh } = useContext(AppContext);
   const [searchHistory, setSearchHistory] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [searchInput, setSearchInput] = useState('');
   const [modalData, setModalData] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [fetchingMore, setFetchingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(null);
+  const limit = Math.round(vh / 50);
+  const [isLoading, setIsLoading] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
-      putFetchData('admin/notifications');
-
-      return () => setWalletRefresh(prev => !prev);
-    }, [setWalletRefresh]),
+      const getNotifications = async () => {
+        try {
+          setIsLoading(true);
+          const response = await getFetchData(
+            `admin/notifications?limit=${limit}&page=${1}`,
+          );
+          if (response.status === 200) {
+            setNotifications(response.data.data);
+            setTotalPages(response.data.totalPages);
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      getNotifications();
+      return () => setPage(1);
+    }, [limit]),
   );
+
   const groupNotificationsByDate = inputArray => {
     const groupedByDate = {};
 
@@ -64,82 +81,114 @@ const Notifications = () => {
     return resultArray;
   };
 
-  const handleSearch = async text => {
-    setSearchInput(text);
-    const foundHistories = notifications.map(history =>
-      Object.values(history)
-        .toString()
-        .toLowerCase()
-        .includes(text.toLowerCase())
-        ? history
-        : null,
-    );
-
-    foundHistories.length && setSearchHistory(foundHistories);
-    text && foundHistories.length
-      ? setIsSearching(true)
-      : setIsSearching(false);
+  const handleScrollMore = async () => {
+    try {
+      setFetchingMore(true);
+      const response = await getFetchData(
+        `admin/notifications?limit=${limit}&page=${page + 1}`,
+      );
+      if (response.status === 200 && response.data.pageSize) {
+        setTotalPages(response.data.totalPages);
+        setPage(page + 1);
+        const uniqueIds = new Set();
+        setNotifications(
+          [...notifications, ...response.data.data].filter(obj => {
+            if (!uniqueIds.has(obj.id)) {
+              uniqueIds.add(obj.id);
+              return true;
+            }
+            return false;
+          }),
+        );
+      }
+    } finally {
+      setFetchingMore(false);
+    }
   };
 
   return (
-    <PageContainer justify={true} scroll>
-      {notifications.length ? (
+    <>
+      {isLoading ? (
         <View
           style={{
             ...styles.container,
             minHeight: vh * 0.65,
           }}>
-          <BoldText style={styles.header}>Notifications</BoldText>
-          <View
-            style={{
-              ...styles.textInputContainer,
-            }}>
-            <TextInput
-              style={{
-                ...styles.textInput,
-                textAlign: searchInput || focused ? 'left' : 'center',
-                paddingLeft: searchInput || focused ? 10 : 0,
-              }}
-              placeholder={searchInput || focused ? '' : 'Search, e.g by date'}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              onChangeText={text => handleSearch(text)}
-              value={searchInput}
+          <View style={styles.body}>
+            {/* Render loading indicator */}
+            <Header
+              isSearching={isSearching}
+              setIsSearching={setIsSearching}
+              setSearchHistory={setSearchHistory}
+            />
+            <ActivityIndicator
+              size={'large'}
+              color={'#1e1e1e'}
+              style={styles.loading}
             />
           </View>
-          <View style={styles.body}>
-            {groupNotificationsByDate(notifications).map(dayNotifications => (
-              <View key={dayNotifications.date} style={styles.dateHistory}>
+        </View>
+      ) : notifications.length ? (
+        <View style={styles.body}>
+          <FlatList
+            data={groupNotificationsByDate(notifications)}
+            keyExtractor={({ date }) => date}
+            renderItem={({ item: dayNotifications }) => (
+              <View key={dayNotifications.date} style={styles.dateNotification}>
                 <RegularText style={styles.date}>
                   {dayNotifications.date}
                 </RegularText>
-                {isSearching
-                  ? searchHistory.map(
-                      notification =>
-                        notification && (
-                          <Message
-                            key={notification.id}
-                            notification={notification}
-                            setShowModal={setShowModal}
-                            setModalData={setModalData}
-                          />
-                        ),
-                    )
-                  : dayNotifications.notifications.map(notification => (
-                      <Message
-                        key={notification.id}
-                        notification={notification}
-                        setShowModal={setShowModal}
-                        setModalData={setModalData}
-                      />
-                    ))}
+                <FlatList
+                  data={
+                    isSearching ? searchHistory : dayNotifications.notifications
+                  }
+                  keyExtractor={({ _id }) => _id}
+                  renderItem={({ item }) => (
+                    <Message
+                      notification={item}
+                      setShowModal={setShowModal}
+                      setModalData={setModalData}
+                    />
+                  )}
+                />
               </View>
-            ))}
-          </View>
+            )}
+            ListHeaderComponent={
+              <Header
+                notifications={notifications}
+                setIsSearching={setIsSearching}
+                setSearchHistory={setSearchHistory}
+              />
+            }
+            ListFooterComponent={
+              page >= totalPages ? (
+                <View style={styles.complete}>
+                  <BoldText>That&apos;s all for now</BoldText>
+                </View>
+              ) : (
+                fetchingMore && <ActivityIndicator color={'#1e1e1e'} />
+              )
+            }
+            ListEmptyComponent={
+              <View style={{ ...styles.empty, minHeight: vh * 0.9 }}>
+                <BoldText style={styles.emptyText}>
+                  Your notifications will appear here
+                </BoldText>
+              </View>
+            }
+            onEndReachedThreshold={0.5}
+            onEndReached={
+              !fetchingMore && notifications.length && page < totalPages
+                ? handleScrollMore
+                : undefined
+            }
+            bounces={false}
+            removeClippedSubviews
+          />
         </View>
       ) : (
-        <View style={{ ...styles.historyEmpty, minHeight: vh * 0.9 }}>
-          <BoldText style={styles.historyEmptyText}>
+        <View style={{ ...styles.empty, minHeight: vh * 0.9 }}>
+          <BoldText style={styles.emptyText}>
             Your notifications will appear here
           </BoldText>
         </View>
@@ -159,7 +208,7 @@ const Notifications = () => {
         />
         <TransactionHistoryParams route={{ params: modalData }} />
       </Modal>
-    </PageContainer>
+    </>
   );
 };
 const styles = StyleSheet.create({
@@ -182,7 +231,7 @@ const styles = StyleSheet.create({
     height: 35,
     fontFamily: 'OpenSans-400',
   },
-  dateHistory: {
+  dateNotification: {
     borderBottomColor: '#868585',
     borderBottomWidth: 0.2,
   },
@@ -192,7 +241,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 3 + '%',
     color: '#979797',
   },
-  history: {
+  notification: {
     backgroundColor: '#eee',
     paddingVertical: 20,
     paddingHorizontal: 10,
@@ -210,7 +259,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     borderRadius: 25,
   },
-  historyContent: {
+  content: {
     flex: 1,
     gap: 3,
   },
@@ -234,7 +283,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 5,
   },
-  historyEmpty: {
+  loading: {
+    marginTop: 15 + '%',
+  },
+  complete: {
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  empty: {
     backgroundColor: '#eee',
     justifyContent: 'center',
     alignItems: 'center',
@@ -242,7 +298,7 @@ const styles = StyleSheet.create({
     height: 100 + '%',
     paddingHorizontal: 15 + '%',
   },
-  historyEmptyText: {
+  emptyText: {
     textAlign: 'center',
   },
 });
@@ -327,9 +383,9 @@ const Message = ({ notification, setModalData, setShowModal }) => {
   }, [photo, type]);
 
   return (
-    <Pressable style={styles.history} onPress={handleNavigate}>
+    <Pressable style={styles.notification} onPress={handleNavigate}>
       {transactionTypeIcon}
-      <View style={styles.historyContent}>
+      <View style={styles.content}>
         <BoldText style={styles.title}>{header}</BoldText>
         <RegularText>{adminMessage}</RegularText>
         <RegularText>{historyTime}</RegularText>
@@ -338,3 +394,46 @@ const Message = ({ notification, setModalData, setShowModal }) => {
     </Pressable>
   );
 };
+
+const Header = memo(({ notifications, setIsSearching, setSearchHistory }) => {
+  const [focused, setFocused] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
+
+  const handleSearch = async text => {
+    setSearchInput(text);
+    const foundHistories = notifications.filter(history =>
+      Object.values(history)
+        .toString()
+        .toLowerCase()
+        .includes(text.toLowerCase()),
+    );
+
+    foundHistories.length && setSearchHistory(foundHistories);
+    text && foundHistories.length
+      ? setIsSearching(true)
+      : setIsSearching(false);
+  };
+
+  return (
+    <View>
+      <BoldText style={styles.header}>Notifications</BoldText>
+      <View
+        style={{
+          ...styles.textInputContainer,
+        }}>
+        <TextInput
+          style={{
+            ...styles.textInput,
+            textAlign: searchInput || focused ? 'left' : 'center',
+            paddingLeft: searchInput || focused ? 10 : 0,
+          }}
+          placeholder={searchInput || focused ? '' : 'Search'}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          onChangeText={text => handleSearch(text)}
+          value={searchInput}
+        />
+      </View>
+    </View>
+  );
+});

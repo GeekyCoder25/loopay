@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useEffect, useState } from 'react';
+import React, { memo, useContext, useEffect, useState } from 'react';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import PageContainer from '../../components/PageContainer';
@@ -34,26 +34,26 @@ const TransactionHistory = ({ navigation }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [isLocalLoading, setIsLocalLoading] = useState(true);
   const [accNoAsterisk, setAccNoAsterisk] = useState([]);
-  const [page, setPage] = useState(1);
-  const [refreshing, setRefreshing] = useState(false);
+  // const [page, setPage] = useState(1);
+  const [reloading, setReloading] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
+  // const totalTransactionsLength = transactions.length;
+  const [isFiltered, setIsFiltered] = useState(false);
 
   useEffect(() => {
-    setTransactionHistory(
-      groupTransactionsByDate(activeTransactions.slice(0, 10)),
-    );
+    setTransactionHistory(groupTransactionsByDate(activeTransactions));
     setIsLocalLoading(false);
-    setRefreshing(false);
+    setReloading(false);
   }, [activeTransactions]);
 
-  const handleScrollMore = () => {
-    setRefreshing(true);
-    setPage(prev => prev + 1);
-    setTransactionHistory(
-      groupTransactionsByDate(activeTransactions.slice(0, (page + 1) * 10)),
-    );
-    setRefreshing(false);
-  };
+  // const handleScrollMore = () => {
+  //   setReloading(true);
+  //   setPage(prev => prev + 1);
+  //   setTransactionHistory(
+  //     groupTransactionsByDate(activeTransactions.slice(0, (page + 1) * 10)),
+  //   );
+  //   setReloading(false);
+  // };
 
   useEffect(() => {
     setAccNoAsterisk([]);
@@ -69,7 +69,9 @@ const TransactionHistory = ({ navigation }) => {
         setShowModal={setShowFilterModal}
         setTransactionHistory={setTransactionHistory}
         transactions={transactions}
+        propTransactions={transactions}
         setActiveTransactions={setActiveTransactions}
+        setIsFiltered={setIsFiltered}
       />
       {transactionHistory.length ? (
         !isLocalLoading ? (
@@ -106,7 +108,9 @@ const TransactionHistory = ({ navigation }) => {
                           accNoAsterisk={accNoAsterisk}
                         />
                       )}
-                      keyExtractor={({ id }) => id}
+                      keyExtractor={({ _id, transactionType }) =>
+                        transactionType + _id
+                      }
                     />
                   </View>
                 )}
@@ -119,11 +123,18 @@ const TransactionHistory = ({ navigation }) => {
                   />
                 )}
                 ListFooterComponent={() =>
-                  refreshing && <ActivityIndicator color={'#1e1e1e'} />
+                  reloading && <ActivityIndicator color={'#1e1e1e'} />
                 }
-                onEndReachedThreshold={0.7}
-                onEndReached={handleScrollMore}
-                refreshing={refreshing}
+                // onEndReachedThreshold={0.5}
+                // onEndReached={
+                //   !isFiltered &&
+                //   !reloading &&
+                //   transactions.length &&
+                //   transactions.length < totalTransactionsLength
+                //     ? handleScrollMore
+                //     : undefined
+                // }
+                bounces={false}
               />
             )}
           </View>
@@ -268,7 +279,7 @@ const styles = StyleSheet.create({
 });
 export default TransactionHistory;
 
-export const History = ({ history, navigation, accNoAsterisk }) => {
+export const History = memo(({ history, navigation, accNoAsterisk }) => {
   const { vw } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const {
@@ -449,7 +460,7 @@ export const History = ({ history, navigation, accNoAsterisk }) => {
       )}
     </Pressable>
   );
-};
+});
 export const billIcon = key => {
   switch (key) {
     case 'electricity':
@@ -463,81 +474,81 @@ export const billIcon = key => {
   }
 };
 
-const Header = ({
-  setIsSearching,
-  setSearchHistory,
-  setIsLocalLoading,
-  setShowFilterModal,
-  hideSearch,
-}) => {
-  const [searchData, setSearchData] = useState(null);
-  const [focused, setFocused] = useState(false);
+const Header = memo(
+  ({
+    setIsSearching,
+    setSearchHistory,
+    setIsLocalLoading,
+    setShowFilterModal,
+    hideSearch,
+  }) => {
+    const [searchData, setSearchData] = useState(null);
+    const [focused, setFocused] = useState(false);
 
-  const handleSearchFocus = async () => {
-    setFocused(true);
-    if (!searchData) {
-      const response = await getFetchData('user/transaction');
-      if (response.status === 200) {
-        return setSearchData(response.data.transactions);
+    const handleSearchFocus = async () => {
+      setFocused(true);
+      if (!searchData) {
+        const response = await getFetchData('user/transaction');
+        if (response.status === 200) {
+          return setSearchData(response.data.transactions);
+        }
+        return setSearchData([]);
       }
-      return setSearchData([]);
-    }
-  };
+    };
 
-  const handleSearchBlur = () => {
-    setFocused(false);
-    setIsSearching(false);
-  };
+    const handleSearchBlur = () => {
+      setFocused(false);
+      setIsSearching(false);
+    };
 
-  const handleSearch = async text => {
-    try {
-      setIsLocalLoading(true);
+    const handleSearch = async text => {
+      try {
+        setIsLocalLoading(true);
 
-      const foundHistories = searchData.map(history =>
-        Object.values(history)
-          .toString()
-          .toLowerCase()
-          .includes(text.toLowerCase())
-          ? history
-          : null,
-      );
-      text && foundHistories.length
-        ? setIsSearching(true)
-        : setIsSearching(false);
+        const foundHistories = searchData.filter(history =>
+          Object.values(history)
+            .toString()
+            .toLowerCase()
+            .includes(text.toLowerCase()),
+        );
+        text && foundHistories.length
+          ? setIsSearching(true)
+          : setIsSearching(false);
 
-      foundHistories.length && setSearchHistory(foundHistories);
-    } finally {
-      setIsLocalLoading(false);
-    }
-  };
+        foundHistories.length && setSearchHistory(foundHistories);
+      } finally {
+        setIsLocalLoading(false);
+      }
+    };
 
-  const handleFilter = () => {
-    setShowFilterModal(true);
-  };
+    const handleFilter = () => {
+      setShowFilterModal(true);
+    };
 
-  return (
-    <View>
-      <View style={styles.headerContainer}>
-        <BoldText style={styles.historyHeader}>Transaction history</BoldText>
-        <Pressable onPress={handleFilter}>
-          <IonIcon name="filter-sharp" size={20} />
-        </Pressable>
-      </View>
-      {!hideSearch && (
-        <View style={styles.textInputContainer}>
-          <TextInput
-            style={{
-              ...styles.textInput,
-              textAlign: focused ? 'left' : 'center',
-              paddingLeft: focused ? 10 : 0,
-            }}
-            placeholder={focused ? '' : 'Search, e.g Beneficiary'}
-            onFocus={handleSearchFocus}
-            onBlur={handleSearchBlur}
-            onChangeText={text => handleSearch(text)}
-          />
+    return (
+      <View>
+        <View style={styles.headerContainer}>
+          <BoldText style={styles.historyHeader}>Transaction history</BoldText>
+          <Pressable onPress={handleFilter}>
+            <IonIcon name="filter-sharp" size={20} />
+          </Pressable>
         </View>
-      )}
-    </View>
-  );
-};
+        {!hideSearch && (
+          <View style={styles.textInputContainer}>
+            <TextInput
+              style={{
+                ...styles.textInput,
+                textAlign: focused ? 'left' : 'center',
+                paddingLeft: focused ? 10 : 0,
+              }}
+              placeholder={focused ? '' : 'Search, e.g Beneficiary'}
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
+              onChangeText={text => handleSearch(text)}
+            />
+          </View>
+        )}
+      </View>
+    );
+  },
+);

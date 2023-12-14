@@ -1,63 +1,425 @@
 import PageContainer from '../../components/PageContainer';
-import { StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import BalanceCard from './components/BalanceCard';
 import BoldText from '../../components/fonts/BoldText';
 import Button from '../../components/Button';
 import RegularText from '../../components/fonts/RegularText';
-import { useAdminDataContext } from '../../context/AdminContext';
 import { useContext, useEffect, useState } from 'react';
 import { addingDecimal } from '../../../utils/AddingZero';
 import { AppContext } from '../../components/AppContext';
 import Donut from './components/Donut';
+import { getFetchData } from '../../../utils/fetchAPI';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import CalendarIcon from '../../../assets/images/calendar.svg';
+import { shareAsync } from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
+import * as Print from 'expo-print';
+import ToastMessage from '../../components/ToastMessage';
+import { useAdminDataContext } from '../../context/AdminContext';
 
 const Statement = () => {
-  const { selectedCurrency } = useContext(AppContext);
+  const { selectedCurrency, setIsLoading, showAmount } = useContext(AppContext);
   const { adminData } = useAdminDataContext();
-  const { transactions } = adminData;
   const [income, setIncome] = useState(0);
   const [outcome, setOutcome] = useState(0);
-  const [onhold, setOnhold] = useState(0);
+  const [onHold, setOnHold] = useState(0);
+  const [summary, setSummary] = useState({});
+  const [showPicker, setShowPicker] = useState(false);
+  const [startValue, setStartValue] = useState('DD/MM/YYYY');
+  const [endValue, setEndValue] = useState('DD/MM/YYYY');
+  const [generateData, setGenerateData] = useState({
+    start: '',
+    end: '',
+  });
 
   useEffect(() => {
-    const interTransactions = transactions.filter(
-      transaction =>
-        transaction.type === 'inter' &&
-        transaction.currency === selectedCurrency.currency,
-    );
+    const getSummary = async () => {
+      try {
+        const response = await getFetchData(
+          `admin/summary?currency=${selectedCurrency.currency}`,
+        );
 
-    const transactionsAddUp = array =>
-      Number(
-        array
-          .map(transaction => Number(transaction.amount))
-          .reduce((a, b) => a + b)
-          .toFixed(2),
-      );
+        if (response.status === 200) {
+          setSummary(response.data.data);
+        }
+      } finally {
+      }
+    };
+    getSummary();
+  }, [selectedCurrency.currency]);
 
-    const incomeTransactions = interTransactions.filter(
-      transaction =>
-        transaction.status === 'success' &&
-        transaction.transactionType === 'credit',
-    );
+  useEffect(() => {
+    setIncome(summary.income?.amount || 0);
+    setOutcome(summary.outgoing?.amount || 0);
+    setOnHold(summary.pending?.amount || 0);
+  }, [selectedCurrency, summary]);
 
-    const outcomeTransactions = interTransactions.filter(
-      transaction =>
-        transaction.status === 'success' &&
-        transaction.transactionType === 'debit',
-    );
-    const onholdTransactions = interTransactions.filter(
-      transaction => transaction.status === 'pending',
-    );
+  const defaultPickerDate = () => {
+    switch (showPicker) {
+      case 'start':
+        return startValue !== 'DD/MM/YYYY'
+          ? generateData.start
+          : new Date(Date.now());
+      case 'end':
+        return endValue !== 'DD/MM/YYYY'
+          ? generateData.end
+          : new Date(Date.now());
+      default:
+        return new Date(Date.now());
+    }
+  };
 
-    incomeTransactions.length
-      ? setIncome(transactionsAddUp(incomeTransactions))
-      : setIncome(0);
-    outcomeTransactions.length
-      ? setOutcome(transactionsAddUp(outcomeTransactions))
-      : setOutcome(0);
-    onholdTransactions.length
-      ? setOnhold(transactionsAddUp(onholdTransactions))
-      : setOnhold(0);
-  }, [selectedCurrency, transactions]);
+  const handleDatePicker = (event, selectedDate) => {
+    setShowPicker(false);
+    if (selectedDate > Date.now()) {
+      selectedDate = new Date(Date.now());
+    }
+    switch (event.type) {
+      case 'set':
+        if (showPicker === 'start') {
+          selectedDate.setMilliseconds(0);
+          selectedDate.setSeconds(0);
+          selectedDate.setMinutes(0);
+          selectedDate.setHours(0);
+          setStartValue(new Date(selectedDate).toLocaleDateString('en-GB'));
+          setGenerateData(prev => {
+            return {
+              ...prev,
+              start: selectedDate,
+            };
+          });
+        } else if (showPicker === 'end') {
+          if (generateData.start && generateData.start > selectedDate) {
+            selectedDate = new Date(Date.now());
+          }
+          selectedDate.setMilliseconds(999);
+          selectedDate.setSeconds(59);
+          selectedDate.setMinutes(59);
+          selectedDate.setHours(23);
+          setEndValue(new Date(selectedDate).toLocaleDateString('en-GB'));
+          setGenerateData(prev => {
+            return {
+              ...prev,
+              end: selectedDate,
+            };
+          });
+        }
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  const handleGenerate = async saveType => {
+    const { start, end } = generateData;
+    if (!start || !end) {
+      return ToastMessage('Please provide all the required data');
+    }
+    setIsLoading(true);
+    const response = await getFetchData(
+      `admin/statement?start=${start}&end=${end}&currency=${selectedCurrency.currency}`,
+    );
+    const { data } = response.data;
+
+    let totalCredit = data
+      .filter(index => index.transactionType === 'credit')
+      .map(index => Number(index.amount));
+    totalCredit = totalCredit.length ? totalCredit?.reduce((a, b) => a + b) : 0;
+
+    let totalDebit = data
+      .filter(index => index.transactionType !== 'credit')
+      .map(index => Number(index.amount));
+    totalDebit = totalDebit.length ? totalDebit?.reduce((a, b) => a + b) : 0;
+
+    const currency = ['dollar', 'euro', 'pound'].includes(
+      selectedCurrency.currency,
+    )
+      ? selectedCurrency.currency
+      : 'local';
+
+    const asideItems = [
+      {
+        label: 'Currency',
+        value: selectedCurrency.acronym,
+      },
+      {
+        label: 'Balance',
+        value:
+          selectedCurrency.symbol +
+          ' ' +
+          addingDecimal(
+            adminData.allBalances[`${currency}Balance`].toLocaleString(),
+          ),
+      },
+    ];
+
+    const dateOptions = {
+      month: 'short',
+      day: '2-digit',
+      year: 'numeric',
+    };
+    // if (format === 'pdf') {
+    const html = String.raw`
+      <html lang="en">
+        <head>
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+          <title>Loopay Statement</title>
+          <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
+
+            body {
+              font-family: Inter, 'sans-serif';
+              padding: 25px;
+              max-width: 800px;
+              margin: auto;
+            }
+
+            .logo {
+              display: flex;
+              align-items: center;
+              height: 50px;
+              margin-bottom: 30px;
+              border-bottom: 0.5px solid grey;
+              padding-bottom: 50px;
+              gap: 20px;
+            }
+            .logo span {
+              margin-left: auto;
+            }
+            aside {
+              display: flex;
+              flex-direction: column;
+              margin-left: auto;
+              margin-bottom: 100px;
+              gap: 25px;
+            }
+
+            aside div {
+              display: flex;
+              justify-content: flex-end;
+              align-items: center;
+              padding-right: 30px;
+              gap: 10px;
+            }
+            aside span {
+              width: 150px;
+            }
+            aside h4 {
+              width: 150px;
+              text-align: right;
+              font-size: 1.2rem;
+              margin: 0;
+            }
+            table {
+              border: 1px solid grey;
+              border-collapse: collapse;
+              max-width: 800px;
+              margin: auto;
+            }
+            th {
+              width: 10%;
+              height: 35px;
+              font-size: 1.2rem;
+            }
+            td {
+              padding: 10px 0;
+              width: 10%;
+              height: 40px;
+              text-align: center;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="logo">
+            <img
+              src="https://res.cloudinary.com/geekycoder/image/upload/v1688782340/loopay/logo.png"
+              style="width: 50px; height: 50px; border-radius: 50%"
+              alt="icon" />
+            <img
+              src="https://res.cloudinary.com/geekycoder/image/upload/v1688782340/loopay/appIcon.png"
+              style="width: 200px; margin: 50px 0"
+              alt="loopay logo" />
+            <span
+              >Generated on
+              ${new Date(Date.now()).toLocaleDateString(
+                'en-US',
+                dateOptions,
+              )}</span
+            >
+          </div>
+          <aside>
+            ${asideItems
+              .map(
+                item => String.raw`
+                  <div>
+                    <span>${item.label}:</span>
+                    <h4>${item.value}</h4>
+                  </div>
+                `,
+              )
+              .join('')}
+          </aside>
+          <h2 style="">
+            Transaction account statement from
+            ${new Date(start).toLocaleDateString('en-US', dateOptions)} -
+            ${new Date(end).toLocaleDateString('en-US', dateOptions)}
+          </h2>
+          <section>
+            <table border>
+              <tr>
+                <th>User</th>
+                <th>Date</th>
+                <th>Debit</th>
+                <th>Credit</th>
+              </tr>
+              ${data
+                .map(element => {
+                  return element.transactionType === 'credit'
+                    ? String.raw`
+                        <tr>
+                          <td>${element.email}</td>
+                          <td>
+                            <p style="margin: 0; padding-bottom: 2px">
+                              ${new Date(element.createdAt).toLocaleDateString(
+                                'en-US',
+                                dateOptions,
+                              )}
+                            </p>
+                            <p style="margin: 0; padding-bottom: 2px">
+                              ${new Date(
+                                element.createdAt,
+                              ).toLocaleTimeString()}
+                            </p>
+                          </td>
+                          <td></td>
+                          <td>
+                            ${
+                              selectedCurrency.symbol +
+                              ' ' +
+                              addingDecimal(
+                                Number(element.amount).toLocaleString(),
+                              )
+                            }
+                          </td>
+                        </tr>
+                      `
+                    : String.raw`
+                        <tr>
+                          <td>${element.email}</td>
+                          <td>
+                            <p style="margin: 0; padding-bottom: 2px">
+                              ${new Date(element.createdAt).toLocaleDateString(
+                                'en-US',
+                                dateOptions,
+                              )}
+                            </p>
+                            <p style="margin: 0; padding-bottom: 2px">
+                              ${new Date(
+                                element.createdAt,
+                              ).toLocaleTimeString()}
+                            </p>
+                          </td>
+                          <td>
+                            ${
+                              selectedCurrency.symbol +
+                              ' ' +
+                              addingDecimal(
+                                Number(element.amount).toLocaleString(),
+                              )
+                            }
+                          </td>
+                          <td></td>
+                        </tr>
+                      `;
+                })
+                .join('')}
+              <tr>
+                <td colspan="2">
+                  <h2
+                    style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0;
+              ">
+                    TOTAL
+                  </h2>
+                </td>
+                <td>
+                  <i
+                    class="fas fa-arrow-up-short-wide fa-2x"
+                    style="color: red; margin-right: 10px"></i>
+                  ${
+                    selectedCurrency.symbol +
+                    ' ' +
+                    addingDecimal(Number(totalDebit).toLocaleString())
+                  }
+                </td>
+                <td>
+                  <i
+                    class="fas fa-arrow-down-short-wide fa-2x"
+                    style="color: green; margin-right: 10px"></i>
+                  ${
+                    selectedCurrency.symbol +
+                    ' ' +
+                    addingDecimal(Number(totalCredit).toLocaleString())
+                  }
+                </td>
+              </tr>
+            </table>
+          </section>
+        </body>
+      </html>
+    `;
+    createPDF(html, saveType);
+    // } else {
+  };
+
+  const createPDF = async html => {
+    const filename = 'statement.pdf';
+    const mimeType = 'application/pdf';
+    const { uri } = await Print.printToFileAsync({ html });
+    // if (saveType === 'share') {
+    //   await shareAsync(uri, { UTI: '.pdf', mimeType });
+    //   return setIsLoading(false);
+    // }
+    if (Platform.OS === 'android') {
+      const permissions =
+        await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+      if (permissions.granted) {
+        const base64 = await FileSystem.readAsStringAsync(uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        await FileSystem.StorageAccessFramework.createFileAsync(
+          permissions.directoryUri,
+          filename,
+          mimeType,
+        )
+          .then(async res => {
+            await FileSystem.writeAsStringAsync(res, base64, {
+              encoding: FileSystem.EncodingType.Base64,
+            });
+            ToastMessage('Saved to local storage');
+          })
+          .catch(err => {
+            shareAsync(uri, { UTI: '.pdf', mimeType });
+            ToastMessage(err);
+          })
+          .finally(() => setIsLoading(false));
+      } else {
+        await shareAsync(uri, { UTI: '.pdf', mimeType });
+      }
+    } else {
+      await shareAsync(uri, { UTI: '.pdf', mimeType });
+    }
+    setIsLoading(false);
+  };
 
   return (
     <PageContainer style={styles.container} scroll>
@@ -66,7 +428,7 @@ const Statement = () => {
         <BoldText style={styles.headerText}>Account Summary</BoldText>
         <View style={styles.card}>
           <View style={styles.chart}>
-            {!income && !outcome && !onhold ? (
+            {!income && !outcome && !onHold ? (
               <View>
                 <BoldText>
                   {selectedCurrency.symbol}
@@ -78,10 +440,10 @@ const Statement = () => {
               <Donut
                 percentage={100}
                 // delay={500 + 100 * i}
-                max={income + outcome + onhold}
+                max={income + outcome + onHold}
                 income={income}
                 outcome={outcome}
-                onhold={onhold}
+                onHold={onHold}
               />
             )}
           </View>
@@ -92,8 +454,10 @@ const Statement = () => {
                 <View>
                   <RegularText style={styles.statusText}>Income</RegularText>
                   <BoldText style={styles.statusNo}>
-                    {selectedCurrency.symbol +
-                      addingDecimal(income.toLocaleString())}
+                    {showAmount
+                      ? selectedCurrency.symbol +
+                        addingDecimal(income.toLocaleString())
+                      : '***'}
                   </BoldText>
                 </View>
               </View>
@@ -102,25 +466,73 @@ const Statement = () => {
                 <View>
                   <RegularText style={styles.statusText}>Outcome</RegularText>
                   <BoldText style={styles.statusNo}>
-                    {selectedCurrency.symbol +
-                      addingDecimal(outcome.toLocaleString())}
+                    {showAmount
+                      ? selectedCurrency.symbol +
+                        addingDecimal(outcome.toLocaleString())
+                      : '***'}
                   </BoldText>
                 </View>
               </View>
               <View style={styles.status}>
-                <View style={{ ...styles.statusBg, ...styles.onholdBg }} />
+                <View style={{ ...styles.statusBg, ...styles.onHoldBg }} />
                 <View>
                   <RegularText style={styles.statusText}>Onhold</RegularText>
                   <BoldText style={styles.statusNo}>
-                    {selectedCurrency.symbol +
-                      addingDecimal(onhold.toLocaleString())}
+                    {showAmount
+                      ? selectedCurrency.symbol +
+                        addingDecimal(onHold.toLocaleString())
+                      : '***'}
                   </BoldText>
                 </View>
               </View>
             </View>
           </View>
         </View>
-        <Button text="Download Statement.CSV" />
+
+        {showPicker && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={defaultPickerDate()}
+            onChange={handleDatePicker}
+          />
+        )}
+        <Text style={styles.topUp}>Start Date</Text>
+        <Pressable
+          onPress={() => setShowPicker('start')}
+          style={styles.textInputContainer}>
+          <View style={{ ...styles.textInput, ...styles.textInputStyles }}>
+            <View style={styles.dateTextContainer}>
+              <View style={styles.calendarIcon}>
+                <CalendarIcon width={30} height={30} />
+                <RegularText style={styles.newDate}>
+                  {new Date().getDate()}
+                </RegularText>
+              </View>
+              <RegularText>{startValue}</RegularText>
+            </View>
+          </View>
+        </Pressable>
+        <Text style={styles.topUp}>End Date</Text>
+        <Pressable
+          style={styles.textInputContainer}
+          onPress={() => setShowPicker('end')}>
+          <View style={{ ...styles.textInput, ...styles.textInputStyles }}>
+            <View style={styles.dateTextContainer}>
+              <View style={styles.calendarIcon}>
+                <CalendarIcon width={30} height={30} />
+                <RegularText style={styles.newDate}>
+                  {new Date().getDate()}
+                </RegularText>
+              </View>
+              <RegularText>{endValue}</RegularText>
+            </View>
+          </View>
+        </Pressable>
+        <Button
+          text="Download Statement"
+          style={styles.button}
+          onPress={handleGenerate}
+        />
       </View>
     </PageContainer>
   );
@@ -180,7 +592,7 @@ const styles = StyleSheet.create({
   outcomeBg: {
     backgroundColor: '#777f8c',
   },
-  onholdBg: {
+  onHoldBg: {
     backgroundColor: '#bec2c7',
   },
   statusText: {
@@ -191,6 +603,55 @@ const styles = StyleSheet.create({
   statusNo: {
     color: '#11263C',
     fontSize: 18,
+  },
+  topUp: {
+    fontFamily: 'OpenSans-600',
+  },
+  selectCurrencyContainer: {
+    marginTop: 20,
+    marginBottom: 40,
+  },
+  textInputContainer: {
+    marginTop: 10,
+    marginBottom: 0,
+  },
+  textInput: {
+    borderRadius: 5,
+    backgroundColor: '#f9f9f9',
+    height: 50,
+    padding: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+    fontFamily: 'OpenSans-600',
+  },
+  textInputStyles: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 15,
+    height: 60,
+    marginBottom: 30,
+  },
+  dateTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 15,
+  },
+  currencyType: {
+    textTransform: 'capitalize',
+  },
+  calendarIcon: {
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 30,
+  },
+  newDate: {
+    position: 'absolute',
+  },
+  button: {
+    marginBottom: 50,
   },
 });
 

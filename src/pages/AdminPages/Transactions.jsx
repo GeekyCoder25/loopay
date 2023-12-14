@@ -1,15 +1,21 @@
-import { useCallback, useContext, useState } from 'react';
-import PageContainer from '../../components/PageContainer';
-import { Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
+/* eslint-disable react-native/no-inline-styles */
+import { memo, useCallback, useContext, useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import UserIcon from '../../components/UserIcon';
 import BoldText from '../../components/fonts/BoldText';
 import { allCurrencies } from '../../database/data';
 import { AppContext } from '../../components/AppContext';
-import { postFetchData } from '../../../utils/fetchAPI';
+import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import ToastMessage from '../../components/ToastMessage';
 import { useFocusEffect } from '@react-navigation/native';
 import BackIcon from '../../../assets/images/backArrow.svg';
-import { useAdminDataContext } from '../../context/AdminContext';
 import ChevronDown from '../../../assets/images/chevron-down-fill.svg';
 import RegularText from '../../components/fonts/RegularText';
 import { addingDecimal } from '../../../utils/AddingZero';
@@ -18,46 +24,92 @@ import TransactionHistoryParams from '../MenuPages/TransactionHistoryParams';
 import Back from '../../components/Back';
 import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
 import { billIcon } from '../MenuPages/TransactionHistory';
+import FilterModal from '../../components/FilterModal';
+import IonIcon from '@expo/vector-icons/Ionicons';
+import { FlatList } from 'react-native-gesture-handler';
 
 const Transactions = ({ navigation, route }) => {
-  const { selectedCurrency } = useContext(AppContext);
-  const { adminData } = useAdminDataContext();
-  const { transactions: allTransactions } = adminData;
-  // const selectedIds = new Set();
-  const transactions = allTransactions.filter(
-    transaction =>
-      transaction.currency === selectedCurrency.currency &&
-      transaction.transactionType !== 'swap',
-  );
-  const { transactionStatus } = route.params;
-  const [selectedTransaction, setSelectedTransaction] = useState(transactions);
+  const { selectedCurrency, vh } = useContext(AppContext);
+  const [status, setStatus] = useState('');
+  const [transactionState, setTransactionState] = useState(transactions);
+  const [selectedTransaction, setSelectedTransaction] = useState([]);
+  const [searchHistory, setSearchHistory] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState('');
   const [label2, setLabel2] = useState('');
   const [modalData, setModalData] = useState(null);
   const [transactionsModal, setTransactionsModal] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isLocalLoading, setIsLocalLoading] = useState(false);
+  const [reloading, setReloading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [reload, setReload] = useState(false);
+  const [totalTransactionsLength, setTotalTransactionsLength] = useState(0);
+  const [isFiltered, setIsFiltered] = useState(false);
+  const limit = Math.round(vh / 50);
+  const [transactions, setTransactions] = useState([]);
+
+  useEffect(() => {
+    const getTransactions = async () => {
+      try {
+        setIsLocalLoading(true);
+        const selectedStatus = status || route.params.transactionStatus;
+        const response = await getFetchData(
+          `admin/transactions?currency=${
+            selectedCurrency.currency
+          }&status=${selectedStatus}&limit=${limit}&page=${1}`,
+        );
+
+        if (response.status === 200) {
+          const swapLength = response.data.data.filter(
+            transaction => transaction.transactionType === 'swap',
+          ).length;
+          setTotalTransactionsLength(response.data.total - swapLength);
+          setTransactions(
+            response.data.data.filter(
+              transaction => transaction.transactionType !== 'swap',
+            ),
+          );
+        }
+      } finally {
+        setIsLocalLoading(false);
+      }
+    };
+    getTransactions();
+  }, [
+    limit,
+    route.params.transactionStatus,
+    selectedCurrency.currency,
+    status,
+  ]);
 
   useFocusEffect(
     useCallback(() => {
-      transactionStatus === 'success' &&
-        setSelectedTransaction(
-          transactions.filter(transaction => transaction.status === 'success'),
+      let histories;
+      const selectedStatus = status || route.params.transactionStatus;
+      if (selectedStatus === 'success') {
+        histories = transactions.filter(
+          transaction => transaction.status === 'success',
         );
-      transactionStatus === 'pending' &&
-        setSelectedTransaction(
-          transactions.filter(transaction => transaction.status === 'pending'),
+        setSelectedTransaction(groupTransactionsByDate(histories));
+        setTransactionState(histories);
+      }
+      if (selectedStatus === 'pending') {
+        histories = transactions.filter(
+          transaction => transaction.status === 'pending',
         );
-      transactionStatus === 'blocked' &&
-        setSelectedTransaction(
-          transactions.filter(transaction => transaction.status === 'blocked'),
+        setSelectedTransaction(groupTransactionsByDate(histories));
+        setTransactionState(histories);
+      }
+      if (selectedStatus === 'blocked') {
+        histories = transactions.filter(
+          transaction => transaction.status === 'blocked',
         );
-
-      return () => {
-        setSelectedLabel('');
-        setLabel2('');
-      };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [route.params]),
+        setSelectedTransaction(groupTransactionsByDate(histories));
+        setTransactionState(histories);
+      }
+    }, [route.params.transactionStatus, status, transactions]),
   );
 
   const selectOptions = [
@@ -83,82 +135,258 @@ const Transactions = ({ navigation, route }) => {
     },
   ];
   const label = selectOptions.find(
-    option => option.status === transactionStatus,
+    option => option.status === route.params.transactionStatus,
   ).label;
 
   const handleModal = selected => {
+    setTotalTransactionsLength(0);
+    setReload(prev => !prev);
     setModalOpen(false);
     setSelectedLabel(selected.label);
     setLabel2(selected.label2);
-    selected.status
-      ? setSelectedTransaction(
-          transactions.filter(
-            transaction => transaction.status === selected.status,
-          ),
-        )
-      : setSelectedTransaction(transactions);
+    setPage(1);
+    setIsSearching(false);
+    if (selected.status) {
+      setStatus(selected.status);
+      const histories = transactions.filter(
+        transaction => transaction.status === selected.status,
+      );
+      setSelectedTransaction(groupTransactionsByDate(histories));
+      setTransactionState(histories);
+    } else {
+      setSelectedTransaction(groupTransactionsByDate(transactions));
+      setTransactionState(transactions);
+    }
   };
 
+  const handleScrollMore = async () => {
+    try {
+      setReloading(true);
+      const selectedStatus = status || route.params.transactionStatus;
+      const response = await getFetchData(
+        `admin/transactions?currency=${
+          selectedCurrency.currency
+        }&status=${selectedStatus}&limit=${limit}&page=${page + 1}`,
+      );
+
+      if (response.status === 200) {
+        const swapLength = response.data.data.filter(
+          transaction => transaction.transactionType === 'swap',
+        ).length;
+        setTotalTransactionsLength(totalTransactionsLength - swapLength);
+        const result = response.data.data.filter(
+          transaction => transaction.transactionType !== 'swap',
+        );
+        setPage(page + 1);
+        const uniqueIds = new Set();
+
+        setTransactions(
+          [...transactions, ...result].filter(obj => {
+            if (!uniqueIds.has(obj.id)) {
+              uniqueIds.add(obj.id);
+              return true;
+            }
+            return false;
+          }),
+        );
+        setSelectedTransaction(
+          isSearching
+            ? transactionState
+            : groupTransactionsByDate(transactionState),
+        );
+      }
+    } finally {
+      setReloading(false);
+    }
+  };
   return (
-    <PageContainer scroll>
-      <View style={styles.header}>
-        <Pressable style={styles.back} onPress={() => navigation.goBack()}>
-          <BackIcon />
-          <BoldText style={styles.headerText}>Transactions</BoldText>
-        </Pressable>
-      </View>
-      <Pressable onPress={() => setModalOpen(true)} style={styles.input}>
-        <BoldText style={styles.inputText}>{selectedLabel || label}</BoldText>
-        <ChevronDown />
-      </Pressable>
-      <View style={styles.transactions}>
-        {selectedTransaction.length ? (
-          <>
-            <BoldText style={styles.subHeader}>
-              {selectedLabel || label}
-            </BoldText>
-            {groupTransactionsByDate(selectedTransaction).map(
-              dayTransaction => (
-                <View key={dayTransaction.date} style={styles.dateHistory}>
-                  <RegularText style={styles.date}>
-                    {dayTransaction.date}
-                  </RegularText>
-                  {dayTransaction.histories.map(transaction => (
-                    <Transaction
-                      key={transaction._id}
-                      transaction={transaction}
-                      setTransactions={setSelectedTransaction}
-                      setTransactionsModal={setTransactionsModal}
-                      setModalData={setModalData}
-                    />
-                  ))}
-                </View>
-              ),
+    <View key={reload} style={{ flex: 1 }}>
+      <FilterModal
+        showModal={showFilterModal}
+        setShowModal={setShowFilterModal}
+        setTransactionHistory={setSelectedTransaction}
+        transactions={transactions}
+        setActiveTransactions={setTransactionState}
+        setTotalTransactionsLength={setTotalTransactionsLength}
+        setIsFiltered={setIsFiltered}
+      />
+      {isSearching ? (
+        <View style={styles.searchList}>
+          <FlatList
+            data={searchHistory}
+            renderItem={({ item }) => (
+              <Transaction
+                transaction={item}
+                navigation={navigation}
+                setTransactions={setSelectedTransaction}
+                setTransactionsModal={setTransactionsModal}
+                setModalData={setModalData}
+              />
             )}
-          </>
-        ) : (
-          <View style={styles.empty}>
-            <BoldText>
-              No current {label2 || transactionStatus} transactions{' '}
-            </BoldText>
+            keyExtractor={({ _id, transactionType }) => transactionType + _id}
+            ListHeaderComponent={
+              <Header
+                setIsSearching={setIsSearching}
+                setSearchHistory={setSearchHistory}
+                setIsLocalLoading={setIsLocalLoading}
+                setShowFilterModal={setShowFilterModal}
+                searchTransactions={transactionState}
+                navigation={navigation}
+                setModalOpen={setModalOpen}
+                label={label}
+                selectedLabel={selectedLabel}
+              />
+            }
+            ListFooterComponent={
+              transactions.length >= totalTransactionsLength ? (
+                <View style={styles.complete}>
+                  <BoldText>That&apos;s all for now</BoldText>
+                </View>
+              ) : (
+                reloading && <ActivityIndicator color={'#1e1e1e'} />
+              )
+            }
+            onEndReachedThreshold={0.5}
+            onEndReached={
+              !isFiltered &&
+              !reloading &&
+              transactions.length &&
+              transactions.length < totalTransactionsLength
+                ? handleScrollMore
+                : undefined
+            }
+            bounces={false}
+            removeClippedSubviews
+          />
+        </View>
+      ) : !isLocalLoading ? (
+        <View style={styles.transactions}>
+          {selectedTransaction.length ? (
+            <FlatList
+              keyExtractor={({ date }) => date}
+              data={selectedTransaction}
+              renderItem={({ item: dayHistory }) => (
+                <View key={dayHistory.date} style={styles.dateHistory}>
+                  <RegularText style={styles.date}>
+                    {dayHistory.date}
+                  </RegularText>
+                  <FlatList
+                    data={dayHistory.histories}
+                    renderItem={({ item }) => (
+                      <Transaction
+                        transaction={item}
+                        navigation={navigation}
+                        setTransactions={setSelectedTransaction}
+                        setTransactionsModal={setTransactionsModal}
+                        setModalData={setModalData}
+                      />
+                    )}
+                    keyExtractor={({ _id, transactionType }) =>
+                      transactionType + _id
+                    }
+                    bounces={false}
+                    removeClippedSubviews
+                  />
+                </View>
+              )}
+              ListHeaderComponent={
+                <Header
+                  setIsSearching={setIsSearching}
+                  setSearchHistory={setSearchHistory}
+                  setIsLocalLoading={setIsLocalLoading}
+                  setShowFilterModal={setShowFilterModal}
+                  searchTransactions={transactionState}
+                  navigation={navigation}
+                  setModalOpen={setModalOpen}
+                  label={label}
+                  selectedLabel={selectedLabel}
+                />
+              }
+              ListFooterComponent={
+                transactions.length >= totalTransactionsLength ? (
+                  <View style={styles.complete}>
+                    <BoldText>That&apos;s all for now</BoldText>
+                  </View>
+                ) : (
+                  reloading && <ActivityIndicator color={'#1e1e1e'} />
+                )
+              }
+              onEndReachedThreshold={0.5}
+              onEndReached={
+                !isFiltered &&
+                !reloading &&
+                transactions.length &&
+                transactions.length < totalTransactionsLength
+                  ? handleScrollMore
+                  : undefined
+              }
+              bounces={false}
+              removeClippedSubviews
+            />
+          ) : (
+            <>
+              <Header
+                setIsSearching={setIsSearching}
+                setSearchHistory={setSearchHistory}
+                setIsLocalLoading={setIsLocalLoading}
+                setShowFilterModal={setShowFilterModal}
+                searchTransactions={transactionState}
+                navigation={navigation}
+                setModalOpen={setModalOpen}
+                label={label}
+                selectedLabel={selectedLabel}
+              />
+              <View style={styles.empty}>
+                <BoldText>
+                  No current {label2 || route.params.transactionStatus}{' '}
+                  transactions{' '}
+                </BoldText>
+              </View>
+            </>
+          )}
+        </View>
+      ) : (
+        <>
+          <Header
+            setIsSearching={setIsSearching}
+            setSearchHistory={setSearchHistory}
+            setIsLocalLoading={setIsLocalLoading}
+            setShowFilterModal={setShowFilterModal}
+            searchTransactions={transactionState}
+            navigation={navigation}
+            setModalOpen={setModalOpen}
+            label={label}
+            selectedLabel={selectedLabel}
+          />
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              marginTop: -50 + '%',
+            }}>
+            <ActivityIndicator
+              size={'large'}
+              color={'#1e1e1e'}
+              style={styles.loading}
+            />
           </View>
-        )}
-        <Modal
-          visible={transactionsModal}
-          animationType="slide"
-          onRequestClose={() => {
+        </>
+      )}
+      <Modal
+        visible={transactionsModal}
+        animationType="fade"
+        onRequestClose={() => {
+          setTransactionsModal(false);
+          setModalData(null);
+        }}>
+        <Back
+          onPress={() => {
             setTransactionsModal(false);
             setModalData(null);
-          }}>
-          <Back
-            onPress={() => {
-              setTransactionsModal(false);
-              setModalData(null);
-            }}
-          />
-          <TransactionHistoryParams route={{ params: modalData }} />
-        </Modal>
-      </View>
+          }}
+        />
+        <TransactionHistoryParams route={{ params: modalData }} />
+      </Modal>
       <Modal
         visible={modalOpen}
         animationType="slide"
@@ -183,7 +411,7 @@ const Transactions = ({ navigation, route }) => {
           </View>
         </Pressable>
       </Modal>
-    </PageContainer>
+    </View>
   );
 };
 
@@ -230,9 +458,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 20,
   },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingRight: 3 + '%',
+  },
   subHeader: {
     paddingHorizontal: 3 + '%',
     marginVertical: 20,
+  },
+  textInputContainer: {
+    paddingHorizontal: 3 + '%',
+    marginBottom: 30,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: '#bbb',
+    marginTop: 20,
+    borderRadius: 5,
+    height: 35,
+    fontFamily: 'OpenSans-400',
   },
   transaction: {
     backgroundColor: '#eee',
@@ -285,7 +531,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.2,
   },
   date: {
-    marginBottom: 5,
+    marginVertical: 5,
     paddingHorizontal: 3 + '%',
     color: '#979797',
   },
@@ -319,11 +565,12 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     marginHorizontal: 5 + '%',
     marginVertical: 10,
-    height: 60,
+    height: 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 5 + '%',
+    flex: 1,
   },
   inputText: {
     fontSize: 16,
@@ -372,219 +619,219 @@ const styles = StyleSheet.create({
   historyTitle: {
     textTransform: 'capitalize',
   },
+  complete: {
+    alignItems: 'center',
+    marginVertical: 10,
+  },
 });
 export default Transactions;
 
-const Transaction = ({
-  transaction,
-  setTransactions,
-  setTransactionsModal,
-  setModalData,
-}) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const {
-    amount,
-    currency,
-    transferCode,
-    reference,
-    senderName,
-    senderPhoto,
-    status,
-    createdAt,
-    transactionType,
-    receiverPhoto,
-    receiverName,
-    networkProvider,
-    dataPlan,
-    billType,
-    billName,
-  } = transaction;
+const Transaction = memo(
+  ({ transaction, setTransactions, setTransactionsModal, setModalData }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const {
+      amount,
+      currency,
+      transferCode,
+      reference,
+      senderName,
+      senderPhoto,
+      status,
+      createdAt,
+      transactionType,
+      receiverPhoto,
+      receiverName,
+      networkProvider,
+      dataPlan,
+      billType,
+      billName,
+    } = transaction;
 
-  const currencySymbol = allCurrencies.find(
-    id => currency === id.currency,
-  )?.symbol;
+    const currencySymbol = allCurrencies.find(
+      id => currency === id.currency,
+    )?.symbol;
+    const date = new Date(createdAt);
+    const historyTime = convertTo12HourFormat(
+      `${date.getHours()}:${date.getMinutes()}`,
+    );
 
-  const date = new Date(createdAt);
-  const historyTime = convertTo12HourFormat(
-    `${date.getHours()}:${date.getMinutes()}`,
-  );
+    function convertTo12HourFormat(time24) {
+      let [hours, minutes] = time24.split(':');
+      let period = 'AM';
 
-  function convertTo12HourFormat(time24) {
-    let [hours, minutes] = time24.split(':');
-    let period = 'AM';
-
-    if (hours >= 12) {
-      period = 'PM';
-      if (hours > 12) {
-        hours -= 12;
+      if (hours >= 12) {
+        period = 'PM';
+        if (hours > 12) {
+          hours -= 12;
+        }
       }
+
+      if (hours === '00') {
+        hours = 12;
+      }
+
+      return `${hours}:${minutes} ${period}`;
     }
 
-    if (hours === '00') {
-      hours = 12;
-    }
+    const label = () => {
+      switch (status) {
+        case 'success':
+          return <RegularText style={styles.success}>Successful</RegularText>;
+        case 'pending':
+          return <RegularText style={styles.pending}>Pending</RegularText>;
+        case 'blocked':
+          return <RegularText style={styles.blocked}>Blocked</RegularText>;
+      }
+    };
 
-    return `${hours}:${minutes} ${period}`;
-  }
-
-  const label = () => {
-    switch (status) {
-      case 'success':
-        return <RegularText style={styles.success}>Successful</RegularText>;
-      case 'pending':
-        return <RegularText style={styles.pending}>Pending</RegularText>;
-      case 'blocked':
-        return <RegularText style={styles.blocked}>Blocked</RegularText>;
-    }
-  };
-
-  return (
-    <View style={styles.expanded}>
-      <Pressable
-        onPress={() => {
-          setModalData(transaction);
-          setTransactionsModal(true);
-        }}
-        style={styles.transaction}>
-        {transactionType?.toLowerCase() === 'credit' && (
-          <>
-            <UserIcon uri={senderPhoto} />
-            <View style={styles.historyContent}>
-              <BoldText>{senderName}</BoldText>
-              <RegularText>{historyTime}</RegularText>
-            </View>
-            <Pressable
-              onPress={() => setIsExpanded(prev => !prev)}
-              style={styles.pendingContainer}>
-              <View style={styles.amount}>
-                <BoldText style={styles.creditAmount}>
-                  +
-                  {currencySymbol +
-                    addingDecimal(Number(amount).toLocaleString())}
-                </BoldText>
-                {label()}
+    return (
+      <View style={styles.expanded}>
+        <Pressable
+          onPress={() => {
+            setModalData(transaction);
+            setTransactionsModal(true);
+          }}
+          style={styles.transaction}>
+          {transactionType?.toLowerCase() === 'credit' && (
+            <>
+              <UserIcon uri={senderPhoto} />
+              <View style={styles.historyContent}>
+                <BoldText>{senderName}</BoldText>
+                <RegularText>{historyTime}</RegularText>
               </View>
-              {status === 'pending' && (
-                <Pressable
-                  onPress={() => setIsExpanded(prev => !prev)}
-                  style={{
-                    transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
-                  }}>
-                  <ChevronDown />
-                </Pressable>
-              )}
-            </Pressable>
-          </>
-        )}
-        {transactionType?.toLowerCase() === 'debit' && (
-          <>
-            <UserIcon uri={receiverPhoto} />
-            <View style={styles.historyContent}>
-              <BoldText>{receiverName}</BoldText>
-              <RegularText>{historyTime}</RegularText>
-            </View>
-            <Pressable
-              onPress={() => setIsExpanded(prev => !prev)}
-              style={styles.pendingContainer}>
+              <Pressable
+                onPress={() => setIsExpanded(prev => !prev)}
+                style={styles.pendingContainer}>
+                <View style={styles.amount}>
+                  <BoldText style={styles.creditAmount}>
+                    +
+                    {currencySymbol +
+                      addingDecimal(Number(amount).toLocaleString())}
+                  </BoldText>
+                  {label()}
+                </View>
+                {status === 'pending' && (
+                  <Pressable
+                    onPress={() => setIsExpanded(prev => !prev)}
+                    style={{
+                      transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
+                    }}>
+                    <ChevronDown />
+                  </Pressable>
+                )}
+              </Pressable>
+            </>
+          )}
+          {transactionType?.toLowerCase() === 'debit' && (
+            <>
+              <UserIcon uri={receiverPhoto} />
+              <View style={styles.historyContent}>
+                <BoldText>{receiverName}</BoldText>
+                <RegularText>{historyTime}</RegularText>
+              </View>
+              <Pressable
+                onPress={() => setIsExpanded(prev => !prev)}
+                style={styles.pendingContainer}>
+                <View style={styles.amount}>
+                  <BoldText style={styles.debitAmount}>
+                    -
+                    {currencySymbol +
+                      addingDecimal(Number(amount).toLocaleString())}
+                  </BoldText>
+                  {label()}
+                </View>
+                {status === 'pending' && (
+                  <Pressable
+                    onPress={() => setIsExpanded(prev => !prev)}
+                    style={{
+                      transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
+                    }}>
+                    <ChevronDown />
+                  </Pressable>
+                )}
+              </Pressable>
+            </>
+          )}
+          {transactionType?.toLowerCase() === 'airtime' && (
+            <>
+              {networkProvidersIcon(networkProvider)}
+              <View style={styles.historyContent}>
+                <BoldText style={styles.historyTitle}>
+                  {networkProvider} - {transaction.phoneNo}
+                </BoldText>
+                <RegularText>Airtime Recharge</RegularText>
+              </View>
               <View style={styles.amount}>
                 <BoldText style={styles.debitAmount}>
                   -
                   {currencySymbol +
                     addingDecimal(Number(amount).toLocaleString())}
                 </BoldText>
-                {label()}
+                <RegularText> {historyTime}</RegularText>
+                {status === 'pending' && (
+                  <Pressable
+                    onPress={() => setIsExpanded(prev => !prev)}
+                    style={{
+                      transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
+                    }}>
+                    <ChevronDown />
+                  </Pressable>
+                )}
               </View>
-              {status === 'pending' && (
-                <Pressable
-                  onPress={() => setIsExpanded(prev => !prev)}
-                  style={{
-                    transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
-                  }}>
-                  <ChevronDown />
-                </Pressable>
-              )}
-            </Pressable>
-          </>
-        )}
-        {transactionType?.toLowerCase() === 'airtime' && (
-          <>
-            {networkProvidersIcon(networkProvider)}
-            <View style={styles.historyContent}>
-              <BoldText style={styles.historyTitle}>
-                {networkProvider} - {transaction.phoneNo}
-              </BoldText>
-              <RegularText>Airtime Recharge</RegularText>
-            </View>
-            <View style={styles.amount}>
-              <BoldText style={styles.debitAmount}>
-                -
-                {currencySymbol +
-                  addingDecimal(Number(amount).toLocaleString())}
-              </BoldText>
-              <RegularText> {historyTime}</RegularText>
-              {status === 'pending' && (
-                <Pressable
-                  onPress={() => setIsExpanded(prev => !prev)}
-                  style={{
-                    transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
-                  }}>
-                  <ChevronDown />
-                </Pressable>
-              )}
-            </View>
-          </>
-        )}
-        {transactionType?.toLowerCase() === 'data' && (
-          <>
-            {networkProvidersIcon(networkProvider)}
-            <View style={styles.historyContent}>
-              <BoldText style={styles.historyTitle}>
-                {networkProvider} - {transaction.phoneNo}
-              </BoldText>
-              <RegularText>Data Recharge - {dataPlan.value}</RegularText>
-            </View>
-            <View style={styles.amount}>
-              <BoldText style={styles.debitAmount}>
-                -
-                {currencySymbol +
-                  addingDecimal(Number(amount).toLocaleString())}
-              </BoldText>
-              <RegularText> {historyTime}</RegularText>
-            </View>
-          </>
-        )}
+            </>
+          )}
+          {transactionType?.toLowerCase() === 'data' && (
+            <>
+              {networkProvidersIcon(networkProvider)}
+              <View style={styles.historyContent}>
+                <BoldText style={styles.historyTitle}>
+                  {networkProvider} - {transaction.phoneNo}
+                </BoldText>
+                <RegularText>Data Recharge - {dataPlan.value}</RegularText>
+              </View>
+              <View style={styles.amount}>
+                <BoldText style={styles.debitAmount}>
+                  -
+                  {currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())}
+                </BoldText>
+                <RegularText> {historyTime}</RegularText>
+              </View>
+            </>
+          )}
 
-        {transactionType?.toLowerCase() === 'bill' && (
-          <>
-            <View style={styles.historyIconText}>{billIcon(billType)}</View>
-            <View style={styles.historyContent}>
-              <BoldText style={styles.historyTitle}>{billName} </BoldText>
-              <RegularText style={styles.historyTitle}>
-                {billType} bill
-              </RegularText>
-            </View>
-            <View style={styles.amount}>
-              <BoldText style={styles.debitAmount}>
-                -
-                {currencySymbol +
-                  addingDecimal(Number(amount).toLocaleString())}
-              </BoldText>
-              <RegularText> {historyTime}</RegularText>
-            </View>
-          </>
+          {transactionType?.toLowerCase() === 'bill' && (
+            <>
+              <View style={styles.historyIconText}>{billIcon(billType)}</View>
+              <View style={styles.historyContent}>
+                <BoldText style={styles.historyTitle}>{billName} </BoldText>
+                <RegularText style={styles.historyTitle}>
+                  {billType} bill
+                </RegularText>
+              </View>
+              <View style={styles.amount}>
+                <BoldText style={styles.debitAmount}>
+                  -
+                  {currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())}
+                </BoldText>
+                <RegularText> {historyTime}</RegularText>
+              </View>
+            </>
+          )}
+        </Pressable>
+        {isExpanded && status === 'pending' && (
+          <ExpandedInput
+            reference={reference}
+            transferCode={transferCode}
+            transaction={transaction}
+            setTransactions={setTransactions}
+          />
         )}
-      </Pressable>
-      {isExpanded && status === 'pending' && (
-        <ExpandedInput
-          reference={reference}
-          transferCode={transferCode}
-          transaction={transaction}
-          setTransactions={setTransactions}
-        />
-      )}
-    </View>
-  );
-};
+      </View>
+    );
+  },
+);
 
 const ExpandedInput = ({
   reference,
@@ -658,3 +905,90 @@ const ExpandedInput = ({
     </View>
   );
 };
+
+const Header = memo(
+  ({
+    setIsSearching,
+    setSearchHistory,
+    setIsLocalLoading,
+    setShowFilterModal,
+    hideSearch,
+    searchTransactions,
+    navigation,
+    setModalOpen,
+    label,
+    selectedLabel,
+  }) => {
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [searchText, setSearchText] = useState('');
+
+    const handleSearchFocus = async () => {
+      setIsSearchFocused(true);
+    };
+
+    const handleSearchBlur = () => {
+      !searchText && setIsSearchFocused(false);
+    };
+
+    const handleSearch = async text => {
+      try {
+        setIsLocalLoading(true);
+        setSearchText(text);
+        const foundHistories = searchTransactions.filter(history => {
+          return Object.values(history)
+            .toString()
+            .toLowerCase()
+            .includes(text.toLowerCase());
+        });
+        text ? setIsSearching(true) : setIsSearching(false);
+
+        setSearchHistory(foundHistories);
+      } finally {
+        setIsLocalLoading(false);
+      }
+    };
+
+    const handleFilter = () => {
+      setIsSearching(false);
+      setShowFilterModal(true);
+    };
+
+    return (
+      <View>
+        <View style={styles.header}>
+          <Pressable style={styles.back} onPress={() => navigation.goBack()}>
+            <BackIcon />
+            <BoldText style={styles.headerText}>Transactions</BoldText>
+          </Pressable>
+        </View>
+        <View style={styles.headerContainer}>
+          <Pressable onPress={() => setModalOpen(true)} style={styles.input}>
+            <BoldText style={styles.inputText}>
+              {selectedLabel || label}
+            </BoldText>
+            <ChevronDown />
+          </Pressable>
+          <Pressable onPress={handleFilter}>
+            <IonIcon name="filter-sharp" size={20} />
+          </Pressable>
+        </View>
+        <View style={styles.container}>{/* <BalanceCard /> */}</View>
+        {!hideSearch && (
+          <View style={styles.textInputContainer}>
+            <TextInput
+              style={{
+                ...styles.textInput,
+                textAlign: isSearchFocused ? 'left' : 'center',
+                paddingLeft: isSearchFocused ? 10 : 0,
+              }}
+              placeholder={isSearchFocused ? '' : 'Search'}
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
+              onChangeText={text => handleSearch(text)}
+            />
+          </View>
+        )}
+      </View>
+    );
+  },
+);

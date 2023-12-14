@@ -1,26 +1,11 @@
 import React, { useContext } from 'react';
-import {
-  Image,
-  View,
-  Pressable,
-  StyleSheet,
-  ScrollView,
-  Text,
-} from 'react-native';
-import BoldText from '../../../components/fonts/BoldText';
-import InputPin from '../../../components/InputPin';
-import FooterCard from '../../../components/FooterCard';
-import GLOIcon from '../../../../assets/images/glo.svg';
-import MTNIcon from '../../../../assets/images/mtn.svg';
-import AirtelIcon from '../../../../assets/images/airtel.svg';
-import NineMobileIcon from '../../../../assets/images/9mobile.svg';
-import { postFetchData } from '../../../../utils/fetchAPI';
-import PageContainer from '../../../components/PageContainer';
-import BackArrow from '../../../../assets/images/backArrowWhite.svg';
+import { View, StyleSheet } from 'react-native';
 import { AppContext } from '../../../components/AppContext';
+import InputPin from '../../../components/InputPin';
+import { postFetchData } from '../../../../utils/fetchAPI';
 
 const TransferAirtime = ({ navigation, route }) => {
-  const { formData, isInternational } = route.params;
+  const { formData } = route.params;
   const { setWalletRefresh } = useContext(AppContext);
   const handlePay = async setErrorMessage => {
     const response = await postFetchData(`user/${formData.type}`, formData);
@@ -36,66 +21,10 @@ const TransferAirtime = ({ navigation, route }) => {
     });
   };
 
-  const networkProvidersIcon = network => {
-    switch (network) {
-      case 'glo':
-        return <GLOIcon />;
-      case 'mtn':
-        return <MTNIcon />;
-      case 'airtel':
-        return <AirtelIcon />;
-      case '9mobile':
-        return <NineMobileIcon />;
-      default:
-        break;
-    }
-  };
-
   return (
-    <PageContainer paddingTop={0} scroll>
-      <View style={styles.backContainer}>
-        <Pressable
-          onPress={() => navigation.goBack()}
-          style={styles.backContainer}>
-          <BackArrow />
-          <Text style={styles.backText}>Back</Text>
-        </Pressable>
-      </View>
-      <ScrollView style={styles.body}>
-        <View style={styles.headerContainer}>
-          <BoldText style={styles.pinHeader}>Airtime Recharge</BoldText>
-          <View style={styles.userIconContainer}>
-            {isInternational ? (
-              <Image
-                source={{ uri: formData.icon }}
-                style={styles.networkIcon}
-              />
-            ) : (
-              networkProvidersIcon(formData.network)
-            )}
-            <View>
-              <BoldText style={styles.pinPhone}>{formData.phoneNo}</BoldText>
-            </View>
-            <View style={styles.modalBorder} />
-          </View>
-        </View>
-        <View style={styles.content}>
-          <InputPin customFunc={handlePay} buttonText={'Buy Now'}>
-            <View style={styles.footer}>
-              <FooterCard
-                airtime={formData}
-                amountInput={`${Number(formData.amount).toLocaleString()}${
-                  Number(formData.amount).toLocaleString().includes('.')
-                    ? ''
-                    : '.00'
-                }`}
-                dataPlan={formData.plan && formData.plan.value}
-              />
-            </View>
-          </InputPin>
-        </View>
-      </ScrollView>
-    </PageContainer>
+    <View style={styles.content}>
+      <InputPin customFunc={handlePay} />
+    </View>
   );
 };
 

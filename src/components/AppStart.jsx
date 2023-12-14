@@ -64,7 +64,7 @@ const AppStart = () => {
     <>
       <View onLayout={onLayoutRootView} />
       <AppPagesNavigator />
-      {isSessionTimedOut && isLoggedIn && <LockScreen />}
+      {/* {isSessionTimedOut && isLoggedIn && <LockScreen />} */}
       <NoInternet modalOpen={!internetStatus} />
     </>
   );

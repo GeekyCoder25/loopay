@@ -52,6 +52,7 @@ const SendMenuNavigator = () => {
         component={TransferFunds}
         options={{
           headerShown: false,
+          animation: 'none',
         }}
       />
       <Stack.Screen
@@ -67,7 +68,13 @@ const SendMenuNavigator = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen name="RequestFund" component={RequestFund} />
-      <Stack.Screen name="RequestConfirm" component={RequestConfirm} />
+      <Stack.Screen
+        name="RequestConfirm"
+        component={RequestConfirm}
+        options={{
+          animation: 'none',
+        }}
+      />
       <Stack.Screen
         name="RequestSuccess"
         component={RequestSuccess}
@@ -86,13 +93,20 @@ const SendMenuNavigator = () => {
         component={TransferBill}
         options={{
           headerShown: false,
+          animation: 'none',
         }}
       />
       <Stack.Screen name="VirtualCard" component={VirtualCard} />
       <Stack.Screen name="VirtualCardDetails" component={VirtualCardDetails} />
       <Stack.Screen name="PayABillParams" component={PayABillParams} />
       <Stack.Screen name="AccStatement" component={AccStatement} />
-      <Stack.Screen name="TransactionPin" component={TransactionPin} />
+      <Stack.Screen
+        name="TransactionPin"
+        component={TransactionPin}
+        options={{
+          animation: 'none',
+        }}
+      />
     </Stack.Navigator>
   );
 };

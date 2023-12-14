@@ -46,35 +46,20 @@ const Withdraw = ({ navigation }) => {
   const [recipientData, setRecipientData] = useState(null);
   const [formData, setFormData] = useState({
     accNo: '',
-    bank: {
-      active: true,
-      code: '033',
-      country: 'Nigeria',
-      createdAt: '2016-07-14T10:04:29.000Z',
-      currency: 'NGN',
-      gateway: 'emandate',
-      id: 18,
-      is_deleted: false,
-      longcode: '033153513',
-      name: 'United Bank For Africa',
-      pay_with_bank: false,
-      slug: 'united-bank-for-africa',
-      type: 'nuban',
-      updatedAt: '2022-03-09T10:28:57.000Z',
-    },
+    bank: '',
   });
 
   useFocusEffect(
     React.useCallback(() => {
-      getFetchData('user/savedbanks').then(response => {
+      getFetchData(
+        `user/savedbanks?limit=${3}&currency=${selectedCurrency.currency},${
+          selectedCurrency.acronym
+        }`,
+      ).then(response => {
         if (response.status === 200) {
-          return setAddedBanks(
-            response.data.filter(
-              bank =>
-                bank.currency === selectedCurrency.currency ||
-                bank.currency === selectedCurrency.acronym,
-            ),
-          );
+          return setAddedBanks(response.data);
+        } else {
+          setAddedBanks([]);
         }
       });
     }, [selectedCurrency]),
@@ -131,8 +116,6 @@ const Withdraw = ({ navigation }) => {
     try {
       setIsLoading(true);
       const response = await postFetchData('user/check-recipient', formData);
-      console.log(response.data);
-
       if (response.status === 200) {
         setFullName(response.data.name);
         setRecipientData(response.data);
@@ -390,18 +373,9 @@ const Withdraw = ({ navigation }) => {
           </View>
         ) : (
           <InputPin
-            buttonText={'Confirm'}
             customFunc={() => initiateWithdrawal()}
-            style={styles.inputPin}>
-            <ErrorMessage errorMessage={errorMessage} />
-            <View style={styles.footer}>
-              <FooterCard
-                userToSendTo={bankSelected}
-                amountInput={amountInput}
-                fee={fee}
-              />
-            </View>
-          </InputPin>
+            handleCancel={() => setCanContinue(false)}
+          />
         )}
       </View>
     </PageContainer>
@@ -594,7 +568,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 40,
   },
-  inputPin: { flex: 1 },
 });
 
 export default Withdraw;

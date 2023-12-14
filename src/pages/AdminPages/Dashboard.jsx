@@ -14,6 +14,7 @@ import { AppContext } from '../../components/AppContext';
 const Dashboard = ({ navigation }) => {
   const { selectedCurrency } = useContext(AppContext);
   const { adminData } = useAdminDataContext();
+  const { statusTransactionsAmount, statusTransactionsLength } = adminData;
   const [success, setSuccess] = useState([]);
   const [successBalance, setSuccessBalance] = useState(0);
   const [pending, setPending] = useState([]);
@@ -25,39 +26,10 @@ const Dashboard = ({ navigation }) => {
 
   useEffect(() => {
     if (adminData) {
-      const selectedIds = new Set();
-      setSuccess(
-        adminData.transactions.filter(
-          transaction =>
-            transaction.currency === selectedCurrency.currency &&
-            transaction.status === 'success' &&
-            transaction.transactionType !== 'swap' &&
-            !selectedIds.has(transaction.id) &&
-            selectedIds.add(transaction.id),
-        ),
-      );
-      setPending(
-        adminData.transactions.filter(
-          transaction =>
-            transaction.currency === selectedCurrency.currency &&
-            transaction.status === 'pending' &&
-            transaction.transactionType !== 'swap' &&
-            !selectedIds.has(transaction.id) &&
-            selectedIds.add(transaction.id),
-        ),
-      );
-      setBlocked(
-        adminData.transactions.filter(
-          transaction =>
-            transaction.currency === selectedCurrency.currency &&
-            (transaction.status === 'blocked' ||
-              transaction.status === 'declined') &&
-            transaction.transactionType !== 'swap' &&
-            !selectedIds.has(transaction.id) &&
-            selectedIds.add(transaction.id),
-        ),
-      );
-      setTotalUsers(adminData.users.length);
+      setSuccess(statusTransactionsLength.success[selectedCurrency.currency]);
+      setPending(statusTransactionsLength.pending[selectedCurrency.currency]);
+      setBlocked(statusTransactionsLength.blocked[selectedCurrency.currency]);
+      setTotalUsers(adminData.users.total);
       setActiveUsers([]);
 
       const checkSameDateAndTime = sessionTimestamp => {
@@ -82,33 +54,19 @@ const Dashboard = ({ navigation }) => {
           setActiveUsers(prev => [...prev, userSession]);
       });
     }
-  }, [adminData, selectedCurrency.currency]);
+  }, [adminData, selectedCurrency.currency, statusTransactionsLength]);
 
   useEffect(() => {
-    success.length
-      ? setSuccessBalance(
-          success
-            .map(successIndex => Number(successIndex.amount))
-            .reduce((a, b) => a + b),
-        )
-      : setSuccessBalance(0);
-
-    pending.length
-      ? setPendingBalance(
-          pending
-            .map(pendingIndex => Number(pendingIndex.amount))
-            .reduce((a, b) => a + b),
-        )
-      : setPendingBalance(0);
-
-    blocked.length
-      ? setBlockedBalance(
-          blocked
-            .map(blockedIndex => Number(blockedIndex.amount))
-            .reduce((a, b) => a + b),
-        )
-      : setBlockedBalance(0);
-  }, [success, pending, blocked]);
+    setSuccessBalance(
+      statusTransactionsAmount.success[selectedCurrency.currency],
+    );
+    setPendingBalance(
+      statusTransactionsAmount.pending[selectedCurrency.currency],
+    );
+    setBlockedBalance(
+      statusTransactionsAmount.blocked[selectedCurrency.currency],
+    );
+  }, [selectedCurrency.currency, statusTransactionsAmount]);
 
   return (
     <PageContainer style={styles.container} scroll>
@@ -128,9 +86,7 @@ const Dashboard = ({ navigation }) => {
             <BoldText style={styles.transactionTitle}>
               Successful Transactions
             </BoldText>
-            <BoldText style={styles.transactionLength}>
-              {success.length}
-            </BoldText>
+            <BoldText style={styles.transactionLength}>{success}</BoldText>
             <BoldText style={styles.success}>
               {selectedCurrency.symbol +
                 addingDecimal(successBalance.toLocaleString())}
@@ -151,9 +107,7 @@ const Dashboard = ({ navigation }) => {
             <BoldText style={styles.transactionTitle}>
               Pending Transactions
             </BoldText>
-            <BoldText style={styles.transactionLength}>
-              {pending.length}
-            </BoldText>
+            <BoldText style={styles.transactionLength}>{pending}</BoldText>
             <BoldText>
               {selectedCurrency.symbol +
                 addingDecimal(pendingBalance.toLocaleString())}
@@ -174,9 +128,7 @@ const Dashboard = ({ navigation }) => {
             <BoldText style={styles.transactionTitle}>
               Blocked Transactions
             </BoldText>
-            <BoldText style={styles.transactionLength}>
-              {blocked.length}
-            </BoldText>
+            <BoldText style={styles.transactionLength}>{blocked}</BoldText>
             <BoldText style={styles.blocked}>
               {selectedCurrency.symbol +
                 addingDecimal(blockedBalance.toLocaleString())}

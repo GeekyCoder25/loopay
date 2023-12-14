@@ -9,7 +9,6 @@ import Success from '../pages/SendMenuPages/Success';
 import Profile from '../pages/HomePages/Profile';
 import LoopayTag from '../pages/HomePages/LoopayTag';
 import Withdraw from '../pages/SendMenuPages/SendMoney/Withdraw';
-import AddWithdraw from '../pages/SendMenuPages/SendMoney/AddWithdraw';
 import TransactionPin from '../pages/MenuPages/TransactionPin';
 
 const SendMoneyNavigator = () => {
@@ -33,6 +32,7 @@ const SendMoneyNavigator = () => {
         component={TransferFunds}
         options={{
           headerShown: false,
+          animation: 'none',
         }}
       />
       <Stack.Screen
@@ -42,7 +42,13 @@ const SendMoneyNavigator = () => {
           headerShown: false,
         }}
       />
-      <Stack.Screen name="TransactionPin" component={TransactionPin} />
+      <Stack.Screen
+        name="TransactionPin"
+        component={TransactionPin}
+        options={{
+          animation: 'none',
+        }}
+      />
     </Stack.Navigator>
   );
 };

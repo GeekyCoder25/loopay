@@ -40,7 +40,7 @@ const TransferBill = ({ navigation, route }) => {
 
   return (
     <PageContainer paddingTop={0} scroll>
-      <View style={styles.backContainer}>
+      {/* <View style={styles.backContainer}>
         <Pressable
           onPress={() => navigation.goBack()}
           style={styles.backContainer}>
@@ -58,18 +58,18 @@ const TransferBill = ({ navigation, route }) => {
             </View>
             <View style={styles.modalBorder} />
           </View>
-        </View>
-        <View style={styles.content}>
-          <InputPin customFunc={handlePay} buttonText={'Buy Now'}>
-            <View style={styles.footer}>
-              <FooterCard
-                amountInput={formData.amount}
-                billPlan={formData.provider.name}
-              />
-            </View>
-          </InputPin>
-        </View>
-      </ScrollView>
+        </View> */}
+      <View style={styles.content}>
+        <InputPin customFunc={handlePay} buttonText={'Buy Now'}>
+          <View style={styles.footer}>
+            <FooterCard
+              amountInput={formData.amount}
+              billPlan={formData.provider.name}
+            />
+          </View>
+        </InputPin>
+      </View>
+      {/* </ScrollView> */}
     </PageContainer>
   );
 };

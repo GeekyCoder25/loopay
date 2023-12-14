@@ -281,7 +281,7 @@ const Home = ({ navigation }) => {
               }}>
               {transactions.slice(0, 3).map(history => (
                 <History
-                  key={history.id}
+                  key={history._id}
                   history={history}
                   navigation={navigation}
                 />

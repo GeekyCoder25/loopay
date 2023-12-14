@@ -18,7 +18,7 @@ import UserIcon from '../../components/UserIcon';
 import BackIcon from '../../../assets/images/backArrow.svg';
 import SortIcon from '../../../assets/images/sort.svg';
 import Button from '../../components/Button';
-import { postFetchData } from '../../../utils/fetchAPI';
+import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import ErrorMessage from '../../components/ErrorMessage';
 import ToastMessage from '../../components/ToastMessage';
 import { AppContext } from '../../components/AppContext';
@@ -26,8 +26,9 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import CalendarIcon from '../../../assets/images/calendar.svg';
 
 const Users = ({ navigation }) => {
+  const { walletRefresh } = useContext(AppContext);
   const { adminData } = useAdminDataContext();
-  const { users, userDatas } = adminData;
+  const [users, setUsers] = useState([]);
   const [selectedTab, setSelectedTab] = useState(1);
   const [sortStatus, setSortStatus] = useState('date');
   const [modalOpen, setModalOpen] = useState(false);
@@ -40,6 +41,16 @@ const Users = ({ navigation }) => {
   const [selectedUser, setSelectedUser] = useState(null);
 
   const sortMethods = ['date', 'status'];
+
+  useEffect(() => {
+    const getUsers = async () => {
+      const response = await getFetchData('admin/users?userData=true');
+      if (response.status === 200) {
+        setUsers(response.data.data);
+      }
+    };
+    getUsers();
+  }, [walletRefresh]);
 
   function sortFunc(a, b) {
     const date1 = a.createdAt;
@@ -162,9 +173,6 @@ const Users = ({ navigation }) => {
                   <User
                     key={user._id}
                     user={user}
-                    userData={userDatas.find(
-                      userData => user.email === userData.email,
-                    )}
                     setBlockTitle={setBlockTitle}
                     setBlockModal={setBlockModal}
                     setSelectedUser={setSelectedUser}
@@ -178,9 +186,6 @@ const Users = ({ navigation }) => {
                   <User
                     key={user._id}
                     user={user}
-                    userData={userDatas.find(
-                      userData => user.email === userData.email,
-                    )}
                     activeStatus
                     setBlockTitle={setBlockTitle}
                     setBlockModal={setBlockModal}
@@ -195,9 +200,6 @@ const Users = ({ navigation }) => {
                   <User
                     key={user._id}
                     user={user}
-                    userData={userDatas.find(
-                      userData => user.email === userData.email,
-                    )}
                     activeStatus
                     setBlockTitle={setBlockTitle}
                     setBlockModal={setBlockModal}
@@ -222,9 +224,6 @@ const Users = ({ navigation }) => {
               <User
                 key={user._id}
                 user={user}
-                userData={userDatas.find(
-                  userData => user.email === userData.email,
-                )}
                 setBlockTitle={setBlockTitle}
                 setBlockModal={setBlockModal}
                 setSelectedUser={setSelectedUser}
@@ -519,7 +518,6 @@ export default Users;
 
 const User = ({
   user,
-  userData,
   activeStatus,
   setBlockTitle,
   setBlockModal,
@@ -570,7 +568,7 @@ const User = ({
           <View style={styles.inActive} />
         )}
         <RegularText style={styles.fullName}>
-          {userData.userProfile.fullName}
+          {user.userProfile.fullName}
         </RegularText>
         <View style={styles.date}>
           {activeStatus ? (
@@ -597,12 +595,12 @@ const User = ({
         <View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Email</BoldText>
-            <RegularText style={styles.rowValue}>{userData.email}</RegularText>
+            <RegularText style={styles.rowValue}>{user.email}</RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Phone Number</BoldText>
             <RegularText style={styles.rowValue}>
-              {userData.userProfile.phoneNumber}
+              {user.userProfile.phoneNumber}
             </RegularText>
           </View>
           <View style={styles.row}>
@@ -612,31 +610,31 @@ const User = ({
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Account Type</BoldText>
             <RegularText style={styles.rowValue}>
-              {userData.accountType}
+              {user.accountType}
             </RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Pin set</BoldText>
             <RegularText style={styles.rowValue}>
-              {userData.pin ? 'true' : 'false'}
+              {user.pin ? 'true' : 'false'}
             </RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Tag Name</BoldText>
             <RegularText style={styles.rowValue}>
-              {userData.tagName || userData.userProfile.userName}
+              {user.tagName || user.userProfile.userName}
             </RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Referral Code</BoldText>
             <RegularText style={styles.rowValue}>
-              {userData.referralCode}
+              {user.referralCode}
             </RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>User Photo</BoldText>
             <View style={styles.rowValue}>
-              <UserIcon uri={userData.photoURL} />
+              <UserIcon uri={user.photoURL} />
             </View>
           </View>
 

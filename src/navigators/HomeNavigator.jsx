@@ -26,6 +26,7 @@ import AddMoney from '../pages/SendMenuPages/AddMoney';
 import AddMoneyConfirm from '../pages/SendMenuPages/AddMoney/AddMoneyConfirm';
 import AddNewCard from '../pages/SendMenuPages/AddMoney/AddNewCard';
 import Biometric from '../pages/HomePages/Biometric';
+import TransactionPin from '../pages/MenuPages/TransactionPin';
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -95,7 +96,10 @@ const HomeNavigator = () => {
         <Stack.Screen
           name="RequestFund"
           component={RequestFund}
-          options={({ navigation, route }) => screenHeader(navigation, route)}
+          options={({ navigation, route }) => ({
+            ...screenHeader(navigation, route),
+            animation: 'none',
+          })}
         />
         <Stack.Screen
           name="RequestConfirm"
@@ -103,7 +107,13 @@ const HomeNavigator = () => {
           options={({ navigation, route }) => screenHeader(navigation, route)}
         />
         <Stack.Screen name="RequestSuccess" component={RequestSuccess} />
-        <Stack.Screen name="TransferAirtime" component={TransferAirtime} />
+        <Stack.Screen
+          name="TransferAirtime"
+          component={TransferAirtime}
+          options={{
+            animation: 'none',
+          }}
+        />
         <Stack.Screen name="Success" component={Success} />
         <Stack.Screen
           name="TransactionHistory"
@@ -130,6 +140,13 @@ const HomeNavigator = () => {
           name="Biometric"
           component={Biometric}
           options={({ navigation, route }) => screenHeader(navigation, route)}
+        />
+        <Stack.Screen
+          name="TransactionPin"
+          component={TransactionPin}
+          options={{
+            animation: 'none',
+          }}
         />
       </Stack.Navigator>
     </NotificationsContextComponent>

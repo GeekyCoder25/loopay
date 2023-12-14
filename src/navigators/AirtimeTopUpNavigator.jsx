@@ -7,6 +7,7 @@ import BuyData from '../pages/SendMenuPages/AirtimeTopUp/BuyData';
 import TransferAirtime from '../pages/SendMenuPages/AirtimeTopUp/TransferAirtime';
 import AccStatement from '../pages/SendMenuPages/AccStatement';
 import BuyAirtimeInternational from '../pages/SendMenuPages/AirtimeTopUp/BuyAirtimeInternational';
+import TransactionPin from '../pages/MenuPages/TransactionPin';
 
 const AirtimeTopUpNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -30,6 +31,14 @@ const AirtimeTopUpNavigator = () => {
         component={TransferAirtime}
         options={{
           headerShown: false,
+          animation: 'none',
+        }}
+      />
+      <Stack.Screen
+        name="TransactionPin"
+        component={TransactionPin}
+        options={{
+          animation: 'none',
         }}
       />
       <Stack.Screen name="AirtimeHistory" component={AccStatement} />

@@ -12,11 +12,7 @@ const Header = ({ navigation }) => {
   const { appData } = useContext(AppContext);
   const { adminData } = useAdminDataContext();
   const fullName = appData.userProfile.fullName;
-  const { notifications } = adminData;
-  const unReadNotifications = notifications.filter(
-    notification => notification.adminStatus === 'unread',
-  );
-
+  const unReadNotifications = adminData.unReadNotifications;
   return (
     <View style={styles.container}>
       <Pressable onPress={() => navigation.openDrawer()}>
@@ -30,7 +26,7 @@ const Header = ({ navigation }) => {
           <UserIcon />
         </Pressable>
         <Pressable onPress={() => navigation.navigate('Notifications')}>
-          {unReadNotifications.length ? <BellActive /> : <Bell />}
+          {unReadNotifications ? <BellActive /> : <Bell />}
         </Pressable>
       </View>
     </View>

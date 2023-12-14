@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -24,15 +24,22 @@ import { allCurrencies } from '../../database/data';
 import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { randomUUID } from 'expo-crypto';
+import InputPin from '../../components/InputPin';
 
 const AdminTransfer = ({ navigation }) => {
-  const { selectedCurrency, vw, setIsLoading, setWalletRefresh } =
-    useContext(AppContext);
+  const {
+    selectedCurrency,
+    vw,
+    setIsLoading,
+    walletRefresh,
+    setWalletRefresh,
+  } = useContext(AppContext);
   const { adminData } = useAdminDataContext();
-  const { recents } = adminData;
+  const { allBalances } = adminData;
+  const [recent, setRecent] = useState([]);
   const [transferCurrency, setTransferCurrency] = useState(selectedCurrency);
   const [balance, setBalance] = useState(
-    adminData[
+    allBalances[
       `${
         ['dollar', 'euro', 'pound'].includes(selectedCurrency.currency)
           ? selectedCurrency.currency
@@ -47,6 +54,17 @@ const AdminTransfer = ({ navigation }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [userFound, setUserFound] = useState(null);
   const [userInput, setUserInput] = useState(null);
+  const [askPin, setAskPin] = useState(false);
+
+  useEffect(() => {
+    const getRecent = async () => {
+      const response = await getFetchData('admin/recent');
+      if (response.status === 200) {
+        setRecent(response.data);
+      }
+    };
+    getRecent();
+  }, [walletRefresh]);
 
   const handlePriceInput = text => {
     setAmountInput(text);
@@ -72,6 +90,8 @@ const AdminTransfer = ({ navigation }) => {
       } else if (amountInput > balance) {
         setErrorKey(true);
         return setErrorMessage('Insufficient funds');
+      } else if (!askPin) {
+        return setAskPin(true);
       }
       setIsLoading(true);
       const response = await postFetchData('admin/loopay/transfer', {
@@ -94,16 +114,19 @@ const AdminTransfer = ({ navigation }) => {
         setWalletRefresh(prev => !prev);
         setAmountInput('');
         setUserFound('');
+        setAskPin(false);
         return setUserInput('');
       }
       throw new Error(response.data);
     } catch (err) {
       console.log(err.message);
       setErrorMessage(err.message);
+      setAskPin(false);
     } finally {
       setIsLoading(false);
     }
   };
+  // setAskPin(false);
 
   const handleCurrencyChange = newSelect => {
     setTransferCurrency(newSelect);
@@ -131,14 +154,15 @@ const AdminTransfer = ({ navigation }) => {
       return setUserFound(null);
     }
   };
-  return (
+
+  return !askPin ? (
     <PageContainer style={styles.body} scroll>
       <BoldText style={styles.headerText}>Transfer</BoldText>
-      <View style={styles.recentsContainer}>
-        <BoldText style={styles.recentsHeader}>Recents</BoldText>
+      <View style={styles.recentContainer}>
+        <BoldText style={styles.recentHeader}>Recents</BoldText>
         <View style={styles.recents}>
           <FlatList
-            data={recents}
+            data={recent}
             renderItem={({ item, index }) => (
               <Pressable
                 style={{
@@ -283,9 +307,11 @@ const AdminTransfer = ({ navigation }) => {
                     </View>
                     <BoldText>
                       {currency.isLocal
-                        ? addingDecimal(adminData.localBalance.toLocaleString())
+                        ? addingDecimal(
+                            allBalances.localBalance.toLocaleString(),
+                          )
                         : addingDecimal(
-                            adminData[
+                            allBalances[
                               `${currency.currency}Balance`
                             ].toLocaleString(),
                           )}
@@ -297,6 +323,8 @@ const AdminTransfer = ({ navigation }) => {
         </View>
       </Modal>
     </PageContainer>
+  ) : (
+    <InputPin customFunc={handleSend} handleCancel={() => setAskPin(false)} />
   );
 };
 
@@ -307,10 +335,10 @@ const styles = StyleSheet.create({
     color: '#525252',
     paddingHorizontal: 5 + '%',
   },
-  recentsContainer: {
+  recentContainer: {
     marginTop: 30,
   },
-  recentsHeader: {
+  recentHeader: {
     paddingHorizontal: 5 + '%',
   },
   recents: {

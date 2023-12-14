@@ -195,7 +195,7 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
         ? selected.currency
         : 'local';
 
-      setBalance(adminData[`${currency}Balance`]);
+      setBalance(adminData.allBalances[`${currency}Balance`]);
     }
   }, [adminData, selected.currency]);
 

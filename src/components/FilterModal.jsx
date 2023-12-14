@@ -24,15 +24,18 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import CalendarIcon from '../../assets/images/calendar.svg';
 import ToastMessage from './ToastMessage';
 import { groupTransactionsByDate } from '../../utils/groupTransactions';
+import { getFetchData } from '../../utils/fetchAPI';
 
 const FilterModal = ({
   showModal,
   setShowModal,
   setTransactionHistory,
-  transactions,
   setActiveTransactions,
+  setIsFiltered,
+  transactions,
+  propTransactions,
 }) => {
-  const { selectedCurrency } = useContext(AppContext);
+  const { selectedCurrency, setIsLoading } = useContext(AppContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectAll, setSelectAll] = useState(true);
   const [selectedCurrencies, setSelectedCurrencies] = useState(
@@ -42,6 +45,34 @@ const FilterModal = ({
   const [showPicker, setShowPicker] = useState(false);
   const [startValue, setStartValue] = useState('DD/MM/YYYY');
   const [endValue, setEndValue] = useState('DD/MM/YYYY');
+  const [filterCleared, setFilterCleared] = useState(false);
+
+  const getTransactions = async () => {
+    const currencies = selectedCurrencies.map(
+      currency =>
+        allCurrencies.find(index => currency === index.acronym).currency,
+    );
+    // console.log(currencies);
+    try {
+      setIsLoading(true);
+      const response = await getFetchData(
+        `admin/transactions?currency=${currencies}&limit=${0}&page=${1}&start=${
+          selectedPeriod.start
+        }&end=${selectedPeriod.end}`,
+      );
+
+      if (response.status === 200) {
+        return response.data.data.filter(
+          transaction => transaction.transactionType !== 'swap',
+        );
+      }
+      throw new Error(response.data?.message || response.data || response);
+    } catch (error) {
+      ToastMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const hideFilter = () => {
     setShowModal(false);
@@ -116,6 +147,7 @@ const FilterModal = ({
 
   const handleDatePicker = (event, selectedDate) => {
     setShowPicker(false);
+    setFilterCleared(false);
     if (selectedDate > Date.now()) {
       selectedDate = new Date(Date.now());
     }
@@ -173,50 +205,62 @@ const FilterModal = ({
     setSelectedCurrencies(allCurrencies.map(currency => currency.acronym));
     setStartValue('DD/MM/YYYY');
     setEndValue('DD/MM/YYYY');
+    setIsFiltered(false);
+    setTransactionHistory(groupTransactionsByDate(transactions));
+    setActiveTransactions(transactions);
+    setFilterCleared(true);
+    setIsFiltered(false);
   };
 
-  const handleApply = () => {
-    const currencyFilter = () =>
-      transactions.filter(
-        transaction =>
-          selectedCurrencies.includes(transaction.currency) ||
-          allCurrencies
-            .filter(currency => selectedCurrencies.includes(currency.acronym))
-            .map(currency => currency.currency)
-            .includes(transaction.currency),
-      );
-    const periodFilter = filterCurrencies => {
-      const transactionsSelected = filterCurrencies || transactions;
-      if (selectedPeriod.start && !selectedPeriod.end) {
-        return transactionsSelected.filter(
+  const handleApply = async () => {
+    try {
+      const filteredTransactionsResult = filterCleared
+        ? transactions
+        : propTransactions || (await getTransactions());
+      const currencyFilter = () =>
+        filteredTransactionsResult.filter(
           transaction =>
-            new Date(transaction.updatedAt) >= new Date(selectedPeriod.start),
+            selectedCurrencies.includes(transaction.currency) ||
+            allCurrencies
+              .filter(currency => selectedCurrencies.includes(currency.acronym))
+              .map(currency => currency.currency)
+              .includes(transaction.currency),
         );
-      } else if (!selectedPeriod.start && selectedPeriod.end) {
+      const periodFilter = filterCurrencies => {
+        const transactionsSelected =
+          filterCurrencies || filteredTransactionsResult;
+        if (selectedPeriod.start && !selectedPeriod.end) {
+          return transactionsSelected.filter(
+            transaction =>
+              new Date(transaction.updatedAt) >= new Date(selectedPeriod.start),
+          );
+        } else if (!selectedPeriod.start && selectedPeriod.end) {
+          return transactionsSelected.filter(
+            transaction =>
+              new Date(transaction.updatedAt) <= new Date(selectedPeriod.end),
+          );
+        }
         return transactionsSelected.filter(
           transaction =>
+            new Date(transaction.updatedAt) >= new Date(selectedPeriod.start) &&
             new Date(transaction.updatedAt) <= new Date(selectedPeriod.end),
         );
-      }
-      return transactionsSelected.filter(
-        transaction =>
-          new Date(transaction.updatedAt) >= new Date(selectedPeriod.start) &&
-          new Date(transaction.updatedAt) <= new Date(selectedPeriod.end),
-      );
-    };
+      };
 
-    if (!selectedCurrencies.length) {
-      ToastMessage('No currency selected in filter');
-    } else if (!selectedPeriod.label) {
-      setTransactionHistory(groupTransactionsByDate(currencyFilter()));
-      setActiveTransactions(currencyFilter());
-    } else {
-      const currencyFilters = currencyFilter();
-      const periodFilters = periodFilter(currencyFilters);
-      setTransactionHistory(groupTransactionsByDate(periodFilters));
-      setActiveTransactions(periodFilters);
-    }
-    hideFilter();
+      if (!selectedCurrencies.length) {
+        ToastMessage('No currency selected in filter');
+      } else if (!selectedPeriod.label) {
+        setTransactionHistory(groupTransactionsByDate(currencyFilter()));
+        setActiveTransactions(currencyFilter());
+      } else {
+        const currencyFilters = currencyFilter();
+        const periodFilters = periodFilter(currencyFilters);
+        setTransactionHistory(groupTransactionsByDate(periodFilters));
+        setActiveTransactions(periodFilters);
+        !filterCleared && setIsFiltered(true);
+      }
+      hideFilter();
+    } catch (error) {}
   };
 
   return (
@@ -271,7 +315,10 @@ const FilterModal = ({
                     ? styles.periodSelected
                     : styles.period
                 }
-                onPress={() => setSelectedPeriod(period)}>
+                onPress={() => {
+                  setFilterCleared(false);
+                  setSelectedPeriod(period);
+                }}>
                 <BoldText>{period.label}</BoldText>
               </Pressable>
             ))}
@@ -393,6 +440,7 @@ const FilterModal = ({
                       setSelectAll={setSelectAll}
                       selectedCurrencies={selectedCurrencies}
                       setSelectedCurrencies={setSelectedCurrencies}
+                      setFilterCleared={setFilterCleared}
                     />
                   ))}
                 {allCurrencies
@@ -406,6 +454,7 @@ const FilterModal = ({
                       setSelectAll={setSelectAll}
                       selectedCurrencies={selectedCurrencies}
                       setSelectedCurrencies={setSelectedCurrencies}
+                      setFilterCleared={setFilterCleared}
                     />
                   ))}
               </View>
@@ -643,6 +692,7 @@ const Currency = ({
   setSelectAll,
   selectedCurrencies,
   setSelectedCurrencies,
+  setFilterCleared,
 }) => {
   const [isSelected, setIsSelected] = useState(false);
 
@@ -662,6 +712,7 @@ const Currency = ({
         : prev;
     });
     setIsSelected(prev => !prev);
+    setFilterCleared(false);
   };
 
   return (

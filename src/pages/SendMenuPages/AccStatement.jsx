@@ -102,15 +102,15 @@ const AccStatement = () => {
       { label: 'Account Number', value: wallet.loopayAccNo },
       { label: 'Tag Name', value: '#' + appData.tagName },
       {
+        label: 'Currency',
+        value: selectedCurrency.acronym,
+      },
+      {
         label: 'Balance',
         value:
           selectedCurrency.symbol +
           ' ' +
           addingDecimal(Number(wallet.balance).toLocaleString()),
-      },
-      {
-        label: 'Currency',
-        value: selectedCurrency.acronym,
       },
     ];
 
@@ -135,7 +135,9 @@ const AccStatement = () => {
 
             body {
               font-family: Inter, 'sans-serif';
-              margin-top: 30px;
+              padding: 25px;
+              max-width: 800px;
+              margin: auto;
             }
 
             .logo {
@@ -174,9 +176,20 @@ const AccStatement = () => {
               font-size: 1.2rem;
               margin: 0;
             }
+            table {
+              border: 1px solid grey;
+              border-collapse: collapse;
+              max-width: 800px;
+              margin: auto;
+            }
+            th {
+              width: 10%;
+              height: 35px;
+              font-size: 1.2rem;
+            }
             td {
               padding: 10px 0;
-              width: 33%;
+              width: 10%;
               height: 40px;
               text-align: center;
             }
@@ -204,11 +217,11 @@ const AccStatement = () => {
             ${asideItems
               .map(
                 item => String.raw`
-                <div>
-                  <span>${item.label}:</span>
-                  <h4>${item.value}</h4>
-                </div>
-              `,
+                  <div>
+                    <span>${item.label}:</span>
+                    <h4>${item.value}</h4>
+                  </div>
+                `,
               )
               .join('')}
           </aside>
@@ -218,30 +231,19 @@ const AccStatement = () => {
             ${new Date(end).toLocaleDateString('en-US', dateOptions)}
           </h2>
           <section>
-            <table
-              border
-              style="border: 1px solid grey; border-collapse: collapse; width: 100%">
+            <table border>
               <tr>
-                <th style="width: 33%; height: 35px; font-size: 1.2rem">
-                  Date
-                </th>
-                <th style="width: 33%; height: 35px; font-size: 1.2rem">
-                  Debit
-                </th>
-                <th style="width: 33%; height: 35px; font-size: 1.2rem">
-                  Credit
-                </th>
+                <th>Date</th>
+                <th>Debit</th>
+                <th>Credit</th>
               </tr>
               ${data
                 .map(element => {
                   return element.transactionType === 'credit'
                     ? String.raw`
                         <tr>
-                          <td
-                            style="
-             
-            ">
-                             <p style="margin: 0; padding-bottom: 2px">
+                          <td>
+                            <p style="margin: 0; padding-bottom: 2px">
                               ${new Date(element.createdAt).toLocaleDateString(
                                 'en-US',
                                 dateOptions,
@@ -268,7 +270,7 @@ const AccStatement = () => {
                     : String.raw`
                         <tr>
                           <td>
-                           <p style="margin: 0; padding-bottom: 2px">
+                            <p style="margin: 0; padding-bottom: 2px">
                               ${new Date(element.createdAt).toLocaleDateString(
                                 'en-US',
                                 dateOptions,
@@ -367,7 +369,7 @@ const AccStatement = () => {
           })
           .catch(err => {
             shareAsync(uri, { UTI: '.pdf', mimeType });
-            console.log(err);
+            ToastMessage(err);
           })
           .finally(() => setIsLoading(false));
       } else {

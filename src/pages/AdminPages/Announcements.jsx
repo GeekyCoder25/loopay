@@ -182,6 +182,7 @@ const styles = StyleSheet.create({
   },
   container: {
     paddingHorizontal: 3 + '%',
+    paddingTop: 20,
   },
   announcements: {
     paddingBottom: 120,

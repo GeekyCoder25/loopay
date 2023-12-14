@@ -232,7 +232,7 @@ const RequestFund = ({ navigation, route }) => {
           <View style={styles.fee}>
             <RegularText style={styles.feeText}>
               Fee: {fee > 0 && selected.symbol}
-              {fee <= 0 ? 'free' : fee}
+              {addingDecimal(fee?.toLocaleString())}
             </RegularText>
           </View>
         </View>

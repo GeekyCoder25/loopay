@@ -8,13 +8,24 @@ import BackIcon from '../../../assets/images/backArrow.svg';
 import RegularText from '../../components/fonts/RegularText';
 import ChevronDown from '../../../assets/images/drop-down.svg';
 import UserIcon from '../../components/UserIcon';
+import { getFetchData } from '../../../utils/fetchAPI';
 
 const ActiveUsers = ({ navigation, route }) => {
   const [defaultTab, setDefaultTab] = useState(route.params.defaultTab);
   const [activeUsers, setActiveUsers] = useState([]);
   const [inactiveUsers, setInactiveUsers] = useState([]);
   const { adminData } = useAdminDataContext();
-  const { users } = adminData;
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const getUsers = async () => {
+      const response = await getFetchData('admin/users?userData=true');
+      if (response.status === 200) {
+        setUsers(response.data.data);
+      }
+    };
+    getUsers();
+  }, []);
 
   useEffect(() => {
     setDefaultTab(route.params.defaultTab);
@@ -103,20 +114,30 @@ const ActiveUsers = ({ navigation, route }) => {
           </Pressable>
         </View>
       </View>
-
-      {defaultTab ? (
-        <View style={styles.users}>
-          {activeUsers.sort(sortFunc).map(user => (
-            <User key={user.email} userSession={user} status={defaultTab} />
-          ))}
-        </View>
-      ) : (
-        <View style={styles.users}>
-          {inactiveUsers.sort(sortFunc).map(user => (
-            <User key={user.email} userSession={user} status={defaultTab} />
-          ))}
-        </View>
-      )}
+      {users.length > 0 &&
+        (defaultTab ? (
+          <View style={styles.users}>
+            {activeUsers.sort(sortFunc).map(user => (
+              <User
+                key={user.email}
+                userSession={user}
+                status={defaultTab}
+                users={users}
+              />
+            ))}
+          </View>
+        ) : (
+          <View style={styles.users}>
+            {inactiveUsers.sort(sortFunc).map(user => (
+              <User
+                key={user.email}
+                userSession={user}
+                status={defaultTab}
+                users={users}
+              />
+            ))}
+          </View>
+        ))}
     </PageContainer>
   );
 };
@@ -204,13 +225,8 @@ const styles = StyleSheet.create({
 
 export default ActiveUsers;
 
-const User = ({ status, userSession }) => {
-  const { adminData } = useAdminDataContext();
-  const { users, userDatas } = adminData;
-  const userData = {
-    ...users.find(i => i.email === userSession.email),
-    ...userDatas.find(i => i.email === userSession.email),
-  };
+const User = ({ status, userSession, users }) => {
+  const userData = users.find(i => i.email === userSession.email);
   const { email, userProfile } = userData;
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -253,7 +269,7 @@ const User = ({ status, userSession }) => {
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Phone Number</BoldText>
             <RegularText style={styles.rowValue}>
-              {userData.userProfile.phoneNumber}
+              {userProfile.phoneNumber}
             </RegularText>
           </View>
           <View style={styles.row}>
@@ -275,7 +291,7 @@ const User = ({ status, userSession }) => {
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Tag Name</BoldText>
             <RegularText style={styles.rowValue}>
-              {userData.tagName || userData.userProfile.userName}
+              {userData.tagName || userProfile.userName}
             </RegularText>
           </View>
           <View style={styles.row}>

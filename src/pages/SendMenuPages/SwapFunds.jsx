@@ -57,7 +57,6 @@ const SwapFunds = ({ navigation }) => {
 
   useEffect(() => {
     const getRates = async () => {
-      // setIsLoading(true);
       const response = await getFetchData(`user/rate/${swapFrom.acronym}`);
       response.status === 200 && setCurrencyRateAPI(response.data);
       setIsLoading(false);
@@ -134,7 +133,14 @@ const SwapFunds = ({ navigation }) => {
       allCurrencies.find(currency => currency.currency === index);
     setSwapTo({
       ...selectedCurrencyFunc(swapToCurrency),
-      balance: wallet[`${swapToCurrency}Balance`],
+      balance:
+        wallet[
+          `${
+            ['dollar', 'euro', 'pound'].includes(swapToCurrency)
+              ? swapToCurrency
+              : 'local'
+          }Balance`
+        ],
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -160,7 +166,14 @@ const SwapFunds = ({ navigation }) => {
     setRateRefetch(prev => !prev);
     setSwapFrom({
       ...currency,
-      balance: wallet[`${currency.currency}Balance`],
+      balance:
+        wallet[
+          `${
+            ['dollar', 'euro', 'pound'].includes(currency.currency)
+              ? currency.currency
+              : 'local'
+          }Balance`
+        ],
     });
     setShowSwapFromCurrencies(false);
     const swapToSelect =
@@ -183,7 +196,14 @@ const SwapFunds = ({ navigation }) => {
     setSwapTo(() => {
       return {
         ...currency,
-        balance: wallet[`${currency.currency}Balance`],
+        balance:
+          wallet[
+            `${
+              ['dollar', 'euro', 'pound'].includes(currency.currency)
+                ? currency.currency
+                : 'local'
+            }Balance`
+          ],
       };
     });
     setShowSwapToCurrencies(false);
@@ -206,7 +226,8 @@ const SwapFunds = ({ navigation }) => {
     setValue(text);
     const textInputValue = Number(text);
     text = Number(text);
-    const transactionFee = text * (currencyFee() / 1000);
+    const rate = currencyRateAPI[swapTo.acronym];
+    const transactionFee = text / 100;
     setFee(transactionFee);
     const toReceiveCalculate = Number((text * currencyRate()).toFixed(2));
 

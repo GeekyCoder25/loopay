@@ -24,7 +24,7 @@ const BalanceCard = () => {
         ? selectedCurrency.currency
         : 'local';
 
-      setBalance(adminData[`${currency}Balance`]);
+      setBalance(adminData.allBalances[`${currency}Balance`]);
     }
   }, [adminData, selectedCurrency.currency]);
 
