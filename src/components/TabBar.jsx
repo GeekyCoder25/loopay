@@ -21,8 +21,9 @@ const tabRoutes = [
 ];
 
 const TabBar = ({ navigation, state }) => {
+  const { showTabBar } = useContext(AppContext);
   return (
-    <View style={styles.bottomTabs}>
+    <View style={showTabBar ? styles.bottomTabs : styles.hideBottomTabs}>
       {tabRoutes.map((routePage, index) => (
         <TabRoute
           key={routePage.route}
@@ -46,6 +47,9 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 5,
     elevation: 30,
+  },
+  hideBottomTabs: {
+    height: 0,
   },
   routeIcon: {
     paddingHorizontal: 25,

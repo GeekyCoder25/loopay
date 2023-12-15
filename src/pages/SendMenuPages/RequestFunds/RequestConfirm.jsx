@@ -55,7 +55,9 @@ const RequestConfirm = ({ navigation, route }) => {
               <RegularText style={styles.cardKey}>Charges</RegularText>
               <BoldText
                 style={{ ...styles.cardValue, color: fee ? 'red' : '#006E53' }}>
-                {fee ? symbol + addingDecimal(fee.toLocaleString()) : 'free'}
+                {fee
+                  ? symbol + addingDecimal(fee.toLocaleString())
+                  : symbol + '0.00'}
               </BoldText>
             </View>
           </View>

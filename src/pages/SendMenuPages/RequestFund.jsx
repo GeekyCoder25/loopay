@@ -59,7 +59,7 @@ const RequestFund = ({ navigation, route }) => {
     setToReceive(
       toReceiveCalculate > 0
         ? addingDecimal(toReceiveCalculate.toLocaleString())
-        : 'free',
+        : '0.00',
     );
     setErrorKey(false);
     setErrorMessage(false);

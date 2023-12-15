@@ -34,7 +34,7 @@ const BottomTabs = () => {
               tabBarStyle: { display: 'none' },
             }}
             backBehavior="initialRoute"
-            tabBar={showTabBar ? TabBar : () => null}>
+            tabBar={showTabBar ? props => <TabBar {...props} /> : () => null}>
             <Tab.Screen name="HomeNavigator" component={HomeNavigator} />
             <Tab.Screen
               name="SendMenuNavigator"

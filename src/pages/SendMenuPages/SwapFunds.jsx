@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -27,6 +27,7 @@ import { randomUUID } from 'expo-crypto';
 import ToastMessage from '../../components/ToastMessage';
 import { Audio } from 'expo-av';
 import IonIcon from '@expo/vector-icons/Ionicons';
+import { useFocusEffect } from '@react-navigation/native';
 
 const SwapFunds = ({ navigation }) => {
   const { selectedCurrency, setIsLoading, setWalletRefresh, vh, showAmount } =
@@ -52,18 +53,26 @@ const SwapFunds = ({ navigation }) => {
   const [showSwapFromCurrencies, setShowSwapFromCurrencies] = useState(false);
   const [showSwapToCurrencies, setShowSwapToCurrencies] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
-  const [currencyRateAPI, setCurrencyRateAPI] = useState([]);
+  const [currencyRateAPI, setCurrencyRateAPI] = useState({});
   const [rateRefetch, setRateRefetch] = useState(false);
 
-  useEffect(() => {
-    const getRates = async () => {
-      const response = await getFetchData(`user/rate/${swapFrom.acronym}`);
-      response.status === 200 && setCurrencyRateAPI(response.data);
-      setIsLoading(false);
-    };
-    getRates();
-    setFee(0);
-  }, [rateRefetch, setIsLoading, swapFrom.acronym]);
+  useFocusEffect(
+    useCallback(() => {
+      try {
+        setIsLoading(true);
+        const getRates = async () => {
+          const response = await getFetchData(`user/rate/${swapFrom.acronym}`);
+          response.status === 200 && setCurrencyRateAPI(response.data);
+        };
+        getRates();
+        setFee(0);
+      } catch {
+        setIsLoading(false);
+        setErrorMessage("Can't connect to server");
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [rateRefetch, setIsLoading, swapFrom.acronym]),
+  );
 
   // const currencyRateAPI = [
   //   {
@@ -214,6 +223,7 @@ const SwapFunds = ({ navigation }) => {
   };
 
   const currencyRate = () => {
+    currencyRateAPI[[swapTo.acronym]] && setIsLoading(false);
     return currencyRateAPI[swapTo.acronym]?.toFixed(4);
   };
 
@@ -299,7 +309,7 @@ const SwapFunds = ({ navigation }) => {
       title: 'Transaction Fee',
       value: currencyFee()
         ? swapFrom.symbol + addingDecimal(fee.toLocaleString())
-        : 'Free',
+        : swapFrom.symbol + '0.00',
     },
     {
       title: 'Pay From',
@@ -307,9 +317,18 @@ const SwapFunds = ({ navigation }) => {
     },
     {
       title: 'Rate',
-      value: `1 ${swapFrom.acronym} = ${addingDecimal(
-        Number(currencyRate()).toLocaleString(),
-      )} ${swapTo.acronym}`,
+      value:
+        currencyRate() < 1 ? (
+          <>
+            {swapTo.acronym}1 = {swapFrom.acronym}
+            {addingDecimal(Number(1 / currencyRate()).toLocaleString())}
+          </>
+        ) : (
+          <>
+            {swapFrom.acronym}1 = {swapTo.acronym}
+            {addingDecimal(Number(currencyRate()).toLocaleString())}
+          </>
+        ),
     },
   ];
 

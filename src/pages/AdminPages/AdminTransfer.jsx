@@ -131,7 +131,15 @@ const AdminTransfer = ({ navigation }) => {
   const handleCurrencyChange = newSelect => {
     setTransferCurrency(newSelect);
     setErrorMessage(false);
-    setBalance(adminData[`${newSelect.currency}Balance`]);
+    setBalance(
+      adminData.allBalances[
+        `${
+          ['dollar', 'euro', 'pound'].includes(newSelect.currency)
+            ? newSelect.currency
+            : 'local'
+        }Balance`
+      ],
+    );
   };
 
   const handleModal = () => {
@@ -155,6 +163,7 @@ const AdminTransfer = ({ navigation }) => {
     }
   };
 
+  console.log(balance);
   return !askPin ? (
     <PageContainer style={styles.body} scroll>
       <BoldText style={styles.headerText}>Transfer</BoldText>
@@ -198,7 +207,7 @@ const AdminTransfer = ({ navigation }) => {
                 </BoldText>
                 <RegularText style={styles.selectAmount}>
                   {`${transferCurrency.symbol} ${addingDecimal(
-                    balance.toLocaleString(),
+                    balance?.toLocaleString(),
                   )}`}
                 </RegularText>
               </View>
@@ -308,12 +317,12 @@ const AdminTransfer = ({ navigation }) => {
                     <BoldText>
                       {currency.isLocal
                         ? addingDecimal(
-                            allBalances.localBalance.toLocaleString(),
+                            allBalances.localBalance?.toLocaleString(),
                           )
                         : addingDecimal(
                             allBalances[
                               `${currency.currency}Balance`
-                            ].toLocaleString(),
+                            ]?.toLocaleString(),
                           )}
                     </BoldText>
                   </Pressable>

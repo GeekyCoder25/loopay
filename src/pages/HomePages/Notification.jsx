@@ -81,7 +81,7 @@ const Notification = () => {
                 textAlign: searchInput || focused ? 'left' : 'center',
                 paddingLeft: searchInput || focused ? 10 : 0,
               }}
-              placeholder={searchInput || focused ? '' : 'Search, e.g by date'}
+              placeholder={searchInput || focused ? '' : 'Search'}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
               onChangeText={text => handleSearch(text)}

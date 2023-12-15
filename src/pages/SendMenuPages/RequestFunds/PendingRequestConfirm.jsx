@@ -97,7 +97,7 @@ const PendingRequestConfirm = ({ navigation, route }) => {
                 }}>
                 {Number(fee)
                   ? symbol + addingDecimal(Number(fee).toLocaleString())
-                  : 'free'}
+                  : symbol + '0.00'}
               </BoldText>
             </View>
             <View style={styles.cardLine}>
