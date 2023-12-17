@@ -170,9 +170,6 @@ const Withdraw = ({ navigation }) => {
     } else if (amountInput > wallet.balance) {
       setErrorKey('amountInput');
       setErrorMessage('Insufficient funds');
-    } else if (!description) {
-      setErrorMessage('Please provide transaction description');
-      setErrorKey('desc');
     } else {
       setCanContinue(true);
     }
@@ -193,17 +190,19 @@ const Withdraw = ({ navigation }) => {
         const { transaction } = response.data;
         setWalletRefresh(prev => !prev);
         await postFetchData('user/savedbanks', formData);
-        return navigation.replace('Success', {
+        navigation.replace('Success', {
           userToSendTo: bankSelected,
           amountInput,
           fee,
           id,
           transaction,
         });
+        return response.status;
       }
       typeof response === 'string'
         ? setErrorMessage(response)
         : setErrorMessage(response.data);
+      return response.data;
     } catch (error) {
       console.log(error.message);
     }
@@ -351,6 +350,7 @@ const Withdraw = ({ navigation }) => {
                   }}
                   value={description}
                   maxLength={40}
+                  placeholder="optional"
                 />
               </View>
             </View>

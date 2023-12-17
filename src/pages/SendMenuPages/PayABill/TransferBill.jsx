@@ -1,20 +1,16 @@
 import React, { useContext } from 'react';
-import { View, Pressable, StyleSheet, ScrollView, Text } from 'react-native';
-import BoldText from '../../../components/fonts/BoldText';
+import { View, StyleSheet } from 'react-native';
 import InputPin from '../../../components/InputPin';
-import FooterCard from '../../../components/FooterCard';
 import { postFetchData } from '../../../../utils/fetchAPI';
 import PageContainer from '../../../components/PageContainer';
-import BackArrow from '../../../../assets/images/backArrowWhite.svg';
 import { AppContext } from '../../../components/AppContext';
-import FaIcon from '@expo/vector-icons/FontAwesome';
 import ToastMessage from '../../../components/ToastMessage';
 
 const TransferBill = ({ navigation, route }) => {
   const formData = route.params;
   const { setIsLoading, setWalletRefresh } = useContext(AppContext);
 
-  const handlePay = async setErrorMessage => {
+  const handlePay = async () => {
     try {
       setIsLoading(true);
       const response = await postFetchData(
@@ -23,14 +19,15 @@ const TransferBill = ({ navigation, route }) => {
       );
       if (response.status === 200) {
         setWalletRefresh(prev => !prev);
-        return navigation.navigate('Success', {
+        navigation.navigate('Success', {
           amountInput: formData.amount,
           billPlan: formData.provider.name,
           reference: response.data.referenceId,
           transaction: response.data.transaction,
         });
+        return response.status;
       }
-      setErrorMessage(response.data);
+      return response.data;
     } catch (error) {
       ToastMessage(error.message);
     } finally {
@@ -60,14 +57,7 @@ const TransferBill = ({ navigation, route }) => {
           </View>
         </View> */}
       <View style={styles.content}>
-        <InputPin customFunc={handlePay} buttonText={'Buy Now'}>
-          <View style={styles.footer}>
-            <FooterCard
-              amountInput={formData.amount}
-              billPlan={formData.provider.name}
-            />
-          </View>
-        </InputPin>
+        <InputPin customFunc={handlePay} />
       </View>
       {/* </ScrollView> */}
     </PageContainer>
@@ -136,16 +126,3 @@ const styles = StyleSheet.create({
   },
 });
 export default TransferBill;
-
-const billIcon = key => {
-  switch (key) {
-    case 'electricity':
-      return <FaIcon name="bolt" size={24} color={'#fff'} />;
-    case 'school':
-      return <FaIcon name="graduation-cap" size={24} color={'#fff'} />;
-    case 'tv':
-      return <FaIcon name="tv" size={24} color={'#fff'} />;
-    default:
-      return <FaIcon name="send" size={24} color={'#fff'} />;
-  }
-};

@@ -17,7 +17,7 @@ import { AppContext } from '../../components/AppContext';
 import { billIcon } from './TransactionHistory';
 
 const TransactionHistoryParams = ({ route }) => {
-  const { vh, showAmount, setIsLoading } = useContext(AppContext);
+  const { vh, showAmount, setIsLoading, isAdmin } = useContext(AppContext);
   const history = route.params;
   const {
     status,
@@ -43,11 +43,12 @@ const TransactionHistoryParams = ({ route }) => {
     swapFromAmount,
     swapToAmount,
     networkProvider,
-    phoneNo,
+    rechargePhoneNo,
     dataPlan,
     billName,
     billType,
     token,
+    email,
   } = history;
 
   const currencySymbol = allCurrencies.find(
@@ -129,7 +130,7 @@ const TransactionHistoryParams = ({ route }) => {
             value: `Debit - ${transactionType} `,
           },
           { key: 'Network', value: networkProvider },
-          { key: 'Phone Number', value: phoneNo },
+          { key: 'Phone Number', value: rechargePhoneNo },
           { key: 'Reference Id', value: reference },
           { key: 'Status', value: status },
         ];
@@ -388,6 +389,12 @@ const TransactionHistoryParams = ({ route }) => {
                 </BoldText>
 
                 <View style={styles.footerCardDetails}>
+                  {isAdmin && (
+                    <View style={styles.cardLine}>
+                      <RegularText style={styles.cardKey}>Email</RegularText>
+                      <BoldText style={styles.cardValue}>{email}</BoldText>
+                    </View>
+                  )}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Status</RegularText>
                     {statusColor()}
@@ -487,6 +494,12 @@ const TransactionHistoryParams = ({ route }) => {
                 </BoldText>
 
                 <View style={styles.footerCardDetails}>
+                  {isAdmin && (
+                    <View style={styles.cardLine}>
+                      <RegularText style={styles.cardKey}>Email</RegularText>
+                      <BoldText style={styles.cardValue}>{email}</BoldText>
+                    </View>
+                  )}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Status</RegularText>
                     {statusColor()}
@@ -569,7 +582,7 @@ const TransactionHistoryParams = ({ route }) => {
               <View style={styles.headerContainer}>
                 {networkProvidersIcon(networkProvider)}
                 <View>
-                  <BoldText style={styles.name}>{phoneNo}</BoldText>
+                  <BoldText style={styles.name}>{rechargePhoneNo}</BoldText>
                   <RegularText style={styles.accNo}>
                     Airtime purchase
                   </RegularText>
@@ -588,6 +601,12 @@ const TransactionHistoryParams = ({ route }) => {
                 </BoldText>
 
                 <View style={styles.footerCardDetails}>
+                  {isAdmin && (
+                    <View style={styles.cardLine}>
+                      <RegularText style={styles.cardKey}>Email</RegularText>
+                      <BoldText style={styles.cardValue}>{email}</BoldText>
+                    </View>
+                  )}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Status</RegularText>
                     {statusColor()}
@@ -613,7 +632,9 @@ const TransactionHistoryParams = ({ route }) => {
                     <RegularText style={styles.cardKey}>
                       Phone Number
                     </RegularText>
-                    <BoldText style={styles.cardValue}>{phoneNo}</BoldText>
+                    <BoldText style={styles.cardValue}>
+                      {rechargePhoneNo}
+                    </BoldText>
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Network</RegularText>
@@ -654,7 +675,7 @@ const TransactionHistoryParams = ({ route }) => {
               <View style={styles.headerContainer}>
                 {networkProvidersIcon(networkProvider)}
                 <View>
-                  <BoldText style={styles.name}>{phoneNo}</BoldText>
+                  <BoldText style={styles.name}>{rechargePhoneNo}</BoldText>
                   <RegularText style={styles.accNo}>Data purchase</RegularText>
                 </View>
               </View>
@@ -671,6 +692,12 @@ const TransactionHistoryParams = ({ route }) => {
                 </BoldText>
 
                 <View style={styles.footerCardDetails}>
+                  {isAdmin && (
+                    <View style={styles.cardLine}>
+                      <RegularText style={styles.cardKey}>Email</RegularText>
+                      <BoldText style={styles.cardValue}>{email}</BoldText>
+                    </View>
+                  )}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Status</RegularText>
                     {statusColor()}
@@ -696,7 +723,9 @@ const TransactionHistoryParams = ({ route }) => {
                     <RegularText style={styles.cardKey}>
                       Phone Number
                     </RegularText>
-                    <BoldText style={styles.cardValue}>{phoneNo}</BoldText>
+                    <BoldText style={styles.cardValue}>
+                      {rechargePhoneNo}
+                    </BoldText>
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Network</RegularText>
@@ -760,6 +789,12 @@ const TransactionHistoryParams = ({ route }) => {
                 </BoldText>
 
                 <View style={styles.footerCardDetails}>
+                  {isAdmin && (
+                    <View style={styles.cardLine}>
+                      <RegularText style={styles.cardKey}>Email</RegularText>
+                      <BoldText style={styles.cardValue}>{email}</BoldText>
+                    </View>
+                  )}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Status</RegularText>
                     {statusColor()}
@@ -858,6 +893,12 @@ const TransactionHistoryParams = ({ route }) => {
                 </View>
 
                 <View style={styles.footerCardDetails}>
+                  {isAdmin && (
+                    <View style={styles.cardLine}>
+                      <RegularText style={styles.cardKey}>Email</RegularText>
+                      <BoldText style={styles.cardValue}>{email}</BoldText>
+                    </View>
+                  )}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Status</RegularText>
                     {statusColor()}

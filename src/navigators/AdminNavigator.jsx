@@ -1,18 +1,15 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import Dashboard from '../pages/AdminPages/Dashboard';
 import Header from '../pages/AdminPages/components/Header';
 import CustomDrawer from '../pages/AdminPages/components/Drawer';
 import AdminContextComponent from '../context/AdminContext';
 import Accounts from '../pages/AdminPages/Accounts';
 import AdminTransfer from '../pages/AdminPages/AdminTransfer';
-import Users from '../pages/AdminPages/Users';
 import TransactionHistoryParams from '../pages/MenuPages/TransactionHistoryParams';
 import Back from '../components/Back';
 import History from '../pages/AdminPages/History';
 import Statement from '../pages/AdminPages/Statement';
 import Success from '../pages/SendMenuPages/Success';
-import Transactions from '../pages/AdminPages/Transactions';
 import ActiveUsers from '../pages/AdminPages/ActiveUsers';
 import AdminSelectCurrencyModal from '../pages/AdminPages/components/AdminSelectCurrency';
 import Profile from '../pages/HomePages/Profile';
@@ -21,7 +18,8 @@ import Rate from '../pages/AdminPages/Rate';
 import Verifications from '../pages/AdminPages/Verifications';
 import Verification from '../pages/AdminPages/components/Verification';
 import Announcements from '../pages/AdminPages/Announcements';
-import DashboardNavigator from '../pages/AdminPages/DashboardNavigator';
+import DashboardNavigator from '../pages/AdminPages/Dashboard/DashboardNavigator';
+import UsersNavigator from '../pages/AdminPages/Users/UsersNavigator';
 
 const AdminNavigator = () => {
   const Drawer = createDrawerNavigator();
@@ -61,7 +59,7 @@ const AdminNavigator = () => {
         />
         <Drawer.Screen
           name="Users"
-          component={Users}
+          component={UsersNavigator}
           options={{ headerShown: false }}
         />
         <Drawer.Screen name="History" component={History} />

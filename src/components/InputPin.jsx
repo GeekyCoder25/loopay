@@ -16,6 +16,7 @@ import * as Haptics from 'expo-haptics';
 import BoldText from './fonts/BoldText';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import Countdown from './Countdown';
 
 const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
   const {
@@ -38,9 +39,12 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      // checkFingerprint();
+      checkFingerprint();
     }, 100);
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      setModalOpen(false);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -56,7 +60,6 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
         setIsLoading(true);
         setIsValidPin && setIsValidPin(true);
         await customFunc(setErrorMessage);
-        return setIsLoading(false);
       }
     }
   };
@@ -72,15 +75,32 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
       }
       if (result.status === 200) {
         setIsValidPin && setIsValidPin(true);
-        return await customFunc(setErrorMessage);
+        const customFuncStatus = await customFunc(setErrorMessage);
+        console.log(customFuncStatus);
+        return customFuncStatus === 200
+          ? setModalOpen(false)
+          : setErrorMessage(customFuncStatus);
       }
-      setErrorMessage(result.data);
-      setErrorCode(true);
-      setTimeout(() => {
-        setErrorMessage('');
-        setErrorCode('');
-        setPinCode('');
-      }, 1500);
+
+      if (result.data === 'Invalid Pin') {
+        setErrorMessage(result.data);
+        setErrorCode(true);
+        setTimeout(() => {
+          setErrorMessage('');
+          setErrorCode('');
+          setPinCode('');
+        }, 1500);
+      } else {
+        const queryCheck = 'try again in ';
+        if (result.data.includes(queryCheck)) {
+          const message = result.data.split(queryCheck)[0];
+          const countDown = result.data.split(queryCheck)[1];
+          setErrorMessage(
+            <Countdown targetDate={countDown} message={message + queryCheck} />,
+          );
+        }
+        setErrorCode(true);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -98,12 +118,17 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
   return (
     <Modal
       visible={modalOpen}
-      animationType="slide"
+      animationType="fade"
       onRequestClose={() => {
         setTimeout(() => {
           setModalOpen(false);
         }, 100);
-        handleCancel ? handleCancel() : navigation.goBack();
+        handleCancel
+          ? handleCancel()
+          : () => {
+              setModalOpen(false);
+              navigation.goBack();
+            };
       }}>
       <ScrollView
         contentContainerStyle={{ minHeight: vh, ...styles.container }}>
@@ -115,8 +140,10 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
           <View>
             <BoldText style={styles.headerText}>Enter PIN</BoldText>
             <RegularText style={styles.text}>
-              Enter transaction 4-digit PIN-Code or use your biometric to
-              perform action.
+              Enter transaction 4-digit PIN-Code{' '}
+              {enableBiometric &&
+                isBiometricSupported &&
+                'or use your biometric to perform action.'}
             </RegularText>
           </View>
           <View style={styles.changePinCodeLengthsContainer}>
@@ -359,7 +386,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
   },
   errorMessage: {
-    height: 30,
+    minHeight: 30,
   },
   row: {
     flexDirection: 'row',

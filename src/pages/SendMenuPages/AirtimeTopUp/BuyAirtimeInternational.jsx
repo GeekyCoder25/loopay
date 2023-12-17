@@ -66,9 +66,17 @@ const BuyAirtimeInternational = ({ navigation }) => {
           `user/airtime/operators?country=${countrySelected.code}`,
         );
         if (response.status === 200) {
-          const data = response.data.map(({ name, operatorId, logoUrls }) => {
-            return { network: name, locale: '', operatorId, icon: logoUrls[0] };
-          });
+          const data = response.data.map(
+            ({ name, operatorId, logoUrls, minAmount }) => {
+              return {
+                network: name,
+                locale: '',
+                operatorId,
+                icon: logoUrls[0],
+                minAmount,
+              };
+            },
+          );
           return setNetworkProviders(data);
         }
         throw new Error(response.data);
@@ -94,9 +102,7 @@ const BuyAirtimeInternational = ({ navigation }) => {
     setFormData(prev => {
       return {
         ...prev,
-        network: provider.network,
-        operatorId: provider.operatorId,
-        icon: provider.icon,
+        ...provider,
       };
     });
   };
@@ -117,10 +123,11 @@ const BuyAirtimeInternational = ({ navigation }) => {
 
   const handleBlur = () => {
     amountInput && setAmountInput(addingDecimal(amountInput));
-    if (amountInput < 50) {
+    if (amountInput < formData.minAmount || 0) {
       setErrorMessage(
         `Minimum recharge amount is ${
-          allCurrencies.find(currency => currency.isLocal).symbol + 50
+          allCurrencies.find(currency => currency.isLocal).symbol +
+          formData.minAmount
         }`,
       );
       setErrorKey('amountInput');
@@ -151,8 +158,13 @@ const BuyAirtimeInternational = ({ navigation }) => {
       return setErrorMessage(
         'Please provide all required fields before progressing',
       );
-    } else if (amountInput < 50) {
-      setErrorMessage(`Minimum recharge amount is ₦${50}`);
+    } else if (amountInput < (formData.minAmount || 0)) {
+      setErrorMessage(
+        `Minimum recharge amount is ${
+          allCurrencies.find(currency => currency.isLocal).symbol +
+          formData.minAmount
+        }`,
+      );
       return setErrorKey('amountInput');
     } else if (formData.amount > wallet.localBalance) {
       setErrorMessage('Insufficient balance');
@@ -269,7 +281,7 @@ const BuyAirtimeInternational = ({ navigation }) => {
                   networkProvidersIcon(networkToBuy.network)
                 )}
                 <BoldText style={styles.networkToBuySelected}>
-                  {networkToBuy.network} - {networkToBuy.locale}
+                  {networkToBuy.network}
                 </BoldText>
               </View>
             ) : (
@@ -326,7 +338,6 @@ const BuyAirtimeInternational = ({ navigation }) => {
             }}
             inputMode="tel"
             onChangeText={text => handlePhoneInput(text)}
-            maxLength={11}
             value={formData.phoneNo}
           />
         </View>

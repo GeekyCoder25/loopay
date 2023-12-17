@@ -101,7 +101,7 @@ const AddMoney = ({ navigation, route }) => {
 
   const handleCopy = () => {
     Clipboard.setString(wallet.accNo);
-    ToastMessage('Copied to clipboard');
+    ToastMessage('Account number copied');
   };
 
   const checkPaymentMethod = () => {
@@ -262,18 +262,27 @@ const AddMoney = ({ navigation, route }) => {
 
           {paymentMethod === 'bankTransfer' && (
             <>
-              <RegularText>Bank Name</RegularText>
-              <BoldText style={styles.bankName}>{wallet.bank}</BoldText>
-              <RegularText>Bank Account Number</RegularText>
-              <View style={styles.accNoContainer}>
-                <BoldText style={styles.accNo}>{wallet.accNo}</BoldText>
-                <Pressable
-                  onPress={wallet.accNo && handleCopy}
-                  style={styles.paste}>
-                  <RegularText style={styles.pasteText}>Copy</RegularText>
-                  <Paste />
+              <View style={styles.copyContainer}>
+                <View>
+                  <RegularText style={styles.label}>Bank Name</RegularText>
+                  <BoldText style={styles.bankName}>{wallet.bank}</BoldText>
+                </View>
+              </View>
+              <View style={styles.copyContainer}>
+                <View>
+                  <RegularText style={styles.label}>
+                    Bank Account Number
+                  </RegularText>
+                  <BoldText style={styles.accNo}>{wallet.accNo}</BoldText>
+                </View>
+                <Pressable style={styles.copy} onPress={handleCopy}>
+                  <BoldText style={styles.copyText}>Copy</BoldText>
                 </Pressable>
               </View>
+              <Button
+                text="I have sent the money"
+                onPress={() => navigation.navigate('AddMoneyConfirm')}
+              />
             </>
           )}
 
@@ -290,7 +299,7 @@ const AddMoney = ({ navigation, route }) => {
                     ...styles.textInputStyles,
                     borderColor: errorKey === 'amount' ? 'red' : '#ccc',
                   }}
-                  inputMode="numeric"
+                  inputMode="decimal"
                   onChangeText={text => handlePriceInput(text)}
                   onBlur={handleAutoFill}
                   value={value}
@@ -413,6 +422,33 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 50,
   },
+  copyContainer: {
+    backgroundColor: '#EEEEEE',
+    borderRadius: 15,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  copy: {
+    backgroundColor: '#1e1e1e',
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 5,
+  },
+  copyText: {
+    color: '#fff',
+  },
+
+  label: {
+    color: '#868585',
+    marginBottom: 5,
+  },
+  tagName: {
+    fontSize: 16,
+  },
   topUp: {
     fontFamily: 'OpenSans-400',
   },
@@ -532,11 +568,11 @@ const styles = StyleSheet.create({
   },
   bankName: {
     fontSize: 22,
-    marginVertical: 10,
+    marginVertical: 5,
   },
   accNo: {
     fontSize: 28,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   paste: {
     backgroundColor: '#006E53',

@@ -80,9 +80,6 @@ const TransferFunds = ({ navigation, route }) => {
     } else if (amountInput > wallet.balance) {
       setErrorKey('amountInput');
       setErrorMessage('Insufficient funds');
-    } else if (!description) {
-      setErrorMessage('Please provide transaction description');
-      setErrorKey('desc');
     } else {
       setCanContinue(true);
     }
@@ -108,13 +105,15 @@ const TransferFunds = ({ navigation, route }) => {
           setRefetchBeneficiary(prev => !prev);
         }
         setWalletRefresh(prev => !prev);
-        return navigation.navigate('Success', {
+        navigation.navigate('Success', {
           userToSendTo,
           amountInput,
           transaction: response.data.transaction,
         });
+        return response.status;
       }
-      ToastMessage(response.data);
+      // ToastMessage(response.data);
+      return response.data;
     } catch (error) {
       console.log(error);
     }
@@ -208,6 +207,7 @@ const TransferFunds = ({ navigation, route }) => {
                         }}
                         value={description}
                         maxLength={40}
+                        placeholder="optional"
                       />
                     </View>
                   </View>

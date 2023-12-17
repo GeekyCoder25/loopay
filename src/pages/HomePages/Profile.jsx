@@ -98,18 +98,18 @@ const Profile = ({ navigation, children, route }) => {
       routeIcon: 'info',
       routeDetails: 'View/Modify your profile information',
     },
-    // {
-    //   routeName: 'Withdraw',
-    //   routeNavigate: 'Withdraw',
-    //   routeIcon: 'withdraw',
-    //   routeDetails: 'Withdraw funds to you NGN account',
-    // },
     {
-      routeName: 'Change Password',
-      routeNavigate: 'Password',
-      routeIcon: 'password',
-      routeDetails: 'Change your online banking password',
+      routeName: 'Withdraw',
+      routeNavigate: 'Withdraw',
+      routeIcon: 'withdraw',
+      routeDetails: 'Withdraw funds to you NGN account',
     },
+    // {
+    //   routeName: 'Change Password',
+    //   routeNavigate: 'Password',
+    //   routeIcon: 'password',
+    //   routeDetails: 'Change your online banking password',
+    // },
     {
       routeName: `${appData.pin ? 'Change' : 'Create'} PIN`,
       routeNavigate: 'Pin',

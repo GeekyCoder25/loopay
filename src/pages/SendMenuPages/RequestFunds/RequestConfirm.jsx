@@ -15,9 +15,10 @@ const RequestConfirm = ({ navigation, route }) => {
     const response = await postFetchData('user/request', route.params);
 
     if (response.status === 200) {
-      return navigation.replace('RequestSuccess', { amount, symbol, tagName });
+      navigation.replace('RequestSuccess', { amount, symbol, tagName });
+      return response.data;
     }
-    ToastMessage(response.data);
+    return response.data;
   };
 
   return (

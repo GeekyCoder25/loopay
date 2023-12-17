@@ -16,23 +16,24 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import BoldText from '../../components/fonts/BoldText';
-import RegularText from '../../components/fonts/RegularText';
-import { allCurrencies } from '../../database/data';
-import { addingDecimal } from '../../../utils/AddingZero';
-import UserIcon from '../../components/UserIcon';
-import { groupTransactionsByDate } from '../../../utils/groupTransactions';
-import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
-import FilterModal from '../../components/FilterModal';
+import BoldText from '../../../components/fonts/BoldText';
+import RegularText from '../../../components/fonts/RegularText';
+import { allCurrencies } from '../../../database/data';
+import { addingDecimal } from '../../../../utils/AddingZero';
+import UserIcon from '../../../components/UserIcon';
+import { groupTransactionsByDate } from '../../../../utils/groupTransactions';
+import { networkProvidersIcon } from '../../SendMenuPages/AirtimeTopUp/BuyAirtime';
+import FilterModal from '../../../components/FilterModal';
 import IonIcon from '@expo/vector-icons/Ionicons';
-import { billIcon } from '../MenuPages/TransactionHistory';
-import { AppContext } from '../../components/AppContext';
-import { getFetchData } from '../../../utils/fetchAPI';
-import Back from '../../components/Back';
-import TransactionHistoryParams from '../MenuPages/TransactionHistoryParams';
-import { useFocusEffect } from '@react-navigation/native';
+import { billIcon } from '../../MenuPages/TransactionHistory';
+import { AppContext } from '../../../components/AppContext';
+import { getFetchData } from '../../../../utils/fetchAPI';
+import Back from '../../../components/Back';
+import TransactionHistoryParams from '../../MenuPages/TransactionHistoryParams';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import BackIcon from '../../../../assets/images/backArrow.svg';
 
-const History = () => {
+const UserTransaction = ({ route }) => {
   const { selectedCurrency, vh } = useContext(AppContext);
   const [histories, setHistories] = useState([]);
   const [searchHistory, setSearchHistory] = useState([]);
@@ -56,7 +57,7 @@ const History = () => {
         const response = await getFetchData(
           `admin/transactions?currency=${
             selectedCurrency.currency
-          }&limit=${limit}&page=${1}`,
+          }&limit=${limit}&page=${1}&userId=email:${route.params.email}`,
         );
 
         if (response.status === 200) {
@@ -78,7 +79,7 @@ const History = () => {
       }
     };
     getTransactions();
-  }, [limit, selectedCurrency.currency]);
+  }, [limit, route.params.email, selectedCurrency.currency]);
 
   const handleScrollMore = async () => {
     try {
@@ -294,16 +295,23 @@ const History = () => {
 };
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  backContainer: {
+    marginTop: 20,
     paddingHorizontal: 3 + '%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 15,
+  },
+  headerContainer: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 10 + '%',
   },
   historyHeader: {
-    marginTop: 40,
     fontSize: 17,
     fontFamily: 'OpenSans-600',
+    flex: 1,
   },
   container: {
     paddingHorizontal: 5 + '%',
@@ -399,7 +407,7 @@ const styles = StyleSheet.create({
     paddingBottom: 100 + '%',
   },
 });
-export default History;
+export default UserTransaction;
 
 const HistoryComp = memo(({ history, setTransactionModal }) => {
   const {
@@ -415,18 +423,12 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
     dataPlan,
     billType,
     billName,
-    debitAccount,
-    senderAccount,
-    receiverAccount,
   } = history;
   const [currencySymbol, setCurrencySymbol] = useState('');
-
-  const accountDebited =
-    transactionType === 'credit'
-      ? receiverAccount
-      : transactionType === 'debit'
-      ? senderAccount
-      : debitAccount;
+  const date = new Date(createdAt);
+  const historyTime = convertTo12HourFormat(
+    `${date.getHours()}:${date.getMinutes()}`,
+  );
 
   function convertTo12HourFormat(time24) {
     let [hours, minutes] = time24.split(':');
@@ -467,7 +469,7 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
             <BoldText style={styles.creditAmount}>
               +{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
             </BoldText>
-            <RegularText>{accountDebited}</RegularText>
+            <RegularText>{historyTime}</RegularText>
           </View>
         </>
       )}
@@ -482,7 +484,7 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
             <BoldText style={styles.debitAmount}>
               -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
             </BoldText>
-            <RegularText> {accountDebited}</RegularText>
+            <RegularText> {historyTime}</RegularText>
           </View>
         </>
       )}
@@ -491,7 +493,7 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
           {networkProvidersIcon(networkProvider)}
           <View style={styles.historyContent}>
             <BoldText style={styles.historyTitle}>
-              {networkProvider} - {history.rechargePhoneNo}
+              {networkProvider} - {history.phoneNo}
             </BoldText>
             <RegularText>Airtime Recharge</RegularText>
           </View>
@@ -499,7 +501,7 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
             <BoldText style={styles.debitAmount}>
               -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
             </BoldText>
-            <RegularText> {accountDebited}</RegularText>
+            <RegularText> {historyTime}</RegularText>
           </View>
         </>
       )}
@@ -508,7 +510,7 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
           {networkProvidersIcon(networkProvider)}
           <View style={styles.historyContent}>
             <BoldText style={styles.historyTitle}>
-              {networkProvider} - {history.rechargePhoneNo}
+              {networkProvider} - {history.phoneNo}
             </BoldText>
             <RegularText>Data Recharge - {dataPlan.value}</RegularText>
           </View>
@@ -516,7 +518,7 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
             <BoldText style={styles.debitAmount}>
               -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
             </BoldText>
-            <RegularText> {accountDebited}</RegularText>
+            <RegularText> {historyTime}</RegularText>
           </View>
         </>
       )}
@@ -533,7 +535,7 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
             <BoldText style={styles.debitAmount}>
               -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
             </BoldText>
-            <RegularText> {accountDebited}</RegularText>
+            <RegularText> {historyTime}</RegularText>
           </View>
         </>
       )}
@@ -554,6 +556,7 @@ const Header = memo(
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [searchText, setSearchText] = useState('');
     const searchRef = useRef();
+    const { goBack } = useNavigation();
 
     useEffect(() => {
       isSearching && searchRef.current.focus();
@@ -596,11 +599,18 @@ const Header = memo(
 
     return (
       <View>
-        <View style={styles.headerContainer}>
-          <BoldText style={styles.historyHeader}>Transaction history</BoldText>
-          <Pressable onPress={handleFilter}>
-            <IonIcon name="filter-sharp" size={20} />
+        <View style={styles.backContainer}>
+          <Pressable style={styles.back} onPress={() => goBack()}>
+            <BackIcon />
           </Pressable>
+          <View style={styles.headerContainer}>
+            <BoldText style={styles.historyHeader}>
+              Transaction history
+            </BoldText>
+            <Pressable onPress={handleFilter}>
+              <IonIcon name="filter-sharp" size={20} />
+            </Pressable>
+          </View>
         </View>
         {!hideSearch && (
           <View style={styles.textInputContainer}>

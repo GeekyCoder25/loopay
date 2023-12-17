@@ -25,6 +25,7 @@ import { useWalletContext } from '../../context/WalletContext';
 import { groupTransactionsByDate } from '../../../utils/groupTransactions';
 import SwapIcon from '../../../assets/images/swap.svg';
 import FlagSelect from '../../components/FlagSelect';
+import { randomUUID } from 'expo-crypto';
 
 const TransactionHistory = ({ navigation }) => {
   const { transactions, wallet } = useWalletContext();
@@ -57,7 +58,7 @@ const TransactionHistory = ({ navigation }) => {
 
   useEffect(() => {
     setAccNoAsterisk([]);
-    for (let i = 0; i < wallet.loopayAccNo.length - 3; i++) {
+    for (let i = 0; i < wallet.loopayAccNo.length - 4; i++) {
       setAccNoAsterisk(prev => [...prev, '*']);
     }
   }, [wallet.loopayAccNo.length]);
@@ -108,9 +109,7 @@ const TransactionHistory = ({ navigation }) => {
                           accNoAsterisk={accNoAsterisk}
                         />
                       )}
-                      keyExtractor={({ _id, transactionType }) =>
-                        transactionType + _id
-                      }
+                      keyExtractor={({ _id, transactionType }) => randomUUID()}
                     />
                   </View>
                 )}
@@ -222,6 +221,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     borderRadius: 25,
   },
+  swapAmountContainer: {
+    flexDirection: 'row',
+    gap: 3,
+    alignItems: 'center',
+  },
   historyContent: {
     flex: 1,
     gap: 3,
@@ -235,7 +239,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   amount: {
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   debitAmount: {
     color: 'red',
@@ -280,7 +284,7 @@ const styles = StyleSheet.create({
 export default TransactionHistory;
 
 export const History = memo(({ history, navigation, accNoAsterisk }) => {
-  const { vw } = useContext(AppContext);
+  const { appData, vw } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const {
     senderName,
@@ -348,7 +352,13 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
             <BoldText style={styles.creditAmount}>
               +{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
             </BoldText>
-            <RegularText>{historyTime}</RegularText>
+            <RegularText>
+              {accNoAsterisk.join('') +
+                wallet.loopayAccNo.slice(
+                  wallet.loopayAccNo.length - 4,
+                  wallet.loopayAccNo.length,
+                )}
+            </RegularText>
           </View>
         </>
       )}
@@ -363,7 +373,13 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
             <BoldText style={styles.debitAmount}>
               -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
             </BoldText>
-            <RegularText> {historyTime}</RegularText>
+            <RegularText>
+              {accNoAsterisk.join('') +
+                wallet.loopayAccNo.slice(
+                  wallet.loopayAccNo.length - 4,
+                  wallet.loopayAccNo.length,
+                )}
+            </RegularText>
           </View>
         </>
       )}
@@ -372,7 +388,7 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
           {networkProvidersIcon(networkProvider)}
           <View style={styles.historyContent}>
             <BoldText style={styles.historyTitle}>
-              {networkProvider} - {history.phoneNo}
+              {networkProvider} - {history.rechargePhoneNo}
             </BoldText>
             <RegularText>Airtime Recharge</RegularText>
           </View>
@@ -380,7 +396,13 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
             <BoldText style={styles.debitAmount}>
               -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
             </BoldText>
-            <RegularText> {historyTime}</RegularText>
+            <RegularText>
+              {accNoAsterisk.join('') +
+                wallet.loopayAccNo.slice(
+                  wallet.loopayAccNo.length - 4,
+                  wallet.loopayAccNo.length,
+                )}
+            </RegularText>
           </View>
         </>
       )}
@@ -397,7 +419,13 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
             <BoldText style={styles.debitAmount}>
               -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
             </BoldText>
-            <RegularText> {historyTime}</RegularText>
+            <RegularText>
+              {accNoAsterisk.join('') +
+                wallet.loopayAccNo.slice(
+                  wallet.loopayAccNo.length - 4,
+                  wallet.loopayAccNo.length,
+                )}
+            </RegularText>
           </View>
         </>
       )}
@@ -414,7 +442,13 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
             <BoldText style={styles.debitAmount}>
               -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
             </BoldText>
-            <RegularText> {historyTime}</RegularText>
+            <RegularText>
+              {accNoAsterisk.join('') +
+                wallet.loopayAccNo.slice(
+                  wallet.loopayAccNo.length - 4,
+                  wallet.loopayAccNo.length,
+                )}
+            </RegularText>
           </View>
         </>
       )}
@@ -424,38 +458,45 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
             <FlagSelect country={currency} style={{ width: 40, height: 40 }} />
           </View>
           <View style={styles.historyContent}>
-            <BoldText style={styles.historyTitle}>Swap</BoldText>
-            <RegularText style={styles.historyTitle}>
-              {accNoAsterisk}
-              {wallet.loopayAccNo.slice(
-                wallet.loopayAccNo.length - 3,
-                wallet.loopayAccNo.length,
-              )}
+            <BoldText style={styles.historyTitle}>
+              {appData.userProfile.fullName}
+            </BoldText>
+            <RegularText style={styles.historyTitle}>swap</RegularText>
+          </View>
+          <View style={styles.amount}>
+            <View style={styles.swapAmountContainer}>
+              <BoldText
+                style={{
+                  ...styles.transactionAmountText,
+                  ...styles.debitAmount,
+                }}>
+                {`${swapFromSymbol}${addingDecimal(
+                  Number(swapFromAmount).toLocaleString(),
+                )}`}
+              </BoldText>
+              <SwapIcon
+                width={14}
+                height={14}
+                style={vw > 360 ? styles.swap : styles.swapIcon}
+              />
+              <BoldText
+                style={{
+                  ...styles.transactionAmountText,
+                  ...styles.creditAmount,
+                }}>
+                {`${swapToSymbol}${addingDecimal(
+                  Number(swapToAmount).toLocaleString(),
+                )}`}
+              </BoldText>
+            </View>
+            <RegularText>
+              {accNoAsterisk.join('') +
+                wallet.loopayAccNo.slice(
+                  wallet.loopayAccNo.length - 4,
+                  wallet.loopayAccNo.length,
+                )}
             </RegularText>
           </View>
-          <BoldText
-            style={{
-              ...styles.transactionAmountText,
-              ...styles.debitAmount,
-            }}>
-            {`${swapFromSymbol}${addingDecimal(
-              Number(swapFromAmount).toLocaleString(),
-            )}`}
-          </BoldText>
-          <SwapIcon
-            width={14}
-            height={14}
-            style={vw > 360 ? styles.swap : styles.swapIcon}
-          />
-          <BoldText
-            style={{
-              ...styles.transactionAmountText,
-              ...styles.creditAmount,
-            }}>
-            {`${swapToSymbol}${addingDecimal(
-              Number(swapToAmount).toLocaleString(),
-            )}`}
-          </BoldText>
         </>
       )}
     </Pressable>

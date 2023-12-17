@@ -28,7 +28,7 @@
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "Allow Loopay to use Biometric to authenticate you"
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use FaceID"
         }
       ]
     ],

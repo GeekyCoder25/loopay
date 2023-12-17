@@ -1,18 +1,18 @@
 import { useContext, useEffect, useState } from 'react';
-import PageContainer from '../../components/PageContainer';
+import PageContainer from '../../../components/PageContainer';
 import { Pressable, StyleSheet, View } from 'react-native';
-import BoldText from '../../components/fonts/BoldText';
-import RegularText from '../../components/fonts/RegularText';
-import Check from '../../../assets/images/success.svg';
-import Pending from '../../../assets/images/pending.svg';
-import Block from '../../../assets/images/blocked.svg';
-import { useAdminDataContext } from '../../context/AdminContext';
-import { addingDecimal } from '../../../utils/AddingZero';
-import BalanceCard from './components/BalanceCard';
-import { AppContext } from '../../components/AppContext';
+import BoldText from '../../../components/fonts/BoldText';
+import RegularText from '../../../components/fonts/RegularText';
+import Check from '../../../../assets/images/success.svg';
+import Pending from '../../../../assets/images/pending.svg';
+import Block from '../../../../assets/images/blocked.svg';
+import { useAdminDataContext } from '../../../context/AdminContext';
+import { addingDecimal } from '../../../../utils/AddingZero';
+import BalanceCard from '../components/BalanceCard';
+import { AppContext } from '../../../components/AppContext';
 
 const Dashboard = ({ navigation }) => {
-  const { selectedCurrency } = useContext(AppContext);
+  const { selectedCurrency, showAmount } = useContext(AppContext);
   const { adminData } = useAdminDataContext();
   const { statusTransactionsAmount, statusTransactionsLength } = adminData;
   const [success, setSuccess] = useState([]);
@@ -88,8 +88,10 @@ const Dashboard = ({ navigation }) => {
             </BoldText>
             <BoldText style={styles.transactionLength}>{success}</BoldText>
             <BoldText style={styles.success}>
-              {selectedCurrency.symbol +
-                addingDecimal(successBalance.toLocaleString())}
+              {showAmount
+                ? selectedCurrency.symbol +
+                  addingDecimal(successBalance.toLocaleString())
+                : '***'}
             </BoldText>
           </View>
         </Pressable>
@@ -109,8 +111,10 @@ const Dashboard = ({ navigation }) => {
             </BoldText>
             <BoldText style={styles.transactionLength}>{pending}</BoldText>
             <BoldText>
-              {selectedCurrency.symbol +
-                addingDecimal(pendingBalance.toLocaleString())}
+              {showAmount
+                ? selectedCurrency.symbol +
+                  addingDecimal(pendingBalance.toLocaleString())
+                : '***'}
             </BoldText>
           </View>
         </Pressable>
@@ -130,8 +134,10 @@ const Dashboard = ({ navigation }) => {
             </BoldText>
             <BoldText style={styles.transactionLength}>{blocked}</BoldText>
             <BoldText style={styles.blocked}>
-              {selectedCurrency.symbol +
-                addingDecimal(blockedBalance.toLocaleString())}
+              {showAmount
+                ? selectedCurrency.symbol +
+                  addingDecimal(blockedBalance.toLocaleString())
+                : '***'}
             </BoldText>
           </View>
         </Pressable>

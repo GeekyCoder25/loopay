@@ -8,23 +8,23 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import UserIcon from '../../components/UserIcon';
-import BoldText from '../../components/fonts/BoldText';
-import { allCurrencies } from '../../database/data';
-import { AppContext } from '../../components/AppContext';
-import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
-import ToastMessage from '../../components/ToastMessage';
+import UserIcon from '../../../components/UserIcon';
+import BoldText from '../../../components/fonts/BoldText';
+import { allCurrencies } from '../../../database/data';
+import { AppContext } from '../../../components/AppContext';
+import { getFetchData, postFetchData } from '../../../../utils/fetchAPI';
+import ToastMessage from '../../../components/ToastMessage';
 import { useFocusEffect } from '@react-navigation/native';
-import BackIcon from '../../../assets/images/backArrow.svg';
-import ChevronDown from '../../../assets/images/chevron-down-fill.svg';
-import RegularText from '../../components/fonts/RegularText';
-import { addingDecimal } from '../../../utils/AddingZero';
-import { groupTransactionsByDate } from '../../../utils/groupTransactions';
-import TransactionHistoryParams from '../MenuPages/TransactionHistoryParams';
-import Back from '../../components/Back';
-import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
-import { billIcon } from '../MenuPages/TransactionHistory';
-import FilterModal from '../../components/FilterModal';
+import BackIcon from '../../../../assets/images/backArrow.svg';
+import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
+import RegularText from '../../../components/fonts/RegularText';
+import { addingDecimal } from '../../../../utils/AddingZero';
+import { groupTransactionsByDate } from '../../../../utils/groupTransactions';
+import TransactionHistoryParams from '../../MenuPages/TransactionHistoryParams';
+import Back from '../../../components/Back';
+import { networkProvidersIcon } from '../../SendMenuPages/AirtimeTopUp/BuyAirtime';
+import { billIcon } from '../../MenuPages/TransactionHistory';
+import FilterModal from '../../../components/FilterModal';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import { FlatList } from 'react-native-gesture-handler';
 
@@ -238,13 +238,14 @@ const Transactions = ({ navigation, route }) => {
               />
             }
             ListFooterComponent={
-              transactions.length >= totalTransactionsLength ? (
+              transactions.length &&
+              (transactions.length >= totalTransactionsLength ? (
                 <View style={styles.complete}>
                   <BoldText>That&apos;s all for now</BoldText>
                 </View>
               ) : (
                 reloading && <ActivityIndicator color={'#1e1e1e'} />
-              )
+              ))
             }
             onEndReachedThreshold={0.5}
             onEndReached={
@@ -303,13 +304,14 @@ const Transactions = ({ navigation, route }) => {
                 />
               }
               ListFooterComponent={
-                transactions.length >= totalTransactionsLength ? (
+                transactions.length &&
+                (transactions.length >= totalTransactionsLength ? (
                   <View style={styles.complete}>
                     <BoldText>That&apos;s all for now</BoldText>
                   </View>
                 ) : (
                   reloading && <ActivityIndicator color={'#1e1e1e'} />
-                )
+                ))
               }
               onEndReachedThreshold={0.5}
               onEndReached={
@@ -637,11 +639,13 @@ const Transaction = memo(
       senderName,
       senderPhoto,
       status,
-      createdAt,
       transactionType,
       receiverPhoto,
       receiverName,
+      receiverAccount,
+      senderAccount,
       networkProvider,
+      debitAccount,
       dataPlan,
       billType,
       billName,
@@ -650,10 +654,13 @@ const Transaction = memo(
     const currencySymbol = allCurrencies.find(
       id => currency === id.currency,
     )?.symbol;
-    const date = new Date(createdAt);
-    const historyTime = convertTo12HourFormat(
-      `${date.getHours()}:${date.getMinutes()}`,
-    );
+
+    const accountDebited =
+      transactionType === 'credit'
+        ? receiverAccount
+        : transactionType === 'debit'
+        ? senderAccount
+        : debitAccount;
 
     function convertTo12HourFormat(time24) {
       let [hours, minutes] = time24.split(':');
@@ -673,17 +680,6 @@ const Transaction = memo(
       return `${hours}:${minutes} ${period}`;
     }
 
-    const label = () => {
-      switch (status) {
-        case 'success':
-          return <RegularText style={styles.success}>Successful</RegularText>;
-        case 'pending':
-          return <RegularText style={styles.pending}>Pending</RegularText>;
-        case 'blocked':
-          return <RegularText style={styles.blocked}>Blocked</RegularText>;
-      }
-    };
-
     return (
       <View style={styles.expanded}>
         <Pressable
@@ -697,7 +693,7 @@ const Transaction = memo(
               <UserIcon uri={senderPhoto} />
               <View style={styles.historyContent}>
                 <BoldText>{senderName}</BoldText>
-                <RegularText>{historyTime}</RegularText>
+                <RegularText>Transfer</RegularText>
               </View>
               <Pressable
                 onPress={() => setIsExpanded(prev => !prev)}
@@ -708,7 +704,7 @@ const Transaction = memo(
                     {currencySymbol +
                       addingDecimal(Number(amount).toLocaleString())}
                   </BoldText>
-                  {label()}
+                  <RegularText>{accountDebited}</RegularText>
                 </View>
                 {status === 'pending' && (
                   <Pressable
@@ -727,7 +723,7 @@ const Transaction = memo(
               <UserIcon uri={receiverPhoto} />
               <View style={styles.historyContent}>
                 <BoldText>{receiverName}</BoldText>
-                <RegularText>{historyTime}</RegularText>
+                <RegularText>Transfer</RegularText>
               </View>
               <Pressable
                 onPress={() => setIsExpanded(prev => !prev)}
@@ -738,7 +734,7 @@ const Transaction = memo(
                     {currencySymbol +
                       addingDecimal(Number(amount).toLocaleString())}
                   </BoldText>
-                  {label()}
+                  <RegularText>{accountDebited}</RegularText>
                 </View>
                 {status === 'pending' && (
                   <Pressable
@@ -757,7 +753,7 @@ const Transaction = memo(
               {networkProvidersIcon(networkProvider)}
               <View style={styles.historyContent}>
                 <BoldText style={styles.historyTitle}>
-                  {networkProvider} - {transaction.phoneNo}
+                  {networkProvider} - {transaction.rechargePhoneNo}
                 </BoldText>
                 <RegularText>Airtime Recharge</RegularText>
               </View>
@@ -767,7 +763,7 @@ const Transaction = memo(
                   {currencySymbol +
                     addingDecimal(Number(amount).toLocaleString())}
                 </BoldText>
-                <RegularText> {historyTime}</RegularText>
+                <RegularText> {accountDebited}</RegularText>
                 {status === 'pending' && (
                   <Pressable
                     onPress={() => setIsExpanded(prev => !prev)}
@@ -785,7 +781,7 @@ const Transaction = memo(
               {networkProvidersIcon(networkProvider)}
               <View style={styles.historyContent}>
                 <BoldText style={styles.historyTitle}>
-                  {networkProvider} - {transaction.phoneNo}
+                  {networkProvider} - {transaction.rechargePhoneNo}
                 </BoldText>
                 <RegularText>Data Recharge - {dataPlan.value}</RegularText>
               </View>
@@ -795,7 +791,7 @@ const Transaction = memo(
                   {currencySymbol +
                     addingDecimal(Number(amount).toLocaleString())}
                 </BoldText>
-                <RegularText> {historyTime}</RegularText>
+                <RegularText> {accountDebited}</RegularText>
               </View>
             </>
           )}
@@ -815,7 +811,7 @@ const Transaction = memo(
                   {currencySymbol +
                     addingDecimal(Number(amount).toLocaleString())}
                 </BoldText>
-                <RegularText> {historyTime}</RegularText>
+                <RegularText> {accountDebited}</RegularText>
               </View>
             </>
           )}

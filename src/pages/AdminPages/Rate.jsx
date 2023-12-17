@@ -230,7 +230,7 @@ const Rate = ({ navigation }) => {
               <RegularText style={styles.label}>Input new rate</RegularText>
               <TextInput
                 style={{ ...styles.input, ...styles.inputText }}
-                inputMode="numeric"
+                inputMode="decimal"
                 onChangeText={text => {
                   setNewRate(text);
                   setNewRateData(prev => {
@@ -250,7 +250,7 @@ const Rate = ({ navigation }) => {
                 <BoldText style={styles.inputSymbol}>%</BoldText>
                 <TextInput
                   style={styles.inputAbsolute}
-                  inputMode="numeric"
+                  inputMode="decimal"
                   onChangeText={text => {
                     setNewFee(text);
                     setNewRateData(prev => {
@@ -428,7 +428,7 @@ const Fees = ({
           <View style={styles.feeInputContainer}>
             <TextInput
               style={styles.feeInput}
-              inputMode="numeric"
+              inputMode="decimal"
               onChangeText={text => {
                 setInputFocused(true);
                 setCurrentInput(text);

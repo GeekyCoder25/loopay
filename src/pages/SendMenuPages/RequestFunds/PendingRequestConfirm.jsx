@@ -29,11 +29,13 @@ const PendingRequestConfirm = ({ navigation, route }) => {
 
         if (response.status === 200) {
           setWalletRefresh(prev => !prev);
-          return navigation.replace('RequestStatus', {
+          navigation.replace('RequestStatus', {
             status,
             ...route.params,
           });
+          return response.status;
         }
+
         throw new Error(response.data);
       } else {
         return navigation.replace('RequestStatus', {

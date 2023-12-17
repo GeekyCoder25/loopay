@@ -69,6 +69,10 @@ const SwapFunds = ({ navigation }) => {
       } catch {
         setIsLoading(false);
         setErrorMessage("Can't connect to server");
+      } finally {
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 15000);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rateRefetch, setIsLoading, swapFrom.acronym]),
@@ -239,7 +243,9 @@ const SwapFunds = ({ navigation }) => {
     const rate = currencyRateAPI[swapTo.acronym];
     const transactionFee = text / 100;
     setFee(transactionFee);
-    const toReceiveCalculate = Number((text * currencyRate()).toFixed(2));
+    const toReceiveCalculate = Number(
+      ((text - transactionFee) * currencyRate()).toFixed(2),
+    );
 
     setSwapData(prev => {
       return {
@@ -320,12 +326,12 @@ const SwapFunds = ({ navigation }) => {
       value:
         currencyRate() < 1 ? (
           <>
-            {swapTo.acronym}1 = {swapFrom.acronym}
+            {swapTo.symbol}1 = {swapFrom.symbol}
             {addingDecimal(Number(1 / currencyRate()).toLocaleString())}
           </>
         ) : (
           <>
-            {swapFrom.acronym}1 = {swapTo.acronym}
+            {swapFrom.symbol}1 = {swapTo.symbol}
             {addingDecimal(Number(currencyRate()).toLocaleString())}
           </>
         ),
@@ -367,7 +373,7 @@ const SwapFunds = ({ navigation }) => {
         <View
           style={{
             ...styles.body,
-            minHeight: vh * 0.8,
+            minHeight: vh * 0.7,
           }}>
           <BoldText style={styles.headerText}>Swap Funds</BoldText>
           <View style={styles.swapContainer}>
@@ -527,7 +533,7 @@ const SwapFunds = ({ navigation }) => {
                         : 50,
                     borderColor: errorKey ? 'red' : '#ccc',
                   }}
-                  inputMode="numeric"
+                  inputMode="decimal"
                   onChangeText={text => handlePriceInput(text)}
                   onBlur={handleAutoFill}
                   value={value}
@@ -931,6 +937,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     justifyContent: 'flex-end',
+    marginBottom: 30,
   },
   modalButton: {
     marginTop: 2 + '%',

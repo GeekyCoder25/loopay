@@ -10,7 +10,8 @@ const TransferAirtime = ({ navigation, route }) => {
   const handlePay = async setErrorMessage => {
     const response = await postFetchData(`user/${formData.type}`, formData);
     if (!response.status || response.status !== 200) {
-      return setErrorMessage(response.data.message || response.data);
+      setErrorMessage(response.data.message || response.data);
+      return response.data;
     }
     setWalletRefresh(prev => !prev);
     navigation.navigate('Success', {
@@ -19,6 +20,7 @@ const TransferAirtime = ({ navigation, route }) => {
       dataPlan: formData.plan?.value || undefined,
       transaction: response.data.transaction,
     });
+    return response.status;
   };
 
   return (

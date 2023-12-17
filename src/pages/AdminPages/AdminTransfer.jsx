@@ -115,13 +115,13 @@ const AdminTransfer = ({ navigation }) => {
         setAmountInput('');
         setUserFound('');
         setAskPin(false);
-        return setUserInput('');
+        setUserInput('');
+        return response.status;
       }
-      throw new Error(response.data);
+      return response.data;
     } catch (err) {
       console.log(err.message);
       setErrorMessage(err.message);
-      setAskPin(false);
     } finally {
       setIsLoading(false);
     }
@@ -163,7 +163,6 @@ const AdminTransfer = ({ navigation }) => {
     }
   };
 
-  console.log(balance);
   return !askPin ? (
     <PageContainer style={styles.body} scroll>
       <BoldText style={styles.headerText}>Transfer</BoldText>
@@ -265,7 +264,7 @@ const AdminTransfer = ({ navigation }) => {
               ...styles.textInput,
               borderColor: errorKey ? 'red' : '#ccc',
             }}
-            inputMode="numeric"
+            inputMode="decimal"
             onChangeText={text => handlePriceInput(text)}
             onBlur={handleAutoFill}
             value={amountInput}

@@ -161,7 +161,7 @@ const RequestFund = ({ navigation, route }) => {
   return (
     <PageContainer style={styles.container} scroll>
       <BoldText style={styles.headerText}>Request Money</BoldText>
-      <View style={{ ...styles.body, minHeight: vh * 0.75 }}>
+      <View style={{ ...styles.body, minHeight: vh * 0.7 }}>
         <View style={styles.labelContainer}>
           <RegularText style={styles.label}>
             Enter user Loopay tag or account number
@@ -231,7 +231,7 @@ const RequestFund = ({ navigation, route }) => {
           </View>
           <View style={styles.fee}>
             <RegularText style={styles.feeText}>
-              Fee: {fee > 0 && selected.symbol}
+              Fee: {selected.symbol}
               {addingDecimal(fee?.toLocaleString())}
             </RegularText>
           </View>
@@ -434,6 +434,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     justifyContent: 'flex-end',
+    marginBottom: 30,
   },
 });
 
