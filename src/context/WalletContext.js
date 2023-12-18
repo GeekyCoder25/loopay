@@ -27,7 +27,9 @@ const WalletContextComponent = ({ children }) => {
         setWallet(null);
       });
 
-    getFetchData('user/transaction?swap=true')
+    getFetchData(
+      `user/transaction?swap=true&currency=${selectedCurrency.currency},${selectedCurrency.acronym}`,
+    )
       .then(result => {
         if (result.status === 400) throw new Error(result.data);
         setTransactions(result.data.transactions);

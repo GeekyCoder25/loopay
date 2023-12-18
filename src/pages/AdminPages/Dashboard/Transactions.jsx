@@ -47,8 +47,8 @@ const Transactions = ({ navigation, route }) => {
   const [reload, setReload] = useState(false);
   const [totalTransactionsLength, setTotalTransactionsLength] = useState(0);
   const [isFiltered, setIsFiltered] = useState(false);
-  const limit = Math.round(vh / 50);
   const [transactions, setTransactions] = useState([]);
+  const limit = Math.round(vh / 50);
 
   useEffect(() => {
     const getTransactions = async () => {
@@ -56,8 +56,8 @@ const Transactions = ({ navigation, route }) => {
         setIsLocalLoading(true);
         const selectedStatus = status || route.params.transactionStatus;
         const response = await getFetchData(
-          `admin/transactions?currency=${
-            selectedCurrency.currency
+          `admin/transactions?currency=${selectedCurrency.currency},${
+            selectedCurrency.acronym
           }&status=${selectedStatus}&limit=${limit}&page=${1}`,
         );
 
@@ -77,12 +77,7 @@ const Transactions = ({ navigation, route }) => {
       }
     };
     getTransactions();
-  }, [
-    limit,
-    route.params.transactionStatus,
-    selectedCurrency.currency,
-    status,
-  ]);
+  }, [limit, route.params.transactionStatus, selectedCurrency, status]);
 
   useFocusEffect(
     useCallback(() => {
@@ -164,8 +159,8 @@ const Transactions = ({ navigation, route }) => {
       setReloading(true);
       const selectedStatus = status || route.params.transactionStatus;
       const response = await getFetchData(
-        `admin/transactions?currency=${
-          selectedCurrency.currency
+        `admin/transactions?currency=${selectedCurrency.currency},${
+          selectedCurrency.acronym
         }&status=${selectedStatus}&limit=${limit}&page=${page + 1}`,
       );
 
@@ -652,7 +647,7 @@ const Transaction = memo(
     } = transaction;
 
     const currencySymbol = allCurrencies.find(
-      id => currency === id.currency,
+      id => currency === id.currency || currency === id.acronym,
     )?.symbol;
 
     const accountDebited =

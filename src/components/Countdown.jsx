@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import RegularText from './fonts/RegularText';
+import BoldText from './fonts/BoldText';
 
 const Countdown = ({ targetDate, message }) => {
   const calculateTimeLeft = () => {
@@ -34,9 +34,9 @@ const Countdown = ({ targetDate, message }) => {
 
   const { hours, minutes, seconds } = time;
   return (
-    <RegularText>
+    <BoldText>
       {message + formatTime(hours)}:{formatTime(minutes)}:{formatTime(seconds)}
-    </RegularText>
+    </BoldText>
   );
 };
 

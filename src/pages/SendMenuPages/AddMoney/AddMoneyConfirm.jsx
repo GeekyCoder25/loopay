@@ -1,17 +1,26 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { Image, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
 import RegularText from '../../../components/fonts/RegularText';
 import Button from '../../../components/Button';
 import { AppContext } from '../../../components/AppContext';
+import IonIcon from '@expo/vector-icons/Ionicons';
+import * as ImagePicker from 'expo-image-picker';
+import ToastMessage from '../../../components/ToastMessage';
+import { getToken } from '../../../../utils/storage';
+import { apiUrl } from '../../../../utils/fetchAPI';
+import { addingDecimal } from '../../../../utils/AddingZero';
 
-const AddMoneyConfirm = ({ navigation, route }) => {
-  const { selectedCurrency, vh } = useContext(AppContext);
+const AddMoneyConfirm = ({ navigation }) => {
+  const { selectedCurrency, vh, setIsLoading } = useContext(AppContext);
   const { acronym, symbol } = selectedCurrency;
-  const [errorKey, seterrorKey] = useState();
-  const [formData, setFormData] = useState({});
+  const [errorKey, setErrorKey] = useState();
+  const [formDataState, setFormDataState] = useState({
+    currency: selectedCurrency.acronym,
+  });
+  const [preview, setPreview] = useState('');
 
   const transactionDetails = [
     {
@@ -22,20 +31,100 @@ const AddMoneyConfirm = ({ navigation, route }) => {
       id: 'amount',
     },
     {
+      title: 'Message',
       type: 'text',
-      placeholder: 'Message',
+      placeholder: 'Optional message',
       id: 'message',
     },
     {
       title: 'Payment Proof',
       type: 'image',
-      id: 'proof',
+      placeholder: 'Upload payment receipt/proof',
+      id: 'image',
     },
   ];
 
-  const handlePay = () => {
-    navigation.popToTop();
-    navigation.navigate('HomeNavigator');
+  const handleConfirm = async () => {
+    if (!formDataState.amount) {
+      ToastMessage('Input amount sent');
+      return setErrorKey('amount');
+    } else if (isNaN(formDataState.amount)) {
+      ToastMessage('Invalid amount provided');
+      return setErrorKey('amount');
+    } else if (!formDataState.image) {
+      ToastMessage('No image selected yet');
+      return setErrorKey('image');
+    }
+    try {
+      setIsLoading(true);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
+      const fileName = preview.split('/').pop();
+      const fileType = fileName.split('.').pop();
+      const formData = new FormData();
+      formData.append('file', {
+        uri: preview,
+        name: fileName,
+        type: `image/${fileType}`,
+      });
+
+      formData.append('data', JSON.stringify(formDataState));
+      const token = await getToken();
+
+      const options = {
+        method: 'POST',
+        signal: controller.signal,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      };
+      const response = await fetch(`${apiUrl}/user/payment-proof`, options);
+      clearTimeout(timeout);
+      const result = await response.json();
+
+      if (response.ok) {
+        navigation.popToTop();
+        navigation.navigate('HomeNavigator');
+        ToastMessage(
+          'Uploaded successfully, you account will be credited soon',
+        );
+      } else {
+        const errormessage = result.status !== 500 ? result : 'Upload failed';
+        ToastMessage(errormessage);
+      }
+    } catch (error) {
+      ToastMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleImageSelect = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      return ToastMessage('Permission was denied by user');
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      aspect: [1, 1],
+      quality: 0.5,
+    });
+    if (!result.canceled) {
+      setPreview(result.assets[0].uri);
+      setFormDataState(prev => {
+        return { ...prev, image: result.assets[0].uri };
+      });
+    }
+  };
+
+  const handleAutoFill = () => {
+    formDataState.amount &&
+      setFormDataState(prev => {
+        return { ...prev, amount: addingDecimal(formDataState.amount) };
+      });
   };
 
   return (
@@ -44,50 +133,71 @@ const AddMoneyConfirm = ({ navigation, route }) => {
         <BoldText style={styles.headerText}>Review</BoldText>
         <View style={styles.card}>
           <BoldText style={styles.cardText}>{acronym} Deposit</BoldText>
-          <BoldText style={styles.cardAmount}>{symbol}</BoldText>
+          <BoldText style={styles.cardAmount}>
+            {symbol}
+            {formDataState.amount &&
+              addingDecimal(Number(formDataState.amount).toLocaleString())}
+          </BoldText>
         </View>
         <View style={styles.modalBorder} />
         {transactionDetails.map(detail => (
           <View key={detail.title} style={styles.details}>
             <View key={detail.title} style={styles.detail}>
               <RegularText>{detail.title}</RegularText>
-              <BoldText>
-                {detail?.symbol} {detail.value}
-              </BoldText>
             </View>
             <View style={styles.textInputContainer}>
               {detail.symbol && (
                 <BoldText style={styles.symbol}>{symbol}</BoldText>
               )}
-              <TextInput
-                style={{
-                  ...styles.textInput,
-                  paddingLeft: detail.symbol
-                    ? symbol.length * 20 > 50
-                      ? symbol.length * 20
-                      : 40
-                    : 15,
-                  borderColor: errorKey ? 'red' : '#ccc',
-                }}
-                inputMode="decimal"
-                onChangeText={text =>
-                  setFormData(prev => {
-                    return {
-                      ...prev,
-                      amount: text,
-                    };
-                  })
-                }
-                // onBlur={handleAutoFill}
-                value={formData[detail.id]}
-                placeholder={detail.placeholder}
-                placeholderTextColor={'#525252'}
-              />
+              {detail.type === 'text' ? (
+                <TextInput
+                  style={{
+                    ...styles.textInput,
+                    paddingLeft: detail.symbol
+                      ? symbol.length * 20 > 50
+                        ? symbol.length * 20
+                        : 40
+                      : 15,
+                    borderColor: errorKey === detail.id ? 'red' : '#ccc',
+                  }}
+                  inputMode="decimal"
+                  onChangeText={text => {
+                    setErrorKey('');
+                    setFormDataState(prev => {
+                      return {
+                        ...prev,
+                        [detail.id]: text,
+                      };
+                    });
+                  }}
+                  onBlur={detail.symbol && handleAutoFill}
+                  value={formDataState[detail.id]}
+                  placeholder={detail.placeholder}
+                  placeholderTextColor={'#525252'}
+                />
+              ) : preview ? (
+                <Pressable onPress={handleImageSelect}>
+                  <Image
+                    source={{ uri: preview }}
+                    style={{ ...styles.textInput, ...styles.imageInput }}
+                  />
+                </Pressable>
+              ) : (
+                <Pressable
+                  style={{
+                    ...styles.imageInput,
+                    borderColor: errorKey === detail.id ? 'red' : '#ccc',
+                  }}
+                  onPress={handleImageSelect}>
+                  <IonIcon name="image-sharp" size={30} />
+                  <BoldText>{detail.placeholder}</BoldText>
+                </Pressable>
+              )}
             </View>
           </View>
         ))}
         <View style={styles.button}>
-          <Button text="Confirm Deposit" onPress={handlePay} />
+          <Button text="Confirm Deposit" onPress={handleConfirm} />
         </View>
       </View>
     </PageContainer>
@@ -164,6 +274,20 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderWidth: 1,
     borderColor: '#ccc',
+  },
+  imageInput: {
+    borderRadius: 15,
+    backgroundColor: '#eee',
+    padding: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    minHeight: 30 + '%',
+    height: 300,
+    justifyContent: 'center',
+    gap: 15,
   },
   symbol: {
     position: 'absolute',

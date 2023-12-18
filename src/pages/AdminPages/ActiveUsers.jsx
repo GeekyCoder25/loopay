@@ -1,7 +1,15 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { Pressable, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Modal,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import { useAdminDataContext } from '../../context/AdminContext';
 import BackIcon from '../../../assets/images/backArrow.svg';
@@ -9,19 +17,38 @@ import RegularText from '../../components/fonts/RegularText';
 import ChevronDown from '../../../assets/images/drop-down.svg';
 import UserIcon from '../../components/UserIcon';
 import { getFetchData } from '../../../utils/fetchAPI';
+import { AppContext } from '../../components/AppContext';
+import { useFocusEffect } from '@react-navigation/native';
+import IonIcon from '@expo/vector-icons/Ionicons';
 
 const ActiveUsers = ({ navigation, route }) => {
+  const { vh } = useContext(AppContext);
   const [defaultTab, setDefaultTab] = useState(route.params.defaultTab);
   const [activeUsers, setActiveUsers] = useState([]);
   const [inactiveUsers, setInactiveUsers] = useState([]);
   const { adminData } = useAdminDataContext();
   const [users, setUsers] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchData, setSearchData] = useState([]);
+  const [totalUsers, setTotalUsers] = useState([]);
+  const [searchModal, setSearchModal] = useState(false);
+  const [reloading, setReloading] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [page, setPage] = useState(1);
+  const limit = Math.round(vh / 50);
+
+  useFocusEffect(
+    useCallback(() => {
+      isSearching && setSearchModal(true);
+    }, [isSearching]),
+  );
 
   useEffect(() => {
     const getUsers = async () => {
       const response = await getFetchData('admin/users?userData=true');
       if (response.status === 200) {
         setUsers(response.data.data);
+        setTotalUsers(response.data.total);
       }
     };
     getUsers();
@@ -74,6 +101,55 @@ const ActiveUsers = ({ navigation, route }) => {
     return comparison;
   }
 
+  const handleSearch = async text => {
+    try {
+      // setIsLocalLoading(true);
+      setSearchText(text);
+      const foundHistories = users.filter(user => {
+        return Object.values(user)
+          .toString()
+          .toLowerCase()
+          .includes(text.toLowerCase());
+      });
+
+      setSearchData(foundHistories);
+    } finally {
+      // setIsLocalLoading(false);
+    }
+  };
+
+  const handleScrollMore = async () => {
+    try {
+      setReloading(true);
+      const response = await getFetchData(
+        `admin/users?userData=true&limit=${limit}&page=${page + 1}`,
+      );
+      if (response.status === 200 && response.data.pageSize) {
+        const uniqueIds = new Set();
+
+        setPage(page + 1);
+        setUsers(
+          [...users, ...response.data].filter(obj => {
+            if (!uniqueIds.has(obj.id)) {
+              uniqueIds.add(obj.id);
+              return true;
+            }
+            return false;
+          }),
+        );
+      }
+    } finally {
+      setReloading(false);
+    }
+  };
+
+  const handleCloseSearchModal = () => {
+    setSearchModal(prev => !prev);
+    setSearchData([]);
+    setIsSearching(false);
+    setSearchText('');
+  };
+
   return (
     <PageContainer scroll>
       <View>
@@ -81,8 +157,15 @@ const ActiveUsers = ({ navigation, route }) => {
           <Pressable style={styles.back} onPress={() => navigation.goBack()}>
             <BackIcon />
             <BoldText style={styles.headerText}>All Users</BoldText>
+            <BoldText style={styles.headerText}>{users.length}</BoldText>
           </Pressable>
-          <BoldText style={styles.headerText}>{users.length}</BoldText>
+          <Pressable
+            onPress={() => {
+              setIsSearching(true);
+              setSearchModal(true);
+            }}>
+            <IonIcon name="search" size={20} />
+          </Pressable>
         </View>
         <View style={styles.bodySelectors}>
           <Pressable
@@ -138,6 +221,65 @@ const ActiveUsers = ({ navigation, route }) => {
             ))}
           </View>
         ))}
+      <Modal
+        visible={searchModal}
+        animationType="none"
+        onRequestClose={handleCloseSearchModal}>
+        <View style={styles.backModal}>
+          <BackIcon onPress={handleCloseSearchModal} />
+          <BoldText>Cancel</BoldText>
+        </View>
+        <FlatList
+          data={searchData}
+          renderItem={({ item }) => (
+            <User
+              user={item}
+              setSearchModal={setSearchModal}
+              userSession={{ email: item.email }}
+              users={users}
+              isSearching={true}
+            />
+          )}
+          keyExtractor={({ _id }) => _id}
+          ListHeaderComponent={
+            <View style={styles.textInputContainer}>
+              <TextInput
+                style={{
+                  ...styles.textInput,
+                  paddingLeft: 10,
+                }}
+                placeholder={'Search'}
+                onChangeText={text => handleSearch(text)}
+                autoFocus={!searchText}
+                value={searchText}
+              />
+            </View>
+          }
+          ListFooterComponent={
+            searchData.length &&
+            (searchData.length >= searchData ? (
+              <View style={styles.complete}>
+                <BoldText>That&apos;s all for now</BoldText>
+              </View>
+            ) : (
+              reloading && <ActivityIndicator color={'#1e1e1e'} />
+            ))
+          }
+          ListEmptyComponent={
+            <View style={styles.empty}>
+              {searchText && <BoldText>No Result found</BoldText>}
+            </View>
+          }
+          onEndReachedThreshold={0.5}
+          onEndReached={
+            !reloading && searchData.length && users.length < totalUsers
+              ? handleScrollMore
+              : undefined
+          }
+          bounces={false}
+          removeClippedSubviews
+        />
+      </Modal>
     </PageContainer>
   );
 };
@@ -156,6 +298,19 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 20,
+  },
+  backModal: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 20,
+    marginTop: 20,
+    paddingLeft: 4 + '%',
+  },
+
+  search: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
   },
   bodySelectors: {
     flexDirection: 'row',
@@ -221,13 +376,31 @@ const styles = StyleSheet.create({
   rowValue: {
     flex: 1,
   },
+  textInputContainer: {
+    paddingHorizontal: 3 + '%',
+    paddingBottom: 10,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: '#bbb',
+    marginTop: 20,
+    borderRadius: 5,
+    height: 35,
+    fontFamily: 'OpenSans-400',
+  },
+  empty: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 50,
+    paddingBottom: 100 + '%',
+  },
 });
 
 export default ActiveUsers;
 
-const User = ({ status, userSession, users }) => {
-  const userData = users.find(i => i.email === userSession.email);
-  const { email, userProfile } = userData;
+const User = ({ status, userSession, users, isSearching }) => {
+  const user = users.find(i => i.email === userSession.email);
+  const { email, userProfile } = user;
   const [isExpanded, setIsExpanded] = useState(false);
 
   const lastSeen = new Date(userSession.updatedAt);
@@ -245,7 +418,7 @@ const User = ({ status, userSession, users }) => {
         </View>
 
         <View style={styles.lastSeen}>
-          {!status && (
+          {isSearching !== true && !status && (
             <View>
               <BoldText>{lastSeen.toLocaleDateString()}</BoldText>
               <BoldText>{lastSeen.toLocaleTimeString()}</BoldText>
@@ -264,7 +437,7 @@ const User = ({ status, userSession, users }) => {
         <View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Email</BoldText>
-            <RegularText style={styles.rowValue}>{userData.email}</RegularText>
+            <RegularText style={styles.rowValue}>{user.email}</RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Phone Number</BoldText>
@@ -274,36 +447,36 @@ const User = ({ status, userSession, users }) => {
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Role</BoldText>
-            <RegularText style={styles.rowValue}>{userData.role}</RegularText>
+            <RegularText style={styles.rowValue}>{user.role}</RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Account Type</BoldText>
             <RegularText style={styles.rowValue}>
-              {userData.accountType}
+              {user.accountType}
             </RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Pin set</BoldText>
             <RegularText style={styles.rowValue}>
-              {userData.pin ? 'true' : 'false'}
+              {user.pin ? 'true' : 'false'}
             </RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Tag Name</BoldText>
             <RegularText style={styles.rowValue}>
-              {userData.tagName || userProfile.userName}
+              {user.tagName || userProfile.userName}
             </RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Referral Code</BoldText>
             <RegularText style={styles.rowValue}>
-              {userData.referralCode}
+              {user.referralCode}
             </RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>User Photo</BoldText>
             <View style={styles.rowValue}>
-              <UserIcon uri={userData.photoURL} />
+              <UserIcon uri={user.photoURL} />
             </View>
           </View>
         </View>

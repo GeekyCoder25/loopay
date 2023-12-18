@@ -33,6 +33,7 @@ const AdminTransfer = ({ navigation }) => {
     setIsLoading,
     walletRefresh,
     setWalletRefresh,
+    showAmount,
   } = useContext(AppContext);
   const { adminData } = useAdminDataContext();
   const { allBalances } = adminData;
@@ -205,9 +206,11 @@ const AdminTransfer = ({ navigation }) => {
                   {transferCurrency.currency} Balance
                 </BoldText>
                 <RegularText style={styles.selectAmount}>
-                  {`${transferCurrency.symbol} ${addingDecimal(
-                    balance?.toLocaleString(),
-                  )}`}
+                  {showAmount
+                    ? `${transferCurrency.symbol} ${addingDecimal(
+                        balance?.toLocaleString(),
+                      )}`
+                    : '***'}
                 </RegularText>
               </View>
             </View>
@@ -314,15 +317,17 @@ const AdminTransfer = ({ navigation }) => {
                       </View>
                     </View>
                     <BoldText>
-                      {currency.isLocal
-                        ? addingDecimal(
-                            allBalances.localBalance?.toLocaleString(),
-                          )
-                        : addingDecimal(
-                            allBalances[
-                              `${currency.currency}Balance`
-                            ]?.toLocaleString(),
-                          )}
+                      {showAmount
+                        ? currency.isLocal
+                          ? addingDecimal(
+                              allBalances.localBalance?.toLocaleString(),
+                            )
+                          : addingDecimal(
+                              allBalances[
+                                `${currency.currency}Balance`
+                              ]?.toLocaleString(),
+                            )
+                        : '***'}
                     </BoldText>
                   </Pressable>
                 ))}

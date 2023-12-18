@@ -54,8 +54,8 @@ const History = () => {
       try {
         setIsLocalLoading(true);
         const response = await getFetchData(
-          `admin/transactions?currency=${
-            selectedCurrency.currency
+          `admin/transactions?currency=${selectedCurrency.currency},${
+            selectedCurrency.acronym
           }&limit=${limit}&page=${1}`,
         );
 
@@ -78,14 +78,14 @@ const History = () => {
       }
     };
     getTransactions();
-  }, [limit, selectedCurrency.currency]);
+  }, [limit, selectedCurrency]);
 
   const handleScrollMore = async () => {
     try {
       setReloading(true);
       const response = await getFetchData(
-        `admin/transactions?currency=${
-          selectedCurrency.currency
+        `admin/transactions?currency=${selectedCurrency.currency},${
+          selectedCurrency.acronym
         }&limit=${limit}&page=${page + 1}`,
       );
       if (response.status === 200 && response.data.pageSize) {
@@ -409,7 +409,6 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
     receiverPhoto,
     amount,
     transactionType,
-    createdAt,
     currency,
     networkProvider,
     dataPlan,
@@ -428,27 +427,11 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
       ? senderAccount
       : debitAccount;
 
-  function convertTo12HourFormat(time24) {
-    let [hours, minutes] = time24.split(':');
-    let period = 'AM';
-
-    if (hours >= 12) {
-      period = 'PM';
-      if (hours > 12) {
-        hours -= 12;
-      }
-    }
-
-    if (hours === '00') {
-      hours = 12;
-    }
-
-    return `${hours}:${minutes} ${period}`;
-  }
-
   useEffect(() => {
     setCurrencySymbol(
-      allCurrencies.find(id => currency === id.currency)?.symbol || '',
+      allCurrencies.find(
+        id => currency === id.currency || currency === id.acronym,
+      )?.symbol || '',
     );
   }, [currency]);
 

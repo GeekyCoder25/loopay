@@ -21,10 +21,9 @@ import { getFetchData } from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import Back from '../../../components/Back';
 
 const Users = ({ navigation }) => {
-  const { walletRefresh } = useContext(AppContext);
+  const { walletRefresh, vh } = useContext(AppContext);
   const { adminData } = useAdminDataContext();
   const [users, setUsers] = useState([]);
   const [selectedTab, setSelectedTab] = useState(1);
@@ -37,10 +36,12 @@ const Users = ({ navigation }) => {
   const sortMethods = ['date', 'status'];
   const [isSearching, setIsSearching] = useState(false);
   const [searchData, setSearchData] = useState([]);
-  const [totalSearchData, setTotalSearchData] = useState([]);
+  const [totalUsers, setTotalUsers] = useState([]);
   const [searchModal, setSearchModal] = useState(false);
   const [reloading, setReloading] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const [page, setPage] = useState(1);
+  const limit = Math.round(vh / 50);
 
   useFocusEffect(
     useCallback(() => {
@@ -52,6 +53,7 @@ const Users = ({ navigation }) => {
       const response = await getFetchData('admin/users?userData=true');
       if (response.status === 200) {
         setUsers(response.data.data);
+        setTotalUsers(response.data.total);
       }
     };
     getUsers();
@@ -140,54 +142,20 @@ const Users = ({ navigation }) => {
     try {
       setReloading(true);
       const response = await getFetchData(
-        `admin/transactions?currency=${
-          selectedCurrency.currency
-        }&limit=${limit}&page=${page + 1}`,
+        `admin/users?userData=true&limit=${limit}&page=${page + 1}`,
       );
       if (response.status === 200 && response.data.pageSize) {
-        const swapLength = response.data.data.filter(
-          transaction => transaction.transactionType === 'swap',
-        ).length;
-        setTotalTransactionsLength(totalTransactionsLength - swapLength);
-        const result = response.data.data.filter(
-          transaction => transaction.transactionType !== 'swap',
-        );
         const uniqueIds = new Set();
-        const uniqueIds2 = new Set();
-        const uniqueIds3 = new Set();
 
         setPage(page + 1);
-        setTransactions(
-          [...transactions, ...result].filter(obj => {
+        setUsers(
+          [...users, ...response.data].filter(obj => {
             if (!uniqueIds.has(obj.id)) {
               uniqueIds.add(obj.id);
               return true;
             }
             return false;
           }),
-        );
-        setActiveHistories(
-          [...activeHistories, ...result].filter(obj => {
-            if (!uniqueIds2.has(obj.id)) {
-              uniqueIds.add(obj.id);
-              return true;
-            }
-            return false;
-          }),
-        );
-        setHistories(
-          groupTransactionsByDate(
-            [...transactions, ...result].filter(obj => {
-              if (!uniqueIds3.has(obj.id)) {
-                uniqueIds.add(obj.id);
-                return true;
-              }
-              return false;
-            }),
-          ),
-        );
-        setLastTransactionsLength(
-          lastTransactionsLength + response.data.data.length,
         );
       }
     } finally {
@@ -366,10 +334,8 @@ const Users = ({ navigation }) => {
           }
           onEndReachedThreshold={0.5}
           onEndReached={
-            !reloading &&
-            searchData.length &&
-            searchData.length < totalSearchData
-              ? () => {}
+            !reloading && searchData.length && users.length < totalUsers
+              ? handleScrollMore
               : undefined
           }
           bounces={false}

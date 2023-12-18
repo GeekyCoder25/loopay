@@ -132,6 +132,13 @@ const PayABill = ({ navigation }) => {
           id: 'amount',
           balance: true,
         },
+        {
+          title: 'Message',
+          type: 'input',
+          placeholder: '(optional)',
+          id: 'message',
+          optional: true,
+        },
       ],
     },
     {
@@ -170,6 +177,12 @@ const PayABill = ({ navigation }) => {
           type: 'input',
           id: 'amount',
           balance: true,
+        },
+        {
+          title: 'Message',
+          type: 'input',
+          placeholder: '(optional)',
+          id: 'message',
         },
       ],
     },

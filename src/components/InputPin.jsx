@@ -26,6 +26,7 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
     setShowTabBar,
     isBiometricSupported,
     enableBiometric,
+    isAdmin,
   } = useContext(AppContext);
   const [errorMessage, setErrorMessage] = useState('');
   const [errorCode, setErrorCode] = useState(false);
@@ -115,20 +116,17 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
     }
   };
 
+  const handleCancelDefault = () => {
+    navigation.goBack();
+    setModalOpen(false);
+  };
+
   return (
     <Modal
       visible={modalOpen}
       animationType="fade"
       onRequestClose={() => {
-        setTimeout(() => {
-          setModalOpen(false);
-        }, 100);
-        handleCancel
-          ? handleCancel()
-          : () => {
-              setModalOpen(false);
-              navigation.goBack();
-            };
+        handleCancel ? handleCancel() : handleCancelDefault();
       }}>
       <ScrollView
         contentContainerStyle={{ minHeight: vh, ...styles.container }}>
@@ -310,13 +308,15 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
             </View>
           </View>
 
-          <Pressable
-            onPress={() => {
-              handleCancel ? handleCancel() : navigation.goBack();
-              navigation.navigate('TransactionPin', { forgotPin: true });
-            }}>
-            <BoldText>Forgot PIN?</BoldText>
-          </Pressable>
+          {!isAdmin && (
+            <Pressable
+              onPress={() => {
+                handleCancel ? handleCancel() : navigation.goBack();
+                navigation.navigate('TransactionPin', { forgotPin: true });
+              }}>
+              <BoldText>Forgot PIN?</BoldText>
+            </Pressable>
+          )}
         </View>
       </ScrollView>
     </Modal>

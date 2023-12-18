@@ -22,7 +22,8 @@ import BiometricIcon from '../../../assets/images/biometric.svg';
 import ToastMessage from '../../components/ToastMessage';
 
 const Profile = ({ navigation, children, route }) => {
-  const { appData, setAppData, isBiometricSupported } = useContext(AppContext);
+  const { appData, setAppData, isBiometricSupported, selectedCurrency } =
+    useContext(AppContext);
   const { email } = appData;
   const { firstName, lastName } = appData.userProfile;
   const fullName = `${firstName} ${lastName}`;
@@ -102,7 +103,7 @@ const Profile = ({ navigation, children, route }) => {
       routeName: 'Withdraw',
       routeNavigate: 'Withdraw',
       routeIcon: 'withdraw',
-      routeDetails: 'Withdraw funds to you NGN account',
+      routeDetails: `Withdraw funds to your ${selectedCurrency.acronym} account`,
     },
     // {
     //   routeName: 'Change Password',

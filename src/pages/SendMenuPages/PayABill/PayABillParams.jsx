@@ -17,12 +17,13 @@ const PayABillParams = ({ route, navigation }) => {
 
   useEffect(() => {
     fields.forEach(element => {
-      setStateFields(prev => {
-        return {
-          ...prev,
-          [element.id]: '',
-        };
-      });
+      !element.optional &&
+        setStateFields(prev => {
+          return {
+            ...prev,
+            [element.id]: '',
+          };
+        });
     });
   }, [fields]);
 
@@ -70,7 +71,7 @@ const PayABillParams = ({ route, navigation }) => {
   };
 
   const payElectricity = () => {
-    if (Object.values(stateFields).includes('')) {
+    if (Object.values({ ...stateFields, message: 'message' }).includes('')) {
       return setErrorMessage('Please provide all required fields');
     } else if (stateFields.amount > wallet.localBalance) {
       setErrorMessage('Insufficient balance');

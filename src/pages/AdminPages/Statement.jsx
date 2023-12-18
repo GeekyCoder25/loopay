@@ -36,7 +36,7 @@ const Statement = () => {
     const getSummary = async () => {
       try {
         const response = await getFetchData(
-          `admin/summary?currency=${selectedCurrency.currency}`,
+          `admin/summary?currency=${selectedCurrency.currency},${selectedCurrency.acronym}`,
         );
 
         if (response.status === 200) {
@@ -46,7 +46,7 @@ const Statement = () => {
       }
     };
     getSummary();
-  }, [selectedCurrency.currency]);
+  }, [selectedCurrency]);
 
   useEffect(() => {
     setIncome(summary.income?.amount || 0);

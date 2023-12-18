@@ -25,7 +25,6 @@ import { useWalletContext } from '../../context/WalletContext';
 import { groupTransactionsByDate } from '../../../utils/groupTransactions';
 import SwapIcon from '../../../assets/images/swap.svg';
 import FlagSelect from '../../components/FlagSelect';
-import { randomUUID } from 'expo-crypto';
 
 const TransactionHistory = ({ navigation }) => {
   const { transactions, wallet } = useWalletContext();
@@ -109,7 +108,7 @@ const TransactionHistory = ({ navigation }) => {
                           accNoAsterisk={accNoAsterisk}
                         />
                       )}
-                      keyExtractor={({ _id, transactionType }) => randomUUID()}
+                      keyExtractor={({ _id }) => _id}
                     />
                   </View>
                 )}
@@ -283,8 +282,8 @@ const styles = StyleSheet.create({
 });
 export default TransactionHistory;
 
-export const History = memo(({ history, navigation, accNoAsterisk }) => {
-  const { appData, vw } = useContext(AppContext);
+export const History = memo(({ history, navigation }) => {
+  const { appData, vw, showAmount } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const {
     senderName,
@@ -293,10 +292,8 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
     receiverPhoto,
     amount,
     transactionType,
-    createdAt,
     currency,
     networkProvider,
-    dataPlan,
     billType,
     billName,
     swapFrom,
@@ -304,31 +301,9 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
     swapFromAmount,
     swapToAmount,
   } = history;
-  const date = new Date(createdAt);
-  const historyTime = convertTo12HourFormat(
-    `${date.getHours()}:${date.getMinutes()}`,
-  );
-
-  function convertTo12HourFormat(time24) {
-    let [hours, minutes] = time24.split(':');
-    let period = 'AM';
-
-    if (hours >= 12) {
-      period = 'PM';
-      if (hours > 12) {
-        hours -= 12;
-      }
-    }
-
-    if (hours === '00') {
-      hours = 12;
-    }
-
-    return `${hours}:${minutes} ${period}`;
-  }
 
   const currencySymbol = allCurrencies.find(
-    id => currency === id.currency,
+    id => currency === id.currency || currency === id.acronym,
   )?.symbol;
 
   const swapFromSymbol = allCurrencies.find(
@@ -350,14 +325,20 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
           </View>
           <View style={styles.amount}>
             <BoldText style={styles.creditAmount}>
-              +{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
+              {showAmount
+                ? `+${
+                    currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())
+                  }`
+                : '***'}{' '}
             </BoldText>
             <RegularText>
-              {accNoAsterisk.join('') +
-                wallet.loopayAccNo.slice(
-                  wallet.loopayAccNo.length - 4,
-                  wallet.loopayAccNo.length,
-                )}
+              To
+              <BoldText> •</BoldText>{' '}
+              {wallet.loopayAccNo.slice(
+                wallet.loopayAccNo.length - 4,
+                wallet.loopayAccNo.length,
+              )}
             </RegularText>
           </View>
         </>
@@ -371,14 +352,20 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
           </View>
           <View style={styles.amount}>
             <BoldText style={styles.debitAmount}>
-              -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
+              {showAmount
+                ? `-${
+                    currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())
+                  }`
+                : '***'}{' '}
             </BoldText>
             <RegularText>
-              {accNoAsterisk.join('') +
-                wallet.loopayAccNo.slice(
-                  wallet.loopayAccNo.length - 4,
-                  wallet.loopayAccNo.length,
-                )}
+              From
+              <BoldText> •</BoldText>{' '}
+              {wallet.loopayAccNo.slice(
+                wallet.loopayAccNo.length - 4,
+                wallet.loopayAccNo.length,
+              )}
             </RegularText>
           </View>
         </>
@@ -387,21 +374,25 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
         <>
           {networkProvidersIcon(networkProvider)}
           <View style={styles.historyContent}>
-            <BoldText style={styles.historyTitle}>
-              {networkProvider} - {history.rechargePhoneNo}
-            </BoldText>
-            <RegularText>Airtime Recharge</RegularText>
+            <BoldText style={styles.historyTitle}>{networkProvider}</BoldText>
+            <RegularText>Airtime</RegularText>
           </View>
           <View style={styles.amount}>
             <BoldText style={styles.debitAmount}>
-              -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
+              {showAmount
+                ? `-${
+                    currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())
+                  }`
+                : '***'}{' '}
             </BoldText>
             <RegularText>
-              {accNoAsterisk.join('') +
-                wallet.loopayAccNo.slice(
-                  wallet.loopayAccNo.length - 4,
-                  wallet.loopayAccNo.length,
-                )}
+              From
+              <BoldText> •</BoldText>{' '}
+              {wallet.loopayAccNo.slice(
+                wallet.loopayAccNo.length - 4,
+                wallet.loopayAccNo.length,
+              )}
             </RegularText>
           </View>
         </>
@@ -410,21 +401,25 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
         <>
           {networkProvidersIcon(networkProvider)}
           <View style={styles.historyContent}>
-            <BoldText style={styles.historyTitle}>
-              {networkProvider} - {history.phoneNo}
-            </BoldText>
-            <RegularText>Data Recharge - {dataPlan.value}</RegularText>
+            <BoldText style={styles.historyTitle}>{networkProvider}</BoldText>
+            <RegularText>Data</RegularText>
           </View>
           <View style={styles.amount}>
             <BoldText style={styles.debitAmount}>
-              -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
+              {showAmount
+                ? `-${
+                    currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())
+                  }`
+                : '***'}{' '}
             </BoldText>
             <RegularText>
-              {accNoAsterisk.join('') +
-                wallet.loopayAccNo.slice(
-                  wallet.loopayAccNo.length - 4,
-                  wallet.loopayAccNo.length,
-                )}
+              From
+              <BoldText> •</BoldText>{' '}
+              {wallet.loopayAccNo.slice(
+                wallet.loopayAccNo.length - 4,
+                wallet.loopayAccNo.length,
+              )}
             </RegularText>
           </View>
         </>
@@ -440,14 +435,20 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
           </View>
           <View style={styles.amount}>
             <BoldText style={styles.debitAmount}>
-              -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
+              {showAmount
+                ? `-${
+                    currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())
+                  }`
+                : '***'}{' '}
             </BoldText>
             <RegularText>
-              {accNoAsterisk.join('') +
-                wallet.loopayAccNo.slice(
-                  wallet.loopayAccNo.length - 4,
-                  wallet.loopayAccNo.length,
-                )}
+              From
+              <BoldText> •</BoldText>{' '}
+              {wallet.loopayAccNo.slice(
+                wallet.loopayAccNo.length - 4,
+                wallet.loopayAccNo.length,
+              )}
             </RegularText>
           </View>
         </>
@@ -490,11 +491,12 @@ export const History = memo(({ history, navigation, accNoAsterisk }) => {
               </BoldText>
             </View>
             <RegularText>
-              {accNoAsterisk.join('') +
-                wallet.loopayAccNo.slice(
-                  wallet.loopayAccNo.length - 4,
-                  wallet.loopayAccNo.length,
-                )}
+              From
+              <BoldText> •</BoldText>{' '}
+              {wallet.loopayAccNo.slice(
+                wallet.loopayAccNo.length - 4,
+                wallet.loopayAccNo.length,
+              )}
             </RegularText>
           </View>
         </>
