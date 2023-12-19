@@ -145,7 +145,16 @@ const Profile = ({ navigation, children, route }) => {
           )}
         </Pressable>
         <View>
-          <BoldText style={styles.name}>{fullName}</BoldText>
+          <View>
+            <BoldText style={styles.name}>{fullName} </BoldText>
+            {appData.verificationStatus === 'verified' && (
+              <Image
+                source={require('../../../assets/images/verify.png')}
+                style={styles.verify}
+                resizeMode="contain"
+              />
+            )}
+          </View>
           <RegularText style={styles.email}>{email}</RegularText>
         </View>
         <View style={styles.modalBorder} />
@@ -252,6 +261,12 @@ const styles = StyleSheet.create({
     fontSize: 25,
     textTransform: 'capitalize',
     textAlign: 'center',
+  },
+  verify: {
+    position: 'absolute',
+    width: 20,
+    height: 20,
+    right: -15,
   },
   email: {
     textAlign: 'center',

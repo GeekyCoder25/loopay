@@ -7,7 +7,7 @@ import { RouteLink } from '../BottomTabPages/SendMenu';
 import { AppContext } from '../../components/AppContext';
 
 const SendMoney = ({ navigation }) => {
-  const { appData, selectedCurrency } = useContext(AppContext);
+  const { selectedCurrency } = useContext(AppContext);
 
   const SendMoneyRoutes = [
     {
@@ -15,13 +15,13 @@ const SendMoney = ({ navigation }) => {
       routeDetails:
         'Send money instantly to friends and family using Loopay tag',
       routeIcon: 'add',
-      routeNavigate: appData.tagName ? 'SendLoopay' : 'SendProfile',
+      routeNavigate: 'SendLoopay',
     },
     {
       routeName: 'Send to a Beneficiary',
       routeDetails: 'Choose from one of your saved beneficiaries to send money',
       routeIcon: 'beneficiary',
-      routeNavigate: appData.tagName ? 'SendBeneficiary' : 'SendProfile',
+      routeNavigate: 'SendBeneficiary',
     },
     {
       routeName: 'Send to a new recipient',

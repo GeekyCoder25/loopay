@@ -31,7 +31,7 @@ const FooterCard = ({
   return (
     <View style={styles.footerCard}>
       <BoldText style={styles.cardAmount}>
-        - {billPlan || dataPlan || currency + amountInput}
+        {billPlan || dataPlan || `- ${currency + amountInput}`}
       </BoldText>
       {userToSendTo ? (
         <View style={styles.footerCardDetails}>

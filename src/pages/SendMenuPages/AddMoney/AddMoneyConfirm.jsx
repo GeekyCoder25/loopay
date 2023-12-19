@@ -28,12 +28,14 @@ const AddMoneyConfirm = ({ navigation }) => {
       symbol,
       type: 'text',
       placeholder: 'Amount Deposited',
+      inputMode: 'decimal',
       id: 'amount',
     },
     {
       title: 'Message',
       type: 'text',
       placeholder: 'Optional message',
+      inputMode: 'text',
       id: 'message',
     },
     {
@@ -88,7 +90,7 @@ const AddMoneyConfirm = ({ navigation }) => {
         navigation.popToTop();
         navigation.navigate('HomeNavigator');
         ToastMessage(
-          'Uploaded successfully, you account will be credited soon',
+          'Uploaded successfully, your account will be credited soon',
         );
       } else {
         const errormessage = result.status !== 500 ? result : 'Upload failed';
@@ -160,7 +162,7 @@ const AddMoneyConfirm = ({ navigation }) => {
                       : 15,
                     borderColor: errorKey === detail.id ? 'red' : '#ccc',
                   }}
-                  inputMode="decimal"
+                  inputMode={detail.inputMode}
                   onChangeText={text => {
                     setErrorKey('');
                     setFormDataState(prev => {
@@ -177,10 +179,7 @@ const AddMoneyConfirm = ({ navigation }) => {
                 />
               ) : preview ? (
                 <Pressable onPress={handleImageSelect}>
-                  <Image
-                    source={{ uri: preview }}
-                    style={{ ...styles.textInput, ...styles.imageInput }}
-                  />
+                  <Image source={{ uri: preview }} style={styles.imageInput} />
                 </Pressable>
               ) : (
                 <Pressable

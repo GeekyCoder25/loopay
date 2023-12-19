@@ -148,11 +148,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 30,
   },
+  verify: {
+    width: 15,
+    height: 15,
+  },
 });
 
 export default SendBeneficiary;
 
 const Beneficiary = ({ beneficiary, handleContinue }) => {
+  console.log(beneficiary.verificationStatus);
   return (
     <Pressable onPress={() => handleContinue(beneficiary)}>
       <View style={styles.userFound}>
@@ -167,7 +172,16 @@ const Beneficiary = ({ beneficiary, handleContinue }) => {
           </View>
         )}
         <View style={styles.userFoundDetails}>
-          <BoldText>{beneficiary.fullName}</BoldText>
+          <BoldText>
+            {beneficiary.fullName}{' '}
+            {beneficiary.verificationStatus === 'verified' && (
+              <Image
+                source={require('../../../../assets/images/verify.png')}
+                style={styles.verify}
+                resizeMode="contain"
+              />
+            )}
+          </BoldText>
           <BoldText>{beneficiary.tagName}</BoldText>
         </View>
       </View>

@@ -151,7 +151,16 @@ const SendNew = ({ navigation, route }) => {
                 </View>
               )}
               <View style={styles.userFoundDetails}>
-                <BoldText>{userFound.fullName}</BoldText>
+                <BoldText>
+                  {userFound.fullName}
+                  {userFound.verificationStatus === 'verified' && (
+                    <Image
+                      source={require('../../../../assets/images/verify.png')}
+                      style={styles.verify}
+                      resizeMode="contain"
+                    />
+                  )}
+                </BoldText>
                 <BoldText>{userFound.tagName || userFound.userName}</BoldText>
               </View>
             </View>
@@ -257,6 +266,10 @@ const styles = StyleSheet.create({
   },
   userFoundDetails: {
     gap: 5,
+  },
+  verify: {
+    width: 15,
+    height: 15,
   },
   beneficiary: {
     flexDirection: 'row',
