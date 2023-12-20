@@ -16,9 +16,11 @@ import * as FileSystem from 'expo-file-system';
 import * as Print from 'expo-print';
 import ToastMessage from '../../components/ToastMessage';
 import { useAdminDataContext } from '../../context/AdminContext';
+import { setShowBalance } from '../../../utils/storage';
 
 const Statement = () => {
-  const { selectedCurrency, setIsLoading, showAmount } = useContext(AppContext);
+  const { selectedCurrency, setIsLoading, showAmount, setShowAmount } =
+    useContext(AppContext);
   const { adminData } = useAdminDataContext();
   const [income, setIncome] = useState(0);
   const [outcome, setOutcome] = useState(0);
@@ -421,6 +423,10 @@ const Statement = () => {
     setIsLoading(false);
   };
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
   return (
     <PageContainer style={styles.container} scroll>
       <BalanceCard />
@@ -430,10 +436,11 @@ const Statement = () => {
           <View style={styles.chart}>
             {!income && !outcome && !onHold ? (
               <View>
-                <BoldText>
-                  {selectedCurrency.symbol}
-                  {'0.00'}
-                </BoldText>
+                <Pressable onPress={handleShow}>
+                  <BoldText>
+                    {showAmount ? selectedCurrency.symbol + '0.00' : '***'}
+                  </BoldText>
+                </Pressable>
                 <RegularText>Label</RegularText>
               </View>
             ) : (
@@ -453,36 +460,42 @@ const Statement = () => {
                 <View style={{ ...styles.statusBg, ...styles.incomeBg }} />
                 <View>
                   <RegularText style={styles.statusText}>Income</RegularText>
-                  <BoldText style={styles.statusNo}>
-                    {showAmount
-                      ? selectedCurrency.symbol +
-                        addingDecimal(income.toLocaleString())
-                      : '***'}
-                  </BoldText>
+                  <Pressable onPress={handleShow}>
+                    <BoldText style={styles.statusNo}>
+                      {showAmount
+                        ? selectedCurrency.symbol +
+                          addingDecimal(income.toLocaleString())
+                        : '***'}
+                    </BoldText>
+                  </Pressable>
                 </View>
               </View>
               <View style={styles.status}>
                 <View style={{ ...styles.statusBg, ...styles.outcomeBg }} />
                 <View>
                   <RegularText style={styles.statusText}>Outcome</RegularText>
-                  <BoldText style={styles.statusNo}>
-                    {showAmount
-                      ? selectedCurrency.symbol +
-                        addingDecimal(outcome.toLocaleString())
-                      : '***'}
-                  </BoldText>
+                  <Pressable onPress={handleShow}>
+                    <BoldText style={styles.statusNo}>
+                      {showAmount
+                        ? selectedCurrency.symbol +
+                          addingDecimal(outcome.toLocaleString())
+                        : '***'}
+                    </BoldText>
+                  </Pressable>
                 </View>
               </View>
               <View style={styles.status}>
                 <View style={{ ...styles.statusBg, ...styles.onHoldBg }} />
                 <View>
                   <RegularText style={styles.statusText}>Onhold</RegularText>
-                  <BoldText style={styles.statusNo}>
-                    {showAmount
-                      ? selectedCurrency.symbol +
-                        addingDecimal(onHold.toLocaleString())
-                      : '***'}
-                  </BoldText>
+                  <Pressable onPress={handleShow}>
+                    <BoldText style={styles.statusNo}>
+                      {showAmount
+                        ? selectedCurrency.symbol +
+                          addingDecimal(onHold.toLocaleString())
+                        : '***'}
+                    </BoldText>
+                  </Pressable>
                 </View>
               </View>
             </View>

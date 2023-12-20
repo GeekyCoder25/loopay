@@ -28,9 +28,11 @@ import { getFetchData } from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
 import { allCurrencies } from '../../../database/data';
 import ToastMessage from '../../../components/ToastMessage';
+import { setShowBalance } from '../../../../utils/storage';
 
 const BuyAirtime = ({ navigation }) => {
-  const { appData, setIsLoading, showAmount } = useContext(AppContext);
+  const { appData, setIsLoading, showAmount, setShowAmount } =
+    useContext(AppContext);
   const { wallet } = useWalletContext();
   const { code: countryCode } = appData.country;
   const [modalOpen, setModalOpen] = useState(false);
@@ -201,6 +203,10 @@ const BuyAirtime = ({ navigation }) => {
     });
   };
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
   return (
     <PageContainer padding paddingTop={0}>
       <ScrollView style={styles.body}>
@@ -322,13 +328,15 @@ const BuyAirtime = ({ navigation }) => {
         <ErrorMessage errorMessage={errorMessage2} />
         <View style={styles.topUpContainer}>
           <Text style={styles.label}>Amount to be credited</Text>
-          <Text style={styles.label}>
-            Balance:{' '}
-            {showAmount
-              ? localCurrencySymbol +
-                addingDecimal(`${localBalance?.toLocaleString()}`)
-              : '***'}
-          </Text>
+          <Pressable onPress={handleShow}>
+            <Text style={styles.label}>
+              Balance:{' '}
+              {showAmount
+                ? localCurrencySymbol +
+                  addingDecimal(`${localBalance?.toLocaleString()}`)
+                : '***'}
+            </Text>
+          </Pressable>
         </View>
         <View style={styles.textInputContainer}>
           <TextInput

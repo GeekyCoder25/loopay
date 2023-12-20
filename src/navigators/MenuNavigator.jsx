@@ -16,6 +16,8 @@ import IdentityVerification from '../pages/MenuPages/VerificationStatus/Identity
 import VerificationInformation from '../pages/MenuPages/VerificationStatus/VerificationInformation';
 import VerifyImage from '../pages/MenuPages/VerificationStatus/VerifyImage';
 import VerifyInputNumber from '../pages/MenuPages/VerificationStatus/VerifyInputNumber';
+import Settings from '../pages/MenuPages/Settings';
+import Biometric from '../pages/HomePages/Biometric';
 
 const MenuNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -55,8 +57,10 @@ const MenuNavigator = () => {
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
       <Stack.Screen name="DevicesAndSessions" component={DevicesAndSessions} />
       <Stack.Screen name="TransactionPin" component={TransactionPin} />
+      <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="Referrals" component={Referrals} />
       <Stack.Screen name="Support" component={Support} />
+      <Stack.Screen name="Biometric" component={Biometric} />
     </Stack.Navigator>
   );
 };

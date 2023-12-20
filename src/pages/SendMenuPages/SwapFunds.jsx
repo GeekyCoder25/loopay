@@ -28,10 +28,17 @@ import ToastMessage from '../../components/ToastMessage';
 import { Audio } from 'expo-av';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import { useFocusEffect } from '@react-navigation/native';
+import { setShowBalance } from '../../../utils/storage';
 
 const SwapFunds = ({ navigation }) => {
-  const { selectedCurrency, setIsLoading, setWalletRefresh, vh, showAmount } =
-    useContext(AppContext);
+  const {
+    selectedCurrency,
+    setIsLoading,
+    setWalletRefresh,
+    vh,
+    showAmount,
+    setShowAmount,
+  } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [errorKey, setErrorKey] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
@@ -366,6 +373,10 @@ const SwapFunds = ({ navigation }) => {
     navigation.navigate('HomeNavigator');
   };
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
   return (
     <>
       <Back onPress={() => navigation.goBack()} />
@@ -401,13 +412,17 @@ const SwapFunds = ({ navigation }) => {
                 />
                 <View style={styles.swapText}>
                   <BoldText>{swapFrom.acronym} Balance</BoldText>
-                  <RegularText style={styles.swapBalance}>
-                    {showAmount
-                      ? `${swapFrom.symbol} ${addingDecimal(
-                          Number(swapFrom.balance.toFixed(2)).toLocaleString(),
-                        )}`
-                      : '***'}
-                  </RegularText>
+                  <Pressable onPress={handleShow}>
+                    <RegularText style={styles.swapBalance}>
+                      {showAmount
+                        ? `${swapFrom.symbol} ${addingDecimal(
+                            Number(
+                              swapFrom.balance.toFixed(2),
+                            ).toLocaleString(),
+                          )}`
+                        : '***'}
+                    </RegularText>
+                  </Pressable>
                 </View>
                 <ChevronDown />
               </Pressable>
@@ -453,13 +468,15 @@ const SwapFunds = ({ navigation }) => {
                 <FlagSelect country={swapTo.currency} style={styles.flagIcon} />
                 <View style={styles.swapText}>
                   <BoldText>{swapTo.acronym} Balance</BoldText>
-                  <RegularText style={styles.swapBalance}>
-                    {showAmount
-                      ? `${swapTo.symbol} ${addingDecimal(
-                          Number(swapTo.balance.toFixed(2)).toLocaleString(),
-                        )}`
-                      : '***'}
-                  </RegularText>
+                  <Pressable onPress={handleShow}>
+                    <RegularText style={styles.swapBalance}>
+                      {showAmount
+                        ? `${swapTo.symbol} ${addingDecimal(
+                            Number(swapTo.balance.toFixed(2)).toLocaleString(),
+                          )}`
+                        : '***'}
+                    </RegularText>
+                  </Pressable>
                 </View>
                 <ChevronDown />
               </Pressable>
@@ -527,6 +544,7 @@ const SwapFunds = ({ navigation }) => {
                 <TextInput
                   style={{
                     ...styles.textInput,
+                    ...styles.toReceive,
                     paddingLeft:
                       swapFrom.symbol.length * 20 > 50
                         ? swapFrom.symbol.length * 20
@@ -540,6 +558,15 @@ const SwapFunds = ({ navigation }) => {
                   placeholder="Amount to swap"
                   placeholderTextColor={'#525252'}
                 />
+                <View style={styles.fee}>
+                  <RegularText style={styles.feeText}>
+                    Service Charge
+                  </RegularText>
+                  <RegularText style={styles.feeText}>
+                    {swapFrom.symbol}
+                    {addingDecimal(fee.toLocaleString())}
+                  </RegularText>
+                </View>
                 <TouchableOpacity
                   style={styles.swapAll}
                   onPress={() => {
@@ -566,20 +593,12 @@ const SwapFunds = ({ navigation }) => {
               <View
                 style={{
                   ...styles.textInput,
-                  ...styles.toReceive,
                   paddingLeft:
                     swapTo.symbol.length * 20 > 50
                       ? swapTo.symbol.length * 20
                       : 50,
                 }}>
                 <RegularText>{toReceive || 'Amount to receive'}</RegularText>
-              </View>
-              <View style={styles.fee}>
-                <RegularText style={styles.feeText}>Service Charge</RegularText>
-                <RegularText style={styles.feeText}>
-                  {swapFrom.symbol}
-                  {addingDecimal(fee.toLocaleString())}
-                </RegularText>
               </View>
             </View>
           </View>

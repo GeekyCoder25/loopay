@@ -25,6 +25,7 @@ import { useWalletContext } from '../../context/WalletContext';
 import { groupTransactionsByDate } from '../../../utils/groupTransactions';
 import SwapIcon from '../../../assets/images/swap.svg';
 import FlagSelect from '../../components/FlagSelect';
+import { setShowBalance } from '../../../utils/storage';
 
 const TransactionHistory = ({ navigation }) => {
   const { transactions, wallet } = useWalletContext();
@@ -283,7 +284,7 @@ const styles = StyleSheet.create({
 export default TransactionHistory;
 
 export const History = memo(({ history, navigation }) => {
-  const { appData, vw, showAmount } = useContext(AppContext);
+  const { appData, vw, showAmount, setShowAmount } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const {
     senderName,
@@ -312,6 +313,10 @@ export const History = memo(({ history, navigation }) => {
 
   const swapToSymbol = allCurrencies.find(id => swapTo === id.currency)?.symbol;
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
   return (
     <Pressable
       onPress={() => navigation.navigate('TransactionHistoryDetails', history)}
@@ -324,14 +329,16 @@ export const History = memo(({ history, navigation }) => {
             <RegularText>Transfer</RegularText>
           </View>
           <View style={styles.amount}>
-            <BoldText style={styles.creditAmount}>
-              {showAmount
-                ? `+${
-                    currencySymbol +
-                    addingDecimal(Number(amount).toLocaleString())
-                  }`
-                : '***'}{' '}
-            </BoldText>
+            <Pressable onPress={handleShow}>
+              <BoldText style={styles.creditAmount}>
+                {showAmount
+                  ? `+${
+                      currencySymbol +
+                      addingDecimal(Number(amount).toLocaleString())
+                    }`
+                  : '***'}{' '}
+              </BoldText>
+            </Pressable>
             <RegularText>
               To
               <BoldText> •</BoldText>{' '}
@@ -351,14 +358,16 @@ export const History = memo(({ history, navigation }) => {
             <RegularText>Transfer</RegularText>
           </View>
           <View style={styles.amount}>
-            <BoldText style={styles.debitAmount}>
-              {showAmount
-                ? `-${
-                    currencySymbol +
-                    addingDecimal(Number(amount).toLocaleString())
-                  }`
-                : '***'}{' '}
-            </BoldText>
+            <Pressable onPress={handleShow}>
+              <BoldText style={styles.debitAmount}>
+                {showAmount
+                  ? `-${
+                      currencySymbol +
+                      addingDecimal(Number(amount).toLocaleString())
+                    }`
+                  : '***'}{' '}
+              </BoldText>
+            </Pressable>
             <RegularText>
               From
               <BoldText> •</BoldText>{' '}
@@ -378,14 +387,16 @@ export const History = memo(({ history, navigation }) => {
             <RegularText>Airtime</RegularText>
           </View>
           <View style={styles.amount}>
-            <BoldText style={styles.debitAmount}>
-              {showAmount
-                ? `-${
-                    currencySymbol +
-                    addingDecimal(Number(amount).toLocaleString())
-                  }`
-                : '***'}{' '}
-            </BoldText>
+            <Pressable onPress={handleShow}>
+              <BoldText style={styles.debitAmount}>
+                {showAmount
+                  ? `-${
+                      currencySymbol +
+                      addingDecimal(Number(amount).toLocaleString())
+                    }`
+                  : '***'}{' '}
+              </BoldText>
+            </Pressable>
             <RegularText>
               From
               <BoldText> •</BoldText>{' '}
@@ -405,14 +416,16 @@ export const History = memo(({ history, navigation }) => {
             <RegularText>Data</RegularText>
           </View>
           <View style={styles.amount}>
-            <BoldText style={styles.debitAmount}>
-              {showAmount
-                ? `-${
-                    currencySymbol +
-                    addingDecimal(Number(amount).toLocaleString())
-                  }`
-                : '***'}{' '}
-            </BoldText>
+            <Pressable onPress={handleShow}>
+              <BoldText style={styles.debitAmount}>
+                {showAmount
+                  ? `-${
+                      currencySymbol +
+                      addingDecimal(Number(amount).toLocaleString())
+                    }`
+                  : '***'}{' '}
+              </BoldText>
+            </Pressable>
             <RegularText>
               From
               <BoldText> •</BoldText>{' '}
@@ -434,14 +447,16 @@ export const History = memo(({ history, navigation }) => {
             </RegularText>
           </View>
           <View style={styles.amount}>
-            <BoldText style={styles.debitAmount}>
-              {showAmount
-                ? `-${
-                    currencySymbol +
-                    addingDecimal(Number(amount).toLocaleString())
-                  }`
-                : '***'}{' '}
-            </BoldText>
+            <Pressable onPress={handleShow}>
+              <BoldText style={styles.debitAmount}>
+                {showAmount
+                  ? `-${
+                      currencySymbol +
+                      addingDecimal(Number(amount).toLocaleString())
+                    }`
+                  : '***'}{' '}
+              </BoldText>
+            </Pressable>
             <RegularText>
               From
               <BoldText> •</BoldText>{' '}
@@ -466,15 +481,19 @@ export const History = memo(({ history, navigation }) => {
           </View>
           <View style={styles.amount}>
             <View style={styles.swapAmountContainer}>
-              <BoldText
-                style={{
-                  ...styles.transactionAmountText,
-                  ...styles.debitAmount,
-                }}>
-                {`${swapFromSymbol}${addingDecimal(
-                  Number(swapFromAmount).toLocaleString(),
-                )}`}
-              </BoldText>
+              <Pressable onPress={handleShow}>
+                <BoldText
+                  style={{
+                    ...styles.transactionAmountText,
+                    ...styles.debitAmount,
+                  }}>
+                  {showAmount
+                    ? `${swapFromSymbol}${addingDecimal(
+                        Number(swapFromAmount).toLocaleString(),
+                      )}`
+                    : '***'}
+                </BoldText>
+              </Pressable>
               <SwapIcon
                 width={14}
                 height={14}

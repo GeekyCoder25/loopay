@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   Modal,
   Pressable,
   StyleSheet,
@@ -25,6 +26,7 @@ import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { randomUUID } from 'expo-crypto';
 import InputPin from '../../components/InputPin';
+import { setShowBalance } from '../../../utils/storage';
 
 const AdminTransfer = ({ navigation }) => {
   const {
@@ -34,6 +36,7 @@ const AdminTransfer = ({ navigation }) => {
     walletRefresh,
     setWalletRefresh,
     showAmount,
+    setShowAmount,
   } = useContext(AppContext);
   const { adminData } = useAdminDataContext();
   const { allBalances } = adminData;
@@ -164,6 +167,10 @@ const AdminTransfer = ({ navigation }) => {
     }
   };
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
   return !askPin ? (
     <PageContainer style={styles.body} scroll>
       <BoldText style={styles.headerText}>Transfer</BoldText>
@@ -183,10 +190,19 @@ const AdminTransfer = ({ navigation }) => {
                   setUserInput(item.tagName);
                 }}>
                 <UserIcon uri={item.photo} />
-                <BoldText style={styles.recentName}>{item.fullName}</BoldText>
+                {item.verificationStatus === 'verified' && (
+                  <Image
+                    source={require('../../../assets/images/verify.png')}
+                    style={styles.verify}
+                    resizeMode="contain"
+                  />
+                )}
+                <BoldText style={styles.recentName}>
+                  {item.userProfile?.fullName}
+                </BoldText>
               </Pressable>
             )}
-            keyExtractor={recent => recent.fullName}
+            keyExtractor={({ tagName }) => tagName}
             horizontal
             showsHorizontalScrollIndicator={false}
           />
@@ -205,13 +221,15 @@ const AdminTransfer = ({ navigation }) => {
                 <BoldText style={styles.currencyName}>
                   {transferCurrency.currency} Balance
                 </BoldText>
-                <RegularText style={styles.selectAmount}>
-                  {showAmount
-                    ? `${transferCurrency.symbol} ${addingDecimal(
-                        balance?.toLocaleString(),
-                      )}`
-                    : '***'}
-                </RegularText>
+                <Pressable onPress={handleShow}>
+                  <RegularText style={styles.selectAmount}>
+                    {showAmount
+                      ? `${transferCurrency.symbol} ${addingDecimal(
+                          balance?.toLocaleString(),
+                        )}`
+                      : '***'}
+                  </RegularText>
+                </Pressable>
               </View>
             </View>
             <ChevronDown />
@@ -252,7 +270,14 @@ const AdminTransfer = ({ navigation }) => {
               <UserIcon uri={userFound.photoURL || userFound.photo} />
               <View style={styles.userFoundDetails}>
                 <BoldText>
-                  {userFound.userProfile?.fullName || userFound.fullName}
+                  {userFound.userProfile?.fullName || userFound.fullName}{' '}
+                  {userFound.verificationStatus === 'verified' && (
+                    <Image
+                      source={require('../../../assets/images/verify.png')}
+                      style={styles.verify}
+                      resizeMode="contain"
+                    />
+                  )}
                 </BoldText>
                 <BoldText>{userFound.tagName}</BoldText>
               </View>
@@ -364,9 +389,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     maxWidth: 70,
     marginRight: 15,
+    position: 'relative',
   },
   recentName: {
     textAlign: 'center',
+  },
+  verify: {
+    width: 15,
+    height: 15,
+    position: 'absolute',
+    right: 0,
   },
   select: {
     paddingTop: 50,

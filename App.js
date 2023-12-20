@@ -170,7 +170,6 @@ export default function App() {
     }, 1200 * 1000);
   }, [isSessionTimedOut]);
 
-  new Date('2023-09-13T13:24:46.046+00:00').toLocaleTimeString();
   return (
     <AppContext.Provider value={contextValue}>
       <StatusBar style="auto" translucent={false} backgroundColor="#f5f5f5" />

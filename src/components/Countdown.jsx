@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import BoldText from './fonts/BoldText';
 
-const Countdown = ({ targetDate, message }) => {
+const Countdown = ({ targetDate, message, message2 }) => {
   const calculateTimeLeft = () => {
     const in24Hours = new Date(targetDate).getHours() + 24;
     const difference = +new Date(targetDate).setHours(in24Hours) - +new Date();
@@ -35,7 +35,8 @@ const Countdown = ({ targetDate, message }) => {
   const { hours, minutes, seconds } = time;
   return (
     <BoldText>
-      {message + formatTime(hours)}:{formatTime(minutes)}:{formatTime(seconds)}
+      {message + formatTime(hours)}:{formatTime(minutes)}:{formatTime(seconds)}.{' '}
+      {message2}
     </BoldText>
   );
 };

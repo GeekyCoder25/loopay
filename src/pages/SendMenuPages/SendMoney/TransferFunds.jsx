@@ -25,7 +25,6 @@ import BackArrow from '../../../../assets/images/backArrowWhite.svg';
 import { useWalletContext } from '../../../context/WalletContext';
 import { randomUUID } from 'expo-crypto';
 import InputPin from '../../../components/InputPin';
-import ToastMessage from '../../../components/ToastMessage';
 import { useBeneficiaryContext } from '../../../context/BeneficiariesContext';
 
 const TransferFunds = ({ navigation, route }) => {
@@ -146,7 +145,14 @@ const TransferFunds = ({ navigation, route }) => {
               )}
               <View>
                 <BoldText style={styles.fullName}>
-                  {userToSendTo.fullName}
+                  {userToSendTo.fullName}{' '}
+                  {userToSendTo.verificationStatus === 'verified' && (
+                    <Image
+                      source={require('../../../../assets/images/verify.png')}
+                      style={styles.verify}
+                      resizeMode="contain"
+                    />
+                  )}
                 </BoldText>
                 <RegularText style={styles.tagName}>
                   {userToSendTo.tagName || userToSendTo.userName}
@@ -282,6 +288,10 @@ const styles = StyleSheet.create({
   },
   fullName: {
     color: '#fff',
+  },
+  verify: {
+    width: 15,
+    height: 15,
   },
   tagName: {
     textAlign: 'center',

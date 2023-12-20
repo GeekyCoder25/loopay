@@ -17,26 +17,13 @@ import { useWalletContext } from '../context/WalletContext';
 import { addingDecimal } from '../../utils/AddingZero';
 
 const AccInfoCard = ({ disableSwitchCurrency }) => {
-  const { selectedCurrency } = useContext(AppContext);
+  const { selectedCurrency, showAmount, setShowAmount } =
+    useContext(AppContext);
   const [modalOpen, setModalOpen] = useState(false);
-  const { wallet, transactions } = useWalletContext();
-  const [showAmount, setShowAmount] = useState(false);
-  const [pendingAmount, setPendingAmount] = useState(0);
-
-  useEffect(() => {
-    const pending = transactions
-      .filter(
-        transaction =>
-          transaction.status === 'pending' &&
-          transaction.currency === selectedCurrency.currency,
-      )
-      .map(balance => Number(balance.amount));
-    !pending.length && pending.push(0);
-    setPendingAmount(pending?.reduce((a, b) => a + b));
-  }, [selectedCurrency, transactions]);
+  const { wallet } = useWalletContext();
 
   const pendingBalance = addingDecimal(
-    (wallet.balance + pendingAmount).toLocaleString(),
+    (wallet.bookBalance || wallet.balance).toLocaleString(),
   );
 
   return (
@@ -77,7 +64,7 @@ const AccInfoCard = ({ disableSwitchCurrency }) => {
             <RegularText style={styles.currencyType}>
               Book Balance:{' '}
               <BoldText>
-                {showAmount ? selectedCurrency.symbol + pendingBalance : '****'}
+                {showAmount ? selectedCurrency.symbol + pendingBalance : '***'}
               </BoldText>
             </RegularText>
           </View>

@@ -16,7 +16,7 @@ import { allCurrencies } from '../../../database/data';
 import { useAdminDataContext } from '../../../context/AdminContext';
 import FlagSelect from '../../../components/FlagSelect';
 import BoldText from '../../../components/fonts/BoldText';
-import { setDefaultCurrency } from '../../../../utils/storage';
+import { setDefaultCurrency, setShowBalance } from '../../../../utils/storage';
 import { addingDecimal } from '../../../../utils/AddingZero';
 
 const AdminSelectCurrencyModal = () => {
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
 export default AdminSelectCurrencyModal;
 
 const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
-  const { selectedCurrency, setSelectedCurrency, showAmount } =
+  const { selectedCurrency, setSelectedCurrency, showAmount, setShowAmount } =
     useContext(AppContext);
   const { adminData, modalFunc, setModalFunc } = useAdminDataContext();
   const [balance, setBalance] = useState('');
@@ -199,6 +199,10 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
     }
   }, [adminData, selected.currency]);
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
   return (
     <Pressable
       key={selected.currency}
@@ -219,11 +223,13 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
           </RegularText>
         </View>
       </View>
-      <RegularText style={styles.currencyAmount}>
-        {adminData && showAmount
-          ? addingDecimal(balance.toLocaleString())
-          : '***'}
-      </RegularText>
+      <Pressable onPress={handleShow}>
+        <RegularText style={styles.currencyAmount}>
+          {adminData && showAmount
+            ? addingDecimal(balance.toLocaleString())
+            : '***'}
+        </RegularText>
+      </Pressable>
     </Pressable>
   );
 };

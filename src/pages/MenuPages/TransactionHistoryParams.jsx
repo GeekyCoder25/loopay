@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
@@ -15,9 +15,11 @@ import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import { AppContext } from '../../components/AppContext';
 import { billIcon } from './TransactionHistory';
+import { setShowBalance } from '../../../utils/storage';
 
 const TransactionHistoryParams = ({ route }) => {
-  const { vh, showAmount, setIsLoading, isAdmin } = useContext(AppContext);
+  const { vh, showAmount, setShowAmount, setIsLoading, isAdmin } =
+    useContext(AppContext);
   const history = route.params;
   const {
     status,
@@ -360,6 +362,11 @@ const TransactionHistoryParams = ({ route }) => {
     await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
   };
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
+
   return (
     <>
       <PageContainer justify={true} scroll>
@@ -380,14 +387,15 @@ const TransactionHistoryParams = ({ route }) => {
               <View style={styles.modalBorder} />
 
               <View style={styles.footerCard}>
-                <BoldText style={styles.cardAmount}>
-                  {!showAmount
-                    ? '***'
-                    : '+' +
-                      currencySymbol +
-                      addingDecimal(Number(amount).toLocaleString())}
-                </BoldText>
-
+                <Pressable onPress={handleShow}>
+                  <BoldText style={styles.cardAmount}>
+                    {!showAmount
+                      ? '***'
+                      : '+' +
+                        currencySymbol +
+                        addingDecimal(Number(amount).toLocaleString())}
+                  </BoldText>
+                </Pressable>
                 <View style={styles.footerCardDetails}>
                   {isAdmin && (
                     <View style={styles.cardLine}>
@@ -485,14 +493,15 @@ const TransactionHistoryParams = ({ route }) => {
               <View style={styles.modalBorder} />
 
               <View style={styles.footerCard}>
-                <BoldText style={styles.cardAmount}>
-                  {!showAmount
-                    ? '***'
-                    : '-' +
-                      currencySymbol +
-                      addingDecimal(Number(amount).toLocaleString())}
-                </BoldText>
-
+                <Pressable onPress={handleShow}>
+                  <BoldText style={styles.cardAmount}>
+                    {!showAmount
+                      ? '***'
+                      : '-' +
+                        currencySymbol +
+                        addingDecimal(Number(amount).toLocaleString())}
+                  </BoldText>
+                </Pressable>
                 <View style={styles.footerCardDetails}>
                   {isAdmin && (
                     <View style={styles.cardLine}>
@@ -592,14 +601,15 @@ const TransactionHistoryParams = ({ route }) => {
               <View style={styles.modalBorder} />
 
               <View style={styles.footerCard}>
-                <BoldText style={styles.cardAmount}>
-                  {!showAmount
-                    ? '***'
-                    : '-' +
-                      currencySymbol +
-                      addingDecimal(Number(amount).toLocaleString())}
-                </BoldText>
-
+                <Pressable onPress={handleShow}>
+                  <BoldText style={styles.cardAmount}>
+                    {!showAmount
+                      ? '***'
+                      : '-' +
+                        currencySymbol +
+                        addingDecimal(Number(amount).toLocaleString())}
+                  </BoldText>
+                </Pressable>
                 <View style={styles.footerCardDetails}>
                   {isAdmin && (
                     <View style={styles.cardLine}>
@@ -683,14 +693,15 @@ const TransactionHistoryParams = ({ route }) => {
               <View style={styles.modalBorder} />
 
               <View style={styles.footerCard}>
-                <BoldText style={styles.cardAmount}>
-                  {!showAmount
-                    ? '***'
-                    : '-' +
-                      currencySymbol +
-                      addingDecimal(Number(amount).toLocaleString())}
-                </BoldText>
-
+                <Pressable onPress={handleShow}>
+                  <BoldText style={styles.cardAmount}>
+                    {!showAmount
+                      ? '***'
+                      : '-' +
+                        currencySymbol +
+                        addingDecimal(Number(amount).toLocaleString())}
+                  </BoldText>
+                </Pressable>
                 <View style={styles.footerCardDetails}>
                   {isAdmin && (
                     <View style={styles.cardLine}>
@@ -780,14 +791,15 @@ const TransactionHistoryParams = ({ route }) => {
               <View style={styles.modalBorder} />
 
               <View style={styles.footerCard}>
-                <BoldText style={styles.cardAmount}>
-                  {!showAmount
-                    ? '***'
-                    : '-' +
-                      currencySymbol +
-                      addingDecimal(Number(amount).toLocaleString())}
-                </BoldText>
-
+                <Pressable onPress={handleShow}>
+                  <BoldText style={styles.cardAmount}>
+                    {!showAmount
+                      ? '***'
+                      : '-' +
+                        currencySymbol +
+                        addingDecimal(Number(amount).toLocaleString())}
+                  </BoldText>
+                </Pressable>
                 <View style={styles.footerCardDetails}>
                   {isAdmin && (
                     <View style={styles.cardLine}>

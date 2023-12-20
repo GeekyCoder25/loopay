@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import {
+  Image,
   ImageBackground,
   Pressable,
   ScrollView,
@@ -109,7 +110,16 @@ const SendMenu = ({ navigation }) => {
               style={styles.beneficiary}
               onPress={() => handleBeneficiaryPress(beneficiary)}>
               <UserIcon uri={beneficiary.photo} />
-              <RegularText>{beneficiary.fullName}</RegularText>
+              <RegularText>
+                {beneficiary.fullName}{' '}
+                {beneficiary.verificationStatus === 'verified' && (
+                  <Image
+                    source={require('../../../assets/images/verify.png')}
+                    style={styles.verify}
+                    resizeMode="contain"
+                  />
+                )}
+              </RegularText>
             </Pressable>
           ))}
         </ScrollView>
@@ -159,6 +169,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
     marginRight: 15,
+  },
+  verify: {
+    width: 15,
+    height: 15,
   },
   userIconStyle: {
     width: 50,

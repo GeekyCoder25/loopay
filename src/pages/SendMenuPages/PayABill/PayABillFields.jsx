@@ -19,6 +19,7 @@ import { useWalletContext } from '../../../context/WalletContext';
 import { getFetchData } from '../../../../utils/fetchAPI';
 import { randomUUID } from 'expo-crypto';
 import { allCurrencies } from '../../../database/data';
+import { setShowBalance } from '../../../../utils/storage';
 
 export default function SelectInputField({
   selectInput,
@@ -29,7 +30,7 @@ export default function SelectInputField({
   setErrorMessage,
   setErrorKey,
 }) {
-  const { showAmount } = useContext(AppContext);
+  const { showAmount, setShowAmount } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [selected, setSelected] = useState(false);
   const [modalData, setModalData] = useState([]);
@@ -75,6 +76,10 @@ export default function SelectInputField({
     }
   };
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
   const localCurrencySymbol = allCurrencies.find(
     currency => currency.isLocal,
   ).symbol;
@@ -83,15 +88,17 @@ export default function SelectInputField({
     <View>
       <View style={styles.labelContainer}>
         <Text style={styles.label}>{title}</Text>
-        {showBalance && (
-          <Text style={styles.label}>
-            Balance:{' '}
-            {showAmount
-              ? localCurrencySymbol +
-                addingDecimal(`${localBalance?.toLocaleString()}`)
-              : '***'}
-          </Text>
-        )}
+        <Pressable onPress={handleShow}>
+          {showBalance && (
+            <Text style={styles.label}>
+              Balance:{' '}
+              {showAmount
+                ? localCurrencySymbol +
+                  addingDecimal(`${localBalance?.toLocaleString()}`)
+                : '***'}
+            </Text>
+          )}
+        </Pressable>
       </View>
       {type === 'input' ? (
         <View style={styles.textInputContainer}>

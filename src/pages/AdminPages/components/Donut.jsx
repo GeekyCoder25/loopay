@@ -1,4 +1,11 @@
-import { Easing, TextInput, Animated, View, StyleSheet } from 'react-native';
+import {
+  Easing,
+  TextInput,
+  Animated,
+  View,
+  StyleSheet,
+  Pressable,
+} from 'react-native';
 import Constants from 'expo-constants';
 import Svg, { G, Circle, Rect } from 'react-native-svg';
 import { AppContext } from '../../../components/AppContext';
@@ -6,6 +13,7 @@ import BoldText from '../../../components/fonts/BoldText';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import RegularText from '../../../components/fonts/RegularText';
 import { useContext, useEffect, useRef, useState } from 'react';
+import { setShowBalance } from '../../../../utils/storage';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
@@ -18,7 +26,8 @@ export default function Donut({
   outcome,
   onHold,
 }) {
-  const { vw, selectedCurrency, showAmount } = useContext(AppContext);
+  const { vw, selectedCurrency, showAmount, setShowAmount } =
+    useContext(AppContext);
   const strokeWidth = 20;
   const radius = vw * 0.2;
   const animated = useRef(new Animated.Value(0)).current;
@@ -65,6 +74,10 @@ export default function Donut({
     }, 10);
   }, [max, maxLabel]);
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
   return (
     <View style={{ width: radius * 2, height: radius * 2 }}>
       <Svg
@@ -96,11 +109,14 @@ export default function Donut({
         </G>
       </Svg>
       <View style={[StyleSheet.absoluteFillObject, styles.text]}>
-        <BoldText style={{ fontSize: radius / 5.5 }}>
-          {showAmount
-            ? selectedCurrency.symbol + addingDecimal(maxLabel.toLocaleString())
-            : '***'}
-        </BoldText>
+        <Pressable onPress={handleShow}>
+          <BoldText style={{ fontSize: radius / 5.5 }}>
+            {showAmount
+              ? selectedCurrency.symbol +
+                addingDecimal(maxLabel.toLocaleString())
+              : '***'}
+          </BoldText>
+        </Pressable>
         <RegularText>Label</RegularText>
       </View>
     </View>

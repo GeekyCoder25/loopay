@@ -1,4 +1,4 @@
-import { Image, View, StyleSheet } from 'react-native';
+import { Image, View, StyleSheet, Pressable } from 'react-native';
 import { addingDecimal } from '../../utils/AddingZero';
 import BoldText from './fonts/BoldText';
 import RegularText from './fonts/RegularText';
@@ -6,12 +6,17 @@ import FlagSelect from './FlagSelect';
 import AtmChevron from '../../assets/images/atmChevronRight.svg';
 import { useContext } from 'react';
 import { AppContext } from './AppContext';
+import { setShowBalance } from '../../utils/storage';
 
 const CurrencyCard = ({ currencyIndex }) => {
-  const { isAdmin } = useContext(AppContext);
+  const { isAdmin, showAmount, setShowAmount } = useContext(AppContext);
   const { acronym, accNo, balance, color, currency, fullName, symbol } =
     currencyIndex;
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
   return (
     <View style={{ ...styles.atm, backgroundColor: color }}>
       <Image
@@ -36,13 +41,17 @@ const CurrencyCard = ({ currencyIndex }) => {
         </View>
         <View style={styles.atmBottom}>
           <View style={styles.atmDetails}>
-            <BoldText style={styles.balance}>
-              {`${symbol}${
-                balance
-                  ? addingDecimal(balance.toLocaleString())
-                  : addingDecimal('0')
-              }`}
-            </BoldText>
+            <Pressable onPress={handleShow}>
+              <BoldText style={styles.balance}>
+                {showAmount
+                  ? `${symbol}${
+                      balance
+                        ? addingDecimal(balance.toLocaleString())
+                        : addingDecimal('0')
+                    }`
+                  : '***'}
+              </BoldText>
+            </Pressable>
             <View>
               <BoldText style={styles.balance}>{acronym}</BoldText>
               <RegularText style={styles.fullName}>{fullName}</RegularText>

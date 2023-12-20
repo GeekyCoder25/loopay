@@ -1,4 +1,9 @@
-import React, { useContext, useEffect, useLayoutEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import RegularText from './fonts/RegularText';
 import {
   Image,
@@ -14,9 +19,12 @@ import ErrorMessage from './ErrorMessage';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as Haptics from 'expo-haptics';
 import BoldText from './fonts/BoldText';
+import FaIcon from '@expo/vector-icons/FontAwesome';
 import IonIcon from '@expo/vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Countdown from './Countdown';
+import { getInvalidPinStatus, setInvalidPinStatus } from '../../utils/storage';
+import Back from './Back';
 
 const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
   const {
@@ -34,20 +42,26 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
   const [modalOpen, setModalOpen] = useState(true);
   const navigation = useNavigation();
   const codeLengths = [1, 2, 3, 4];
+  const [hideDigits, setHideDigits] = useState(false);
+  const [showBiometrics, setShowBiometrics] = useState(false);
   useLayoutEffect(() => {
     setShowTabBar(false);
   }, [setShowTabBar]);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      checkFingerprint();
-    }, 100);
-    return () => {
-      clearTimeout(timeout);
-      setModalOpen(false);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getInvalidPinStatus().then(result => {
+        if (result === true) {
+          setShowBiometrics(false);
+        } else {
+          setShowBiometrics(enableBiometric && isBiometricSupported);
+          checkFingerprint();
+        }
+      });
+      return () => setErrorMessage('');
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
+  );
 
   const checkFingerprint = async () => {
     const options = {
@@ -61,6 +75,7 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
         setIsLoading(true);
         setIsValidPin && setIsValidPin(true);
         await customFunc(setErrorMessage);
+        setIsLoading(false);
       }
     }
   };
@@ -77,13 +92,13 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
       if (result.status === 200) {
         setIsValidPin && setIsValidPin(true);
         const customFuncStatus = await customFunc(setErrorMessage);
-        console.log(customFuncStatus);
         return customFuncStatus === 200
           ? setModalOpen(false)
           : setErrorMessage(customFuncStatus);
       }
 
-      if (result.data === 'Invalid Pin') {
+      if (result.status === 400) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         setErrorMessage(result.data);
         setErrorCode(true);
         setTimeout(() => {
@@ -96,9 +111,17 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
         if (result.data.includes(queryCheck)) {
           const message = result.data.split(queryCheck)[0];
           const countDown = result.data.split(queryCheck)[1];
+          const message2 = 'Please click on forgot pin or contact support';
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
           setErrorMessage(
-            <Countdown targetDate={countDown} message={message + queryCheck} />,
+            <Countdown
+              targetDate={countDown}
+              message={message + queryCheck}
+              message2={message2}
+            />,
           );
+          setInvalidPinStatus(true);
+          setHideDigits(true);
         }
         setErrorCode(true);
       }
@@ -128,190 +151,206 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
       onRequestClose={() => {
         handleCancel ? handleCancel() : handleCancelDefault();
       }}>
+      <Back
+        onPress={() => {
+          handleCancel ? handleCancel() : handleCancelDefault();
+        }}
+      />
       <ScrollView
-        contentContainerStyle={{ minHeight: vh, ...styles.container }}>
+        contentContainerStyle={{ minHeight: vh * 0.9, ...styles.container }}>
         <View
           style={{
             ...styles.container,
             gap: vh * 0.043,
           }}>
           <View>
-            <BoldText style={styles.headerText}>Enter PIN</BoldText>
-            <RegularText style={styles.text}>
-              Enter transaction 4-digit PIN-Code{' '}
-              {enableBiometric &&
-                isBiometricSupported &&
-                'or use your biometric to perform action.'}
-            </RegularText>
+            <BoldText style={styles.headerText}>
+              {hideDigits ? 'PIN Blocked' : 'Enter PIN'}
+            </BoldText>
+            {!hideDigits && (
+              <RegularText style={styles.text}>
+                Enter transaction 4-digit PIN-Code{' '}
+                {enableBiometric &&
+                  isBiometricSupported &&
+                  'or use your biometric to perform action.'}
+              </RegularText>
+            )}
           </View>
-          <View style={styles.changePinCodeLengthsContainer}>
-            <View style={styles.displayContainer}>
-              {codeLengths.map(code =>
-                pinCode.length >= code ? (
-                  errorCode ? (
-                    <View key={code} style={styles.displayError} />
-                  ) : (
-                    <View key={code} style={styles.displayFilled} />
-                  )
-                ) : (
-                  <View key={code} style={styles.display} />
-                ),
-              )}
+          {hideDigits ? (
+            <View>
+              <FaIcon name="ban" size={35} />
             </View>
-          </View>
+          ) : (
+            <View style={styles.changePinCodeLengthsContainer}>
+              <View style={styles.displayContainer}>
+                {codeLengths.map(code =>
+                  pinCode.length >= code ? (
+                    errorCode ? (
+                      <View key={code} style={styles.displayError} />
+                    ) : (
+                      <View key={code} style={styles.displayFilled} />
+                    )
+                  ) : (
+                    <View key={code} style={styles.display} />
+                  ),
+                )}
+              </View>
+            </View>
+          )}
           <View style={styles.errorMessage}>
             <ErrorMessage errorMessage={errorMessage} />
           </View>
-          <View style={styles.digits}>
-            <View style={styles.row}>
-              <Pressable
-                disabled={pinCode.length >= codeLengths.length}
-                style={{
-                  ...styles.digit,
-                  width: vw * 0.2,
-                  height: vh * 0.08,
-                }}
-                onPress={() => handleInput('1')}>
-                <BoldText style={styles.digitText}>1</BoldText>
-              </Pressable>
-              <Pressable
-                disabled={pinCode.length >= codeLengths.length}
-                style={{
-                  ...styles.digit,
-                  width: vw * 0.2,
-                  height: vh * 0.08,
-                }}
-                onPress={() => handleInput('2')}>
-                <BoldText style={styles.digitText}>2</BoldText>
-              </Pressable>
-              <Pressable
-                disabled={pinCode.length >= codeLengths.length}
-                style={{
-                  ...styles.digit,
-                  width: vw * 0.2,
-                  height: vh * 0.08,
-                }}
-                onPress={() => handleInput('3')}>
-                <BoldText style={styles.digitText}>3</BoldText>
-              </Pressable>
-            </View>
-            <View style={styles.row}>
-              <Pressable
-                disabled={pinCode.length >= codeLengths.length}
-                style={{
-                  ...styles.digit,
-                  width: vw * 0.2,
-                  height: vh * 0.08,
-                }}
-                onPress={() => handleInput('4')}>
-                <BoldText style={styles.digitText}>4</BoldText>
-              </Pressable>
-              <Pressable
-                disabled={pinCode.length >= codeLengths.length}
-                style={{
-                  ...styles.digit,
-                  width: vw * 0.2,
-                  height: vh * 0.08,
-                }}
-                onPress={() => handleInput('5')}>
-                <BoldText style={styles.digitText}>5</BoldText>
-              </Pressable>
-              <Pressable
-                disabled={pinCode.length >= codeLengths.length}
-                style={{
-                  ...styles.digit,
-                  width: vw * 0.2,
-                  height: vh * 0.08,
-                }}
-                onPress={() => handleInput('6')}>
-                <BoldText style={styles.digitText}>6</BoldText>
-              </Pressable>
-            </View>
-            <View style={styles.row}>
-              <Pressable
-                disabled={pinCode.length >= codeLengths.length}
-                style={{
-                  ...styles.digit,
-                  width: vw * 0.2,
-                  height: vh * 0.08,
-                }}
-                onPress={() => handleInput('7')}>
-                <BoldText style={styles.digitText}>7</BoldText>
-              </Pressable>
-              <Pressable
-                disabled={pinCode.length >= codeLengths.length}
-                style={{
-                  ...styles.digit,
-                  width: vw * 0.2,
-                  height: vh * 0.08,
-                }}
-                onPress={() => handleInput('8')}>
-                <BoldText style={styles.digitText}>8</BoldText>
-              </Pressable>
-              <Pressable
-                disabled={pinCode.length >= codeLengths.length}
-                style={{
-                  ...styles.digit,
-                  width: vw * 0.2,
-                  height: vh * 0.08,
-                }}
-                onPress={() => handleInput('9')}>
-                <BoldText style={styles.digitText}>9</BoldText>
-              </Pressable>
-            </View>
-            <View style={styles.row}>
-              {enableBiometric && isBiometricSupported ? (
+          {!hideDigits && (
+            <View style={styles.digits}>
+              <View style={styles.row}>
                 <Pressable
+                  disabled={pinCode.length >= codeLengths.length}
                   style={{
                     ...styles.digit,
                     width: vw * 0.2,
                     height: vh * 0.08,
                   }}
-                  onPress={checkFingerprint}>
-                  <IonIcon name="finger-print-sharp" size={50} />
+                  onPress={() => handleInput('1')}>
+                  <BoldText style={styles.digitText}>1</BoldText>
                 </Pressable>
-              ) : (
+                <Pressable
+                  disabled={pinCode.length >= codeLengths.length}
+                  style={{
+                    ...styles.digit,
+                    width: vw * 0.2,
+                    height: vh * 0.08,
+                  }}
+                  onPress={() => handleInput('2')}>
+                  <BoldText style={styles.digitText}>2</BoldText>
+                </Pressable>
+                <Pressable
+                  disabled={pinCode.length >= codeLengths.length}
+                  style={{
+                    ...styles.digit,
+                    width: vw * 0.2,
+                    height: vh * 0.08,
+                  }}
+                  onPress={() => handleInput('3')}>
+                  <BoldText style={styles.digitText}>3</BoldText>
+                </Pressable>
+              </View>
+              <View style={styles.row}>
+                <Pressable
+                  disabled={pinCode.length >= codeLengths.length}
+                  style={{
+                    ...styles.digit,
+                    width: vw * 0.2,
+                    height: vh * 0.08,
+                  }}
+                  onPress={() => handleInput('4')}>
+                  <BoldText style={styles.digitText}>4</BoldText>
+                </Pressable>
+                <Pressable
+                  disabled={pinCode.length >= codeLengths.length}
+                  style={{
+                    ...styles.digit,
+                    width: vw * 0.2,
+                    height: vh * 0.08,
+                  }}
+                  onPress={() => handleInput('5')}>
+                  <BoldText style={styles.digitText}>5</BoldText>
+                </Pressable>
+                <Pressable
+                  disabled={pinCode.length >= codeLengths.length}
+                  style={{
+                    ...styles.digit,
+                    width: vw * 0.2,
+                    height: vh * 0.08,
+                  }}
+                  onPress={() => handleInput('6')}>
+                  <BoldText style={styles.digitText}>6</BoldText>
+                </Pressable>
+              </View>
+              <View style={styles.row}>
+                <Pressable
+                  disabled={pinCode.length >= codeLengths.length}
+                  style={{
+                    ...styles.digit,
+                    width: vw * 0.2,
+                    height: vh * 0.08,
+                  }}
+                  onPress={() => handleInput('7')}>
+                  <BoldText style={styles.digitText}>7</BoldText>
+                </Pressable>
+                <Pressable
+                  disabled={pinCode.length >= codeLengths.length}
+                  style={{
+                    ...styles.digit,
+                    width: vw * 0.2,
+                    height: vh * 0.08,
+                  }}
+                  onPress={() => handleInput('8')}>
+                  <BoldText style={styles.digitText}>8</BoldText>
+                </Pressable>
+                <Pressable
+                  disabled={pinCode.length >= codeLengths.length}
+                  style={{
+                    ...styles.digit,
+                    width: vw * 0.2,
+                    height: vh * 0.08,
+                  }}
+                  onPress={() => handleInput('9')}>
+                  <BoldText style={styles.digitText}>9</BoldText>
+                </Pressable>
+              </View>
+              <View style={styles.row}>
+                {showBiometrics ? (
+                  <Pressable
+                    style={{
+                      ...styles.digit,
+                      width: vw * 0.2,
+                      height: vh * 0.08,
+                    }}
+                    onPress={checkFingerprint}>
+                    <IonIcon name="finger-print-sharp" size={50} />
+                  </Pressable>
+                ) : (
+                  <Pressable
+                    style={{
+                      ...styles.digit,
+                      width: vw * 0.2,
+                      height: vh * 0.08,
+                    }}
+                  />
+                )}
+                <Pressable
+                  disabled={pinCode.length >= codeLengths.length}
+                  style={{
+                    ...styles.digit,
+                    width: vw * 0.2,
+                    height: vh * 0.08,
+                  }}
+                  onPress={() => handleInput('0')}>
+                  <BoldText style={styles.digitText}>0</BoldText>
+                </Pressable>
                 <Pressable
                   style={{
                     ...styles.digit,
                     width: vw * 0.2,
                     height: vh * 0.08,
                   }}
-                  onPress={checkFingerprint}
-                />
-              )}
-              <Pressable
-                disabled={pinCode.length >= codeLengths.length}
-                style={{
-                  ...styles.digit,
-                  width: vw * 0.2,
-                  height: vh * 0.08,
-                }}
-                onPress={() => handleInput('0')}>
-                <BoldText style={styles.digitText}>0</BoldText>
-              </Pressable>
-              <Pressable
-                style={{
-                  ...styles.digit,
-                  width: vw * 0.2,
-                  height: vh * 0.08,
-                }}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  setPinCode(prev => prev.slice(0, -1));
-                }}>
-                <Image
-                  source={require('../../assets/images/delete.png')}
-                  style={styles.delete}
-                />
-              </Pressable>
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setPinCode(prev => prev.slice(0, -1));
+                  }}>
+                  <Image
+                    source={require('../../assets/images/delete.png')}
+                    style={styles.delete}
+                  />
+                </Pressable>
+              </View>
             </View>
-          </View>
+          )}
 
           {!isAdmin && (
             <Pressable
               onPress={() => {
-                handleCancel ? handleCancel() : navigation.goBack();
+                handleCancel ? handleCancel() : handleCancelDefault();
                 navigation.navigate('TransactionPin', { forgotPin: true });
               }}>
               <BoldText>Forgot PIN?</BoldText>

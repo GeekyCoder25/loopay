@@ -5,14 +5,17 @@ import { useAdminDataContext } from '../../context/AdminContext';
 
 import CurrencyCard from '../../components/CurrencyCard';
 import { allCurrencies } from '../../database/data';
+import { useContext } from 'react';
+import { AppContext } from '../../components/AppContext';
 
 const Accounts = () => {
+  const { selectedCurrency } = useContext(AppContext);
   const { adminData } = useAdminDataContext();
   const { localBalance, dollarBalance, poundBalance, euroBalance } =
     adminData?.allBalances;
 
   const localCurrency = allCurrencies[0];
-  const currencies = [
+  const unArrangedCurrencies = [
     {
       currency: localCurrency.currency,
       fullName: localCurrency.fullName,
@@ -45,6 +48,15 @@ const Accounts = () => {
       symbol: '€',
       color: '#105AAD',
     },
+  ];
+
+  const currencies = [
+    ...unArrangedCurrencies.filter(
+      currency => currency.acronym === selectedCurrency.acronym,
+    ),
+    ...unArrangedCurrencies.filter(
+      currency => currency.acronym !== selectedCurrency.acronym,
+    ),
   ];
 
   return (

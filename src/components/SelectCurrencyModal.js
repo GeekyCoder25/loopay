@@ -16,7 +16,7 @@ import RegularText from './fonts/RegularText';
 import BoldText from './fonts/BoldText';
 import FlagSelect from './FlagSelect';
 import { addingDecimal } from '../../utils/AddingZero';
-import { setDefaultCurrency } from '../../utils/storage';
+import { setDefaultCurrency, setShowBalance } from '../../utils/storage';
 import { useWalletContext } from '../context/WalletContext';
 
 const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
@@ -188,6 +188,11 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
     await setDefaultCurrency(`${newSelect.currency}`);
   };
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
+
   return (
     <Pressable
       key={selected.currency}
@@ -209,7 +214,7 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
         </View>
       </View>
       {wallet && (
-        <Pressable onPress={() => setShowAmount(prev => !prev)}>
+        <Pressable onPress={handleShow}>
           <RegularText style={styles.currencyAmount}>
             {showAmount
               ? addingDecimal(

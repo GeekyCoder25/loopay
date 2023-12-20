@@ -21,6 +21,8 @@ import { deleteFetchData } from '../../../utils/fetchAPI';
 import { allCurrencies, menuRoutes } from '../../database/data';
 import { useFocusEffect } from '@react-navigation/native';
 import ToastMessage from '../../components/ToastMessage';
+import IonIcon from '@expo/vector-icons/Ionicons';
+import MaIcon from '@expo/vector-icons/MaterialIcons';
 
 const Menu = ({ navigation }) => {
   const {
@@ -158,10 +160,14 @@ const RouteLink = ({ route, navigation }) => {
         return <LockIcon />;
       case 'devices':
         return <DevicesIcon />;
+      case 'gear':
+        return <IonIcon name="settings-outline" size={24} color={'#868585'} />;
       case 'key':
         return <KeyIcon />;
       case 'dualUser':
         return <DualUserIcon />;
+      case 'support':
+        return <MaIcon name="support-agent" size={24} color={'#868585'} />;
       default:
         break;
     }

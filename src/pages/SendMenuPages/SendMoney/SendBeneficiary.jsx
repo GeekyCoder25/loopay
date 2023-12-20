@@ -157,7 +157,6 @@ const styles = StyleSheet.create({
 export default SendBeneficiary;
 
 const Beneficiary = ({ beneficiary, handleContinue }) => {
-  console.log(beneficiary.verificationStatus);
   return (
     <Pressable onPress={() => handleContinue(beneficiary)}>
       <View style={styles.userFound}>

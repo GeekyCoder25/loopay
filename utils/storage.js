@@ -11,6 +11,7 @@ const StorageKeys = {
   ROLE: 'ROLE',
   BIOMETRIC: 'BIOMETRIC',
   LOCAL_CURRENCY: 'LOCAL_CURRENCY',
+  INVALID_PIN: 'INVALID_PIN',
 };
 
 export const loginUser = async (data, session) => {
@@ -35,6 +36,7 @@ export const logoutUser = async () => {
   await AsyncStorage.removeItem(StorageKeys.ROLE);
   await AsyncStorage.removeItem(StorageKeys.LOCAL_CURRENCY);
   await AsyncStorage.removeItem(StorageKeys.DEFAULT_CURRENCY);
+  await AsyncStorage.removeItem(StorageKeys.INVALID_PIN);
   await AsyncStorage.setItem(StorageKeys.LOGGED_IN, 'false');
 };
 
@@ -96,6 +98,17 @@ export const getCurrencyCode = async () => {
     StorageKeys.LOCAL_CURRENCY,
   );
   return stringifiedState;
+};
+export const setInvalidPinStatus = async state => {
+  const stringifiedState = await AsyncStorage.setItem(
+    StorageKeys.INVALID_PIN,
+    `${state}`,
+  );
+  return stringifiedState;
+};
+export const getInvalidPinStatus = async () => {
+  const stringifiedState = await AsyncStorage.getItem(StorageKeys.INVALID_PIN);
+  return JSON.parse(stringifiedState);
 };
 
 const getAllKeys = async () => {

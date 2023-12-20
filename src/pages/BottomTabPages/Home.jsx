@@ -36,6 +36,7 @@ import { useNotificationsContext } from '../../context/NotificationContext';
 import { Audio } from 'expo-av';
 import Phone from '../../../assets/images/airtime.svg';
 import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
+import { setShowBalance } from '../../../utils/storage';
 
 const Home = ({ navigation }) => {
   const {
@@ -602,6 +603,11 @@ const History = ({ history, navigation }) => {
         return <FaIcon name="send" size={18} />;
     }
   };
+
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
   return (
     <Pressable
       onPress={() => navigation.navigate('TransactionHistoryDetails', history)}
@@ -620,7 +626,7 @@ const History = ({ history, navigation }) => {
       {showAmount ? (
         <View>
           {transactionType?.toLowerCase() === 'credit' && (
-            <Pressable onPress={() => setShowAmount(false)}>
+            <Pressable onPress={handleShow}>
               <BoldText
                 style={{
                   ...styles.transactionAmountText,
@@ -636,7 +642,7 @@ const History = ({ history, navigation }) => {
             transactionType?.toLowerCase() === 'airtime' ||
             transactionType?.toLowerCase() === 'data' ||
             transactionType?.toLowerCase() === 'bill') && (
-            <Pressable onPress={() => setShowAmount(false)}>
+            <Pressable onPress={handleShow}>
               <BoldText
                 style={{
                   ...styles.transactionAmountText,
@@ -655,7 +661,7 @@ const History = ({ history, navigation }) => {
                   ? styles.transactionAmountTextRow
                   : styles.transactionAmountTextColumn
               }
-              onPress={() => setShowAmount(false)}>
+              onPress={handleShow}>
               <BoldText
                 style={{
                   ...styles.transactionAmountText,
@@ -683,7 +689,7 @@ const History = ({ history, navigation }) => {
           )}
         </View>
       ) : (
-        <Pressable onPress={() => setShowAmount(true)}>
+        <Pressable onPress={handleShow}>
           <BoldText
             style={
               transactionType === 'credit' ? styles.creditAmount : undefined

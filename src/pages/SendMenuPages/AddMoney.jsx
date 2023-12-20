@@ -18,7 +18,6 @@ import { allCurrencies } from '../../database/data';
 import Back from '../../components/Back';
 import FlagSelect from '../../components/FlagSelect';
 import { useWalletContext } from '../../context/WalletContext';
-import Paste from '../../../assets/images/paste.svg';
 import ToastMessage from '../../components/ToastMessage';
 import { addingDecimal } from '../../../utils/AddingZero';
 import BankIcon from '../../../assets/images/bank.svg';
@@ -28,6 +27,7 @@ import EmptyCheckbox from '../../../assets/images/emptyCheckbox.svg';
 import FilledCheckbox from '../../../assets/images/filledCheckbox.svg';
 import ErrorMessage from '../../components/ErrorMessage';
 import { getFetchData } from '../../../utils/fetchAPI';
+import { setShowBalance } from '../../../utils/storage';
 
 const AddMoney = ({ navigation, route }) => {
   const {
@@ -184,6 +184,11 @@ const AddMoney = ({ navigation, route }) => {
     navigation.navigate('AddMoneyConfirm', addBalanceData);
   };
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
+
   return (
     <PageContainer paddingTop={10} padding scroll>
       <View style={styles.body}>
@@ -233,7 +238,7 @@ const AddMoney = ({ navigation, route }) => {
                       </View>
                     </View>
 
-                    <Pressable onPress={() => setShowAmount(prev => !prev)}>
+                    <Pressable onPress={handleShow}>
                       <BoldText style={styles.amount}>
                         {showAmount
                           ? select.symbol +

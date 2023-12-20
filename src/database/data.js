@@ -149,6 +149,11 @@ export const menuRoutes = [
     routeIcon: 'key',
   },
   {
+    routeName: 'Settings',
+    routeNavigate: 'Settings',
+    routeIcon: 'gear',
+  },
+  {
     routeName: 'Referrals',
     routeNavigate: 'Referrals',
     routeIcon: 'dualUser',
@@ -156,7 +161,52 @@ export const menuRoutes = [
   {
     routeName: 'Support',
     routeNavigate: 'Support',
+    routeIcon: 'support',
+  },
+];
+
+export const settingsRoutes = [
+  {
+    routeName: 'Manage Beneficiaries',
+    routeNavigate: 'Beneficiaries',
     routeIcon: 'dualUser',
+  },
+  {
+    routeName: 'Change Password',
+    routeNavigate: 'ChangePassword',
+    routeIcon: 'lock',
+  },
+
+  {
+    routeName: 'Change Pin',
+    routeNavigate: 'TransactionPin',
+    routeIcon: 'key',
+  },
+  {
+    routeName: 'Devices and Session',
+    routeNavigate: 'DevicesAndSessions',
+    routeIcon: 'devices',
+  },
+  {
+    routeName: 'Biometric Authentication',
+    routeNavigate: 'Biometric',
+    routeIcon: 'biometric',
+    routeDetails: 'Enable/Disable biometric authentication method',
+  },
+  {
+    routeName: 'Support',
+    routeNavigate: 'Support',
+    routeIcon: 'support',
+  },
+  {
+    routeName: 'Delete Account',
+    routeNavigate: 'DeleteAccount',
+    routeIcon: 'trash',
+  },
+  {
+    routeName: 'Rate the app',
+    routeNavigate: 'Rate',
+    routeIcon: 'star',
   },
 ];
 export const swapFromObject = {

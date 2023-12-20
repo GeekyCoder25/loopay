@@ -29,9 +29,11 @@ import { allCurrencies } from '../../../database/data';
 import { CountriesSelect } from '../../MenuPages/VerificationStatus/IdentityVerification';
 import { allCountries } from '../../../../utils/allCountries';
 import ToastMessage from '../../../components/ToastMessage';
+import { setShowBalance } from '../../../../utils/storage';
 
 const BuyAirtimeInternational = ({ navigation }) => {
-  const { appData, setIsLoading, showAmount } = useContext(AppContext);
+  const { appData, setIsLoading, showAmount, setShowAmount } =
+    useContext(AppContext);
   const { wallet } = useWalletContext();
   const countryCode = appData.country.code;
   const [modalOpen, setModalOpen] = useState(false);
@@ -201,6 +203,11 @@ const BuyAirtimeInternational = ({ navigation }) => {
     setModalOpen(true);
   };
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
+
   const localCurrencySymbol = allCurrencies.find(
     currency => currency.isLocal,
   ).symbol;
@@ -343,13 +350,15 @@ const BuyAirtimeInternational = ({ navigation }) => {
         </View>
         <View style={styles.labelContainer}>
           <Text style={styles.label}>Amount to be credited</Text>
-          <Text style={styles.label}>
-            Balance:{' '}
-            {showAmount
-              ? localCurrencySymbol +
-                addingDecimal(`${localBalance?.toLocaleString()}`)
-              : '***'}
-          </Text>
+          <Pressable onPress={handleShow}>
+            <Text style={styles.label}>
+              Balance:{' '}
+              {showAmount
+                ? localCurrencySymbol +
+                  addingDecimal(`${localBalance?.toLocaleString()}`)
+                : '***'}
+            </Text>
+          </Pressable>
         </View>
         <View style={styles.textInputContainer}>
           <TextInput

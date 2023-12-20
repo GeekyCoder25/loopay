@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, FlatList } from 'react-native';
+import { View, StyleSheet, FlatList } from 'react-native';
 import CurrencyCard from '../../components/CurrencyCard';
 import { useWalletContext } from '../../context/WalletContext';
 import BoldText from '../../components/fonts/BoldText';
@@ -7,7 +7,7 @@ import { AppContext } from '../../components/AppContext';
 import { allCurrencies } from '../../database/data';
 
 const AccountDetails = () => {
-  const { setWalletRefresh } = useContext(AppContext);
+  const { setWalletRefresh, selectedCurrency } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const {
     loopayAccNo: accNo,
@@ -18,7 +18,7 @@ const AccountDetails = () => {
   } = wallet;
 
   const localCurrency = allCurrencies[0];
-  const currencies = [
+  const unArrangedCurrencies = [
     {
       accNo,
       currency: localCurrency.currency,
@@ -56,10 +56,19 @@ const AccountDetails = () => {
       color: '#105AAD',
     },
   ];
+  const currencies = [
+    ...unArrangedCurrencies.filter(
+      currency => currency.acronym === selectedCurrency.acronym,
+    ),
+    ...unArrangedCurrencies.filter(
+      currency => currency.acronym !== selectedCurrency.acronym,
+    ),
+  ];
 
   useEffect(() => {
     setWalletRefresh(prev => !prev);
   }, [setWalletRefresh]);
+
   return (
     <View style={styles.body}>
       <FlatList
