@@ -79,6 +79,7 @@ const InputPinPage = ({
             />
           ))}
         </View>
+        <ErrorMessage errorMessage={errorMessage} style={styles.errorMessage} />
         <Pressable style={styles.forgot} onPress={() => setInputOldPin(false)}>
           <BoldText>Forgot PIN?</BoldText>
         </Pressable>
@@ -88,16 +89,16 @@ const InputPinPage = ({
           inputMode="numeric"
           onChangeText={text => {
             setPinCode(text);
-            text.length === codeLengths.length && Keyboard.dismiss();
-            handlePress({ pinCode: text });
             setErrorMessage('');
             setErrorKey('');
+            text.length === codeLengths.length && Keyboard.dismiss();
+            text.length === codeLengths.length &&
+              handlePress({ pinCode: text });
           }}
           maxLength={codeLengths.length}
           ref={inputRef}
           value={pinCode}
         />
-        <ErrorMessage errorMessage={errorMessage} style={styles.errorMessage} />
         <View style={styles.button}>
           <Button
             text={'Continue'}
@@ -148,7 +149,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   button: {
-    flex: 1,
     justifyContent: 'center',
     marginBottom: 30,
   },

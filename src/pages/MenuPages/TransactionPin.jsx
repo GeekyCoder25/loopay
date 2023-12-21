@@ -160,9 +160,11 @@ const ChangePin = ({ navigation, setReload }) => {
     });
   }, [pinCode, pinCode2]);
 
-  const handleChangePin = async () => {
+  const handleChangePin = async ({ pinCode: paramsPinCode }) => {
+    const code = paramsPinCode || pinCode;
+    const code2 = paramsPinCode || pinCode2;
     if (isPin1) {
-      if (pinCode.length !== codeLengths.length) {
+      if (code.length !== codeLengths.length) {
         setErrorKey('pinCode');
         return setErrorMessage('Input your new transaction pin');
       } else {
@@ -171,9 +173,9 @@ const ChangePin = ({ navigation, setReload }) => {
     } else {
       try {
         setIsLoading(true);
-        const { pin1, pin2 } = formData;
+        const { pin1 } = formData;
 
-        if (pin1 !== pin2) {
+        if (pin1 !== code2) {
           setErrorKey('pinCode');
           return setErrorMessage("Pins aren't the same");
         }
@@ -210,6 +212,7 @@ const ChangePin = ({ navigation, setReload }) => {
       }
     }
   };
+
   return (
     <View style={styles.form}>
       <Header
@@ -228,9 +231,11 @@ const ChangePin = ({ navigation, setReload }) => {
               inputMode="numeric"
               onChangeText={text => {
                 setPinCode(text);
-                text.length === codeLengths.length && Keyboard.dismiss();
                 setErrorMessage('');
                 setErrorKey('');
+                text.length === codeLengths.length && Keyboard.dismiss();
+                text.length === codeLengths.length &&
+                  handleChangePin({ pinCode: text });
               }}
               maxLength={codeLengths.length}
               ref={inputRef}
@@ -270,9 +275,11 @@ const ChangePin = ({ navigation, setReload }) => {
               inputMode="numeric"
               onChangeText={text => {
                 setPinCode2(text);
-                text.length === codeLengths.length && Keyboard.dismiss();
                 setErrorMessage('');
                 setErrorKey('');
+                text.length === codeLengths.length && Keyboard.dismiss();
+                text.length === codeLengths.length &&
+                  handleChangePin({ pinCode: text });
               }}
               maxLength={codeLengths.length}
               ref={inputRef}

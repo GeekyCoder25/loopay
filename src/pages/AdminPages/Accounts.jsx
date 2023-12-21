@@ -26,7 +26,7 @@ const Accounts = () => {
     },
     {
       currency: 'dollar',
-      fullName: 'United State Dollar',
+      fullName: 'United States Dollar',
       balance: dollarBalance,
       acronym: 'USD',
       symbol: '$',
@@ -42,7 +42,7 @@ const Accounts = () => {
     },
     {
       currency: 'euro',
-      fullName: 'European dollar',
+      fullName: 'European Euro',
       balance: euroBalance,
       acronym: 'EUR',
       symbol: '€',

@@ -26,7 +26,12 @@ import Countdown from './Countdown';
 import { getInvalidPinStatus, setInvalidPinStatus } from '../../utils/storage';
 import Back from './Back';
 
-const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
+const InputPin = ({
+  setIsValidPin,
+  customFunc,
+  handleCancel,
+  disableBiometric,
+}) => {
   const {
     setIsLoading,
     vw,
@@ -54,7 +59,9 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
         if (result === true) {
           setShowBiometrics(false);
         } else {
-          setShowBiometrics(enableBiometric && isBiometricSupported);
+          setShowBiometrics(
+            enableBiometric && isBiometricSupported && !disableBiometric,
+          );
           checkFingerprint();
         }
       });
@@ -69,7 +76,7 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
       cancelLabel: 'Use payment pin instead',
       disableDeviceFallback: true,
     };
-    if (isBiometricSupported && enableBiometric) {
+    if (isBiometricSupported && enableBiometric && !disableBiometric) {
       const { success } = await LocalAuthentication.authenticateAsync(options);
       if (success) {
         setIsLoading(true);
@@ -91,10 +98,13 @@ const InputPin = ({ setIsValidPin, customFunc, handleCancel }) => {
       }
       if (result.status === 200) {
         setIsValidPin && setIsValidPin(true);
+        !showBiometrics && setInvalidPinStatus(false);
         const customFuncStatus = await customFunc(setErrorMessage);
-        return customFuncStatus === 200
-          ? setModalOpen(false)
-          : setErrorMessage(customFuncStatus);
+        setTimeout(() => {
+          return customFuncStatus === 200
+            ? setModalOpen(false)
+            : setErrorMessage(customFuncStatus);
+        }, 200);
       }
 
       if (result.status === 400) {

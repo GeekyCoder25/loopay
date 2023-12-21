@@ -188,9 +188,9 @@ export default function App() {
                 </View>
               )}
               <AppStart />
-              <LoadingModal isLoading={isLoading} />
             </View>
           </TouchableWithoutFeedback>
+          <LoadingModal isLoading={isLoading} />
         </SafeAreaView>
       </RootSiblingParent>
     </AppContext.Provider>

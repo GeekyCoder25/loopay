@@ -1,6 +1,6 @@
 import React from 'react';
 import PageContainer from '../../components/PageContainer';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { settingsRoutes } from '../../database/data';
 import RegularText from '../../components/fonts/RegularText';
 import UserIconSVG from '../../../assets/images/user-grey.svg';
@@ -103,7 +103,11 @@ const RouteLink = ({ route, navigation }) => {
   };
 
   const handleNavigate = () => {
-    navigation.navigate(route.routeNavigate);
+    route.routeNavigate !== 'Rate'
+      ? navigation.navigate(route.routeNavigate)
+      : Linking.openURL(
+          'https://play.google.com/store/apps/loopay/details?id=com.loopay.hmghomes',
+        );
   };
 
   return (

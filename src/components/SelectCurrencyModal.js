@@ -59,7 +59,9 @@ const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
             <View style={styles.currencies}>
               {allCurrencies
                 .filter(
-                  currency => currency.currency === selectedCurrency.currency,
+                  currency =>
+                    currency.currency === selectedCurrency.currency &&
+                    currency.status === 'active',
                 )
                 .map(selected => (
                   <Currency
@@ -71,7 +73,9 @@ const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
                 ))}
               {allCurrencies
                 .filter(
-                  currency => currency.currency !== selectedCurrency.currency,
+                  currency =>
+                    currency.currency !== selectedCurrency.currency &&
+                    currency.status === 'active',
                 )
                 .map(selected => (
                   <Currency

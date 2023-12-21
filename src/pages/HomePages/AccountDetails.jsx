@@ -31,7 +31,7 @@ const AccountDetails = () => {
     {
       accNo,
       currency: 'dollar',
-      fullName: 'United State Dollar',
+      fullName: 'United States Dollar',
       balance: dollarBalance,
       acronym: 'USD',
       symbol: '$',
@@ -49,7 +49,7 @@ const AccountDetails = () => {
     {
       accNo,
       currency: 'euro',
-      fullName: 'European dollar',
+      fullName: 'European Euro',
       balance: euroBalance,
       acronym: 'EUR',
       symbol: '€',

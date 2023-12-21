@@ -190,205 +190,209 @@ const AddMoney = ({ navigation, route }) => {
   };
 
   return (
-    <PageContainer paddingTop={10} padding scroll>
-      <View style={styles.body}>
-        <BoldText style={styles.headerText}>Add Balance</BoldText>
-        <>
-          <Text style={styles.topUp}>Account to top up</Text>
-          <Pressable
-            onPress={() => setModalOpen(true)}
-            style={styles.textInputContainer}>
-            <View style={styles.textInput}>
-              <View style={styles.flagContainer}>
-                <FlagSelect country={selectedCurrency.currency} />
-                <RegularText style={styles.currencyName}>
-                  {selectedCurrency.currency} Balance
-                </RegularText>
-              </View>
-              <ChevronDown />
-            </View>
-          </Pressable>
-          <Modal
-            visible={modalOpen}
-            animationType="slide"
-            transparent
-            onRequestClose={handleModal}>
-            <Back route={route} onPress={() => setModalOpen(false)} />
-            <View style={styles.modal}>
-              <BoldText style={styles.modalHeader}>
-                Select account to top up
-              </BoldText>
-              {allCurrencies
-                .filter(i => i.currency !== selectedCurrency.currency)
-                .map(select => (
-                  <Pressable
-                    key={select.currency}
-                    style={styles.currency}
-                    onPress={() => {
-                      handleCurrencyChange(select);
-                      setModalOpen(false);
-                    }}>
-                    <View style={styles.currencyIcon}>
-                      <FlagSelect country={select.currency} />
-                      <View>
-                        <BoldText>{select.acronym}</BoldText>
-                        <RegularText style={styles.currencyName}>
-                          {select.currency}
-                        </RegularText>
-                      </View>
-                    </View>
-
-                    <Pressable onPress={handleShow}>
-                      <BoldText style={styles.amount}>
-                        {showAmount
-                          ? select.symbol +
-                            addingDecimal(
-                              wallet[
-                                `${select.currency}Balance`
-                              ]?.toLocaleString(),
-                            )
-                          : '***'}
-                      </BoldText>
-                    </Pressable>
-                  </Pressable>
-                ))}
-            </View>
-          </Modal>
-
-          <Text style={styles.topUp}>Payment method</Text>
-          <Pressable
-            onPress={() => setPaymentModal(true)}
-            style={styles.textInputContainer}>
-            <View style={styles.textInput}>
-              <RegularText>{checkPaymentMethod()}</RegularText>
-              <ChevronDown />
-            </View>
-          </Pressable>
-
-          {paymentMethod === 'bankTransfer' && (
-            <>
-              <View style={styles.copyContainer}>
-                <View>
-                  <RegularText style={styles.label}>Bank Name</RegularText>
-                  <BoldText style={styles.bankName}>{wallet.bank}</BoldText>
-                </View>
-              </View>
-              <View style={styles.copyContainer}>
-                <View>
-                  <RegularText style={styles.label}>
-                    Bank Account Number
+    <>
+      <PageContainer paddingTop={10} padding scroll>
+        <View style={styles.body}>
+          <BoldText style={styles.headerText}>Add Balance</BoldText>
+          <>
+            <Text style={styles.topUp}>Account to top up</Text>
+            <Pressable
+              onPress={() => setModalOpen(true)}
+              style={styles.textInputContainer}>
+              <View style={styles.textInput}>
+                <View style={styles.flagContainer}>
+                  <FlagSelect country={selectedCurrency.currency} />
+                  <RegularText style={styles.currencyName}>
+                    {selectedCurrency.currency} Balance
                   </RegularText>
-                  <BoldText style={styles.accNo}>{wallet.accNo}</BoldText>
                 </View>
-                <Pressable style={styles.copy} onPress={handleCopy}>
-                  <BoldText style={styles.copyText}>Copy</BoldText>
-                </Pressable>
+                <ChevronDown />
               </View>
-              <Button
-                text="I have sent the money"
-                onPress={() => navigation.navigate('AddMoneyConfirm')}
-              />
-            </>
-          )}
-
-          {paymentMethod === 'card' && (
-            <>
-              <Text style={styles.topUp}>Amount to be credited</Text>
-              <View style={styles.textInputContainer}>
-                <BoldText style={styles.symbol}>
-                  {selectedCurrency.symbol}
+            </Pressable>
+            <Modal
+              visible={modalOpen}
+              animationType="slide"
+              transparent
+              onRequestClose={handleModal}>
+              <Back route={route} onPress={() => setModalOpen(false)} />
+              <View style={styles.modal}>
+                <BoldText style={styles.modalHeader}>
+                  Select account to top up
                 </BoldText>
-                <TextInput
-                  style={{
-                    ...styles.textInput,
-                    ...styles.textInputStyles,
-                    borderColor: errorKey === 'amount' ? 'red' : '#ccc',
-                  }}
-                  inputMode="decimal"
-                  onChangeText={text => handlePriceInput(text)}
-                  onBlur={handleAutoFill}
-                  value={value}
-                />
-              </View>
-              {errorMessage && (
-                <ErrorMessage
-                  errorMessage={errorMessage}
-                  style={styles.errorMessage}
-                />
-              )}
-
-              <RegularText style={styles.label}>
-                Amount you’ll receive
-              </RegularText>
-              <View style={styles.textInputContainer}>
-                <BoldText style={styles.symbol}>
-                  {selectedCurrency.symbol}
-                </BoldText>
-                <View
-                  style={{ ...styles.textInput, ...styles.textInputStyles }}>
-                  <RegularText
-                    style={{ fontSize: styles.textInputStyles.fontSize }}>
-                    {toReceive}
-                  </RegularText>
-                </View>
-                <View style={styles.fee}>
-                  <RegularText style={styles.feeText}>
-                    Fee: {selectedCurrency.symbol}
-                    {fee < 0 ? '0.00' : fee}
-                  </RegularText>
-                </View>
-              </View>
-              {savedCards.length > 0 && (
-                <View style={styles.savedCards}>
-                  <BoldText>Saved card{savedCards.length > 1 && 's'}</BoldText>
-                  {savedCards.map(card => (
+                {allCurrencies
+                  .filter(i => i.currency !== selectedCurrency.currency)
+                  .map(select => (
                     <Pressable
-                      key={card.id}
-                      style={styles.savedCard}
-                      onPress={() =>
-                        selectedCard && selectedCard.id === card.id
-                          ? setSelectedCard(null)
-                          : setSelectedCard(card)
-                      }>
-                      <View style={styles.savedCardCheck}>
-                        {selectedCard?.id === card.id ? (
-                          <FilledCheckbox width={30} height={30} />
-                        ) : (
-                          <EmptyCheckbox width={30} height={30} />
-                        )}
+                      key={select.currency}
+                      style={styles.currency}
+                      onPress={() => {
+                        handleCurrencyChange(select);
+                        setModalOpen(false);
+                      }}>
+                      <View style={styles.currencyIcon}>
+                        <FlagSelect country={select.currency} />
                         <View>
-                          <BoldText style={styles.boldText}>
-                            {addSpaceEvery4Characters(card.cardNo)}
-                          </BoldText>
-                          <RegularText style={styles.subText}>
-                            {card.type}
+                          <BoldText>{select.acronym}</BoldText>
+                          <RegularText style={styles.currencyName}>
+                            {select.currency}
                           </RegularText>
                         </View>
                       </View>
-                      <View style={styles.expiry}>
-                        <BoldText style={styles.boldText}>
-                          {card.expiryMonth + '/' + card.expiryYear}
+
+                      <Pressable onPress={handleShow}>
+                        <BoldText style={styles.amount}>
+                          {showAmount
+                            ? select.symbol +
+                              addingDecimal(
+                                wallet[
+                                  `${select.currency}Balance`
+                                ]?.toLocaleString(),
+                              )
+                            : '***'}
                         </BoldText>
-                        <RegularText style={styles.subText}>***</RegularText>
-                      </View>
+                      </Pressable>
                     </Pressable>
                   ))}
+              </View>
+            </Modal>
+
+            <Text style={styles.topUp}>Payment method</Text>
+            <Pressable
+              onPress={() => setPaymentModal(true)}
+              style={styles.textInputContainer}>
+              <View style={styles.textInput}>
+                <RegularText>{checkPaymentMethod()}</RegularText>
+                <ChevronDown />
+              </View>
+            </Pressable>
+
+            {paymentMethod === 'bankTransfer' && (
+              <>
+                <View style={styles.copyContainer}>
+                  <View>
+                    <RegularText style={styles.label}>Bank Name</RegularText>
+                    <BoldText style={styles.bankName}>{wallet.bank}</BoldText>
+                  </View>
                 </View>
-              )}
-              {selectedCard ? (
-                <View style={styles.button}>
-                  <Button text="Continue" onPress={handleContinue} />
+                <View style={styles.copyContainer}>
+                  <View>
+                    <RegularText style={styles.label}>
+                      Bank Account Number
+                    </RegularText>
+                    <BoldText style={styles.accNo}>{wallet.accNo}</BoldText>
+                  </View>
+                  <Pressable style={styles.copy} onPress={handleCopy}>
+                    <BoldText style={styles.copyText}>Copy</BoldText>
+                  </Pressable>
                 </View>
-              ) : (
                 <Button
-                  text={'Add new card'}
-                  onPress={() => navigation.navigate('AddNewCard')}
+                  text="I have sent the money"
+                  onPress={() => navigation.navigate('AddMoneyConfirm')}
                 />
-              )}
-            </>
-          )}
-        </>
-      </View>
+              </>
+            )}
+
+            {paymentMethod === 'card' && (
+              <>
+                <Text style={styles.topUp}>Amount to be credited</Text>
+                <View style={styles.textInputContainer}>
+                  <BoldText style={styles.symbol}>
+                    {selectedCurrency.symbol}
+                  </BoldText>
+                  <TextInput
+                    style={{
+                      ...styles.textInput,
+                      ...styles.textInputStyles,
+                      borderColor: errorKey === 'amount' ? 'red' : '#ccc',
+                    }}
+                    inputMode="decimal"
+                    onChangeText={text => handlePriceInput(text)}
+                    onBlur={handleAutoFill}
+                    value={value}
+                  />
+                </View>
+                {errorMessage && (
+                  <ErrorMessage
+                    errorMessage={errorMessage}
+                    style={styles.errorMessage}
+                  />
+                )}
+
+                <RegularText style={styles.label}>
+                  Amount you’ll receive
+                </RegularText>
+                <View style={styles.textInputContainer}>
+                  <BoldText style={styles.symbol}>
+                    {selectedCurrency.symbol}
+                  </BoldText>
+                  <View
+                    style={{ ...styles.textInput, ...styles.textInputStyles }}>
+                    <RegularText
+                      style={{ fontSize: styles.textInputStyles.fontSize }}>
+                      {toReceive}
+                    </RegularText>
+                  </View>
+                  <View style={styles.fee}>
+                    <RegularText style={styles.feeText}>
+                      Fee: {selectedCurrency.symbol}
+                      {fee < 0 ? '0.00' : fee}
+                    </RegularText>
+                  </View>
+                </View>
+                {savedCards.length > 0 && (
+                  <View style={styles.savedCards}>
+                    <BoldText>
+                      Saved card{savedCards.length > 1 && 's'}
+                    </BoldText>
+                    {savedCards.map(card => (
+                      <Pressable
+                        key={card.id}
+                        style={styles.savedCard}
+                        onPress={() =>
+                          selectedCard && selectedCard.id === card.id
+                            ? setSelectedCard(null)
+                            : setSelectedCard(card)
+                        }>
+                        <View style={styles.savedCardCheck}>
+                          {selectedCard?.id === card.id ? (
+                            <FilledCheckbox width={30} height={30} />
+                          ) : (
+                            <EmptyCheckbox width={30} height={30} />
+                          )}
+                          <View>
+                            <BoldText style={styles.boldText}>
+                              {addSpaceEvery4Characters(card.cardNo)}
+                            </BoldText>
+                            <RegularText style={styles.subText}>
+                              {card.type}
+                            </RegularText>
+                          </View>
+                        </View>
+                        <View style={styles.expiry}>
+                          <BoldText style={styles.boldText}>
+                            {card.expiryMonth + '/' + card.expiryYear}
+                          </BoldText>
+                          <RegularText style={styles.subText}>***</RegularText>
+                        </View>
+                      </Pressable>
+                    ))}
+                  </View>
+                )}
+                {selectedCard ? (
+                  <View style={styles.button}>
+                    <Button text="Continue" onPress={handleContinue} />
+                  </View>
+                ) : (
+                  <Button
+                    text={'Add new card'}
+                    onPress={() => navigation.navigate('AddNewCard')}
+                  />
+                )}
+              </>
+            )}
+          </>
+        </View>
+      </PageContainer>
       <Modal
         visible={paymentModal}
         animationType="slide"
@@ -414,7 +418,7 @@ const AddMoney = ({ navigation, route }) => {
           </View>
         </Pressable>
       </Modal>
-    </PageContainer>
+    </>
   );
 };
 const styles = StyleSheet.create({

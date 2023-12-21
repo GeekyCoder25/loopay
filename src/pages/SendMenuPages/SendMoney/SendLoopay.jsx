@@ -120,6 +120,7 @@ const SendLoopay = ({ navigation, route }) => {
               placeholder="#username or account no"
               placeholderTextColor={'#525252'}
               maxLength={maximum}
+              autoFocus
             />
             {showPaste && !inputValue ? (
               <Pressable onPress={handlePaste} style={styles.paste}>

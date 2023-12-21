@@ -66,8 +66,8 @@ const SwapFunds = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       try {
-        setIsLoading(true);
         const getRates = async () => {
+          setIsLoading(true);
           const response = await getFetchData(`user/rate/${swapFrom.acronym}`);
           response.status === 200 && setCurrencyRateAPI(response.data);
         };

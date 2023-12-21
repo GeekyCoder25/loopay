@@ -18,6 +18,8 @@ import VerifyImage from '../pages/MenuPages/VerificationStatus/VerifyImage';
 import VerifyInputNumber from '../pages/MenuPages/VerificationStatus/VerifyInputNumber';
 import Settings from '../pages/MenuPages/Settings';
 import Biometric from '../pages/HomePages/Biometric';
+import Beneficiaries from '../pages/MenuPages/Settings/Beneficiaries';
+import DeleteAccount from '../pages/MenuPages/DeleteAccount';
 
 const MenuNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -61,6 +63,8 @@ const MenuNavigator = () => {
       <Stack.Screen name="Referrals" component={Referrals} />
       <Stack.Screen name="Support" component={Support} />
       <Stack.Screen name="Biometric" component={Biometric} />
+      <Stack.Screen name="Beneficiaries" component={Beneficiaries} />
+      <Stack.Screen name="DeleteAccount" component={DeleteAccount} />
     </Stack.Navigator>
   );
 };

@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
+    zIndex: 99,
   },
   modalContainer: {
     position: 'absolute',

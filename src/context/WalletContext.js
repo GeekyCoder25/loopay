@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { getFetchData } from '../../utils/fetchAPI';
 import { AppContext } from '../components/AppContext';
+import { allCurrencies } from '../database/data';
 
 const WalletContext = createContext();
 
@@ -38,7 +39,6 @@ const WalletContextComponent = ({ children }) => {
         console.log(err.message);
         setTransactions([]);
       });
-
     const walletToSet = result => {
       const otherWalletBalances = {
         localBalance: result.walletLocal?.balance,
@@ -47,6 +47,22 @@ const WalletContextComponent = ({ children }) => {
         poundBalance: result.walletPound?.balance,
         [`${result.walletLocal.currency}Balance`]: result.walletLocal?.balance,
       };
+
+      allCurrencies.forEach(currency => {
+        const activeCurrency = ['dollar', 'euro', 'pound'].includes(
+          currency.currency,
+        )
+          ? currency.currency
+          : 'local';
+
+        return (currency.status =
+          result[
+            `wallet${
+              activeCurrency.charAt(0).toUpperCase() + activeCurrency.slice(1)
+            }`
+          ].status);
+      });
+
       switch (selectedCurrency.currency) {
         case 'naira':
           return setWallet({ ...result.walletLocal, ...otherWalletBalances });

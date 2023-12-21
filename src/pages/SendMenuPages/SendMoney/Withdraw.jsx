@@ -188,7 +188,6 @@ const Withdraw = ({ navigation }) => {
       });
       if (response.status === 200) {
         const { transaction } = response.data;
-        setWalletRefresh(prev => !prev);
         await postFetchData('user/savedbanks', formData);
         navigation.replace('Success', {
           userToSendTo: bankSelected,
@@ -197,6 +196,7 @@ const Withdraw = ({ navigation }) => {
           id,
           transaction,
         });
+        setWalletRefresh(prev => !prev);
         return response.status;
       }
       typeof response === 'string'
