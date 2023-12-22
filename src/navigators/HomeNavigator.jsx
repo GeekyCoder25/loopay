@@ -27,6 +27,7 @@ import AddMoneyConfirm from '../pages/SendMenuPages/AddMoney/AddMoneyConfirm';
 import AddNewCard from '../pages/SendMenuPages/AddMoney/AddNewCard';
 import Biometric from '../pages/HomePages/Biometric';
 import TransactionPin from '../pages/MenuPages/TransactionPin';
+import AddMoneyDetails from '../pages/SendMenuPages/AddMoney/AddMoneyDetails';
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -71,6 +72,11 @@ const HomeNavigator = () => {
         <Stack.Screen
           name="AddMoneyConfirm"
           component={AddMoneyConfirm}
+          options={({ navigation, route }) => screenHeader(navigation, route)}
+        />
+        <Stack.Screen
+          name="AddMoneyDetails"
+          component={AddMoneyDetails}
           options={({ navigation, route }) => screenHeader(navigation, route)}
         />
         <Stack.Screen

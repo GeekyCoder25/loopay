@@ -81,7 +81,7 @@ const InputPin = ({
       if (success) {
         setIsLoading(true);
         setIsValidPin && setIsValidPin(true);
-        await customFunc(setErrorMessage);
+        customFunc && (await customFunc(setErrorMessage));
         setIsLoading(false);
       }
     }
@@ -99,12 +99,14 @@ const InputPin = ({
       if (result.status === 200) {
         setIsValidPin && setIsValidPin(true);
         !showBiometrics && setInvalidPinStatus(false);
-        const customFuncStatus = await customFunc(setErrorMessage);
-        setTimeout(() => {
-          return customFuncStatus === 200
-            ? setModalOpen(false)
-            : setErrorMessage(customFuncStatus);
-        }, 200);
+        if (customFunc) {
+          const customFuncStatus = await customFunc(setErrorMessage);
+          return setTimeout(() => {
+            customFuncStatus === 200
+              ? setModalOpen(false)
+              : setErrorMessage(customFuncStatus);
+          }, 200);
+        }
       }
 
       if (result.status === 400) {

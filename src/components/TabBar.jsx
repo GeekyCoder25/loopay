@@ -7,7 +7,7 @@ import { AppContext } from './AppContext';
 import BoldText from './fonts/BoldText';
 const tabRoutes = [
   {
-    route: 'HomeNavigator',
+    route: 'Home',
     label: 'Home',
   },
   {
@@ -63,7 +63,7 @@ const TabRoute = ({ routePage, navigation, state, index }) => {
   const isFocused = state.index === index;
   const routeIcon = fill => {
     switch (routePage.route) {
-      case 'HomeNavigator':
+      case 'Home':
         return <HomeIcon fill={fill} />;
       case 'SendMenuNavigator':
         return <SendIcon fill={fill} />;

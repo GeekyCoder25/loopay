@@ -20,6 +20,7 @@ import Verification from '../pages/AdminPages/components/Verification';
 import Announcements from '../pages/AdminPages/Announcements';
 import DashboardNavigator from '../pages/AdminPages/Dashboard/DashboardNavigator';
 import UsersNavigator from '../pages/AdminPages/Users/UsersNavigator';
+import Proofs from '../pages/AdminPages/Proofs';
 
 const AdminNavigator = () => {
   const Drawer = createDrawerNavigator();
@@ -94,6 +95,11 @@ const AdminNavigator = () => {
         <Drawer.Screen
           name="Verification"
           component={Verification}
+          options={({ navigation, route }) => BackHeader(navigation, route)}
+        />
+        <Drawer.Screen
+          name="Proofs"
+          component={Proofs}
           options={({ navigation, route }) => BackHeader(navigation, route)}
         />
       </Drawer.Navigator>

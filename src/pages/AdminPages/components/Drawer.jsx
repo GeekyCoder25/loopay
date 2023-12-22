@@ -1,6 +1,5 @@
 import { useContext } from 'react';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-
 import DashboardIcon from '../../../../assets/images/dashboard.svg';
 import AccountsIcon from '../../../../assets/images/accounts.svg';
 import TransferIcon from '../../../../assets/images/transfer.svg';
@@ -33,6 +32,7 @@ const CustomDrawer = props => {
   const adminRoutes = [
     'Dashboard',
     'Accounts',
+    'Proofs',
     'Transfer',
     'Rate & Charges',
     'Users',
@@ -47,6 +47,8 @@ const CustomDrawer = props => {
         return <DashboardIcon />;
       case 'Accounts':
         return <AccountsIcon />;
+      case 'Proofs':
+        return <IonIcon name="cash-outline" color={'#868585'} size={24} />;
       case 'Transfer':
         return <TransferIcon />;
       case 'Rate & Charges':

@@ -28,6 +28,7 @@ import FilledCheckbox from '../../../assets/images/filledCheckbox.svg';
 import ErrorMessage from '../../components/ErrorMessage';
 import { getFetchData } from '../../../utils/fetchAPI';
 import { setShowBalance } from '../../../utils/storage';
+import * as Haptics from 'expo-haptics';
 
 const AddMoney = ({ navigation, route }) => {
   const {
@@ -100,6 +101,7 @@ const AddMoney = ({ navigation, route }) => {
   };
 
   const handleCopy = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     Clipboard.setString(wallet.accNo);
     ToastMessage('Account number copied');
   };
@@ -129,7 +131,7 @@ const AddMoney = ({ navigation, route }) => {
     setValue(text);
     text = Number(text);
     const transactionFee = text * feeRate;
-    setFee(transactionFee);
+    setFee(transactionFee.toFixed(2));
     const swapFromAmountAfterFee = text - transactionFee;
     const toReceiveCalculate = Number(swapFromAmountAfterFee.toFixed(2));
 
@@ -181,7 +183,7 @@ const AddMoney = ({ navigation, route }) => {
         `Minimum amount to add is ${selectedCurrency.symbol}${minimumAmountToAdd}`,
       );
     }
-    navigation.navigate('AddMoneyConfirm', addBalanceData);
+    navigation.navigate('AddMoneyDetails', addBalanceData);
   };
 
   const handleShow = () => {
@@ -310,6 +312,12 @@ const AddMoney = ({ navigation, route }) => {
                     onBlur={handleAutoFill}
                     value={value}
                   />
+                  <View style={styles.fee}>
+                    <RegularText style={styles.feeText}>
+                      Fee: {selectedCurrency.symbol}
+                      {fee < 0 ? '0.00' : fee}
+                    </RegularText>
+                  </View>
                 </View>
                 {errorMessage && (
                   <ErrorMessage
@@ -330,12 +338,6 @@ const AddMoney = ({ navigation, route }) => {
                     <RegularText
                       style={{ fontSize: styles.textInputStyles.fontSize }}>
                       {toReceive}
-                    </RegularText>
-                  </View>
-                  <View style={styles.fee}>
-                    <RegularText style={styles.feeText}>
-                      Fee: {selectedCurrency.symbol}
-                      {fee < 0 ? '0.00' : fee}
                     </RegularText>
                   </View>
                 </View>

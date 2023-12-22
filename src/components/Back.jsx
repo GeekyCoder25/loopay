@@ -30,7 +30,9 @@ const Back = ({ goBack, onPress, route }) => {
         <Text style={styles.text}>Back</Text>
       </Pressable>
       {canChangeRole && (
-        <Pressable style={styles.switch} onPress={() => setIsAdmin(true)}>
+        <Pressable
+          style={styles.switch}
+          onPress={() => setIsAdmin(prev => !prev)}>
           <RegularText style={styles.switchText}>
             Switch to {isAdmin ? 'User' : 'Admin'}
           </RegularText>

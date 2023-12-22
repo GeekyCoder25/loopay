@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   FlatList,
   Pressable,
+  RefreshControl,
   StyleSheet,
   TextInput,
   View,
@@ -26,8 +27,11 @@ import { groupTransactionsByDate } from '../../../utils/groupTransactions';
 import SwapIcon from '../../../assets/images/swap.svg';
 import FlagSelect from '../../components/FlagSelect';
 import { setShowBalance } from '../../../utils/storage';
+import Refresh from '../../components/Refresh';
 
 const TransactionHistory = ({ navigation }) => {
+  const { setWalletRefresh, noReload, refreshing, setRefreshing } =
+    useContext(AppContext);
   const { transactions, wallet } = useWalletContext();
   const [activeTransactions, setActiveTransactions] = useState(transactions);
   const [transactionHistory, setTransactionHistory] = useState([]);
@@ -63,6 +67,13 @@ const TransactionHistory = ({ navigation }) => {
     }
   }, [wallet.loopayAccNo.length]);
 
+  const handleRefresh = async () => {
+    setWalletRefresh(prev => !prev);
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  };
   return (
     <>
       <FilterModal
@@ -134,6 +145,13 @@ const TransactionHistory = ({ navigation }) => {
                 //     : undefined
                 // }
                 bounces={false}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={handleRefresh}
+                    enabled={!noReload}
+                  />
+                }
               />
             )}
           </View>

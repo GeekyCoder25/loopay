@@ -37,6 +37,7 @@ import { Audio } from 'expo-av';
 import Phone from '../../../assets/images/airtime.svg';
 import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
 import { setShowBalance } from '../../../utils/storage';
+import * as Haptics from 'expo-haptics';
 
 const Home = ({ navigation }) => {
   const {
@@ -130,6 +131,7 @@ const Home = ({ navigation }) => {
   ];
 
   const handleCopy = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     Clipboard.setString(wallet.loopayAccNo);
     ToastMessage('Copied to clipboard');
   };

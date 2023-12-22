@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import TabBar from '../components/TabBar';
 import SendMenuNavigator from './SendMenuNavigator';
@@ -9,10 +10,18 @@ import WalletContextComponent from '../context/WalletContext';
 import BeneficiaryContextComponent from '../context/BeneficiariesContext';
 import RequestFundsContextComponent from '../context/RequestContext';
 import Popup from '../components/Popup';
+import ToastMessage from '../components/ToastMessage';
+import useShakeEvent from '../components/Shake';
 
-const BottomTabs = () => {
-  const { showTabBar, appData, setAppData, showPopUp, isSessionTimedOut } =
-    useContext(AppContext);
+const BottomTabs = ({ navigation }) => {
+  const {
+    showTabBar,
+    appData,
+    setAppData,
+    showPopUp,
+    isSessionTimedOut,
+    setIsShaking,
+  } = useContext(AppContext);
   const Tab = createBottomTabNavigator();
 
   useEffect(() => {
@@ -24,6 +33,14 @@ const BottomTabs = () => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleShake = () => {
+    ToastMessage('Shaking');
+    setIsShaking(false);
+    // navigation.navigate('SendMoneyNavigatorFromHome');
+  };
+  useShakeEvent(handleShake);
+
   return (
     <WalletContextComponent>
       <BeneficiaryContextComponent>

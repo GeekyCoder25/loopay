@@ -10,6 +10,7 @@ import UserIcon from '../../components/UserIcon';
 import { putFetchData } from '../../../utils/fetchAPI';
 import { useNavigation } from '@react-navigation/native';
 import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
+import ToastMessage from '../../components/ToastMessage';
 
 const Notification = () => {
   const { vh } = useContext(AppContext);
@@ -256,6 +257,9 @@ const Message = ({ notification }) => {
       navigate('Home');
     } else if (type === 'transfer' || type === 'airtime') {
       navigate('TransactionHistoryDetails', notification.metadata);
+    } else {
+      await putFetchData(`user/notification/${_id}`);
+      ToastMessage('Read');
     }
     const response = await putFetchData(`user/notification/${_id}`);
     response.status === 200 && setWalletRefresh(prev => !prev);

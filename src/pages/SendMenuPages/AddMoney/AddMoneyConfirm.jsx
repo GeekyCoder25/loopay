@@ -12,13 +12,18 @@ import ToastMessage from '../../../components/ToastMessage';
 import { getToken } from '../../../../utils/storage';
 import { apiUrl } from '../../../../utils/fetchAPI';
 import { addingDecimal } from '../../../../utils/AddingZero';
+import { useWalletContext } from '../../../context/WalletContext';
 
 const AddMoneyConfirm = ({ navigation }) => {
-  const { selectedCurrency, vh, setIsLoading } = useContext(AppContext);
+  const { appData, selectedCurrency, vh, setIsLoading } =
+    useContext(AppContext);
+  const { wallet } = useWalletContext();
   const { acronym, symbol } = selectedCurrency;
   const [errorKey, setErrorKey] = useState();
   const [formDataState, setFormDataState] = useState({
     currency: selectedCurrency.acronym,
+    accNo: wallet.loopayAccNo,
+    tagName: appData.tagName,
   });
   const [preview, setPreview] = useState('');
 
@@ -87,8 +92,8 @@ const AddMoneyConfirm = ({ navigation }) => {
       const result = await response.json();
 
       if (response.ok) {
-        navigation.popToTop();
-        navigation.navigate('HomeNavigator');
+        // navigation.popToTop();
+        // navigation.navigate('HomeNavigator');
         ToastMessage(
           'Uploaded successfully, your account will be credited soon',
         );
@@ -196,7 +201,7 @@ const AddMoneyConfirm = ({ navigation }) => {
           </View>
         ))}
         <View style={styles.button}>
-          <Button text="Confirm Deposit" onPress={handleConfirm} />
+          <Button text="Payment Receipt" onPress={handleConfirm} />
         </View>
       </View>
     </PageContainer>
