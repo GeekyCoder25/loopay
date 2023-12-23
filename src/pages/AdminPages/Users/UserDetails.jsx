@@ -22,6 +22,7 @@ import CalendarIcon from '../../../../assets/images/calendar.svg';
 import { AppContext } from '../../../components/AppContext';
 
 const UserDetails = ({ navigation, route }) => {
+  const { walletRefresh } = useContext(AppContext);
   const { email } = route.params;
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,7 +42,7 @@ const UserDetails = ({ navigation, route }) => {
       }
     };
     getUser();
-  }, [email]);
+  }, [email, walletRefresh]);
 
   const handleShowBlockModal = async blockType => {
     setBlockTitle(blockType);
@@ -57,7 +58,7 @@ const UserDetails = ({ navigation, route }) => {
           <BoldText style={styles.headerText}>User Details</BoldText>
         </Pressable>
       </View>
-      <PageContainer style={styles.body} padding>
+      <PageContainer style={styles.body} padding scroll>
         {isLoading ? (
           <View style={styles.loading}>
             <ActivityIndicator size={'large'} color={'#1e1e1e'} />
@@ -85,6 +86,34 @@ const UserDetails = ({ navigation, route }) => {
               </RegularText>
             </View>
             <View style={styles.row}>
+              <BoldText style={styles.rowKey}>Account Number</BoldText>
+              <RegularText style={styles.rowValue}>
+                {user.wallet.loopayAccNo}
+              </RegularText>
+            </View>
+            <View style={styles.row}>
+              <BoldText style={styles.rowKey}>Public Acc No</BoldText>
+              <RegularText style={styles.rowValue}>
+                {user.wallet.accNo}
+              </RegularText>
+            </View>
+            <View style={styles.row}>
+              <BoldText style={styles.rowKey}>BVN</BoldText>
+              <RegularText style={styles.rowValue}>{user.bvn}</RegularText>
+            </View>
+            <View style={styles.row}>
+              <BoldText style={styles.rowKey}>Address</BoldText>
+              <RegularText style={styles.rowValue}>
+                {user.userProfile.address}
+              </RegularText>
+            </View>
+            <View style={styles.row}>
+              <BoldText style={styles.rowKey}>Local Currency</BoldText>
+              <RegularText style={styles.rowValue}>
+                {user.localCurrencyCode}
+              </RegularText>
+            </View>
+            <View style={styles.row}>
               <BoldText style={styles.rowKey}>Pin set</BoldText>
               <RegularText style={styles.rowValue}>
                 {user.pin ? 'true' : 'false'}
@@ -97,9 +126,29 @@ const UserDetails = ({ navigation, route }) => {
               </RegularText>
             </View>
             <View style={styles.row}>
+              <BoldText style={styles.rowKey}>Limit level</BoldText>
+              <RegularText style={styles.rowValue}>{user.level}</RegularText>
+            </View>
+            <View style={styles.row}>
+              <BoldText style={styles.rowKey}>Pin trial remaining</BoldText>
+              <RegularText style={styles.rowValue}>
+                {5 - (user.invalidPinTried || 0)}
+              </RegularText>
+            </View>
+            <View style={styles.row}>
               <BoldText style={styles.rowKey}>Referral Code</BoldText>
               <RegularText style={styles.rowValue}>
                 {user.referralCode}
+              </RegularText>
+            </View>
+            <View style={styles.row}>
+              <BoldText style={styles.rowKey}>Account Status</BoldText>
+              <RegularText style={styles.rowValue}>{user.status}</RegularText>
+            </View>
+            <View style={styles.row}>
+              <BoldText style={styles.rowKey}>Joined on</BoldText>
+              <RegularText style={styles.rowValue}>
+                {user.createdAt}
               </RegularText>
             </View>
             <View style={styles.row}>
@@ -109,7 +158,7 @@ const UserDetails = ({ navigation, route }) => {
               </View>
             </View>
 
-            <View>
+            <View style={styles.buttons}>
               <Button
                 text={'View user transactions'}
                 onPress={() =>
@@ -176,7 +225,8 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    marginTop: 10,
+    paddingVertical: 15,
+    borderBottomWidth: 0.5,
   },
   rowKey: {
     flex: 1,
@@ -185,6 +235,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
+  buttons: {
+    marginVertical: 50,
+  },
   blockModal: {
     padding: 3 + '%',
     paddingTop: 20,

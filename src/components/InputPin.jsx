@@ -71,19 +71,31 @@ const InputPin = ({
   );
 
   const checkFingerprint = async () => {
-    const options = {
-      promptMessage: 'Verify fingerprint',
-      cancelLabel: 'Use payment pin instead',
-      disableDeviceFallback: true,
-    };
-    if (isBiometricSupported && enableBiometric && !disableBiometric) {
-      const { success } = await LocalAuthentication.authenticateAsync(options);
-      if (success) {
-        setIsLoading(true);
-        setIsValidPin && setIsValidPin(true);
-        customFunc && (await customFunc(setErrorMessage));
-        setIsLoading(false);
+    try {
+      const options = {
+        promptMessage: 'Verify fingerprint',
+        cancelLabel: 'Use payment pin instead',
+        disableDeviceFallback: true,
+      };
+      if (isBiometricSupported && enableBiometric && !disableBiometric) {
+        const { success } = await LocalAuthentication.authenticateAsync(
+          options,
+        );
+        if (success) {
+          setIsLoading(true);
+          setIsValidPin && setIsValidPin(true);
+          if (customFunc) {
+            const customFuncStatus = await customFunc(setErrorMessage);
+            return setTimeout(() => {
+              customFuncStatus === 200
+                ? setModalOpen(false)
+                : setErrorMessage(customFuncStatus);
+            }, 200);
+          }
+        }
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 

@@ -35,9 +35,11 @@ const Success = ({ navigation, route }) => {
       return () => subscription.remove();
     }, [navigation]),
   );
+
   useEffect(() => {
     setShowTabBar(false);
   }, [setShowTabBar]);
+
   useEffect(() => {
     const playSound = async () => {
       const { sound } = await Audio.Sound.createAsync(
@@ -47,6 +49,7 @@ const Success = ({ navigation, route }) => {
     };
     playSound();
   }, []);
+
   const handleShare = async () => {
     const {
       status,
@@ -62,7 +65,7 @@ const Success = ({ navigation, route }) => {
       description,
       reference,
       networkProvider,
-      phoneNo,
+      rechargePhoneNo,
       billType,
       billName,
     } = transaction;
@@ -79,7 +82,7 @@ const Success = ({ navigation, route }) => {
             value: `Debit - ${transactionType} `,
           },
           { key: 'Network', value: networkProvider },
-          { key: 'Phone Number', value: phoneNo },
+          { key: 'Phone Number', value: rechargePhoneNo },
           { key: 'Reference ID', value: reference },
           { key: 'Status', value: status },
         ];

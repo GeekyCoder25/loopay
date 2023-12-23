@@ -576,6 +576,7 @@ const User = ({ user, activeStatus, setSearchModal }) => {
         checkSameDateAndTime(userSession) && setStatus(true);
       });
   }, [adminData.lastActiveSessions, user.email]);
+
   return (
     <View style={styles.userExpanded}>
       <Pressable

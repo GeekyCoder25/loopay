@@ -35,9 +35,9 @@ const BottomTabs = ({ navigation }) => {
   }, []);
 
   const handleShake = () => {
-    ToastMessage('Shaking');
+    // ToastMessage('Shaking');
     setIsShaking(false);
-    // navigation.navigate('SendMoneyNavigatorFromHome');
+    navigation.navigate('SendMoneyNavigatorFromHome');
   };
   useShakeEvent(handleShake);
 
