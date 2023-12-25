@@ -36,14 +36,14 @@ import { CurrencyFullDetails } from '../../../utils/allCountries.js';
 
 const Signup = ({ navigation }) => {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    userName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    firstName: 'John',
+    lastName: 'Doe',
+    userName: 'johndoee',
+    email: 'john@gmail.com',
+    password: '123456',
+    confirmPassword: '123456',
     phoneNumber: '',
-    referralCode: '',
+    referralCode: 'zt2sxh',
     // firstName: 'Toyyib',
     // lastName: 'Lawal',
     // userName: 'Geeky Coder',
@@ -97,19 +97,14 @@ const Signup = ({ navigation }) => {
       }
       try {
         setIsLoading(true);
-        const sessionData = saveSessionOptions();
         const { email, phoneNumber } = formData;
         const response = await postFetchData('auth/register', {
-          formData: {
-            ...formData,
-            phoneNumber: countryCode + phoneNumber,
-            localCurrencyCode,
-          },
-          sessionData,
+          ...formData,
+          phoneNumber: countryCode + phoneNumber,
+          localCurrencyCode,
         });
         const result = response.data;
         if (response.status === 200 && result.email === email) {
-          setDeviceID(result?.sessions?.deviceID || sessionData.deviceID);
           setIsLoading(false);
           setTimeout(() => {
             setVerifyEmail(false);
@@ -216,7 +211,6 @@ const Signup = ({ navigation }) => {
       {verifyEmail && (
         <EmailVerify
           email={formData.email}
-          deviceID={deviceID}
           setErrorMessage={setErrorMessage}
           setSuccessMessage={setSuccessMessage}
           navigation={navigation}
@@ -512,9 +506,8 @@ const FormField = ({
   );
 };
 
-const EmailVerify = ({
+export const EmailVerify = ({
   email,
-  deviceID,
   setErrorMessage,
   setSuccessMessage,
   setVerifyEmail,
@@ -529,9 +522,11 @@ const EmailVerify = ({
     setInputCode(prev => `${prev}${input}`);
     if (inputCode.length + 1 >= codeLength.length) {
       try {
+        const session = saveSessionOptions();
         const response = await putFetchData('auth/register', {
           otp: `${inputCode}${input}`,
           email,
+          session,
         });
         if (response.status === 201) {
           setIsLoading(true);
@@ -539,7 +534,7 @@ const EmailVerify = ({
           const result = response.data;
           const { firstName, lastName, userName, phoneNumber } = result.data;
           setSuccessMessage(Object.values(result)[0]);
-          await loginUser(result.data, deviceID);
+          await loginUser(result.data, session.deviceID);
           const data = {
             email,
             userProfile: {
@@ -680,6 +675,12 @@ const EmailVerify = ({
             </Pressable>
           </View>
         </View>
+        <Pressable
+          onPress={() => {
+            setVerifyEmail(false);
+          }}>
+          <BoldText>Go Back</BoldText>
+        </Pressable>
       </View>
     </Modal>
   );

@@ -42,7 +42,6 @@ const DeleteAccount = ({ navigation }) => {
   const handleDelete = async () => {
     try {
       const response = await deleteFetchData(`user/delete-account/${email}`);
-      console.log(response);
       if (response.status === 200) {
         handleLogout();
         return response.status;

@@ -371,6 +371,7 @@ const SwapFunds = ({ navigation }) => {
   const handleGoBack = () => {
     navigation.popToTop();
     navigation.navigate('HomeNavigator');
+    navigation.navigate('Home');
   };
 
   const handleShow = () => {
@@ -396,7 +397,7 @@ const SwapFunds = ({ navigation }) => {
                 <Pressable style={styles.arrow} onPress={handleSwitch}>
                   <IonIcon
                     name="swap-horizontal-sharp"
-                    size={28}
+                    size={32}
                     color={'#8d8d8d'}
                   />
                 </Pressable>
@@ -613,8 +614,8 @@ const SwapFunds = ({ navigation }) => {
         transparent
         onRequestClose={handleModal}>
         <Pressable style={styles.overlay} onPress={handleModal} />
-        <View style={styles.modalContainer}>
-          {!isSuccessful ? (
+        {!isSuccessful ? (
+          <View style={styles.modalContainer}>
             <View style={styles.modal}>
               <View style={styles.modalBorder} />
               <BoldText style={styles.modalTextHeader}>
@@ -669,8 +670,10 @@ const SwapFunds = ({ navigation }) => {
                 <BoldText>Back</BoldText>
               </Pressable>
             </View>
-          ) : (
-            <View style={styles.modal}>
+          </View>
+        ) : (
+          <View style={styles.modalContainerSuccess}>
+            <View style={styles.modalSuccess}>
               <View>
                 <Check />
               </View>
@@ -704,14 +707,26 @@ const SwapFunds = ({ navigation }) => {
                   </BoldText>
                 </View>
               </View>
+              <View style={styles.card}>
+                {transactionDetails.map(detail => (
+                  <View style={styles.cardRow} key={detail.title}>
+                    <RegularText style={styles.cardKey}>
+                      {detail.title}
+                    </RegularText>
+                    <RegularText style={styles.cardValue}>
+                      {detail.value}
+                    </RegularText>
+                  </View>
+                ))}
+              </View>
               <Button
                 text="Back Home"
-                style={styles.modalButton}
+                style={styles.modalButtonSuccess}
                 onPress={handleGoBack}
               />
             </View>
-          )}
-        </View>
+          </View>
+        )}
       </Modal>
     </>
   );
@@ -740,11 +755,11 @@ const styles = StyleSheet.create({
   },
   arrow: {
     position: 'absolute',
-    width: 50,
-    height: 50,
+    width: 70,
+    height: 70,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: -30,
+    marginRight: -38,
     right: 0,
     zIndex: 1,
   },
@@ -903,6 +918,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 20,
   },
+  modalContainerSuccess: {
+    position: 'absolute',
+    height: 100 + '%',
+    width: 100 + '%',
+    bottom: 0,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  modalSuccess: {
+    backgroundColor: '#fff',
+    width: 100 + '%',
+    height: 100 + '%',
+    paddingVertical: 30,
+    paddingHorizontal: 5 + '%',
+    alignItems: 'center',
+    gap: 20,
+  },
   modalBorder: {
     backgroundColor: '#ddd',
     height: 6,
@@ -940,6 +972,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     flex: 1,
     justifyContent: 'space-around',
+    maxHeight: 150,
   },
   cardRow: {
     flexDirection: 'row',
@@ -960,6 +993,9 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     marginTop: 2 + '%',
+  },
+  modalButtonSuccess: {
+    marginTop: 10 + '%',
   },
 });
 

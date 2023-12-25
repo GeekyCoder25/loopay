@@ -4,6 +4,7 @@ import {
   BackHandler,
   Clipboard,
   ImageBackground,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -24,6 +25,7 @@ import RegularText from '../../components/fonts/RegularText';
 import BoldText from '../../components/fonts/BoldText';
 import FlagSelect from '../../components/FlagSelect';
 import UserIcon from '../../components/UserIcon';
+import RequestIcon from '../../../assets/images/request.svg';
 import WalletAmount from '../../components/WalletAmount';
 import { useFocusEffect } from '@react-navigation/native';
 import ToastMessage from '../../components/ToastMessage';
@@ -54,7 +56,7 @@ const Home = ({ navigation }) => {
   const [isExiting, setIsExiting] = useState(false);
   const [requestsLength, setRequestsLength] = useState(0);
   const { unread } = useNotificationsContext();
-
+  const [isAndroid] = useState(Platform.OS === 'android');
   // useFocusEffect(
   //   React.useCallback(() => {
   //     const getHistories = async () => {
@@ -125,7 +127,7 @@ const Home = ({ navigation }) => {
     {
       routeName: 'Request money',
       routeDetails: 'Buy airtime via VTU',
-      routeIcon: <FaIcon name="code-fork" size={28} />,
+      routeIcon: <RequestIcon width={30} />,
       routeNavigate: 'RequestFund',
     },
   ];
@@ -135,6 +137,7 @@ const Home = ({ navigation }) => {
     Clipboard.setString(wallet.loopayAccNo);
     ToastMessage('Copied to clipboard');
   };
+
   return (
     <>
       <PageContainer refreshFunc={refreshPage}>
@@ -180,7 +183,20 @@ const Home = ({ navigation }) => {
             <View style={styles.cardHeader}>
               <View style={styles.amountContainer}>
                 <View style={styles.symbolContainer}>
-                  <Text style={styles.symbol}>{selectedCurrency.symbol}</Text>
+                  <Text
+                    style={
+                      isAndroid
+                        ? {
+                            ...styles.symbol,
+                            transform: [
+                              { translateY: -3.5 },
+                              { translateX: -0.5 },
+                            ],
+                          }
+                        : styles.symbol
+                    }>
+                    {selectedCurrency.symbol}
+                  </Text>
                 </View>
                 <View>
                   <WalletAmount />
@@ -377,7 +393,6 @@ const styles = StyleSheet.create({
   symbol: {
     fontSize: 28,
     fontFamily: 'AlfaSlabOne-Regular',
-    transform: [{ translateY: -3.5 }, { translateX: -0.5 }],
   },
   flagContainer: {
     flexDirection: 'row',

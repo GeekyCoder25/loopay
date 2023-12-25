@@ -20,21 +20,15 @@ const TransactionPin = ({ navigation, route }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [canEditPin, setCanEditPin] = useState(false);
   const [remembersPassword, setRemembersPassword] = useState(true);
-  const [inputOldPin, setInputOldPin] = useState(!route.params?.forgotPin);
-  const [justEnterRouteState, setJustEnterRouteState] = useState(false);
+  const [inputOldPin, setInputOldPin] = useState(
+    appData.pin ?? !route.params?.forgotPin,
+  );
   const [reload, setReload] = useState(false);
 
   useEffect(() => {
-    setJustEnterRouteState(true);
-  }, []);
-
-  useEffect(() => {
     !remembersPassword && setCanEditPin(true);
-    justEnterRouteState &&
-      remembersPassword &&
-      !inputOldPin &&
-      setCanEditPin(true);
-  }, [appData.pin, inputOldPin, justEnterRouteState, remembersPassword]);
+    remembersPassword && !inputOldPin && setCanEditPin(true);
+  }, [appData.pin, inputOldPin, remembersPassword]);
 
   return (
     <PageContainer justify={true}>
@@ -89,7 +83,7 @@ const styles = StyleSheet.create({
     padding: 3 + '%',
   },
   logo: {
-    flex: 1,
+    height: 100,
     justifyContent: 'center',
   },
   form: {

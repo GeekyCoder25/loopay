@@ -30,12 +30,12 @@ export default function SelectInputField({
   setErrorMessage,
   setErrorKey,
 }) {
-  const { showAmount, setShowAmount } = useContext(AppContext);
+  const { showAmount, setShowAmount, selectedCurrency } =
+    useContext(AppContext);
   const { wallet } = useWalletContext();
   const [selected, setSelected] = useState(false);
   const [modalData, setModalData] = useState([]);
   const { title, type, placeholder, id, apiUrl } = selectInput;
-  const { localBalance } = wallet;
   const [modalOpen, setModalOpen] = useState(false);
   const [inputText, setInputText] = useState('');
 
@@ -80,9 +80,6 @@ export default function SelectInputField({
     setShowAmount(prev => !prev);
     setShowBalance(!showAmount);
   };
-  const localCurrencySymbol = allCurrencies.find(
-    currency => currency.isLocal,
-  ).symbol;
 
   return (
     <View>
@@ -93,8 +90,8 @@ export default function SelectInputField({
             <Text style={styles.label}>
               Balance:{' '}
               {showAmount
-                ? localCurrencySymbol +
-                  addingDecimal(`${localBalance?.toLocaleString()}`)
+                ? selectedCurrency.symbol +
+                  addingDecimal(`${wallet?.balance?.toLocaleString()}`)
                 : '***'}
             </Text>
           )}

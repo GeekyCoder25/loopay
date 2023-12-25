@@ -1,19 +1,20 @@
-import { FlatList, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import BalanceCard from './components/BalanceCard';
 import BoldText from '../../components/fonts/BoldText';
 import { useAdminDataContext } from '../../context/AdminContext';
 
 import CurrencyCard from '../../components/CurrencyCard';
 import { allCurrencies } from '../../database/data';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AppContext } from '../../components/AppContext';
+import { FlatList } from 'react-native-gesture-handler';
 
 const Accounts = () => {
   const { selectedCurrency } = useContext(AppContext);
   const { adminData } = useAdminDataContext();
+  const [accountsData] = useState(adminData.allBalances);
   const { localBalance, dollarBalance, poundBalance, euroBalance } =
-    adminData?.allBalances;
-
+    accountsData;
   const localCurrency = allCurrencies[0];
   const unArrangedCurrencies = [
     {

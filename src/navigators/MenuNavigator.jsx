@@ -20,6 +20,7 @@ import Settings from '../pages/MenuPages/Settings';
 import Biometric from '../pages/HomePages/Biometric';
 import Beneficiaries from '../pages/MenuPages/Settings/Beneficiaries';
 import DeleteAccount from '../pages/MenuPages/DeleteAccount';
+import Referral from '../pages/MenuPages/Referral';
 
 const MenuNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -60,6 +61,7 @@ const MenuNavigator = () => {
       <Stack.Screen name="DevicesAndSessions" component={DevicesAndSessions} />
       <Stack.Screen name="TransactionPin" component={TransactionPin} />
       <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen name="Referral" component={Referral} />
       <Stack.Screen name="Referrals" component={Referrals} />
       <Stack.Screen name="Support" component={Support} />
       <Stack.Screen name="Biometric" component={Biometric} />

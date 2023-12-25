@@ -32,6 +32,7 @@ const BalanceCard = () => {
     setShowAmount(prev => !prev);
     setShowBalance(!showAmount);
   };
+
   return (
     <View style={{ ...styles.cardHeader }}>
       <Pressable onPress={() => setModalOpen(true)} style={styles.plus}>

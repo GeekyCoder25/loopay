@@ -63,7 +63,7 @@ const Referrals = ({ navigation }) => {
     }
   };
 
-  const referralLink = `https://play.google.com/store/apps/loopay/details?id=com.loopay.hmghomes&referrer=${referralCode}`;
+  const referralLink = `https://play.google.com/store/apps/details?id=com.loopay&referrer=${referralCode}`;
 
   return (
     <PageContainer padding justify={true}>

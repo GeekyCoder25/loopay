@@ -18,6 +18,8 @@ import FlagSelect from './FlagSelect';
 import { addingDecimal } from '../../utils/AddingZero';
 import { setDefaultCurrency, setShowBalance } from '../../utils/storage';
 import { useWalletContext } from '../context/WalletContext';
+import Button from './Button';
+import Plus from '../../assets/images/plus.svg';
 
 const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
   const { selectedCurrency } = useContext(AppContext);

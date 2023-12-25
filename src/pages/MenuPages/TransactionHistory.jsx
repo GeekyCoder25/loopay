@@ -498,35 +498,37 @@ export const History = memo(({ history, navigation }) => {
             <RegularText style={styles.historyTitle}>swap</RegularText>
           </View>
           <View style={styles.amount}>
-            <View style={styles.swapAmountContainer}>
-              <Pressable onPress={handleShow}>
-                <BoldText
-                  style={{
-                    ...styles.transactionAmountText,
-                    ...styles.debitAmount,
-                  }}>
-                  {showAmount
-                    ? `${swapFromSymbol}${addingDecimal(
-                        Number(swapFromAmount).toLocaleString(),
-                      )}`
-                    : '***'}
-                </BoldText>
-              </Pressable>
-              <SwapIcon
-                width={14}
-                height={14}
-                style={vw > 360 ? styles.swap : styles.swapIcon}
-              />
-              <BoldText
-                style={{
-                  ...styles.transactionAmountText,
-                  ...styles.creditAmount,
-                }}>
-                {`${swapToSymbol}${addingDecimal(
-                  Number(swapToAmount).toLocaleString(),
-                )}`}
-              </BoldText>
-            </View>
+            <Pressable onPress={handleShow}>
+              {showAmount ? (
+                <View style={styles.swapAmountContainer}>
+                  <BoldText
+                    style={{
+                      ...styles.transactionAmountText,
+                      ...styles.debitAmount,
+                    }}>
+                    {`${swapFromSymbol}${addingDecimal(
+                      Number(swapFromAmount).toLocaleString(),
+                    )}`}
+                  </BoldText>
+                  <SwapIcon
+                    width={14}
+                    height={14}
+                    style={vw > 360 ? styles.swap : styles.swapIcon}
+                  />
+                  <BoldText
+                    style={{
+                      ...styles.transactionAmountText,
+                      ...styles.creditAmount,
+                    }}>
+                    {`${swapToSymbol}${addingDecimal(
+                      Number(swapToAmount).toLocaleString(),
+                    )}`}
+                  </BoldText>
+                </View>
+              ) : (
+                <BoldText style={styles.transactionAmountText}>***</BoldText>
+              )}
+            </Pressable>
             <RegularText>
               From
               <BoldText> •</BoldText>{' '}

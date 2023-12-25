@@ -154,8 +154,8 @@ export const menuRoutes = [
     routeIcon: 'gear',
   },
   {
-    routeName: 'Referrals',
-    routeNavigate: 'Referrals',
+    routeName: 'Referral',
+    routeNavigate: 'Referral',
     routeIcon: 'dualUser',
   },
   {

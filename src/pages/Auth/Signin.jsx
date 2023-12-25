@@ -18,17 +18,9 @@ import { loginUser } from '../../../utils/storage';
 import ErrorMessage from '../../components/ErrorMessage';
 import SuccessMessage from '../../components/SuccessMessage';
 import saveSessionOptions from '../../services/saveSession.js';
+import { EmailVerify } from './Signup.jsx';
 
 const Signin = ({ navigation }) => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    // email: 'toyibe25@gmail.com',
-    // password: '251101',
-  });
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorKey, setErrorKey] = useState('');
   const {
     vh,
     setIsLoggedIn,
@@ -38,8 +30,19 @@ const Signin = ({ navigation }) => {
     setCanChangeRole,
     setVerified,
   } = useContext(AppContext);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    // email: 'toyibe25@gmail.com',
+    // password: '251101',
+  });
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorKey, setErrorKey] = useState('');
+  const [verifyEmail, setVerifyEmail] = useState(false);
 
   const handleLogin = async () => {
+    setErrorMessage('');
     setIsLoading(true);
     if (Object.values(formData).includes('')) {
       setErrorMessage('Please input all fields');
@@ -47,27 +50,32 @@ const Signin = ({ navigation }) => {
     } else {
       try {
         const sessionData = saveSessionOptions();
-        const fetchedResult = await postFetchData('auth/login', formData);
-        const result = fetchedResult.data;
+        const response = await postFetchData('auth/login', formData);
+        const result = response.data;
 
+        if (response.status === 403) {
+          setErrorKey(Object.keys(result)[0]);
+          setErrorMessage(Object.values(result)[0]);
+          return setVerifyEmail(true);
+        }
         if (result?.data?.email === formData.email) {
           await postFetchData('user/session', sessionData, result.data.token);
           await loginUser(result.data, sessionData.deviceID);
           setErrorMessage('');
           setSuccessMessage('Login Successful');
-          const response = await getFetchData('user?popup=true');
+          const response2 = await getFetchData('user?popup=true');
           if (result.data.role === 'admin') {
             setIsAdmin(true);
             setCanChangeRole(true);
           }
-          setAppData(response.data);
-          setVerified(response.data.verificationStatus || false);
+          setAppData(response2.data);
+          setVerified(response2.data.verificationStatus || false);
           setIsLoggedIn(true);
           setIsLoading(false);
           setSuccessMessage('');
         } else {
-          if (typeof fetchedResult === 'string') {
-            setErrorMessage(fetchedResult);
+          if (typeof response === 'string') {
+            setErrorMessage(response);
           } else {
             setErrorKey(Object.keys(result)[0]);
             setErrorMessage(Object.values(result)[0]);
@@ -76,6 +84,7 @@ const Signin = ({ navigation }) => {
         }
       } catch (err) {
         setErrorMessage(err.message);
+      } finally {
         setIsLoading(false);
       }
     }
@@ -87,38 +96,39 @@ const Signin = ({ navigation }) => {
   };
 
   return (
-    <PageContainer scroll>
-      <View style={{ ...styles.container, minHeight: vh }}>
-        <View style={styles.headers}>
-          <Logo />
-        </View>
-        <View style={styles.form}>
-          <Header
-            title={'Login Information'}
-            text={'To continue, kindly complete the following details'}
-          />
-          {signInData.map(inputForm => (
-            <FormField
-              key={inputForm.name}
-              inputForm={inputForm}
-              formData={formData}
-              setFormData={setFormData}
-              editInput={editInput}
-              errorKey={errorKey}
-              setErrorKey={setErrorKey}
-              showRedBorder={errorMessage}
-            />
-          ))}
-          <ErrorMessage errorMessage={errorMessage} />
-          <SuccessMessage successMessage={successMessage} />
-          <View style={styles.forgetPressable}>
-            <Pressable onPress={() => navigation.navigate('ForgotPassword')}>
-              <BoldText style={styles.forget}>Forget Password?</BoldText>
-            </Pressable>
+    <>
+      <PageContainer scroll>
+        <View style={{ ...styles.container, minHeight: vh }}>
+          <View style={styles.headers}>
+            <Logo />
           </View>
-        </View>
-        <View style={styles.actionButtons}>
-          {/* <View style={styles.signInIcons}>
+          <View style={styles.form}>
+            <Header
+              title={'Login Information'}
+              text={'To continue, kindly complete the following details'}
+            />
+            {signInData.map(inputForm => (
+              <FormField
+                key={inputForm.name}
+                inputForm={inputForm}
+                formData={formData}
+                setFormData={setFormData}
+                editInput={editInput}
+                errorKey={errorKey}
+                setErrorKey={setErrorKey}
+                showRedBorder={errorMessage}
+              />
+            ))}
+            <ErrorMessage errorMessage={errorMessage} />
+            <SuccessMessage successMessage={successMessage} />
+            <View style={styles.forgetPressable}>
+              <Pressable onPress={() => navigation.navigate('ForgotPassword')}>
+                <BoldText style={styles.forget}>Forget Password?</BoldText>
+              </Pressable>
+            </View>
+          </View>
+          <View style={styles.actionButtons}>
+            {/* <View style={styles.signInIcons}>
             <Pressable onPress={() => console.log('apple was clicked')}>
               <Apple />
             </Pressable>
@@ -126,18 +136,28 @@ const Signin = ({ navigation }) => {
               <Google />
             </Pressable>
           </View> */}
-          <View style={styles.already}>
-            <RegularText style={styles.alreadyText}>
-              Don&apos;t have an account?
-            </RegularText>
-            <Pressable onPress={() => navigation.replace('Signup')}>
-              <BoldText style={styles.signIn}>Sign up</BoldText>
-            </Pressable>
+            <View style={styles.already}>
+              <RegularText style={styles.alreadyText}>
+                Don&apos;t have an account?
+              </RegularText>
+              <Pressable onPress={() => navigation.replace('Signup')}>
+                <BoldText style={styles.signIn}>Sign up</BoldText>
+              </Pressable>
+            </View>
+            <Button text={'Log in'} onPress={handleLogin} />
           </View>
-          <Button text={'Log in'} onPress={handleLogin} />
         </View>
-      </View>
-    </PageContainer>
+      </PageContainer>
+      {verifyEmail && (
+        <EmailVerify
+          email={formData.email}
+          setErrorMessage={setErrorMessage}
+          setSuccessMessage={setSuccessMessage}
+          navigation={navigation}
+          setVerifyEmail={setVerifyEmail}
+        />
+      )}
+    </>
   );
 };
 

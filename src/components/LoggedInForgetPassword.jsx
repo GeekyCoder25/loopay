@@ -29,11 +29,12 @@ const LoggedInForgetPassword = ({ setPasswordIsValid }) => {
     setIsPinOkay(otpCode.length === codeLengths.length);
   }, [codeLengths.length, otpCode.length]);
 
-  const handleConfirm = async () => {
+  const handleConfirm = async ({ pinCode: paramsPinCode }) => {
+    const code = paramsPinCode || otpCode;
     try {
       setIsLoading(true);
       const result = await postFetchData(
-        `auth/confirm-otp/${otpCode || 'fake'}`,
+        `auth/confirm-otp/${code || 'fake'}`,
         formData,
       );
       if (result === "Couldn't connect to server") {
@@ -91,19 +92,21 @@ const LoggedInForgetPassword = ({ setPasswordIsValid }) => {
       </View>
       <TextInput
         autoFocus
-        style={styles.codeInput}
+        style={{ height: 1 }}
         inputMode="numeric"
         onChangeText={text => {
           setOtpCode(text);
-          text.length === codeLengths.length && Keyboard.dismiss();
           setErrorMessage('');
           setErrorKey('');
+          text.length === codeLengths.length && Keyboard.dismiss();
+          text.length === codeLengths.length &&
+            handleConfirm({ pinCode: text });
         }}
         maxLength={codeLengths.length}
         ref={inputRef}
         value={otpCode}
       />
-      <ErrorMessage errorMessage={errorMessage} />
+      <ErrorMessage errorMessage={errorMessage} style={styles.errorMessage} />
       <View style={styles.button}>
         <Button
           text={'Confirm One time password'}
@@ -149,19 +152,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 30,
     justifyContent: 'center',
-    marginVertical: 40,
   },
-  codeInput: {
-    color: '#fff',
-    position: 'absolute',
-    transform: [{ translateX: -1000 }],
-  },
-  errorMessageText: {
-    fontSize: 14,
-    marginBottom: 5,
-    paddingHorizontal: 5,
-    color: 'red',
-    textAlign: 'center',
+  errorMessage: {
+    marginTop: 20,
   },
   button: {
     flex: 1,

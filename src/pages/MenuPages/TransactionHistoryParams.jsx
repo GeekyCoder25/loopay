@@ -280,9 +280,17 @@ const TransactionHistoryParams = ({ route }) => {
             text-align: justify;
             margin-top: auto;
             line-height: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px
           }
           footer h3 {
             display: inline-block;
+          }
+          footer img {
+            width: 200px;
+            height: 200px;
+            margin-left: auto;
           }
         </style>
       </head>
@@ -299,9 +307,9 @@ const TransactionHistoryParams = ({ route }) => {
               class="logo" />
           </header>
           <div class="amount">
-          ${
-            showAmount ? (
-              String.raw`
+            ${
+              showAmount ? (
+                String.raw`
                 <h4>${currencySymbol}</h4>
                 <h1>
                   ${
@@ -314,11 +322,11 @@ const TransactionHistoryParams = ({ route }) => {
                   .${Number(amount).toLocaleString().split('.')[1] || '00'}
                 </h5>
              `
-            ) : (
-              <h1>***</h1>
-            )
-          }
-            </div>
+              ) : (
+                <h1>***</h1>
+              )
+            }
+          </div>
           <span class="statusHeader ${status}">${status}</span>
           <section>
             ${shareReceiptData()
@@ -348,6 +356,7 @@ const TransactionHistoryParams = ({ route }) => {
               will not be liable. All transactions are subject to Loopay
               confirmation and fraud proof verification.
             </div>
+            <img src="https://res.cloudinary.com/geekycoder/image/upload/v1703481253/loopay/qrcode.png" />
           </footer>
         </div>
       </body>
