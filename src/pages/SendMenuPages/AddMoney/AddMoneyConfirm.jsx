@@ -201,7 +201,7 @@ const AddMoneyConfirm = ({ navigation }) => {
           </View>
         ))}
         <View style={styles.button}>
-          <Button text="Payment Receipt" onPress={handleConfirm} />
+          <Button text="Share Payment Receipt" onPress={handleConfirm} />
         </View>
       </View>
     </PageContainer>

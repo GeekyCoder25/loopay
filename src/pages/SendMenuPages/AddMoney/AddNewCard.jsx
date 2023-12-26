@@ -156,7 +156,6 @@ const AddNewCard = ({ navigation }) => {
                       };
                     });
                   }}
-                  maxLength={3}
                 />
                 <RegularText style={styles.label}>CVV</RegularText>
               </View>

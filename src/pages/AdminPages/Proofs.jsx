@@ -162,7 +162,8 @@ const Proof = ({
   setRequestPin,
   setProof,
 }) => {
-  const { amount, email, image, message, tagName } = proof;
+  const { accNo, amount, email, image, message, tagName, userData, createdAt } =
+    proof;
 
   const symbol = allCurrencies.find(
     ({ acronym, currency }) =>
@@ -184,7 +185,23 @@ const Proof = ({
         Tag Name: <RegularText>{tagName}</RegularText>
       </BoldText>
       <BoldText>
+        Full Name : <RegularText>{userData.fullName}</RegularText>
+      </BoldText>
+      <BoldText>
         Message: <RegularText>{message}</RegularText>
+      </BoldText>
+      <BoldText>
+        Account Number: <RegularText>{accNo}</RegularText>
+      </BoldText>
+      <BoldText>
+        Verification Status:{' '}
+        <RegularText>{userData.verificationStatus}</RegularText>
+      </BoldText>
+      <BoldText>
+        Date: <RegularText>{new Date(createdAt).toDateString()}</RegularText>
+      </BoldText>
+      <BoldText>
+        Time: <RegularText>{new Date(createdAt).toTimeString()}</RegularText>
       </BoldText>
       <View style={styles.row}>
         <BoldText>Image Proof:</BoldText>
