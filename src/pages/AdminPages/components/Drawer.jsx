@@ -1,4 +1,5 @@
-import { useContext } from 'react';
+/* eslint-disable react/no-unstable-nested-components */
+import { useContext, useEffect, useState } from 'react';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import DashboardIcon from '../../../../assets/images/dashboard.svg';
 import AccountsIcon from '../../../../assets/images/accounts.svg';
@@ -17,6 +18,8 @@ import { getSessionID, logoutUser } from '../../../../utils/storage';
 import RegularText from '../../../components/fonts/RegularText';
 import ToastMessage from '../../../components/ToastMessage';
 import IonIcon from '@expo/vector-icons/Ionicons';
+import BoldText from '../../../components/fonts/BoldText';
+import { useAdminDataContext } from '../../../context/AdminContext';
 
 const CustomDrawer = props => {
   const { navigation } = props;
@@ -106,9 +109,8 @@ const CustomDrawer = props => {
         <View>
           {adminRoutes.map(route => (
             <DrawerItem
-              icon={() => routeIcon(route)}
               key={route}
-              label={route}
+              label={() => <RouteItem route={route} routeIcon={routeIcon} />}
               labelStyle={styles.route}
               onPress={() => navigation.navigate(route)}
             />
@@ -146,12 +148,32 @@ const styles = StyleSheet.create({
     paddingTop: 20 + '%',
   },
   route: {
-    borderBottomWidth: 0.2,
-    marginLeft: -10,
-    borderBottomColor: '#bbb',
-    paddingBottom: 10,
     fontFamily: 'OpenSans-600',
     color: '#525252',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 15,
+  },
+  routeIcon: {
+    paddingBottom: 10,
+  },
+  routeText: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomColor: '#bbb',
+    borderBottomWidth: 0.2,
+    paddingBottom: 10,
+  },
+  routeCount: {
+    backgroundColor: '#FBD5D5',
+    width: 25,
+    height: 25,
+    borderRadius: 15,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    alignSelf: 'flex-end',
+    marginLeft: 'auto',
   },
   buttons: {
     marginTop: 30,
@@ -169,3 +191,34 @@ const styles = StyleSheet.create({
 });
 
 export default CustomDrawer;
+
+const RouteItem = ({ route, routeIcon }) => {
+  const { adminData } = useAdminDataContext();
+  const [routeCount, setRouteCount] = useState(0);
+  const [hasRouteCount, setHasRouteCount] = useState(false);
+
+  useEffect(() => {
+    const drawerCount = adminData.drawerCount;
+    if (drawerCount && drawerCount[route.toLowerCase()]) {
+      setHasRouteCount(true);
+      setRouteCount(drawerCount[route.toLowerCase()]);
+    } else {
+      setHasRouteCount(false);
+      setRouteCount(0);
+    }
+  }, [adminData?.drawerCount, route]);
+
+  return (
+    <View style={styles.route}>
+      <View style={styles.routeIcon}>{routeIcon(route)}</View>
+      <View style={styles.routeText}>
+        <RegularText>{route}</RegularText>
+        {hasRouteCount && (
+          <BoldText color="#9B1C1C" style={styles.routeCount}>
+            {routeCount}
+          </BoldText>
+        )}
+      </View>
+    </View>
+  );
+};
