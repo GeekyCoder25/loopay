@@ -27,6 +27,7 @@ import Back from '../../components/Back';
 import { FlatList } from 'react-native-gesture-handler';
 
 const Announcements = () => {
+  const { setWalletRefresh } = useContext(AppContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [announcements, setAnnouncements] = useState([]);
   const [editFormData, setEditFormData] = useState(null);
@@ -63,6 +64,8 @@ const Announcements = () => {
       }
     } catch (error) {
       ToastMessage(error.message);
+    } finally {
+      setWalletRefresh(prev => !prev);
     }
   };
 
@@ -299,7 +302,7 @@ const styles = StyleSheet.create({
 export default Announcements;
 
 const AddNew = ({ editFormData, handleClose, setReload, setModalOpen }) => {
-  const { vh, setIsLoading } = useContext(AppContext);
+  const { vh, setIsLoading, setWalletRefresh } = useContext(AppContext);
   const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
     title: editFormData?.title || '',
@@ -360,6 +363,7 @@ const AddNew = ({ editFormData, handleClose, setReload, setModalOpen }) => {
         );
       } finally {
         setIsLoading(false);
+        setWalletRefresh(prev => !prev);
       }
     }
   };

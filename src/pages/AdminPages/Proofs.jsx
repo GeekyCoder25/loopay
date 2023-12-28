@@ -68,7 +68,7 @@ const Proofs = () => {
 
   return (
     <PageContainer padding scroll>
-      <BoldText style={styles.headerText}>Payment proofs</BoldText>
+      <BoldText style={styles.headerText}>Submitted proofs</BoldText>
       {requestPin ? (
         <InputPin
           handleCancel={() => setRequestPin(false)}
@@ -134,21 +134,21 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     borderRadius: 10,
-    minWidth: 30 + '%',
+    minWidth: 28 + '%',
   },
   decline: {
     backgroundColor: 'red',
     padding: 10,
     alignItems: 'center',
     borderRadius: 10,
-    minWidth: 30 + '%',
+    minWidth: 28 + '%',
   },
   request: {
     backgroundColor: 'orange',
     padding: 10,
     alignItems: 'center',
     borderRadius: 10,
-    minWidth: 30 + '%',
+    minWidth: 28 + '%',
   },
 });
 
