@@ -41,7 +41,7 @@ const RequestSuccess = ({ navigation, route }) => {
       <RegularText style={styles.bottomText}>
         You’ll be notified when
         <BoldText> #{tagName} </BoldText>
-        accept or reject your request
+        accepts or rejects your request
       </RegularText>
       <View style={styles.button}>
         <Button text={'Back Home'} onPress={handleHome} />

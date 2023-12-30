@@ -92,8 +92,8 @@ const AddMoneyConfirm = ({ navigation }) => {
       const result = await response.json();
 
       if (response.ok) {
-        // navigation.popToTop();
-        // navigation.navigate('HomeNavigator');
+        navigation.popToTop();
+        navigation.navigate('HomeNavigator');
         ToastMessage(
           'Uploaded successfully, your account will be credited soon',
         );
