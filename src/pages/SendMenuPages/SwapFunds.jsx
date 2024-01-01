@@ -263,6 +263,7 @@ const SwapFunds = ({ navigation }) => {
         toCurrency: swapTo.currency,
         id: randomUUID(),
         fee: transactionFee,
+        swapRate: currencyRate(),
       };
     });
     toReceiveCalculate &&
@@ -278,7 +279,6 @@ const SwapFunds = ({ navigation }) => {
     setErrorKey(false);
     setErrorMessage(false);
   };
-
   const handleAutoFill = ({ params }) => {
     const amount = params || value;
     if (amount && amount < minimumAmountToAdd) {
@@ -933,6 +933,7 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     paddingHorizontal: 5 + '%',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 20,
   },
   modalBorder: {
@@ -952,6 +953,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     width: 80 + '%',
+    maxHeight: 250,
   },
   swapModal: {
     alignItems: 'center',

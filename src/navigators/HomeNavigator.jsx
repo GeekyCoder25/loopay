@@ -28,6 +28,9 @@ import AddNewCard from '../pages/SendMenuPages/AddMoney/AddNewCard';
 import Biometric from '../pages/HomePages/Biometric';
 import TransactionPin from '../pages/MenuPages/TransactionPin';
 import AddMoneyDetails from '../pages/SendMenuPages/AddMoney/AddMoneyDetails';
+import SendLoopay from '../pages/SendMenuPages/SendMoney/SendLoopay';
+import Withdraw from '../pages/SendMenuPages/SendMoney/Withdraw';
+import PayABill from '../pages/SendMenuPages/PayABill/PayABill';
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -60,7 +63,7 @@ const HomeNavigator = () => {
         />
 
         <Stack.Screen
-          name="AddMoney"
+          name="AddMoneyFromHome"
           component={AddMoney}
           options={({ navigation, route }) => screenHeader(navigation, route)}
         />
@@ -145,6 +148,21 @@ const HomeNavigator = () => {
         <Stack.Screen
           name="Biometric"
           component={Biometric}
+          options={({ navigation, route }) => screenHeader(navigation, route)}
+        />
+        <Stack.Screen
+          name="SendLoopay"
+          component={SendLoopay}
+          options={({ navigation, route }) => screenHeader(navigation, route)}
+        />
+        <Stack.Screen
+          name="SendBank"
+          component={Withdraw}
+          options={({ navigation, route }) => screenHeader(navigation, route)}
+        />
+        <Stack.Screen
+          name="PayABill"
+          component={PayABill}
           options={({ navigation, route }) => screenHeader(navigation, route)}
         />
         <Stack.Screen

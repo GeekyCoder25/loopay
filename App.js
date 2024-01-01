@@ -54,6 +54,7 @@ export default function App() {
   const [popUpClosed, setPopUpClosed] = useState(0);
   const [showAmount, setShowAmount] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
+  const [openShake, setOpenShake] = useState(false);
   const timerId = useRef(false);
   const vw = useWindowDimensions().width;
   const vh = useWindowDimensions().height;
@@ -106,6 +107,8 @@ export default function App() {
     setPopUpClosed,
     isShaking,
     setIsShaking,
+    openShake,
+    setOpenShake,
   };
 
   useEffect(() => {

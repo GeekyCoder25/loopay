@@ -402,7 +402,9 @@ const AddMoney = ({ navigation, route }) => {
         onRequestClose={() => setPaymentModal(prev => !prev)}>
         <Pressable
           style={styles.overlay}
-          onPress={() => setPaymentModal(prev => !prev)}>
+          onPress={() => setPaymentModal(prev => !prev)}
+        />
+        <View style={styles.paymentModalContainer}>
           <View style={styles.paymentModal}>
             <View style={styles.paymentModal}>
               <View style={styles.paymentModal}>
@@ -418,7 +420,7 @@ const AddMoney = ({ navigation, route }) => {
               </View>
             </View>
           </View>
-        </Pressable>
+        </View>
       </Modal>
     </>
   );
@@ -499,6 +501,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     bottom: 0,
+    height: 100 + '%',
+    width: 100 + '%',
+  },
+  paymentModalContainer: {
     height: 100 + '%',
     width: 100 + '%',
     justifyContent: 'center',

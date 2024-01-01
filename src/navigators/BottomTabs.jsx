@@ -12,6 +12,7 @@ import RequestFundsContextComponent from '../context/RequestContext';
 import Popup from '../components/Popup';
 import ToastMessage from '../components/ToastMessage';
 import useShakeEvent from '../components/Shake';
+import ShakeModal from '../components/ShakeModal';
 
 const BottomTabs = ({ navigation }) => {
   const {
@@ -21,6 +22,8 @@ const BottomTabs = ({ navigation }) => {
     showPopUp,
     isSessionTimedOut,
     setIsShaking,
+    openShake,
+    setOpenShake,
   } = useContext(AppContext);
   const Tab = createBottomTabNavigator();
 
@@ -37,7 +40,7 @@ const BottomTabs = ({ navigation }) => {
   const handleShake = () => {
     // ToastMessage('Shaking');
     setIsShaking(false);
-    navigation.navigate('SendMoneyNavigatorFromHome');
+    setOpenShake(true);
   };
   useShakeEvent(handleShake);
 
@@ -61,6 +64,7 @@ const BottomTabs = ({ navigation }) => {
             <Tab.Screen name="MenuNavigator" component={MenuNavigator} />
           </Tab.Navigator>
           {showPopUp && !isSessionTimedOut && <Popup />}
+          {openShake && !showPopUp && <ShakeModal />}
         </RequestFundsContextComponent>
       </BeneficiaryContextComponent>
     </WalletContextComponent>

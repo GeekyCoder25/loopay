@@ -119,6 +119,7 @@ export const BanksModal = ({
   setFormData,
   setErrorKey,
   setErrorMessage,
+  noBanks,
 }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchBanks, setSearchBanks] = useState([]);
@@ -161,7 +162,11 @@ export const BanksModal = ({
         />
         <ScrollView>
           <View style={styles.modal}>
-            {isSearching ? (
+            {noBanks ? (
+              <View>
+                <RegularText>{`${noBanks}`}</RegularText>
+              </View>
+            ) : isSearching ? (
               searchBanks.map(
                 (bank, index) =>
                   bank && (

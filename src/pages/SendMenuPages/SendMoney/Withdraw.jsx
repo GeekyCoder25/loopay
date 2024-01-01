@@ -18,7 +18,6 @@ import { addingDecimal } from '../../../../utils/AddingZero';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { useWalletContext } from '../../../context/WalletContext';
 import { getFetchData, postFetchData } from '../../../../utils/fetchAPI';
-import FooterCard from '../../../components/FooterCard';
 import { randomUUID } from 'expo-crypto';
 import { useFocusEffect } from '@react-navigation/native';
 import AccInfoCard from '../../../components/AccInfoCard';
@@ -32,6 +31,7 @@ const Withdraw = ({ navigation }) => {
   const { wallet } = useWalletContext();
   const [bankSelected, setBankSelected] = useState(null);
   const [banks, setBanks] = useState([]);
+  const [noBanks, setNoBanks] = useState(false);
   const [selectedBank, setSelectedBank] = useState(null);
   const [showBankModal, setShowBankModal] = useState(false);
   const [fullName, setFullName] = useState('');
@@ -66,14 +66,16 @@ const Withdraw = ({ navigation }) => {
   );
 
   useEffect(() => {
-    if (!banks.length) {
-      getFetchData('user/banks').then(response => {
+    getFetchData(`user/banks?currency=${selectedCurrency.acronym}`).then(
+      response => {
         if (response.status === 200) {
+          setNoBanks(false);
           return setBanks(response.data);
         }
-      });
-    }
-  }, [banks.length, showBankModal]);
+        setNoBanks(response.data);
+      },
+    );
+  }, [banks.length, selectedCurrency.acronym, showBankModal]);
 
   useEffect(() => {
     if (!Object.values(formData).includes('') && formData.accNo.length === 10) {
@@ -251,6 +253,7 @@ const Withdraw = ({ navigation }) => {
                 setFormData={setFormData}
                 setErrorKey={setErrorKey}
                 setErrorMessage={setErrorMessage}
+                noBanks={noBanks}
               />
               {!isLoading ? (
                 fullName && (

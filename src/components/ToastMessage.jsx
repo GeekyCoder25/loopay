@@ -12,6 +12,17 @@ const ToastMessage = message => {
   if (Platform.OS === 'android') {
     return ToastAndroid.show(message, ToastAndroid.SHORT);
   }
+
+  const options = {
+    position: -50,
+    backgroundColor: '#f0f0f3',
+    textColor: '#000',
+    animation: true,
+    shadow: true,
+    opacity: 1,
+    shadowColor: 'rgba(0,0,0,0.5)',
+  };
+
   return Toast.show(
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -23,13 +34,7 @@ const ToastMessage = message => {
       </View>
       <Text style={styles.message}>{message}</Text>
     </View>,
-    {
-      position: -50,
-      backgroundColor: '#f0f0f3',
-      textColor: '#000',
-      animation: true,
-      shadow: false,
-    },
+    options,
   );
 };
 
@@ -40,11 +45,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 10,
     maxWidth: 350,
-    paddingTop: 5,
+    paddingHorizontal: 2,
+    overflow: 'hidden',
   },
   imageContainer: {
     backgroundColor: '#fff',
-    borderRadius: 15,
+    borderRadius: 20,
   },
   image: {
     borderRadius: 15,
@@ -52,7 +58,8 @@ const styles = StyleSheet.create({
     height: 25,
   },
   message: {
-    fontWeight: '500',
+    maxWidth: '80%',
+    textAlign: 'center',
   },
 });
 export default ToastMessage;

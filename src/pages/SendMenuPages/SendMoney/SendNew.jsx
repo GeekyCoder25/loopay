@@ -118,7 +118,7 @@ const SendNew = ({ navigation, route }) => {
               inputMode="numeric"
               onChangeText={text => handleChange(text)}
               value={inputValue}
-              placeholder="9012345678"
+              placeholder="“Input LOOPAY tag or account number"
               placeholderTextColor={'#525252'}
               maxLength={10}
             />

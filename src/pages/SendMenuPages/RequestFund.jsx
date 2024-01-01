@@ -177,9 +177,11 @@ const RequestFund = ({ navigation, route }) => {
             placeholder={'#username'}
             onBlur={handleCheck}
           />
-          <Pressable style={styles.textInputRight} onPress={handleCheck}>
-            <Check />
-          </Pressable>
+          {userFound && (
+            <Pressable style={styles.textInputRight}>
+              <Check />
+            </Pressable>
+          )}
         </View>
         {successMessage && (
           <View style={styles.success}>

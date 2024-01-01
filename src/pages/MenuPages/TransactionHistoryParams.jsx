@@ -44,6 +44,7 @@ const TransactionHistoryParams = ({ route }) => {
     swapTo,
     swapFromAmount,
     swapToAmount,
+    swapRate,
     networkProvider,
     rechargePhoneNo,
     dataPlan,
@@ -164,6 +165,17 @@ const TransactionHistoryParams = ({ route }) => {
             value: `${swapToSymbol}${addingDecimal(
               Number(swapToAmount).toLocaleString(),
             )}`,
+          },
+          {
+            key: 'Swap Rate',
+            value:
+              swapRate < 1
+                ? `${swapToSymbol}1 = ${swapFromSymbol}${addingDecimal(
+                    Number(1 / swapRate || 0).toLocaleString(),
+                  )}
+                `
+                : `${swapFromSymbol}1 = ${swapToSymbol}
+                  ${addingDecimal(Number(swapRate || 0).toLocaleString())}`,
           },
           { key: 'Reference Id', value: reference },
           { key: 'Status', value: status },
@@ -931,14 +943,14 @@ const TransactionHistoryParams = ({ route }) => {
                     <BoldText style={styles.cardValue}>Swap</BoldText>
                   </View>
                   <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>Swap-from</RegularText>
+                    <RegularText style={styles.cardKey}>Swap from</RegularText>
                     <BoldText
                       style={{ ...styles.cardValue, ...styles.statusText }}>
                       {swapFrom}
                     </BoldText>
                   </View>
                   <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>Swap-to</RegularText>
+                    <RegularText style={styles.cardKey}>Swap to</RegularText>
                     <BoldText
                       style={{ ...styles.cardValue, ...styles.statusText }}>
                       {swapTo}
@@ -946,7 +958,7 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Swap-from amount
+                      Swap from amount
                     </RegularText>
                     <BoldText style={styles.cardValue}>
                       {swapFromSymbol +
@@ -955,11 +967,31 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Swap-to amount
+                      Swap to amount
                     </RegularText>
                     <BoldText style={styles.cardValue}>
                       {swapToSymbol +
                         addingDecimal(Number(swapToAmount).toLocaleString())}
+                    </BoldText>
+                  </View>
+                  <View style={styles.cardLine}>
+                    <RegularText style={styles.cardKey}>Swap rate</RegularText>
+                    <BoldText style={styles.cardValue}>
+                      {swapRate < 1 ? (
+                        <>
+                          {swapToSymbol}1 = {swapFromSymbol}
+                          {addingDecimal(
+                            Number(1 / swapRate || 0).toLocaleString(),
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {swapFromSymbol}1 = {swapToSymbol}
+                          {addingDecimal(
+                            Number(swapRate || 0).toLocaleString(),
+                          )}
+                        </>
+                      )}
                     </BoldText>
                   </View>
                   <View style={styles.cardLine}>

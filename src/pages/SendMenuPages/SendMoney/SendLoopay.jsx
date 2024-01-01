@@ -170,6 +170,10 @@ const SendLoopay = ({ navigation, route }) => {
                 </BoldText>
                 <BoldText>{userFound.tagName}</BoldText>
               </View>
+
+              {/* <Pressable style={styles.textInputRight}>
+                <FaIcon name="slideshare" />
+              </Pressable> */}
             </View>
             {newBeneficiary && (
               <View style={styles.beneficiary}>

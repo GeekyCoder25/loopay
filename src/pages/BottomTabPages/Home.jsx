@@ -31,6 +31,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import ToastMessage from '../../components/ToastMessage';
 import { addingDecimal } from '../../../utils/AddingZero';
 import FaIcon from '@expo/vector-icons/FontAwesome';
+import IonIcon from '@expo/vector-icons/Ionicons';
 import { allCurrencies } from '../../database/data';
 import { useRequestFundsContext } from '../../context/RequestContext';
 import { useWalletContext } from '../../context/WalletContext';
@@ -48,6 +49,7 @@ const Home = ({ navigation }) => {
     setWalletRefresh,
     setNoReload,
     setShowTabBar,
+    vw,
   } = useContext(AppContext);
   const { transactions, wallet } = useWalletContext();
   const { requestFunds: requests } = useRequestFundsContext();
@@ -55,6 +57,7 @@ const Home = ({ navigation }) => {
   const firstName = appData.userProfile.firstName;
   const [isExiting, setIsExiting] = useState(false);
   const [requestsLength, setRequestsLength] = useState(0);
+  const [closeRequest, setCloseRequest] = useState(false);
   const { unread } = useNotificationsContext();
   const [isAndroid] = useState(Platform.OS === 'android');
   // useFocusEffect(
@@ -111,7 +114,7 @@ const Home = ({ navigation }) => {
 
   const refreshPage = () => {};
 
-  const quickLinks = [
+  const shortcuts = [
     {
       routeName: 'Buy airtime',
       routeDetails: 'Send Funds to Family and Friends',
@@ -158,9 +161,9 @@ const Home = ({ navigation }) => {
               {unread.length ? <BellActive /> : <Bell />}
             </Pressable>
           </View>
-          {requests.length > 0 && (
+          {requests.length > 0 && !closeRequest && (
             <Pressable
-              style={styles.request}
+              style={{ ...styles.request, width: vw }}
               onPress={() => navigation.navigate('PendingRequest')}>
               <View style={styles.requestBell}>
                 <BoldText>🔔 </BoldText>
@@ -169,6 +172,15 @@ const Home = ({ navigation }) => {
                     ? `You’ve ${requests.length} pending requests. Click to check requests`
                     : 'You’ve a pending request. Click to check request'}
                 </BoldText>
+                <Pressable
+                  style={styles.close}
+                  onPress={() => setCloseRequest(true)}>
+                  <IonIcon
+                    name="close-circle-outline"
+                    color={'#fff'}
+                    size={18}
+                  />
+                </Pressable>
               </View>
             </Pressable>
           )}
@@ -177,8 +189,7 @@ const Home = ({ navigation }) => {
             resizeMode="contain"
             style={{
               ...styles.card,
-              height: requests.length ? 150 : 200,
-              marginTop: requests.length ? 20 : 30,
+              height: requests.length && !closeRequest ? 150 : 200,
             }}>
             <View style={styles.cardHeader}>
               <View style={styles.amountContainer}>
@@ -242,7 +253,7 @@ const Home = ({ navigation }) => {
           showsHorizontalScrollIndicator={false}>
           <Pressable
             style={styles.quickLink}
-            onPress={() => navigation.navigate('AddMoney')}>
+            onPress={() => navigation.navigate('AddMoneyFromHome')}>
             <FaIcon name="plus-circle" color={'#fff'} size={24} />
             <BoldText style={styles.quickLinkText}>Add money</BoldText>
           </Pressable>
@@ -263,7 +274,7 @@ const Home = ({ navigation }) => {
         </ScrollView>
         <BoldText style={styles.shortcutsHeader}>Shortcuts</BoldText>
         <View style={styles.shortcuts}>
-          {quickLinks.map(link => (
+          {shortcuts.map(link => (
             <Pressable
               onPress={() => {
                 navigation.navigate(link.routeNavigate);
@@ -322,7 +333,6 @@ const Home = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    height: 300,
     paddingHorizontal: 3 + '%',
   },
   bgContainer: {
@@ -347,10 +357,12 @@ const styles = StyleSheet.create({
   },
   request: {
     backgroundColor: '#1e1e1e',
-    width: 106 + '%',
     marginLeft: -3 + '%',
     padding: 15,
+    paddingRight: 0,
+    position: 'relative',
     marginTop: 10,
+    marginBottom: -10,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -361,11 +373,18 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     textAlignVertical: 'center',
+    marginRight: 35,
+    maxWidth: 90 + '%',
+  },
+  close: {
+    position: 'absolute',
+    paddingHorizontal: 5,
+    right: 0,
   },
   card: {
     backgroundColor: '#000',
-    height: 200,
     marginVertical: 30,
+    marginBottom: 20,
     borderRadius: 15,
     paddingHorizontal: 20,
     paddingTop: 5,
