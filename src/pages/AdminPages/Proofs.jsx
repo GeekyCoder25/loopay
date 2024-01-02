@@ -13,13 +13,13 @@ import { AppContext } from '../../components/AppContext';
 import RegularText from '../../components/fonts/RegularText';
 import ToastMessage from '../../components/ToastMessage';
 import InputPin from '../../components/InputPin';
+import { addingDecimal } from '../../../utils/AddingZero';
 
 const Proofs = () => {
   const { walletRefresh } = useContext(AppContext);
   const [proofs, setProofs] = useState([]);
   const [requestPin, setRequestPin] = useState(false);
   const [customFunc, setCustomFunc] = useState(null);
-  const [proof, setProof] = useState(null);
 
   useEffect(() => {
     const getProofs = async () => {
@@ -30,41 +30,6 @@ const Proofs = () => {
     };
     getProofs();
   }, [walletRefresh]);
-
-  const handleApprove = async () => {
-    const response = await postFetchData('admin/approve', proof);
-    if (response.status === 200) {
-      setProofs(prev =>
-        prev.filter(indexProof => indexProof._id !== response.data?.data?._id),
-      );
-      ToastMessage('Transaction Approved');
-      return setRequestPin(false);
-    }
-    ToastMessage(response.data);
-  };
-  const handleDecline = async () => {
-    const response = await deleteFetchData(`admin/decline/${proof._id}`, proof);
-    if (response.status === 200) {
-      setProofs(prev =>
-        prev.filter(indexProof => indexProof._id !== response.data?.data?._id),
-      );
-      ToastMessage('Transaction Declined');
-      return setRequestPin(false);
-    }
-    ToastMessage(response.data);
-  };
-
-  const handleRequest = async () => {
-    const response = await deleteFetchData(`admin/decline/${proof._id}`, proof);
-    if (response.status === 200) {
-      setProofs(prev =>
-        prev.filter(indexProof => indexProof._id !== response.data?.data?._id),
-      );
-      ToastMessage('Transaction Declined');
-      return setRequestPin(false);
-    }
-    ToastMessage(response.data);
-  };
 
   return (
     <PageContainer padding scroll>
@@ -77,17 +42,13 @@ const Proofs = () => {
       ) : (
         <View>
           {proofs.length ? (
-            proofs.map(proofIndex => (
+            proofs.map(proof => (
               <Proof
-                key={proofIndex._id}
-                proof={proofIndex}
-                requestPin={requestPin}
-                setRequestPin={setRequestPin}
-                setProof={setProof}
+                key={proof._id}
+                proof={proof}
                 setCustomFunc={setCustomFunc}
-                handleApprove={handleApprove}
-                handleDecline={handleDecline}
-                handleRequest={handleRequest}
+                setRequestPin={setRequestPin}
+                setProofs={setProofs}
               />
             ))
           ) : (
@@ -154,14 +115,7 @@ const styles = StyleSheet.create({
 
 export default Proofs;
 
-const Proof = ({
-  proof,
-  handleApprove,
-  handleDecline,
-  setCustomFunc,
-  setRequestPin,
-  setProof,
-}) => {
+const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
   const { accNo, amount, email, image, message, tagName, userData, createdAt } =
     proof;
 
@@ -170,13 +124,47 @@ const Proof = ({
       currency === proof.currency || acronym === proof.currency,
   ).symbol;
 
-  const handleRequest = () => {};
+  const handleApprove = async () => {
+    const response = await postFetchData('admin/approve', proof);
+    if (response.status === 200) {
+      setProofs(prev =>
+        prev.filter(indexProof => indexProof._id !== response.data?.data?._id),
+      );
+      ToastMessage('Transaction Approved');
+      return setRequestPin(false);
+    }
+    ToastMessage(response.data);
+  };
+
+  const handleDecline = async () => {
+    const response = await deleteFetchData(`admin/decline/${proof._id}`, proof);
+    if (response.status === 200) {
+      setProofs(prev =>
+        prev.filter(indexProof => indexProof._id !== response.data?.data?._id),
+      );
+      ToastMessage('Transaction Declined');
+      return setRequestPin(false);
+    }
+    ToastMessage(response.data);
+  };
+
+  const handleRequest = async () => {
+    const response = await deleteFetchData(`admin/decline/${proof._id}`, proof);
+    if (response.status === 200) {
+      setProofs(prev =>
+        prev.filter(indexProof => indexProof._id !== response.data?.data?._id),
+      );
+      ToastMessage('Transaction Declined');
+      return setRequestPin(false);
+    }
+    ToastMessage(response.data);
+  };
 
   return (
     <View style={styles.proof}>
       <BoldText style={styles.amount}>
         {symbol}
-        {amount}
+        {addingDecimal(Number(amount).toLocaleString())}
       </BoldText>
       <BoldText>
         Email: <RegularText>{email}</RegularText>
@@ -198,6 +186,15 @@ const Proof = ({
         <RegularText>{userData.verificationStatus}</RegularText>
       </BoldText>
       <BoldText>
+        Country:{' '}
+        <RegularText>
+          {userData.country?.name + ', ' + userData.country?.code}
+        </RegularText>
+      </BoldText>
+      <BoldText>
+        Type: <RegularText>{'Deposit'}</RegularText>
+      </BoldText>
+      <BoldText>
         Date: <RegularText>{new Date(createdAt).toDateString()}</RegularText>
       </BoldText>
       <BoldText>
@@ -214,7 +211,6 @@ const Proof = ({
         <Pressable
           onPress={() => {
             setRequestPin(true);
-            setProof(proof);
             setCustomFunc(() => handleApprove);
           }}
           style={styles.approve}>
@@ -223,7 +219,6 @@ const Proof = ({
         <Pressable
           onPress={() => {
             setRequestPin(true);
-            setProof(proof);
             setCustomFunc(() => handleDecline);
           }}
           style={styles.decline}>

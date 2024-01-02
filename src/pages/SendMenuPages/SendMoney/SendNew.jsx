@@ -23,6 +23,7 @@ import { postFetchData } from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
 import { useBeneficiaryContext } from '../../../context/BeneficiariesContext';
 import ErrorMessage from '../../../components/ErrorMessage';
+import IonIcon from '@expo/vector-icons/Ionicons';
 
 const SendNew = ({ navigation, route }) => {
   const { appData } = useContext(AppContext);
@@ -34,6 +35,7 @@ const SendNew = ({ navigation, route }) => {
   const [userFound, setUserFound] = useState(null);
   const [newBeneficiary, setNewBeneficiary] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [userSelected, setUserSelected] = useState(false);
 
   useEffect(() => {
     const getClipboard = async () => {
@@ -67,6 +69,7 @@ const SendNew = ({ navigation, route }) => {
   const handleChange = async text => {
     try {
       setErrorMessage('');
+      setUserSelected(false);
       setInputValue(text);
       if (text.length === 10) {
         setIsSearching(true);
@@ -88,7 +91,8 @@ const SendNew = ({ navigation, route }) => {
         }
         setErrorMessage(result.data);
       } else {
-        return setUserFound(null);
+        setUserFound(null);
+        return setUserSelected(null);
       }
     } finally {
       setIsSearching(false);
@@ -163,16 +167,26 @@ const SendNew = ({ navigation, route }) => {
                 </BoldText>
                 <BoldText>{userFound.tagName || userFound.userName}</BoldText>
               </View>
+              <Pressable
+                style={styles.selected}
+                onPress={() => setUserSelected(prev => !prev)}>
+                {userSelected ? (
+                  <IonIcon name="radio-button-on-outline" size={24} />
+                ) : (
+                  <IonIcon name="radio-button-off-outline" size={24} />
+                )}
+              </Pressable>
             </View>
           </View>
         )}
         <Button
           text={'Continue'}
-          disabled={!userFound}
+          disabled={!userFound || !userSelected}
           onPress={handleContinue}
           style={{
             ...styles.button,
-            backgroundColor: userFound ? '#1E1E1E' : 'rgba(30, 30, 30, 0.7)',
+            backgroundColor:
+              userFound && userSelected ? '#1E1E1E' : 'rgba(30, 30, 30, 0.7)',
           }}
         />
       </ScrollView>
@@ -270,6 +284,10 @@ const styles = StyleSheet.create({
   verify: {
     width: 15,
     height: 15,
+  },
+  selected: {
+    flex: 1,
+    alignItems: 'flex-end',
   },
   beneficiary: {
     flexDirection: 'row',

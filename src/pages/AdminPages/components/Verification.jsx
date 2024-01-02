@@ -84,12 +84,12 @@ const Verification = ({ route, modalOpen, setModalOpen }) => {
           </View>
           <View style={styles.detailsRow}>
             <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-            <RegularText>Phone Number</RegularText>
+            <RegularText>Phone Number:</RegularText>
             <BoldText>{userData?.userProfile.phoneNumber}</BoldText>
           </View>
           <View style={styles.detailsRow}>
             <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-            <RegularText>Country</RegularText>
+            <RegularText>Country:</RegularText>
             <BoldText>{userData?.country.name}</BoldText>
           </View>
           <View style={styles.detailsRow}>
@@ -112,12 +112,12 @@ const Verification = ({ route, modalOpen, setModalOpen }) => {
         <View style={styles.containerSub}>
           <View style={styles.detailsRow}>
             <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-            <RegularText>Type</RegularText>
+            <RegularText>Type:</RegularText>
             <BoldText>{idType}</BoldText>
           </View>
           <View style={styles.detailsRow}>
             <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-            <RegularText>Country</RegularText>
+            <RegularText>Country:</RegularText>
             <BoldText>{country}</BoldText>
           </View>
           {idValue && (

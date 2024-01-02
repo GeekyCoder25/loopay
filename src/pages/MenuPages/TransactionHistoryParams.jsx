@@ -29,6 +29,7 @@ const TransactionHistoryParams = ({ route }) => {
     receiverPhoto,
     amount,
     transactionType,
+    method,
     createdAt,
     sourceBank,
     destinationBank,
@@ -388,6 +389,19 @@ const TransactionHistoryParams = ({ route }) => {
     setShowBalance(!showAmount);
   };
 
+  const transactionMethod = (() => {
+    switch (method) {
+      case 'intra':
+        return 'Loopay to Loopay transfer';
+      case 'card':
+        return 'Card transaction';
+      case 'deposit':
+        return 'Deposit';
+      default:
+        return 'Local bank transfer';
+    }
+  })();
+
   return (
     <>
       <PageContainer justify={true} scroll>
@@ -477,10 +491,10 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Payment Method
+                      Transaction Method
                     </RegularText>
-                    <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
-                      Balance
+                    <BoldText style={styles.cardValue}>
+                      {transactionMethod}
                     </BoldText>
                   </View>
                   <View style={styles.cardLine}>
@@ -589,6 +603,14 @@ const TransactionHistoryParams = ({ route }) => {
                     </RegularText>
                     <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
                       Balance
+                    </BoldText>
+                  </View>
+                  <View style={styles.cardLine}>
+                    <RegularText style={styles.cardKey}>
+                      Transaction Method
+                    </RegularText>
+                    <BoldText style={styles.cardValue}>
+                      {transactionMethod}
                     </BoldText>
                   </View>
                   <View style={styles.cardLine}>

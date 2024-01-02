@@ -24,6 +24,7 @@ import { tagNameRules } from '../../../database/data';
 import { AppContext } from '../../../components/AppContext';
 import { useBeneficiaryContext } from '../../../context/BeneficiariesContext';
 import FaIcon from '@expo/vector-icons/FontAwesome';
+import IonIcon from '@expo/vector-icons/Ionicons';
 import ErrorMessage from '../../../components/ErrorMessage';
 
 const SendLoopay = ({ navigation, route }) => {
@@ -36,6 +37,7 @@ const SendLoopay = ({ navigation, route }) => {
   const [userFound, setUserFound] = useState(null);
   const [newBeneficiary, setNewBeneficiary] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [userSelected, setUserSelected] = useState(false);
   const { minimum, maximum } = tagNameRules;
 
   useEffect(() => {
@@ -69,6 +71,7 @@ const SendLoopay = ({ navigation, route }) => {
 
   const handleCheck = async () => {
     setErrorMessage('');
+    setUserSelected(false);
     if (inputValue.length >= minimum && inputValue.length <= maximum) {
       setIsSearching(true);
       const senderTagName = appData.tagName;
@@ -91,9 +94,11 @@ const SendLoopay = ({ navigation, route }) => {
       } finally {
         setIsSearching(false);
       }
-      return setUserFound(null);
+      setUserFound(null);
+      return setUserSelected(null);
     } else {
-      return setUserFound(null);
+      setUserFound(null);
+      return setUserSelected(null);
     }
   };
 
@@ -171,9 +176,15 @@ const SendLoopay = ({ navigation, route }) => {
                 <BoldText>{userFound.tagName}</BoldText>
               </View>
 
-              {/* <Pressable style={styles.textInputRight}>
-                <FaIcon name="slideshare" />
-              </Pressable> */}
+              <Pressable
+                style={styles.selected}
+                onPress={() => setUserSelected(prev => !prev)}>
+                {userSelected ? (
+                  <IonIcon name="radio-button-on-outline" size={24} />
+                ) : (
+                  <IonIcon name="radio-button-off-outline" size={24} />
+                )}
+              </Pressable>
             </View>
             {newBeneficiary && (
               <View style={styles.beneficiary}>
@@ -193,11 +204,12 @@ const SendLoopay = ({ navigation, route }) => {
         )}
         <Button
           text={'Continue'}
-          disabled={!userFound}
+          disabled={!userSelected || !userFound}
           onPress={handleContinue}
           style={{
             ...styles.button,
-            backgroundColor: userFound ? '#1E1E1E' : 'rgba(30, 30, 30, 0.7)',
+            backgroundColor:
+              userSelected && userFound ? '#1E1E1E' : 'rgba(30, 30, 30, 0.7)',
           }}
         />
       </ScrollView>
@@ -296,6 +308,10 @@ const styles = StyleSheet.create({
   verify: {
     width: 15,
     height: 15,
+  },
+  selected: {
+    flex: 1,
+    alignItems: 'flex-end',
   },
   beneficiary: {
     flexDirection: 'row',
