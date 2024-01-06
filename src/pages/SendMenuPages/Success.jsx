@@ -292,7 +292,6 @@ const Success = ({ navigation, route }) => {
     navigation.navigate('HomeNavigator');
     navigation.navigate('Home');
   };
-
   return (
     <PageContainer scroll>
       <View style={{ ...styles.container, minHeight: vh * 0.8 }}>

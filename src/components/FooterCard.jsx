@@ -19,7 +19,9 @@ const FooterCard = ({
 }) => {
   const { selectedCurrency } = useContext(AppContext);
   amountInput = addingDecimal(
-    Number(airtime ? airtime.amount : amountInput).toLocaleString(),
+    Number(
+      airtime && !dataPlan ? airtime.amount : amountInput,
+    ).toLocaleString(),
   );
 
   const currency = airtime

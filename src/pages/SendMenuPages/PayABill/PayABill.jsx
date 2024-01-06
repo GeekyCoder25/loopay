@@ -115,6 +115,20 @@ const PayABill = ({ navigation }) => {
         //   id: 'package',
         // },
         {
+          title: 'Meter type',
+          type: 'select',
+          placeholder: 'Select meter type',
+          id: 'meterType',
+          data: [
+            {
+              title: 'Prepaid',
+            },
+            {
+              title: 'Postpaid',
+            },
+          ],
+        },
+        {
           title: 'Meter number',
           type: 'input',
           placeholder: 'Enter Meter number',

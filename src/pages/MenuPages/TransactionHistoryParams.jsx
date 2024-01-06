@@ -394,9 +394,9 @@ const TransactionHistoryParams = ({ route }) => {
       case 'intra':
         return 'Loopay to Loopay transfer';
       case 'card':
-        return 'Card transaction';
+        return 'Card Self';
       case 'deposit':
-        return 'Deposit';
+        return 'Transfer Self';
       default:
         return 'Local bank transfer';
     }

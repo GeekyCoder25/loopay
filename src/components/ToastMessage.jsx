@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     height: 25,
   },
   message: {
-    maxWidth: '80%',
+    maxWidth: 250,
     textAlign: 'center',
   },
 });

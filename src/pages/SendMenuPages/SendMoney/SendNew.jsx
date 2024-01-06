@@ -71,11 +71,19 @@ const SendNew = ({ navigation, route }) => {
       setErrorMessage('');
       setUserSelected(false);
       setInputValue(text);
-      if (text.length === 10) {
+      if (text.length >= 6) {
         setIsSearching(true);
-        const result = await postFetchData('user/get-phone', {
-          phoneNumber: text,
-        });
+        let result;
+        if (isNaN(text)) {
+          const senderTagName = appData.tagName;
+          result = await postFetchData(`user/get-tag/${senderTagName}`, {
+            tagName: text,
+          });
+        } else {
+          result = await postFetchData('user/get-phone', {
+            phoneNumber: text,
+          });
+        }
         if (result.status === 200) {
           // const beneficiariesTagName = beneficiaryState?.map(
           //   beneficiary => beneficiary.tagName || beneficiary.userName,
@@ -87,9 +95,12 @@ const SendNew = ({ navigation, route }) => {
           //     ? setNewBeneficiary(false)
           //     : setNewBeneficiary(true);
           // }
+          setErrorMessage('');
           return setUserFound(result.data);
         }
         setErrorMessage(result.data);
+        setUserFound(null);
+        return setUserSelected(null);
       } else {
         setUserFound(null);
         return setUserSelected(null);
@@ -114,20 +125,14 @@ const SendNew = ({ navigation, route }) => {
           <AccInfoCard />
           <RegularText style={styles.header}>Send to new recipient</RegularText>
           <View style={styles.textInputContainer}>
-            <View style={styles.symbolContainer}>
-              <BoldText style={styles.symbol}>Acc No:</BoldText>
-            </View>
             <TextInput
               style={styles.textInput}
-              inputMode="numeric"
               onChangeText={text => handleChange(text)}
               value={inputValue}
-              placeholder="“Input LOOPAY tag or account number"
+              placeholder="Loopay tag or account number"
               placeholderTextColor={'#525252'}
-              maxLength={10}
             />
             <Pressable onPress={handlePaste} style={styles.paste}>
-              <RegularText style={styles.pasteText}>Paste</RegularText>
               <Paste />
             </Pressable>
           </View>
@@ -208,8 +213,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 10,
     fontFamily: 'OpenSans-600',
-    paddingLeft: 85,
-    paddingRight: 15,
+    paddingHorizontal: 15,
     paddingVertical: 10,
     borderWidth: 1,
     borderColor: '#ccc',
@@ -232,7 +236,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 12,
     right: 15,
-    backgroundColor: '#006E53',
+    backgroundColor: '#000',
     borderRadius: 5,
     flexDirection: 'row',
     alignItems: 'center',

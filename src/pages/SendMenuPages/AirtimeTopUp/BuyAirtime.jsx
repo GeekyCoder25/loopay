@@ -29,13 +29,17 @@ import { AppContext } from '../../../components/AppContext';
 import { allCurrencies } from '../../../database/data';
 import ToastMessage from '../../../components/ToastMessage';
 import { setShowBalance } from '../../../../utils/storage';
+import FlagSelect from '../../../components/FlagSelect';
+import Back from '../../../components/Back';
 
-const BuyAirtime = ({ navigation }) => {
-  const { appData, setIsLoading, showAmount, setShowAmount } =
+const BuyAirtime = ({ route, navigation }) => {
+  const { appData, setIsLoading, showAmount, setShowAmount, selectedCurrency } =
     useContext(AppContext);
   const { wallet } = useWalletContext();
   const { code: countryCode } = appData.country;
-  const [modalOpen, setModalOpen] = useState(false);
+  const [paymentModal, setPaymentModal] = useState(false);
+  const [networkModal, setNetworkModal] = useState(false);
+  const [selected, setSelected] = useState(selectedCurrency);
   const [networkToBuy, setNetworkToBuy] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [errorMessage2, setErrorMessage2] = useState('');
@@ -58,7 +62,7 @@ const BuyAirtime = ({ navigation }) => {
     amount: '',
     phoneNo: '',
   });
-  const { localBalance } = wallet;
+  const balance = wallet[`${selected.currency}Balance`];
   const airtimeBeneficiaries = [
     // {
     //   phoneNo: '09073002599',
@@ -101,11 +105,17 @@ const BuyAirtime = ({ navigation }) => {
   }, [countryCode, isNigeria]);
 
   const handleModal = () => {
-    setModalOpen(prev => !prev);
+    setNetworkModal(prev => !prev);
+  };
+
+  const handleCurrencyChange = newSelect => {
+    setErrorKey('');
+    setErrorMessage('');
+    setSelected(newSelect);
   };
 
   const handleNetworkSelect = provider => {
-    setModalOpen(false);
+    setNetworkModal(false);
     setNetworkToBuy(provider);
     setFormData(prev => {
       return {
@@ -119,8 +129,8 @@ const BuyAirtime = ({ navigation }) => {
 
   const handleAmountInput = amount => {
     setAmountInput(amount);
-    if (amount > localBalance) {
-      setErrorMessage('Insufficient Funds');
+    if (amount > balance) {
+      setErrorMessage('Insufficient balance');
       setErrorKey('amountInput');
     } else {
       setErrorMessage('');
@@ -133,7 +143,7 @@ const BuyAirtime = ({ navigation }) => {
 
   const handleBlur = () => {
     amountInput && setAmountInput(addingDecimal(amountInput));
-    if (amountInput < 50) {
+    if (selected.acronym === 'NGN' && amountInput < 50) {
       setErrorMessage(
         `Minimum recharge amount is ${
           allCurrencies.find(currency => currency.isLocal).symbol + 50
@@ -176,16 +186,16 @@ const BuyAirtime = ({ navigation }) => {
 
   const handleInputPin = async () => {
     if (Object.values(formData).includes('')) {
-      return setErrorMessage2(
+      return setErrorMessage(
         'Please provide all required fields before progressing',
       );
-    } else if (amountInput < 50) {
+    } else if (selected.acronym === 'NGN' && amountInput < 50) {
       setErrorMessage(`Minimum recharge amount is ${localCurrencySymbol + 50}`);
       return setErrorKey('amountInput');
     } else if (isNigeria && formData.phoneNo.length < 11) {
       setErrorMessage2('Incomplete phone number');
       return setErrorKey('phoneInput');
-    } else if (formData.amount > wallet.localBalance) {
+    } else if (formData.amount > balance) {
       setErrorMessage('Insufficient balance');
       return setErrorKey('amountInput');
     }
@@ -194,9 +204,10 @@ const BuyAirtime = ({ navigation }) => {
         ...formData,
         id: randomUUID(),
         currency: allCurrencies.find(
-          currency => currency.acronym === appData.localCurrencyCode,
+          currency => currency.acronym === selected.acronym,
         ).currency,
         countryCode,
+        paymentCurrency: selected.acronym,
         type: 'airtime',
       },
       isInternational: !isNigeria,
@@ -208,158 +219,224 @@ const BuyAirtime = ({ navigation }) => {
     setShowBalance(!showAmount);
   };
   return (
-    <PageContainer padding paddingTop={0}>
-      <ScrollView style={styles.body}>
-        <View style={styles.header}>
-          <RegularText>Beneficiaries</RegularText>
-          {airtimeBeneficiaries.length > 3 && (
-            <RegularText>View all</RegularText>
-          )}
-        </View>
-        <ScrollView
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          style={styles.beneficiaries}>
-          {airtimeBeneficiaries.map(beneficiary => (
-            <Beneficiary
-              beneficiary={beneficiary}
-              key={beneficiary.phoneNo}
-              networkProvidersIcon={networkProvidersIcon}
-            />
-          ))}
-        </ScrollView>
-        <BoldText style={styles.headerText}>Buy Airtime</BoldText>
-        <RegularText style={styles.headerSubText}>Network</RegularText>
-        <Pressable
-          onPress={() => setModalOpen(true)}
-          style={styles.textInputContainer}>
-          <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
-            {networkToBuy ? (
-              <View style={styles.networkToBuySelected}>
-                {networkToBuy &&
-                  (isNigeria ? (
-                    networkProvidersIcon(networkToBuy.network)
-                  ) : (
-                    <Image
-                      source={{ uri: networkToBuy.icon }}
-                      style={styles.networkIcon}
-                    />
-                  ))}
-                <BoldText style={styles.networkToBuySelected}>
-                  {networkToBuy.network}{' '}
-                  {isNigeria ? `-${networkToBuy.locale}` : ''}
-                </BoldText>
-              </View>
-            ) : (
-              <RegularText style={styles.networkToBuy}>
-                Choose Network
-              </RegularText>
+    <>
+      <PageContainer padding paddingTop={0}>
+        <ScrollView style={styles.body}>
+          <View style={styles.header}>
+            <RegularText>Beneficiaries</RegularText>
+            {airtimeBeneficiaries.length > 3 && (
+              <RegularText>View all</RegularText>
             )}
-            <ChevronDown />
           </View>
-        </Pressable>
-        <Modal
-          visible={modalOpen}
-          animationType="slide"
-          transparent
-          onRequestClose={handleModal}>
-          <Pressable style={styles.overlay} onPress={handleModal} />
-          <View style={styles.modalContainer}>
-            <View style={styles.modal}>
-              <View style={styles.modalBorder} />
-              <ScrollView style={{ width: 100 + '%' }}>
-                <View style={styles.modalLists}>
-                  {networkProviders.length ? (
-                    networkProviders.map(provider => (
-                      <Pressable
-                        key={provider.network}
-                        style={{
-                          ...styles.modalList,
-                          backgroundColor:
-                            networkToBuy?.network === provider.network
-                              ? '#e4e2e2'
-                              : 'transparent',
-                        }}
-                        onPress={() => handleNetworkSelect(provider)}>
-                        <View>
-                          {isNigeria ? (
-                            networkProvidersIcon(provider.network)
-                          ) : (
-                            <Image
-                              source={{ uri: provider.icon }}
-                              style={styles.networkIcon}
-                            />
-                          )}
-                        </View>
-                        <BoldText style={styles.networkToBuySelected}>
-                          {`${provider.network}${
-                            isNigeria ? `-${provider.locale}` : ''
-                          }`}
-                        </BoldText>
-                      </Pressable>
-                    ))
-                  ) : (
-                    <ActivityIndicator
-                      color={'#1e1e1e'}
-                      style={styles.activity}
-                      size="large"
-                    />
-                  )}
+          <ScrollView
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            style={styles.beneficiaries}>
+            {airtimeBeneficiaries.map(beneficiary => (
+              <Beneficiary
+                beneficiary={beneficiary}
+                key={beneficiary.phoneNo}
+                networkProvidersIcon={networkProvidersIcon}
+              />
+            ))}
+          </ScrollView>
+          <BoldText style={styles.headerText}>Buy Airtime</BoldText>
+          <View style={styles.label}>
+            <Text style={styles.label}>Pay With</Text>
+          </View>
+          <Pressable
+            onPress={() => setPaymentModal(true)}
+            style={styles.textInputContainer}>
+            <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
+              <View style={styles.currencyIcon}>
+                <FlagSelect country={selected.currency} />
+                <View>
+                  <RegularText style={styles.currencyName}>
+                    {selected.currency} Balance
+                  </RegularText>
                 </View>
-              </ScrollView>
+              </View>
+              <ChevronDown />
             </View>
-          </View>
-        </Modal>
-        <Text style={styles.label}>Phone Number</Text>
-        <View style={styles.textInputContainer}>
-          <TextInput
-            style={{
-              ...styles.textInput,
-              ...styles.textInputStyles,
-              borderColor: errorKey === 'phoneInput' ? 'red' : '#ccc',
-            }}
-            inputMode="tel"
-            onChangeText={text => handlePhoneInput(text)}
-            onBlur={!isNigeria && formData.phoneNo ? checkOperator : undefined}
-            maxLength={isNigeria ? 11 : undefined}
-            value={formData.phoneNo}
-          />
-        </View>
-        <ErrorMessage errorMessage={errorMessage2} />
-        <View style={styles.topUpContainer}>
-          <Text style={styles.label}>Amount to be credited</Text>
-          <Pressable onPress={handleShow}>
-            <Text style={styles.label}>
-              Balance:{' '}
-              {showAmount
-                ? localCurrencySymbol +
-                  addingDecimal(`${localBalance?.toLocaleString()}`)
-                : '***'}
-            </Text>
           </Pressable>
-        </View>
-        <View style={styles.textInputContainer}>
-          <TextInput
-            style={{
-              ...styles.textInput,
-              ...styles.textInputStyles,
-              borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
-            }}
-            inputMode="decimal"
-            onChangeText={text => handleAmountInput(text)}
-            onBlur={handleBlur}
-            value={amountInput}
-          />
-          {errorMessage && (
-            <View style={{ marginTop: 15 }}>
-              <ErrorMessage errorMessage={errorMessage} />
+          <RegularText style={styles.headerSubText}>Network</RegularText>
+          <Pressable
+            onPress={() => setNetworkModal(true)}
+            style={styles.textInputContainer}>
+            <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
+              {networkToBuy ? (
+                <View style={styles.networkToBuySelected}>
+                  {networkToBuy &&
+                    (isNigeria ? (
+                      networkProvidersIcon(networkToBuy.network)
+                    ) : (
+                      <Image
+                        source={{ uri: networkToBuy.icon }}
+                        style={styles.networkIcon}
+                      />
+                    ))}
+                  <BoldText style={styles.networkToBuySelected}>
+                    {networkToBuy.network}{' '}
+                    {isNigeria ? `-${networkToBuy.locale}` : ''}
+                  </BoldText>
+                </View>
+              ) : (
+                <RegularText style={styles.networkToBuy}>
+                  Choose Network
+                </RegularText>
+              )}
+              <ChevronDown />
             </View>
-          )}
-        </View>
+          </Pressable>
+          <Modal
+            visible={networkModal}
+            animationType="slide"
+            transparent
+            onRequestClose={handleModal}>
+            <Pressable style={styles.overlay} onPress={handleModal} />
+            <View style={styles.modalContainer}>
+              <View style={styles.networkModal}>
+                <View style={styles.modalBorder} />
+                <ScrollView style={{ width: 100 + '%' }}>
+                  <View style={styles.modalLists}>
+                    {networkProviders.length ? (
+                      networkProviders.map(provider => (
+                        <Pressable
+                          key={provider.network}
+                          style={{
+                            ...styles.modalList,
+                            backgroundColor:
+                              networkToBuy?.network === provider.network
+                                ? '#e4e2e2'
+                                : 'transparent',
+                          }}
+                          onPress={() => handleNetworkSelect(provider)}>
+                          <View>
+                            {isNigeria ? (
+                              networkProvidersIcon(provider.network)
+                            ) : (
+                              <Image
+                                source={{ uri: provider.icon }}
+                                style={styles.networkIcon}
+                              />
+                            )}
+                          </View>
+                          <BoldText style={styles.networkToBuySelected}>
+                            {`${provider.network}${
+                              isNigeria ? `-${provider.locale}` : ''
+                            }`}
+                          </BoldText>
+                        </Pressable>
+                      ))
+                    ) : (
+                      <ActivityIndicator
+                        color={'#1e1e1e'}
+                        style={styles.activity}
+                        size="large"
+                      />
+                    )}
+                  </View>
+                </ScrollView>
+              </View>
+            </View>
+          </Modal>
+          <Text style={styles.label}>Phone Number</Text>
+          <View style={styles.textInputContainer}>
+            <TextInput
+              style={{
+                ...styles.textInput,
+                ...styles.textInputStyles,
+                borderColor: errorKey === 'phoneInput' ? 'red' : '#ccc',
+              }}
+              inputMode="tel"
+              onChangeText={text => handlePhoneInput(text)}
+              onBlur={
+                !isNigeria && formData.phoneNo ? checkOperator : undefined
+              }
+              maxLength={isNigeria ? 11 : undefined}
+              value={formData.phoneNo}
+            />
+          </View>
+          <ErrorMessage errorMessage={errorMessage2} />
+          <View style={styles.topUpContainer}>
+            <Text style={styles.label}>Amount to be credited</Text>
+            <Pressable onPress={handleShow}>
+              <Text style={styles.label}>
+                Balance:{' '}
+                {showAmount
+                  ? selected.symbol +
+                    addingDecimal(`${balance?.toLocaleString()}`)
+                  : '***'}
+              </Text>
+            </Pressable>
+          </View>
+          <View style={styles.textInputContainer}>
+            <TextInput
+              style={{
+                ...styles.textInput,
+                ...styles.textInputStyles,
+                borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
+              }}
+              inputMode="decimal"
+              onChangeText={text => handleAmountInput(text)}
+              onBlur={handleBlur}
+              value={amountInput}
+            />
+            {errorMessage && (
+              <View style={{ marginTop: 15 }}>
+                <ErrorMessage errorMessage={errorMessage} />
+              </View>
+            )}
+          </View>
 
-        <Button text={'Buy Airtime'} onPress={handleInputPin} />
-      </ScrollView>
-    </PageContainer>
+          <Button text={'Buy Airtime'} onPress={handleInputPin} />
+        </ScrollView>
+      </PageContainer>
+      <Modal
+        visible={paymentModal}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setPaymentModal(false)}>
+        <Back route={route} onPress={() => setPaymentModal(false)} />
+        <View style={styles.paymentModal}>
+          <BoldText style={styles.paymentModalHeader}>
+            Select account to pay with
+          </BoldText>
+          {allCurrencies
+            .filter(i => i.currency !== selected.currency)
+            .map(select => (
+              <Pressable
+                key={select.currency}
+                style={styles.currency}
+                onPress={() => {
+                  handleCurrencyChange(select);
+                  setPaymentModal(false);
+                }}>
+                <View style={styles.currencyIcon}>
+                  <FlagSelect country={select.currency} />
+                  <View>
+                    <BoldText>{select.acronym}</BoldText>
+                    <RegularText style={styles.currencyName}>
+                      {select.currency}
+                    </RegularText>
+                  </View>
+                </View>
+
+                <Pressable onPress={handleShow}>
+                  <BoldText style={styles.amount}>
+                    {showAmount
+                      ? select.symbol +
+                        addingDecimal(
+                          wallet[`${select.currency}Balance`]?.toLocaleString(),
+                        )
+                      : '***'}
+                  </BoldText>
+                </Pressable>
+              </Pressable>
+            ))}
+        </View>
+      </Modal>
+    </>
   );
 };
 const styles = StyleSheet.create({
@@ -419,6 +496,36 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
   },
+  currencies: {
+    flex: 1,
+  },
+  currency: {
+    width: 100 + '%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+  },
+  currencyIcon: {
+    gap: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  flagContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  currencyName: { textTransform: 'capitalize' },
+  paymentModal: {
+    backgroundColor: '#fff',
+    width: 100 + '%',
+    height: 100 + '%',
+    paddingTop: 20,
+    gap: 10,
+    padding: 3 + '%',
+  },
   networkToBuySelected: {
     textTransform: 'uppercase',
     flexDirection: 'row',
@@ -444,7 +551,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
-  modal: {
+  networkModal: {
     backgroundColor: '#fff',
     width: 100 + '%',
     height: 100 + '%',

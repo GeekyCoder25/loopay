@@ -85,69 +85,6 @@ const SwapFunds = ({ navigation }) => {
     }, [rateRefetch, setIsLoading, swapFrom.acronym]),
   );
 
-  // const currencyRateAPI = [
-  //   {
-  //     name: 'NairaToDollar',
-  //     rate: 1 / 763.86,
-  //     fee: 1 / 100,
-  //   },
-  //   {
-  //     name: 'NairaToEuro',
-  //     rate: 1 / 816.34,
-  //     fee: 3 / 100,
-  //   },
-  //   {
-  //     name: 'NairaToPound',
-  //     rate: 1 / 956.12,
-  //     fee: 3 / 100,
-  //   },
-  //   {
-  //     name: 'DollarToNaira',
-  //     rate: 763.86,
-  //     fee: 1 / 100,
-  //   },
-  //   {
-  //     name: 'DollarToEuro',
-  //     rate: 1 / 1.07,
-  //     fee: 3 / 100,
-  //   },
-  //   {
-  //     name: 'DollarToPound',
-  //     rate: 1 / 1.26,
-  //     fee: 1 / 100,
-  //   },
-  //   {
-  //     name: 'EuroToNaira',
-  //     rate: 816.34,
-  //     fee: 3 / 100,
-  //   },
-  //   {
-  //     name: 'EuroToDollar',
-  //     rate: 1.07,
-  //     fee: 3 / 100,
-  //   },
-  //   {
-  //     name: 'EuroToPound',
-  //     rate: 1 / 1.17,
-  //     fee: 1 / 100,
-  //   },
-  //   {
-  //     name: 'PoundToNaira',
-  //     rate: 956.12,
-  //     fee: 3 / 100,
-  //   },
-  //   {
-  //     name: 'PoundToDollar',
-  //     rate: 1.26,
-  //     fee: 1 / 100,
-  //   },
-  //   {
-  //     name: 'PoundToEuro',
-  //     rate: 1.17,
-  //     fee: 3 / 100,
-  //   },
-  // ];
-
   useEffect(() => {
     const selectedCurrencyFunc = index =>
       allCurrencies.find(currency => currency.currency === index);
@@ -235,7 +172,7 @@ const SwapFunds = ({ navigation }) => {
 
   const currencyRate = () => {
     currencyRateAPI[[swapTo.acronym]] && setIsLoading(false);
-    return currencyRateAPI[swapTo.acronym]?.toFixed(4);
+    return currencyRateAPI[swapTo.acronym]?.toFixed(3);
   };
 
   const currencyFee = () => {

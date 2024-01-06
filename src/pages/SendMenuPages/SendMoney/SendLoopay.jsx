@@ -129,7 +129,6 @@ const SendLoopay = ({ navigation, route }) => {
             />
             {showPaste && !inputValue ? (
               <Pressable onPress={handlePaste} style={styles.paste}>
-                <RegularText style={styles.pasteText}>Paste</RegularText>
                 <Paste />
               </Pressable>
             ) : (
@@ -255,7 +254,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 12,
     right: 15,
-    backgroundColor: '#006E53',
+    backgroundColor: '#000',
     borderRadius: 5,
     flexDirection: 'row',
     alignItems: 'center',

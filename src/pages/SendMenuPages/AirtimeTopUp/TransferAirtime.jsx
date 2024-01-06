@@ -16,7 +16,7 @@ const TransferAirtime = ({ navigation, route }) => {
     setWalletRefresh(prev => !prev);
     navigation.navigate('Success', {
       airtime: { ...formData, reference: response.data.reference },
-      amountInput: formData.amount,
+      amountInput: response.data.transaction?.amount || formData.amount,
       dataPlan: formData.plan?.value || undefined,
       transaction: response.data.transaction,
     });

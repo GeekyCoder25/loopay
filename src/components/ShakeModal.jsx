@@ -66,7 +66,6 @@ const ShakeModal = () => {
       animationType="fade"
       transparent
       onRequestClose={handleModal}>
-      <Pressable style={styles.overlay} onPress={handleModal} />
       <View style={styles.modalContainer}>
         <View style={styles.modal}>
           <View style={styles.shortcuts}>
@@ -102,6 +101,7 @@ const ShakeModal = () => {
             ))}
           </View>
         </View>
+        <Pressable style={styles.overlay} onPress={handleModal} />
       </View>
     </Modal>
   );

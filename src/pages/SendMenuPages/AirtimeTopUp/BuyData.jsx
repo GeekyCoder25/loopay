@@ -27,12 +27,19 @@ import ToastMessage from '../../../components/ToastMessage';
 import { useWalletContext } from '../../../context/WalletContext';
 import { AppContext } from '../../../components/AppContext';
 import { allCurrencies } from '../../../database/data';
+import FlagSelect from '../../../components/FlagSelect';
+import { addingDecimal } from '../../../../utils/AddingZero';
+import Back from '../../../components/Back';
+import { setShowBalance } from '../../../../utils/storage';
 
-const BuyData = ({ navigation }) => {
-  const { appData, setIsLoading } = useContext(AppContext);
+const BuyData = ({ route, navigation }) => {
+  const { appData, setIsLoading, showAmount, setShowAmount, selectedCurrency } =
+    useContext(AppContext);
   const { wallet } = useWalletContext();
   const countryCode = appData.country.code;
-  const [modalOpen, setModalOpen] = useState(false);
+  const [paymentModal, setPaymentModal] = useState(false);
+  const [networkModal, setNetworkModal] = useState(false);
+  const [selected, setSelected] = useState(selectedCurrency);
   const [planModalOpen, setPlanModalOpen] = useState(false);
   const [networkToBuy, setNetworkToBuy] = useState(null);
   const [dataPlans, setDataPlans] = useState([]);
@@ -55,6 +62,7 @@ const BuyData = ({ navigation }) => {
         ]
       : [],
   );
+  const balance = wallet[`${selected.currency}Balance`];
   const dataBeneficiaries = [
     // {
     //   phoneNo: '09073002599',
@@ -97,9 +105,16 @@ const BuyData = ({ navigation }) => {
   }, [countryCode, isNigeria]);
 
   const handleModal = () => {
-    setModalOpen(false);
+    setNetworkModal(false);
     setPlanModalOpen(false);
   };
+
+  const handleCurrencyChange = newSelect => {
+    setErrorKey('');
+    setErrorMessage('');
+    setSelected(newSelect);
+  };
+
   const handleNetworkSelect = async provider => {
     handleModal();
     setNetworkToBuy(provider);
@@ -116,7 +131,7 @@ const BuyData = ({ navigation }) => {
     setErrorMessage('');
     setErrorKey('');
     const plansResponse = await getFetchData(
-      `user/get-data-plans?provider=${provider.network}&country=${countryCode}`,
+      `user/data-plans?provider=${provider.network}&country=${countryCode}`,
     );
     const plans = plansResponse.data;
     setDataPlans(
@@ -160,6 +175,10 @@ const BuyData = ({ navigation }) => {
   };
 
   const handlePlanSelect = plan => {
+    if (selected.acronym === 'NGN' && plan.amount > balance) {
+      setErrorMessage('Insufficient balance');
+      setErrorKey('amountInput');
+    }
     setFormData(prev => {
       return {
         ...prev,
@@ -185,7 +204,7 @@ const BuyData = ({ navigation }) => {
     } else if (isNigeria && formData.phoneNo.length < 11) {
       setErrorMessage('Incomplete phone number');
       return setErrorKey('phoneInput');
-    } else if (formData.amount > wallet.localBalance) {
+    } else if (selected.acronym === 'NGN' && formData.amount > balance) {
       setErrorMessage('Insufficient balance');
       return setErrorKey('amountInput');
     }
@@ -194,13 +213,19 @@ const BuyData = ({ navigation }) => {
         ...formData,
         id: randomUUID(),
         currency: allCurrencies.find(
-          currency => currency.acronym === appData.localCurrencyCode,
+          currency => currency.acronym === selected.acronym,
         ).currency,
         countryCode,
+        paymentCurrency: selected.acronym,
         type: 'data',
       },
       isInternational: !isNigeria,
     });
+  };
+
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
   };
 
   const networkProvidersIcon = network => {
@@ -218,185 +243,253 @@ const BuyData = ({ navigation }) => {
     }
   };
   return (
-    <PageContainer padding paddingTop={0}>
-      <ScrollView style={styles.body}>
-        <View style={styles.header}>
-          <RegularText>Beneficiaries</RegularText>
-          {dataBeneficiaries.length > 3 && <RegularText>View all</RegularText>}
-        </View>
-        <ScrollView
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          style={styles.beneficiaries}>
-          {dataBeneficiaries.map(beneficiary => (
-            <Beneficiary
-              beneficiary={beneficiary}
-              key={beneficiary.phoneNo}
-              networkProvidersIcon={networkProvidersIcon}
-            />
-          ))}
-        </ScrollView>
-        <BoldText style={styles.headerText}>Buy Data Bundle</BoldText>
-        <RegularText style={styles.headerSubText}>Select a Network</RegularText>
-        <Pressable
-          onPress={() => setModalOpen(true)}
-          style={styles.textInputContainer}>
-          <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
-            {networkToBuy ? (
-              <View style={styles.networkToBuySelected}>
-                {networkToBuy &&
-                  (isNigeria ? (
-                    networkProvidersIcon(networkToBuy.network)
-                  ) : (
-                    <Image
-                      source={{ uri: networkToBuy.icon }}
-                      style={styles.networkIcon}
-                    />
-                  ))}
-                <BoldText style={styles.networkToBuySelected}>
-                  {networkToBuy.network}{' '}
-                  {isNigeria ? `-${networkToBuy.locale}` : ''}
-                </BoldText>
-              </View>
-            ) : (
-              <RegularText style={styles.networkToBuy}>
-                Choose Network
-              </RegularText>
+    <>
+      <PageContainer padding paddingTop={0}>
+        <ScrollView style={styles.body}>
+          <View style={styles.header}>
+            <RegularText>Beneficiaries</RegularText>
+            {dataBeneficiaries.length > 3 && (
+              <RegularText>View all</RegularText>
             )}
-            <ChevronDown />
           </View>
-        </Pressable>
-        <Modal
-          visible={modalOpen || planModalOpen}
-          animationType="slide"
-          transparent
-          onRequestClose={handleModal}>
-          <Pressable style={styles.overlay} onPress={handleModal} />
-          <View style={styles.modalContainer}>
-            <View style={styles.modal}>
-              <View style={styles.modalBorder} />
-              <ScrollView style={{ width: 100 + '%' }}>
-                <View style={styles.modalLists}>
-                  {modalOpen ? (
-                    networkProviders.length ? (
-                      networkProviders.map(provider => (
-                        <Pressable
-                          key={provider.network}
-                          style={{
-                            ...styles.modalList,
-                            backgroundColor:
-                              networkToBuy?.network === provider.network
-                                ? '#e4e2e2'
-                                : 'transparent',
-                          }}
-                          onPress={() => handleNetworkSelect(provider)}>
-                          <View>
-                            {isNigeria ? (
-                              networkProvidersIcon(provider.network)
-                            ) : (
-                              <Image
-                                source={{ uri: provider.icon }}
-                                style={styles.networkIcon}
-                              />
-                            )}
-                          </View>
-                          <BoldText style={styles.networkToBuySelected}>
-                            {`${provider.network}${
-                              isNigeria ? `-${provider.locale}` : ''
-                            }`}
-                          </BoldText>
-                        </Pressable>
-                      ))
+          <ScrollView
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            style={styles.beneficiaries}>
+            {dataBeneficiaries.map(beneficiary => (
+              <Beneficiary
+                beneficiary={beneficiary}
+                key={beneficiary.phoneNo}
+                networkProvidersIcon={networkProvidersIcon}
+              />
+            ))}
+          </ScrollView>
+          <BoldText style={styles.headerText}>Buy Data Bundle</BoldText>
+          <View style={styles.label}>
+            <Text style={styles.label}>Pay With</Text>
+          </View>
+          <Pressable
+            onPress={() => setPaymentModal(true)}
+            style={styles.textInputContainer}>
+            <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
+              <View style={styles.currencyIcon}>
+                <FlagSelect country={selected.currency} />
+                <View>
+                  <RegularText style={styles.currencyName}>
+                    {selected.currency} Balance
+                  </RegularText>
+                </View>
+              </View>
+              <ChevronDown />
+            </View>
+          </Pressable>
+          <RegularText style={styles.headerSubText}>
+            Select a Network
+          </RegularText>
+          <Pressable
+            onPress={() => setNetworkModal(true)}
+            style={styles.textInputContainer}>
+            <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
+              {networkToBuy ? (
+                <View style={styles.networkToBuySelected}>
+                  {networkToBuy &&
+                    (isNigeria ? (
+                      networkProvidersIcon(networkToBuy.network)
+                    ) : (
+                      <Image
+                        source={{ uri: networkToBuy.icon }}
+                        style={styles.networkIcon}
+                      />
+                    ))}
+                  <BoldText style={styles.networkToBuySelected}>
+                    {networkToBuy.network}{' '}
+                    {isNigeria ? `-${networkToBuy.locale}` : ''}
+                  </BoldText>
+                </View>
+              ) : (
+                <RegularText style={styles.networkToBuy}>
+                  Choose Network
+                </RegularText>
+              )}
+              <ChevronDown />
+            </View>
+          </Pressable>
+          <Modal
+            visible={networkModal || planModalOpen}
+            animationType="slide"
+            transparent
+            onRequestClose={handleModal}>
+            <Pressable style={styles.overlay} onPress={handleModal} />
+            <View style={styles.modalContainer}>
+              <View style={styles.modal}>
+                <View style={styles.modalBorder} />
+                <ScrollView style={{ width: 100 + '%' }}>
+                  <View style={styles.modalLists}>
+                    {networkModal ? (
+                      networkProviders.length ? (
+                        networkProviders.map(provider => (
+                          <Pressable
+                            key={provider.network}
+                            style={{
+                              ...styles.modalList,
+                              backgroundColor:
+                                networkToBuy?.network === provider.network
+                                  ? '#e4e2e2'
+                                  : 'transparent',
+                            }}
+                            onPress={() => handleNetworkSelect(provider)}>
+                            <View>
+                              {isNigeria ? (
+                                networkProvidersIcon(provider.network)
+                              ) : (
+                                <Image
+                                  source={{ uri: provider.icon }}
+                                  style={styles.networkIcon}
+                                />
+                              )}
+                            </View>
+                            <BoldText style={styles.networkToBuySelected}>
+                              {`${provider.network}${
+                                isNigeria ? `-${provider.locale}` : ''
+                              }`}
+                            </BoldText>
+                          </Pressable>
+                        ))
+                      ) : (
+                        <ActivityIndicator
+                          color={'#1e1e1e'}
+                          style={styles.activity}
+                          size="large"
+                        />
+                      )
+                    ) : dataPlans.length ? (
+                      typeof dataPlans === 'string' ? (
+                        <BoldText style={styles.dataPlanEmpty}>
+                          {dataPlans}
+                        </BoldText>
+                      ) : (
+                        dataPlans.map(plan => (
+                          <Pressable
+                            key={plan.value}
+                            style={{
+                              ...styles.modalList,
+                              backgroundColor:
+                                planToBuy === plan ? '#e4e2e2' : 'transparent',
+                            }}
+                            onPress={() => handlePlanSelect(plan)}>
+                            <BoldText style={styles.dataPlan}>
+                              {Math.ceil(plan.amount).toLocaleString()} -{' '}
+                              {plan.value}
+                            </BoldText>
+                          </Pressable>
+                        ))
+                      )
                     ) : (
                       <ActivityIndicator
                         color={'#1e1e1e'}
                         style={styles.activity}
                         size="large"
                       />
-                    )
-                  ) : dataPlans.length ? (
-                    typeof dataPlans === 'string' ? (
-                      <BoldText style={styles.dataPlanEmpty}>
-                        {dataPlans}
-                      </BoldText>
-                    ) : (
-                      dataPlans.map(plan => (
-                        <Pressable
-                          key={plan.value}
-                          style={{
-                            ...styles.modalList,
-                            backgroundColor:
-                              planToBuy === plan ? '#e4e2e2' : 'transparent',
-                          }}
-                          onPress={() => handlePlanSelect(plan)}>
-                          <BoldText style={styles.dataPlan}>
-                            {Math.ceil(plan.amount).toLocaleString()} -{' '}
-                            {plan.value}
-                          </BoldText>
-                        </Pressable>
-                      ))
-                    )
-                  ) : (
-                    <ActivityIndicator
-                      color={'#1e1e1e'}
-                      style={styles.activity}
-                      size="large"
-                    />
-                  )}
-                </View>
-              </ScrollView>
+                    )}
+                  </View>
+                </ScrollView>
+              </View>
             </View>
-          </View>
-        </Modal>
-        <Text style={styles.label}>Enter Phone Number</Text>
-        <View style={styles.textInputContainer}>
-          <TextInput
-            style={{
-              ...styles.textInput,
-              ...styles.textInputStyles,
-              borderColor: errorKey === 'phoneInput' ? 'red' : '#ccc',
-            }}
-            inputMode="tel"
-            onChangeText={text => handlePhoneInput(text)}
-            onBlur={!isNigeria ? checkOperator : undefined}
-            maxLength={isNigeria ? 11 : undefined}
-            value={formData.phoneNo}
-          />
-        </View>
-        <View style={styles.labelContainer}>
-          <Text style={styles.label}>Choose a Plan</Text>
-        </View>
-        <View style={styles.textInputContainer}>
-          <Pressable
-            onPress={handlePlanModal}
-            style={styles.textInputContainer}>
-            <View
+          </Modal>
+          <Text style={styles.label}>Enter Phone Number</Text>
+          <View style={styles.textInputContainer}>
+            <TextInput
               style={{
                 ...styles.textInput,
                 ...styles.textInputStyles,
-                borderColor: errorKey === 'amountInput' ? 'red' : '#f9f9f9',
-              }}>
-              {planToBuy ? (
-                <BoldText style={styles.networkToBuySelected}>
-                  {planToBuy}
-                </BoldText>
-              ) : (
-                <RegularText style={styles.networkToBuy}>
-                  Choose a Plan
-                </RegularText>
-              )}
-              <ChevronDown />
-            </View>
-          </Pressable>
-          {errorMessage && (
-            <View style={{ marginTop: 15 }}>
-              <ErrorMessage errorMessage={errorMessage} />
-            </View>
-          )}
+                borderColor: errorKey === 'phoneInput' ? 'red' : '#ccc',
+              }}
+              inputMode="tel"
+              onChangeText={text => handlePhoneInput(text)}
+              onBlur={!isNigeria ? checkOperator : undefined}
+              maxLength={isNigeria ? 11 : undefined}
+              value={formData.phoneNo}
+            />
+          </View>
+          <View style={styles.labelContainer}>
+            <Text style={styles.label}>Choose a Plan</Text>
+          </View>
+          <View style={styles.textInputContainer}>
+            <Pressable
+              onPress={handlePlanModal}
+              style={styles.textInputContainer}>
+              <View
+                style={{
+                  ...styles.textInput,
+                  ...styles.textInputStyles,
+                  borderColor: errorKey === 'amountInput' ? 'red' : '#f9f9f9',
+                }}>
+                {planToBuy ? (
+                  <BoldText style={styles.networkToBuySelected}>
+                    {planToBuy}
+                  </BoldText>
+                ) : (
+                  <RegularText style={styles.networkToBuy}>
+                    Choose a Plan
+                  </RegularText>
+                )}
+                <ChevronDown />
+              </View>
+            </Pressable>
+            {errorMessage && (
+              <View style={{ marginTop: 15 }}>
+                <ErrorMessage errorMessage={errorMessage} />
+              </View>
+            )}
+          </View>
+          <Button text={'Buy Data'} onPress={handleInputPin} />
+        </ScrollView>
+      </PageContainer>
+      <Modal
+        visible={paymentModal}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setPaymentModal(false)}>
+        <Back route={route} onPress={() => setPaymentModal(false)} />
+        <View style={styles.paymentModal}>
+          <BoldText style={styles.paymentModalHeader}>
+            Select account to pay with
+          </BoldText>
+          {allCurrencies
+            .filter(i => i.currency !== selected.currency)
+            .map(select => (
+              <Pressable
+                key={select.currency}
+                style={styles.currency}
+                onPress={() => {
+                  handleCurrencyChange(select);
+                  setPaymentModal(false);
+                }}>
+                <View style={styles.currencyIcon}>
+                  <FlagSelect country={select.currency} />
+                  <View>
+                    <BoldText>{select.acronym}</BoldText>
+                    <RegularText style={styles.currencyName}>
+                      {select.currency}
+                    </RegularText>
+                  </View>
+                </View>
+
+                <Pressable onPress={handleShow}>
+                  <BoldText style={styles.amount}>
+                    {showAmount
+                      ? select.symbol +
+                        addingDecimal(
+                          wallet[`${select.currency}Balance`]?.toLocaleString(),
+                        )
+                      : '***'}
+                  </BoldText>
+                </Pressable>
+              </Pressable>
+            ))}
         </View>
-        <Button text={'Buy Data'} onPress={handleInputPin} />
-      </ScrollView>
-    </PageContainer>
+      </Modal>
+    </>
   );
 };
 const styles = StyleSheet.create({
@@ -457,6 +550,36 @@ const styles = StyleSheet.create({
   textInputStyles: {
     borderWidth: 1,
     borderColor: '#ccc',
+  },
+  currencies: {
+    flex: 1,
+  },
+  currency: {
+    width: 100 + '%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+  },
+  currencyIcon: {
+    gap: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  flagContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  currencyName: { textTransform: 'capitalize' },
+  paymentModal: {
+    backgroundColor: '#fff',
+    width: 100 + '%',
+    height: 100 + '%',
+    paddingTop: 20,
+    gap: 10,
+    padding: 3 + '%',
   },
   networkToBuySelected: {
     textTransform: 'uppercase',

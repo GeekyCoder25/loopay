@@ -18,7 +18,6 @@ import { addingDecimal } from '../../../../utils/AddingZero';
 import { useWalletContext } from '../../../context/WalletContext';
 import { getFetchData } from '../../../../utils/fetchAPI';
 import { randomUUID } from 'expo-crypto';
-import { allCurrencies } from '../../../database/data';
 import { setShowBalance } from '../../../../utils/storage';
 
 export default function SelectInputField({
@@ -29,13 +28,20 @@ export default function SelectInputField({
   errorKey,
   setErrorMessage,
   setErrorKey,
+  selectedCurrency,
 }) {
-  const { showAmount, setShowAmount, selectedCurrency } =
-    useContext(AppContext);
+  const { showAmount, setShowAmount } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [selected, setSelected] = useState(false);
   const [modalData, setModalData] = useState([]);
-  const { title, type, placeholder, id, apiUrl } = selectInput;
+  const {
+    title,
+    type,
+    placeholder,
+    id,
+    apiUrl,
+    data: selectData,
+  } = selectInput;
   const [modalOpen, setModalOpen] = useState(false);
   const [inputText, setInputText] = useState('');
 
@@ -60,6 +66,8 @@ export default function SelectInputField({
 
     if (type === 'select' && apiUrl) {
       setModalDataFunc();
+    } else if (type === 'select' && selectData) {
+      setModalData(selectData);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -90,8 +98,12 @@ export default function SelectInputField({
             <Text style={styles.label}>
               Balance:{' '}
               {showAmount
-                ? selectedCurrency.symbol +
-                  addingDecimal(`${wallet?.balance?.toLocaleString()}`)
+                ? selectedCurrency?.symbol +
+                  addingDecimal(
+                    `${wallet[
+                      `${selectedCurrency.currency}Balance`
+                    ]?.toLocaleString()}`,
+                  )
                 : '***'}
             </Text>
           )}

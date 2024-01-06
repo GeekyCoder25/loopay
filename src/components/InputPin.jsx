@@ -12,6 +12,7 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  Platform,
 } from 'react-native';
 import { AppContext } from './AppContext';
 import { postFetchData } from '../../utils/fetchAPI';
@@ -183,12 +184,23 @@ const InputPin = ({
         onRequestClose={() => {
           handleCancel ? handleCancel() : handleCancelDefault();
         }}>
+        <LoadingModal isLoading={isLoading} />
         <SafeAreaView>
-          <Back
-            onPress={() => {
-              handleCancel ? handleCancel() : handleCancelDefault();
-            }}
-          />
+          {Platform.OS === 'ios' ? (
+            <View style={styles.back}>
+              <Back
+                onPress={() => {
+                  handleCancel ? handleCancel() : handleCancelDefault();
+                }}
+              />
+            </View>
+          ) : (
+            <Back
+              onPress={() => {
+                handleCancel ? handleCancel() : handleCancelDefault();
+              }}
+            />
+          )}
           <ScrollView
             contentContainerStyle={{
               minHeight: vh * 0.9,
@@ -396,12 +408,14 @@ const InputPin = ({
           </ScrollView>
         </SafeAreaView>
       </Modal>
-      <LoadingModal isLoading={isLoading} />
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  back: {
+    marginVertical: 20,
+  },
   container: {
     justifyContent: 'center',
     alignItems: 'center',

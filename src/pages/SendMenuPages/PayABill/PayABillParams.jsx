@@ -23,7 +23,7 @@ import { addingDecimal } from '../../../../utils/AddingZero';
 import { setShowBalance } from '../../../../utils/storage';
 
 const PayABillParams = ({ route, navigation }) => {
-  const { selectedCurrency, showAmount, setShowAmount, setSelectedCurrency } =
+  const { selectedCurrency, showAmount, setShowAmount } =
     useContext(AppContext);
   const { wallet } = useWalletContext();
   const [stateFields, setStateFields] = useState({});
@@ -95,14 +95,16 @@ const PayABillParams = ({ route, navigation }) => {
       setErrorMessage('Insufficient balance');
       return setErrorKey('amount');
     } else if (
-      stateFields.amount < stateFields.provider.minLocalTransactionAmount
+      stateFields.amount < stateFields.provider.minLocalTransactionAmount &&
+      selected.currency === 'NGN'
     ) {
       setErrorMessage(
         'Amount is less than the minimum accepted by this biller',
       );
       return setErrorKey('amount');
     } else if (
-      stateFields.amount > stateFields.provider.maxLocalTransactionAmount
+      stateFields.amount > stateFields.provider.maxLocalTransactionAmount &&
+      selected.currency === 'NGN'
     ) {
       setErrorMessage(
         'Amount is greater than the maximum accepted by this biller',
@@ -113,6 +115,7 @@ const PayABillParams = ({ route, navigation }) => {
     navigation.navigate('TransferBill', {
       ...stateFields,
       routeId: route.params.title,
+      paymentCurrency: selected.acronym,
     });
   };
 
@@ -136,7 +139,6 @@ const PayABillParams = ({ route, navigation }) => {
     setErrorKey('');
     setErrorMessage('');
     setSelected(newSelect);
-    setSelectedCurrency(newSelect);
   };
 
   const handleShow = () => {
@@ -181,6 +183,7 @@ const PayABillParams = ({ route, navigation }) => {
               errorKey={errorKey}
               setErrorMessage={setErrorMessage}
               setErrorKey={setErrorKey}
+              selectedCurrency={selected}
             />
           ))}
           {errorMessage && (
@@ -204,7 +207,7 @@ const PayABillParams = ({ route, navigation }) => {
             Select account to pay with
           </BoldText>
           {allCurrencies
-            .filter(i => i.currency !== selectedCurrency.currency)
+            .filter(i => i.currency !== selected.currency)
             .map(select => (
               <Pressable
                 key={select.currency}
