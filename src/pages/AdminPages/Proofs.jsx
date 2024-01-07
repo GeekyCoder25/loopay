@@ -83,6 +83,10 @@ const styles = StyleSheet.create({
   link: {
     color: 'blue',
     textDecorationLine: 'underline',
+    textTransform: 'capitalize',
+  },
+  capitalize: {
+    textTransform: 'capitalize',
   },
   buttons: {
     flexDirection: 'row',
@@ -116,8 +120,17 @@ const styles = StyleSheet.create({
 export default Proofs;
 
 const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
-  const { accNo, amount, email, image, message, tagName, userData, createdAt } =
-    proof;
+  const {
+    accNo,
+    amount,
+    email,
+    image,
+    message,
+    tagName,
+    type,
+    userData,
+    createdAt,
+  } = proof;
 
   const symbol = allCurrencies.find(
     ({ acronym, currency }) =>
@@ -128,7 +141,7 @@ const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
     const response = await postFetchData('admin/approve', proof);
     if (response.status === 200) {
       setProofs(prev =>
-        prev.filter(indexProof => indexProof._id !== response.data?.data?._id),
+        prev.filter(indexProof => indexProof._id !== proof._id),
       );
       ToastMessage('Transaction Approved');
       return setRequestPin(false);
@@ -140,7 +153,7 @@ const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
     const response = await deleteFetchData(`admin/decline/${proof._id}`, proof);
     if (response.status === 200) {
       setProofs(prev =>
-        prev.filter(indexProof => indexProof._id !== response.data?.data?._id),
+        prev.filter(indexProof => indexProof._id !== proof._id),
       );
       ToastMessage('Transaction Declined');
       return setRequestPin(false);
@@ -152,7 +165,7 @@ const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
     const response = await deleteFetchData(`admin/decline/${proof._id}`, proof);
     if (response.status === 200) {
       setProofs(prev =>
-        prev.filter(indexProof => indexProof._id !== response.data?.data?._id),
+        prev.filter(indexProof => indexProof._id !== proof._id),
       );
       ToastMessage('Transaction Declined');
       return setRequestPin(false);
@@ -183,7 +196,9 @@ const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
       </BoldText>
       <BoldText>
         Verification Status:{' '}
-        <RegularText>{userData.verificationStatus}</RegularText>
+        <RegularText style={styles.capitalize}>
+          {userData.verificationStatus}
+        </RegularText>
       </BoldText>
       <BoldText>
         Country:{' '}
@@ -192,7 +207,7 @@ const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
         </RegularText>
       </BoldText>
       <BoldText>
-        Type: <RegularText>{'Deposit'}</RegularText>
+        Type: <RegularText style={styles.capitalize}>{type}</RegularText>
       </BoldText>
       <BoldText>
         Date: <RegularText>{new Date(createdAt).toDateString()}</RegularText>

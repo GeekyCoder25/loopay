@@ -1,11 +1,11 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, memo, useContext, useEffect, useState } from 'react';
 import { getFetchData } from '../../utils/fetchAPI';
 import { AppContext } from '../components/AppContext';
 import { allCurrencies } from '../database/data';
 
 const WalletContext = createContext();
 
-const WalletContextComponent = ({ children }) => {
+const WalletContextComponent = memo(({ children }) => {
   const { walletRefresh, selectedCurrency, setShowConnected, refreshing } =
     useContext(AppContext);
   const [wallet, setWallet] = useState({ balance: 0 });
@@ -29,11 +29,11 @@ const WalletContextComponent = ({ children }) => {
       });
 
     getFetchData(
-      `user/transaction?swap=true&currency=${selectedCurrency.currency},${selectedCurrency.acronym}`,
+      `user/transaction?currency=${selectedCurrency.currency},${selectedCurrency.acronym}&limit=4`,
     )
       .then(result => {
         if (result.status === 400) throw new Error(result.data);
-        setTransactions(result.data.transactions);
+        setTransactions(result.data.data);
       })
       .catch(err => {
         console.log(err.message);
@@ -103,7 +103,7 @@ const WalletContextComponent = ({ children }) => {
       {children}
     </WalletContext.Provider>
   );
-};
+});
 
 export default WalletContextComponent;
 export const useWalletContext = () => useContext(WalletContext);

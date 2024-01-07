@@ -112,7 +112,11 @@ const AdminTransfer = ({ navigation }) => {
       if (response.status === 200) {
         const { ...userToSendTo } = response.data.data;
         navigation.navigate('Success', {
-          userToSendTo,
+          userToSendTo: {
+            ...userToSendTo,
+            accNo: userFound.wallet.loopayAccNo,
+            fullName: userFound.userProfile.fullName,
+          },
           amountInput,
         });
         setWalletRefresh(prev => !prev);
@@ -120,6 +124,7 @@ const AdminTransfer = ({ navigation }) => {
         setUserFound('');
         setAskPin(false);
         setUserInput('');
+        setErrorMessage('');
         return response.status;
       }
       return response.data;
@@ -150,11 +155,13 @@ const AdminTransfer = ({ navigation }) => {
     setModalOpen(false);
   };
 
-  const handleCheckAccount = async () => {
-    if (userInput) {
+  const handleCheckAccount = async ({ userInputParams }) => {
+    if (userInputParams || userInput) {
       setIsSearching(true);
       try {
-        const result = await getFetchData(`admin/user/${userInput}`);
+        const result = await getFetchData(
+          `admin/user/${userInputParams || userInput}`,
+        );
         if (result.status === 200) {
           return setUserFound(result.data);
         }
@@ -188,6 +195,7 @@ const AdminTransfer = ({ navigation }) => {
                 onPress={() => {
                   setUserFound(item);
                   setUserInput(item.tagName);
+                  handleCheckAccount({ userInputParams: item.tagName });
                 }}>
                 <UserIcon uri={item.photo} />
                 {item.verificationStatus === 'verified' && (

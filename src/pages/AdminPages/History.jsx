@@ -31,6 +31,7 @@ import { getFetchData } from '../../../utils/fetchAPI';
 import Back from '../../components/Back';
 import TransactionHistoryParams from '../MenuPages/TransactionHistoryParams';
 import { useFocusEffect } from '@react-navigation/native';
+import BalanceCard from './components/BalanceCard';
 
 const History = () => {
   const { selectedCurrency, vh } = useContext(AppContext);
@@ -44,41 +45,41 @@ const History = () => {
   const [transactions, setTransactions] = useState([]);
   const [activeHistories, setActiveHistories] = useState(transactions);
   const [totalTransactionsLength, setTotalTransactionsLength] = useState(0);
-  const [lastTransactionsLength, setLastTransactionsLength] = useState(0);
   const [isFiltered, setIsFiltered] = useState(false);
   const [transactionModal, setTransactionModal] = useState(null);
   const limit = Math.round(vh / 50);
 
-  useEffect(() => {
-    const getTransactions = async () => {
-      try {
-        setIsLocalLoading(true);
-        const response = await getFetchData(
-          `admin/transactions?currency=${selectedCurrency.currency},${
-            selectedCurrency.acronym
-          }&limit=${limit}&page=${1}`,
-        );
-
-        if (response.status === 200) {
-          const swapLength = response.data.data.filter(
-            transaction => transaction.transactionType === 'swap',
-          ).length;
-          setTotalTransactionsLength(response.data.total - swapLength);
-          const result = response.data.data.filter(
-            transaction => transaction.transactionType !== 'swap',
+  useFocusEffect(
+    useCallback(() => {
+      const getTransactions = async () => {
+        try {
+          setIsLocalLoading(true);
+          const response = await getFetchData(
+            `admin/transactions?currency=${selectedCurrency.currency},${
+              selectedCurrency.acronym
+            }&limit=${limit}&page=${1}`,
           );
-          setTransactions(result);
-          setActiveHistories(result);
-          const groupedTransactions = groupTransactionsByDate(result);
-          setHistories(groupedTransactions);
-          setLastTransactionsLength(response.data.data.length);
+
+          if (response.status === 200) {
+            const swapLength = response.data.data.filter(
+              transaction => transaction.transactionType === 'swap',
+            ).length;
+            setTotalTransactionsLength(response.data.total - swapLength);
+            const result = response.data.data.filter(
+              transaction => transaction.transactionType !== 'swap',
+            );
+            setTransactions(result);
+            setActiveHistories(result);
+            const groupedTransactions = groupTransactionsByDate(result);
+            setHistories(groupedTransactions);
+          }
+        } finally {
+          setIsLocalLoading(false);
         }
-      } finally {
-        setIsLocalLoading(false);
-      }
-    };
-    getTransactions();
-  }, [limit, selectedCurrency]);
+      };
+      getTransactions();
+    }, [limit, selectedCurrency]),
+  );
 
   const handleScrollMore = async () => {
     try {
@@ -130,9 +131,6 @@ const History = () => {
             }),
           ),
         );
-        setLastTransactionsLength(
-          lastTransactionsLength + response.data.data.length,
-        );
       }
     } finally {
       setReloading(false);
@@ -159,6 +157,7 @@ const History = () => {
         setTotalTransactionsLength={setTotalTransactionsLength}
         setIsFiltered={setIsFiltered}
       />
+
       {isSearching ? (
         <View style={styles.searchList}>
           <FlatList
@@ -294,14 +293,17 @@ const History = () => {
 };
 
 const styles = StyleSheet.create({
+  balanceCard: {
+    paddingHorizontal: 3 + '%',
+  },
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 3 + '%',
+    marginTop: 20,
   },
   historyHeader: {
-    marginTop: 40,
     fontSize: 17,
     fontFamily: 'OpenSans-600',
   },
@@ -353,9 +355,7 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 3,
   },
-  historyTitle: {
-    textTransform: 'capitalize',
-  },
+  historyTitle: {},
   creditAmount: {
     color: '#006E53',
     fontSize: 16,
@@ -411,12 +411,12 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
     transactionType,
     currency,
     networkProvider,
-    dataPlan,
     billType,
     billName,
     debitAccount,
     senderAccount,
     receiverAccount,
+    method,
   } = history;
   const [currencySymbol, setCurrencySymbol] = useState('');
 
@@ -443,8 +443,19 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
         <>
           <UserIcon uri={senderPhoto} />
           <View style={styles.historyContent}>
-            <BoldText>{senderName}</BoldText>
-            <RegularText>Transfer</RegularText>
+            {method ? (
+              <>
+                <BoldText>{receiverName}</BoldText>
+                <RegularText>
+                  {method === 'card' ? 'Card Deposit' : 'Transfer Deposit'}
+                </RegularText>
+              </>
+            ) : (
+              <>
+                <BoldText>{senderName}</BoldText>
+                <RegularText>Transfer</RegularText>
+              </>
+            )}
           </View>
           <View style={styles.amount}>
             <BoldText style={styles.creditAmount}>
@@ -474,9 +485,9 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
           {networkProvidersIcon(networkProvider)}
           <View style={styles.historyContent}>
             <BoldText style={styles.historyTitle}>
-              {networkProvider} - {history.rechargePhoneNo}
+              {networkProvider.toUpperCase()} - {history.rechargePhoneNo}
             </BoldText>
-            <RegularText>Airtime Recharge</RegularText>
+            <RegularText>Airtime</RegularText>
           </View>
           <View style={styles.amount}>
             <BoldText style={styles.debitAmount}>
@@ -491,9 +502,9 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
           {networkProvidersIcon(networkProvider)}
           <View style={styles.historyContent}>
             <BoldText style={styles.historyTitle}>
-              {networkProvider} - {history.rechargePhoneNo}
+              {networkProvider.toUpperCase()} - {history.rechargePhoneNo}
             </BoldText>
-            <RegularText>Data Recharge - {dataPlan.value}</RegularText>
+            <RegularText>Data </RegularText>
           </View>
           <View style={styles.amount}>
             <BoldText style={styles.debitAmount}>
@@ -579,6 +590,9 @@ const Header = memo(
 
     return (
       <View>
+        <View style={styles.balanceCard}>
+          <BalanceCard />
+        </View>
         <View style={styles.headerContainer}>
           <BoldText style={styles.historyHeader}>Transaction history</BoldText>
           <Pressable onPress={handleFilter}>

@@ -20,6 +20,12 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import { timeForInactivityInSecond } from '../../config/config';
 import { getBiometric } from '../../../utils/storage';
+import Animated, {
+  Easing,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 
 const LockScreen = () => {
   const {
@@ -38,10 +44,14 @@ const LockScreen = () => {
   const [inputCode, setInputCode] = useState('');
   const [hasForgot, setHasForgot] = useState(false);
   const [canChange, setCanChange] = useState(false);
-  const [switchIcon, setSwitchIcon] = useState(true);
   const [errorCode, setErrorCode] = useState(false);
   const [biometricSwitch, setBiometricSwitch] = useState(false);
   const codeLength = [1, 2, 3, 4, 5, 6];
+  const [errorAnimated, setErrorAnimated] = useState(false);
+
+  const logoPosition = useSharedValue(0);
+  const iconPosition = useSharedValue(100);
+  const errorPosition = useSharedValue(0);
 
   useEffect(() => {
     const checkFingerprint = async () => {
@@ -84,15 +94,31 @@ const LockScreen = () => {
     enableBiometric,
     timerId,
   ]);
+
   useEffect(() => {
     setTimeout(() => {
-      setSwitchIcon(prev => !prev);
+      logoPosition.value = withTiming(logoPosition.value + 100, {
+        duration: 1000,
+        easing: Easing.in(Easing.ease),
+      });
+      setTimeout(() => {
+        iconPosition.value = withTiming(iconPosition.value - 100, {
+          duration: 1000,
+          easing: Easing.out(Easing.ease),
+        });
+      }, 300);
     }, 2500);
+    return () => {
+      logoPosition.value = 0;
+      iconPosition.value = 100;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setIsSessionTimedOut]);
 
   const handleInput = async input => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setInputCode(prev => `${prev}${input}`);
+    setErrorAnimated(false);
     if (inputCode.length + 1 >= codeLength.length) {
       try {
         const response = await postFetchData('auth/check-password', {
@@ -120,6 +146,23 @@ const LockScreen = () => {
     }
   };
 
+  const errorAnimation = () => {
+    if (!errorAnimated) {
+      errorPosition.value = withSpring(errorPosition.value - 10, {
+        duration: 100,
+      });
+      setTimeout(() => {
+        errorPosition.value = withSpring(errorPosition.value + 10, {
+          duration: 100,
+        });
+      }, 200);
+      setErrorAnimated(true);
+    }
+  };
+
+  const digitDimension = { width: vw * 0.2, height: vh * 0.08 };
+  const disabled = inputCode.length >= codeLength.length;
+
   return (
     <Modal visible={isSessionTimedOut && isLoggedIn} animationType="fade">
       {hasForgot ? (
@@ -142,21 +185,35 @@ const LockScreen = () => {
               ...styles.container,
               gap: vh * 0.043,
             }}>
-            {switchIcon ? (
-              <Image
-                style={styles.logo}
+            <View style={styles.logoContainer}>
+              <Animated.Image
+                style={{
+                  ...styles.logo,
+                  top: logoPosition,
+                  right: logoPosition,
+                }}
                 source={require('../../../assets/icon.png')}
                 resizeMode="contain"
               />
-            ) : (
-              <UserIcon style={styles.icon} />
-            )}
+              <Animated.View
+                style={{
+                  ...styles.icon,
+                  top: iconPosition,
+                  right: iconPosition,
+                }}>
+                <UserIcon style={styles.icon} />
+              </Animated.View>
+            </View>
             <RegularText>Enter Password</RegularText>
             <View style={styles.displayContainer}>
               {codeLength.map(code =>
                 inputCode.length >= code ? (
                   errorCode ? (
-                    <View key={code} style={styles.displayError} />
+                    <Animated.View
+                      key={code}
+                      style={{ ...styles.displayError, left: errorPosition }}
+                      onLayout={errorAnimation}
+                    />
                   ) : (
                     <View key={code} style={styles.displayFilled} />
                   )
@@ -168,31 +225,28 @@ const LockScreen = () => {
             <View style={styles.digits}>
               <View style={styles.row}>
                 <Pressable
-                  disabled={inputCode.length >= codeLength.length}
+                  disabled={disabled}
                   style={{
                     ...styles.digit,
-                    width: vw * 0.2,
-                    height: vh * 0.08,
+                    ...digitDimension,
                   }}
                   onPress={() => handleInput('1')}>
                   <BoldText style={styles.digitText}>1</BoldText>
                 </Pressable>
                 <Pressable
-                  disabled={inputCode.length >= codeLength.length}
+                  disabled={disabled}
                   style={{
                     ...styles.digit,
-                    width: vw * 0.2,
-                    height: vh * 0.08,
+                    ...digitDimension,
                   }}
                   onPress={() => handleInput('2')}>
                   <BoldText style={styles.digitText}>2</BoldText>
                 </Pressable>
                 <Pressable
-                  disabled={inputCode.length >= codeLength.length}
+                  disabled={disabled}
                   style={{
                     ...styles.digit,
-                    width: vw * 0.2,
-                    height: vh * 0.08,
+                    ...digitDimension,
                   }}
                   onPress={() => handleInput('3')}>
                   <BoldText style={styles.digitText}>3</BoldText>
@@ -200,31 +254,28 @@ const LockScreen = () => {
               </View>
               <View style={styles.row}>
                 <Pressable
-                  disabled={inputCode.length >= codeLength.length}
+                  disabled={disabled}
                   style={{
                     ...styles.digit,
-                    width: vw * 0.2,
-                    height: vh * 0.08,
+                    ...digitDimension,
                   }}
                   onPress={() => handleInput('4')}>
                   <BoldText style={styles.digitText}>4</BoldText>
                 </Pressable>
                 <Pressable
-                  disabled={inputCode.length >= codeLength.length}
+                  disabled={disabled}
                   style={{
                     ...styles.digit,
-                    width: vw * 0.2,
-                    height: vh * 0.08,
+                    ...digitDimension,
                   }}
                   onPress={() => handleInput('5')}>
                   <BoldText style={styles.digitText}>5</BoldText>
                 </Pressable>
                 <Pressable
-                  disabled={inputCode.length >= codeLength.length}
+                  disabled={disabled}
                   style={{
                     ...styles.digit,
-                    width: vw * 0.2,
-                    height: vh * 0.08,
+                    ...digitDimension,
                   }}
                   onPress={() => handleInput('6')}>
                   <BoldText style={styles.digitText}>6</BoldText>
@@ -232,51 +283,57 @@ const LockScreen = () => {
               </View>
               <View style={styles.row}>
                 <Pressable
-                  disabled={inputCode.length >= codeLength.length}
+                  disabled={disabled}
                   style={{
                     ...styles.digit,
-                    width: vw * 0.2,
-                    height: vh * 0.08,
+                    ...digitDimension,
                   }}
                   onPress={() => handleInput('7')}>
                   <BoldText style={styles.digitText}>7</BoldText>
                 </Pressable>
                 <Pressable
-                  disabled={inputCode.length >= codeLength.length}
+                  disabled={disabled}
                   style={{
                     ...styles.digit,
-                    width: vw * 0.2,
-                    height: vh * 0.08,
+                    ...digitDimension,
                   }}
                   onPress={() => handleInput('8')}>
                   <BoldText style={styles.digitText}>8</BoldText>
                 </Pressable>
                 <Pressable
-                  disabled={inputCode.length >= codeLength.length}
+                  disabled={disabled}
                   style={{
                     ...styles.digit,
-                    width: vw * 0.2,
-                    height: vh * 0.08,
+                    ...digitDimension,
                   }}
                   onPress={() => handleInput('9')}>
                   <BoldText style={styles.digitText}>9</BoldText>
                 </Pressable>
               </View>
               <View style={styles.row}>
+                {enableBiometric && isBiometricSupported ? (
+                  <Pressable
+                    style={{
+                      ...styles.digit,
+                      ...digitDimension,
+                    }}
+                    onPress={() => setBiometricSwitch(prev => !prev)}>
+                    <IonIcon name="finger-print-sharp" size={50} />
+                  </Pressable>
+                ) : (
+                  <View
+                    disabled={disabled}
+                    style={{
+                      ...styles.digit,
+                      ...digitDimension,
+                    }}
+                  />
+                )}
                 <Pressable
-                  disabled={inputCode.length >= codeLength.length}
+                  disabled={disabled}
                   style={{
                     ...styles.digit,
-                    width: vw * 0.2,
-                    height: vh * 0.08,
-                  }}
-                />
-                <Pressable
-                  disabled={inputCode.length >= codeLength.length}
-                  style={{
-                    ...styles.digit,
-                    width: vw * 0.2,
-                    height: vh * 0.08,
+                    ...digitDimension,
                   }}
                   onPress={() => handleInput('0')}>
                   <BoldText style={styles.digitText}>0</BoldText>
@@ -285,8 +342,7 @@ const LockScreen = () => {
                 <Pressable
                   style={{
                     ...styles.digit,
-                    width: vw * 0.2,
-                    height: vh * 0.08,
+                    ...digitDimension,
                   }}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -299,11 +355,6 @@ const LockScreen = () => {
                 </Pressable>
               </View>
             </View>
-            {enableBiometric && isBiometricSupported && (
-              <Pressable onPress={() => setBiometricSwitch(prev => !prev)}>
-                <IonIcon name="finger-print-sharp" size={50} />
-              </Pressable>
-            )}
             <Pressable
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -328,10 +379,18 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
   },
+  logoContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
   logo: {
     width: 100,
     height: 100,
     borderRadius: 50,
+    position: 'absolute',
   },
   displayContainer: {
     flexDirection: 'row',

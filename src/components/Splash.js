@@ -66,7 +66,9 @@ const Splash = ({ navigation }) => {
           } else {
             setIsSessionTimedOut(false);
           }
-          navigation.replace('FirstPage');
+          setTimeout(() => {
+            navigation.replace('FirstPage');
+          }, 3000);
         } catch (err) {
           console.log(err);
         }

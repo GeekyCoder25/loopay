@@ -33,9 +33,8 @@ const FilterModal = ({
   setActiveTransactions,
   setIsFiltered,
   transactions,
-  propTransactions,
 }) => {
-  const { selectedCurrency, setIsLoading } = useContext(AppContext);
+  const { selectedCurrency, setIsLoading, isAdmin } = useContext(AppContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectAll, setSelectAll] = useState(true);
   const [selectedCurrencies, setSelectedCurrencies] = useState(
@@ -52,14 +51,19 @@ const FilterModal = ({
       currency =>
         allCurrencies.find(index => currency === index.acronym).currency,
     );
-    // console.log(currencies);
     try {
       setIsLoading(true);
-      const response = await getFetchData(
-        `admin/transactions?currency=${currencies}&limit=${0}&page=${1}&start=${
-          selectedPeriod.start
-        }&end=${selectedPeriod.end}`,
-      );
+      const response = isAdmin
+        ? await getFetchData(
+            `user/transaction?currency=${currencies}&limit=${0}&page=${1}&start=${
+              selectedPeriod.start
+            }&end=${selectedPeriod.end}`,
+          )
+        : await getFetchData(
+            `admin/transactions?currency=${currencies}&limit=${0}&page=${1}&start=${
+              selectedPeriod.start
+            }&end=${selectedPeriod.end}`,
+          );
 
       if (response.status === 200) {
         return response.data.data.filter(
@@ -216,7 +220,7 @@ const FilterModal = ({
     try {
       const filteredTransactionsResult = filterCleared
         ? transactions
-        : propTransactions || (await getTransactions());
+        : await getTransactions();
       const currencyFilter = () =>
         filteredTransactionsResult.filter(
           transaction =>

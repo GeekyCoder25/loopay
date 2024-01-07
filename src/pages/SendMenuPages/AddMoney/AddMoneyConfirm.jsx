@@ -24,6 +24,7 @@ const AddMoneyConfirm = ({ navigation }) => {
     currency: selectedCurrency.acronym,
     accNo: wallet.loopayAccNo,
     tagName: appData.tagName,
+    type: 'transfer',
   });
   const [preview, setPreview] = useState('');
 

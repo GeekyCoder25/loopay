@@ -557,14 +557,13 @@ const styles = StyleSheet.create({
 export default Home;
 
 const History = ({ history, navigation }) => {
-  const { vw, showAmount, setShowAmount } = useContext(AppContext);
+  const { appData, vw, showAmount, setShowAmount } = useContext(AppContext);
   const [transactionTypeIcon, setTransactionTypeIcon] = useState('');
   const [transactionTypeTitle, setTransactionTypeTitle] = useState('');
-  const [transactionDate, setTransactionDate] = useState('');
+  const [transactionAccount, setTransactionAccount] = useState('');
 
   const {
     amount,
-    createdAt,
     currency,
     transactionType,
     swapFrom,
@@ -573,50 +572,58 @@ const History = ({ history, navigation }) => {
     swapToAmount,
     networkProvider,
     billType,
+    receiverName,
+    senderName,
+    method,
   } = history;
 
   useEffect(() => {
-    const date = new Date(createdAt);
-
-    setTransactionDate(
-      `${date.toDateString()} ${
-        date.getHours().toString().length === 1
-          ? '0' + date.getHours()
-          : date.getHours()
-      }:${
-        date.getMinutes().toString().length === 1
-          ? '0' + date.getMinutes()
-          : date.getMinutes()
-      }`,
-    );
-
     switch (transactionType?.toLowerCase()) {
       case 'credit':
         setTransactionTypeIcon(<FaIcon name="download" size={18} />);
-        setTransactionTypeTitle('Credit Transfer');
+        setTransactionTypeTitle(
+          method
+            ? method === 'card'
+              ? 'Card self'
+              : 'Transfer self'
+            : 'Credit',
+        );
+        setTransactionAccount(
+          method ? (
+            <BoldText>{receiverName}</BoldText>
+          ) : (
+            <BoldText>{senderName}</BoldText>
+          ),
+        );
         break;
       case 'debit':
         setTransactionTypeIcon(<FaIcon name="send" size={18} />);
-        setTransactionTypeTitle('Debit Transfer');
+        setTransactionTypeTitle('Debit');
+        setTransactionAccount(receiverName);
         break;
       case 'swap':
         setTransactionTypeIcon(<SwapIcon width={22} height={22} />);
         setTransactionTypeTitle('Swap');
+        setTransactionAccount(appData.userProfile.fullName);
         break;
       case 'airtime':
         setTransactionTypeIcon(networkProvidersIcon(networkProvider));
-        setTransactionTypeTitle('Airtime Purchase');
+        setTransactionTypeTitle('Airtime');
+        setTransactionAccount(networkProvider.toUpperCase());
         break;
       case 'data':
         setTransactionTypeIcon(networkProvidersIcon(networkProvider));
-        setTransactionTypeTitle('Data Purchase');
+        setTransactionTypeTitle('Data');
+        setTransactionAccount(networkProvider.toUpperCase());
         break;
       case 'bill':
         setTransactionTypeIcon(billIcon(billType));
-        setTransactionTypeTitle('Bill Purchase');
+        setTransactionTypeTitle('Bill');
+        setTransactionAccount(`${billType} bill`);
         break;
     }
-  }, [createdAt, networkProvider, transactionType, billType]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const currencySymbol = allCurrencies.find(
     id => currency === id.currency,
@@ -657,8 +664,8 @@ const History = ({ history, navigation }) => {
         )}
       </View>
       <View style={styles.historyTitle}>
-        <BoldText>{transactionTypeTitle}</BoldText>
-        <RegularText>{transactionDate}</RegularText>
+        <BoldText>{transactionAccount}</BoldText>
+        <RegularText>{transactionTypeTitle}</RegularText>
       </View>
       {showAmount ? (
         <View>

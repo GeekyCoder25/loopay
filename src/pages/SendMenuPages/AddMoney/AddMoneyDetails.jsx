@@ -6,12 +6,17 @@ import RegularText from '../../../components/fonts/RegularText';
 import Button from '../../../components/Button';
 import { AppContext } from '../../../components/AppContext';
 import { addingDecimal } from '../../../../utils/AddingZero';
+import { postFetchData } from '../../../../utils/fetchAPI';
+import { useWalletContext } from '../../../context/WalletContext';
+import { randomUUID } from 'expo-crypto';
+import ToastMessage from '../../../components/ToastMessage';
 
 const AddMoneyDetails = ({ navigation, route }) => {
-  const { selectedCurrency } = useContext(AppContext);
+  const { appData, selectedCurrency, setIsLoading } = useContext(AppContext);
   const { acronym, symbol } = selectedCurrency;
   const { params } = route;
   const { vh } = useContext(AppContext);
+  const { wallet } = useWalletContext();
 
   const transactionDetails = [
     {
@@ -35,9 +40,28 @@ const AddMoneyDetails = ({ navigation, route }) => {
     },
   ];
 
-  const handlePay = () => {
-    navigation.popToTop();
-    navigation.navigate('HomeNavigator');
+  const handlePay = async () => {
+    try {
+      setIsLoading(true);
+
+      const body = {
+        currency: selectedCurrency.acronym,
+        accNo: wallet.loopayAccNo,
+        tagName: appData.tagName,
+        type: 'card',
+        amount: params.amount,
+        reference: randomUUID(),
+      };
+      const response = await postFetchData('user/payment-proof', body);
+      if (response.status === 200) {
+        navigation.popToTop();
+        navigation.navigate('HomeNavigator');
+      }
+    } catch (error) {
+      ToastMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

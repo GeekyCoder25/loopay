@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { apiUrl } from '../../utils/fetchAPI';
 import AppPagesNavigator from '../navigators/AppPagesNavigator';
 import NoInternet from './NoInternet';
@@ -11,6 +11,7 @@ import LockScreen from '../pages/GlobalPages/LockScreen';
 const AppStart = () => {
   const { internetStatus, setInternetStatus, isLoggedIn, isSessionTimedOut } =
     useContext(AppContext);
+  const [showLockScreen, setShowLockScreen] = useState(false);
 
   useEffect(() => {
     const getFetchData = async () => {
@@ -33,6 +34,14 @@ const AppStart = () => {
       setInternetStatus(data.network || false);
     });
   }, [setInternetStatus]);
+
+  useEffect(() => {
+    isSessionTimedOut &&
+      isLoggedIn &&
+      setTimeout(() => {
+        setShowLockScreen(false);
+      }, 3000);
+  }, [isLoggedIn, isSessionTimedOut]);
 
   const [fontsLoaded] = useFonts({
     'OpenSans-300': require('../../assets/fonts/OpenSans-Light.ttf'),
@@ -64,7 +73,7 @@ const AppStart = () => {
     <>
       <View onLayout={onLayoutRootView} />
       <AppPagesNavigator />
-      {isSessionTimedOut && isLoggedIn && <LockScreen />}
+      {showLockScreen && <LockScreen />}
       <NoInternet modalOpen={!internetStatus} />
     </>
   );

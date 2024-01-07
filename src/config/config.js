@@ -13,4 +13,4 @@ export const hideTabRoutes = [
   'SendBank',
 ];
 
-export const timeForInactivityInSecond = 1200;
+export const timeForInactivityInSecond = 120;

@@ -1,18 +1,52 @@
-import React, { useContext } from 'react';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import React, { useContext, useEffect, useRef } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
 import TopBg from '../../assets/images/bg1.svg';
 import { AppContext } from './AppContext';
 
 const CustomBackground = () => {
   const { vw, vh } = useContext(AppContext);
+
+  const rotateY = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const animate = () => {
+      Animated.sequence([
+        Animated.timing(rotateY, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(rotateY, {
+          toValue: 0,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+      ]).start(animate);
+    };
+    animate();
+  }, [rotateY]);
+
+  const interpolatedRotateY = rotateY.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '180deg'],
+  });
+
   return (
     <View style={{ ...styles.bg, height: vh }}>
-      <View style={styles.top}>
+      <Animated.View
+        style={{
+          ...styles.top,
+          transform: [{ rotateY: interpolatedRotateY }],
+        }}>
         <TopBg width={`${vw}`} />
-      </View>
-      <View style={styles.bottom}>
+      </Animated.View>
+      <Animated.View
+        style={{
+          ...styles.bottom,
+          transform: [{ rotateY: interpolatedRotateY }],
+        }}>
         <TopBg width={`${vw}`} />
-      </View>
+      </Animated.View>
     </View>
   );
 };

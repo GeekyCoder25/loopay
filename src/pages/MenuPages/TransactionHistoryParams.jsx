@@ -412,7 +412,11 @@ const TransactionHistoryParams = ({ route }) => {
               <View style={styles.headerContainer}>
                 <UserIcon uri={senderPhoto} />
                 <View>
-                  <BoldText style={styles.name}>{senderName}</BoldText>
+                  {method ? (
+                    <BoldText>{receiverName}</BoldText>
+                  ) : (
+                    <BoldText>{senderName}</BoldText>
+                  )}
                   <RegularText style={styles.accNo}>
                     {senderAccount}
                   </RegularText>
