@@ -31,6 +31,9 @@ import AddMoneyDetails from '../pages/SendMenuPages/AddMoney/AddMoneyDetails';
 import SendLoopay from '../pages/SendMenuPages/SendMoney/SendLoopay';
 import PayABill from '../pages/SendMenuPages/PayABill/PayABill';
 import Withdraw from '../pages/HomePages/Withdraw';
+import AirtimeTopUpNavigator from './AirtimeTopUpNavigator';
+import PayABillParams from '../pages/SendMenuPages/PayABill/PayABillParams';
+import TransferBill from '../pages/SendMenuPages/PayABill/TransferBill';
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -92,6 +95,10 @@ const HomeNavigator = () => {
           component={SendMoneyNavigator}
         />
         <Stack.Screen name="SwapFundsFromHome" component={SwapFunds} />
+        <Stack.Screen
+          name="AirtimeTopUpNavigator"
+          component={AirtimeTopUpNavigator}
+        />
         <Stack.Screen
           name="BuyAirtime"
           component={BuyAirtime}
@@ -169,6 +176,15 @@ const HomeNavigator = () => {
           name="TransactionPin"
           component={TransactionPin}
           options={{
+            animation: 'none',
+          }}
+        />
+        <Stack.Screen name="PayABillParams" component={PayABillParams} />
+        <Stack.Screen
+          name="TransferBill"
+          component={TransferBill}
+          options={{
+            headerShown: false,
             animation: 'none',
           }}
         />

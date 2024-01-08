@@ -8,9 +8,9 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import BoldText from '../../../components/fonts/BoldText';
-import RegularText from '../../../components/fonts/RegularText';
-import Back from '../../../components/Back';
+import BoldText from '../../components/fonts/BoldText';
+import RegularText from '../../components/fonts/RegularText';
+import Back from '../../components/Back';
 
 const styles = StyleSheet.create({
   header: {

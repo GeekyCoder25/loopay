@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import { AppContext } from './AppContext';
 import Phone from '../../assets/images/airtime.svg';
 import SwapIcon from '../../assets/images/swapBeneficiary.svg';
+import BillIcon from '../../assets/images/bill.svg';
 import AddIcon from '../../assets/images/addBeneficiary.svg';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import BoldText from './fonts/BoldText';
@@ -18,32 +19,12 @@ const ShakeModal = () => {
 
   const shortcuts = [
     {
-      routeName: 'Buy airtime',
-      routeDetails: 'Send Funds to Family and Friends',
+      routeName: 'MobileTop up',
       routeIcon: <Phone />,
-      routeNavigate: 'BuyAirtime',
-    },
-    {
-      routeName: 'Buy data',
-      routeDetails: 'Convert your USD to another currency',
-      routeIcon: <FaIcon name="wifi" size={20} />,
-      routeNavigate: 'BuyData',
-    },
-    {
-      routeName: 'Swap Funds',
-      routeDetails: 'Send Funds to Family and Friends',
-      routeIcon: <SwapIcon />,
-      routeNavigate: 'SwapFunds',
-    },
-    {
-      routeName: 'Add Money',
-      routeDetails: 'Buy airtime via VTU',
-      routeIcon: <AddIcon />,
-      routeNavigate: 'AddMoneyFromHome',
+      routeNavigate: 'AirtimeTopUpNavigator',
     },
     {
       routeName: 'Send to Loopay',
-      routeDetails: 'Convert your USD to another currency',
       routeIcon: (
         <Image
           source={require('../../assets/icon.png')}
@@ -58,6 +39,21 @@ const ShakeModal = () => {
       routeDetails: 'Buy airtime via VTU',
       routeIcon: <FaIcon name="bank" size={24} color={'#1e1e1e'} />,
       routeNavigate: 'SendOthers',
+    },
+    {
+      routeName: 'Pay Bill',
+      routeIcon: <BillIcon />,
+      routeNavigate: 'PayABill',
+    },
+    {
+      routeName: 'Swap Funds',
+      routeIcon: <SwapIcon />,
+      routeNavigate: 'SwapFunds',
+    },
+    {
+      routeName: 'Add Money',
+      routeIcon: <AddIcon />,
+      routeNavigate: 'AddMoneyFromHome',
     },
   ];
   return (
@@ -129,7 +125,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modal: {
-    width: 100 + '%',
+    width: 95 + '%',
     maxWidth: 400,
     alignItems: 'center',
     backgroundColor: '#fff',

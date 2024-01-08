@@ -37,10 +37,10 @@ const WalletAmount = () => {
           marginTop: showAmount ? undefined : 15,
           fontSize: showAmount
             ? walletAmount.length > 8
-              ? vw > 400
-                ? 40
-                : 25
-              : 40
+              ? vw > 500
+                ? 35
+                : 22
+              : 35
             : 30,
         }}>
         {showAmount ? walletAmount : '****'}

@@ -532,6 +532,9 @@ const styles = StyleSheet.create({
   historyTitle: {
     flex: 1,
   },
+  transactionAccount: {
+    textTransform: 'capitalize',
+  },
   transactionAmountTextRow: {
     flexDirection: 'row',
     gap: 5,
@@ -664,7 +667,14 @@ const History = ({ history, navigation }) => {
         )}
       </View>
       <View style={styles.historyTitle}>
-        <BoldText>{transactionAccount}</BoldText>
+        {transactionType?.toLowerCase() === 'airtime' ||
+        transactionType?.toLowerCase() === 'data' ? (
+          <BoldText>{transactionAccount}</BoldText>
+        ) : (
+          <BoldText style={styles.transactionAccount}>
+            {transactionAccount}
+          </BoldText>
+        )}
         <RegularText>{transactionTypeTitle}</RegularText>
       </View>
       {showAmount ? (

@@ -64,7 +64,7 @@ const BottomTabs = ({ navigation }) => {
             <Tab.Screen name="MenuNavigator" component={MenuNavigator} />
           </Tab.Navigator>
           {showPopUp && !isSessionTimedOut && <Popup />}
-          {openShake && !showPopUp && <ShakeModal />}
+          {<ShakeModal />}
         </RequestFundsContextComponent>
       </BeneficiaryContextComponent>
     </WalletContextComponent>

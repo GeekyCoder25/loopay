@@ -53,11 +53,15 @@ const TransactionHistoryParams = ({ route }) => {
     billType,
     token,
     email,
+    rate,
   } = history;
 
   const currencySymbol = allCurrencies.find(
     id => currency === id.currency || currency === id.acronym,
   )?.symbol;
+  const currencyAcronym = allCurrencies.find(
+    id => currency === id.currency || currency === id.acronym,
+  )?.acronym;
 
   const transactionDate = `${new Date(
     createdAt || history.transactionDate,
@@ -402,6 +406,14 @@ const TransactionHistoryParams = ({ route }) => {
     }
   })();
 
+  const transactionRate = () =>
+    ['euro', 'dollar', 'pound'].includes(currency) && (
+      <View style={styles.cardLine}>
+        <RegularText style={styles.cardKey}>Rate</RegularText>
+        <BoldText style={styles.cardValue}>{rate}</BoldText>
+      </View>
+    );
+
   return (
     <>
       <PageContainer justify={true} scroll>
@@ -603,10 +615,10 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Payment Method
+                      Payment Wallet
                     </RegularText>
                     <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
-                      Balance
+                      {currencyAcronym} Balance
                     </BoldText>
                   </View>
                   <View style={styles.cardLine}>
@@ -705,12 +717,13 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Payment Method
+                      Payment Wallet
                     </RegularText>
                     <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
-                      Balance
+                      {currencyAcronym} Balance
                     </BoldText>
                   </View>
+                  {transactionRate()}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
                       Transaction Date
@@ -803,12 +816,13 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Payment Method
+                      Payment Wallet
                     </RegularText>
                     <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
-                      Balance
+                      {currencyAcronym} Balance
                     </BoldText>
                   </View>
+                  {transactionRate()}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
                       Transaction Date
@@ -891,12 +905,13 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Payment Method
+                      Payment Wallet
                     </RegularText>
                     <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
-                      Balance
+                      {currencyAcronym} Balance
                     </BoldText>
                   </View>
+                  {transactionRate()}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
                       Transaction Date
