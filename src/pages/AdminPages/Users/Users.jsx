@@ -595,7 +595,7 @@ const User = ({ user, activeStatus, setSearchModal }) => {
 
         <View style={styles.name}>
           <RegularText style={styles.fullName}>
-            {user.userProfile.fullName}
+            {user.userProfile?.fullName}
           </RegularText>
           <RegularText style={styles.email}>{user.email}</RegularText>
         </View>

@@ -68,7 +68,7 @@ const Splash = ({ navigation }) => {
           }
           setTimeout(() => {
             navigation.replace('FirstPage');
-          }, 3000);
+          }, 1000);
         } catch (err) {
           console.log(err);
         }

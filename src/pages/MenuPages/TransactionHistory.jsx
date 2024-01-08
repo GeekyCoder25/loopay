@@ -215,6 +215,7 @@ const TransactionHistory = memo(({ navigation }) => {
                 setIsLocalLoading={setIsLocalLoading}
                 setShowFilterModal={setShowFilterModal}
                 searchTransactions={activeTransactions}
+                hideSearch
               />
             }
             ListFooterComponent={

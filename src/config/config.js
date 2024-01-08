@@ -10,7 +10,7 @@ export const hideTabRoutes = [
   'VerifyImage',
   'Profile',
   'Biometric',
-  'SendBank',
+  'SendOthers',
 ];
 
 export const timeForInactivityInSecond = 120;

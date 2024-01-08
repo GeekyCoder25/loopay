@@ -48,6 +48,7 @@ const LockScreen = () => {
   const [biometricSwitch, setBiometricSwitch] = useState(false);
   const codeLength = [1, 2, 3, 4, 5, 6];
   const [errorAnimated, setErrorAnimated] = useState(false);
+  const [switchIcon, setSwitchIcon] = useState(false);
 
   const logoPosition = useSharedValue(0);
   const iconPosition = useSharedValue(100);
@@ -107,10 +108,14 @@ const LockScreen = () => {
           easing: Easing.out(Easing.ease),
         });
       }, 300);
+      setTimeout(() => {
+        setSwitchIcon(true);
+      }, 400);
     }, 2500);
     return () => {
       logoPosition.value = 0;
       iconPosition.value = 100;
+      setSwitchIcon(false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setIsSessionTimedOut]);
@@ -201,7 +206,7 @@ const LockScreen = () => {
                   top: iconPosition,
                   right: iconPosition,
                 }}>
-                <UserIcon style={styles.icon} />
+                {switchIcon && <UserIcon style={{ ...styles.icon }} />}
               </Animated.View>
             </View>
             <RegularText>Enter Password</RegularText>
@@ -378,6 +383,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
+    position: 'absolute',
   },
   logoContainer: {
     width: 100,

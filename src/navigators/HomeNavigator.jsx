@@ -29,8 +29,8 @@ import Biometric from '../pages/HomePages/Biometric';
 import TransactionPin from '../pages/MenuPages/TransactionPin';
 import AddMoneyDetails from '../pages/SendMenuPages/AddMoney/AddMoneyDetails';
 import SendLoopay from '../pages/SendMenuPages/SendMoney/SendLoopay';
-import Withdraw from '../pages/SendMenuPages/SendMoney/Withdraw';
 import PayABill from '../pages/SendMenuPages/PayABill/PayABill';
+import Withdraw from '../pages/HomePages/Withdraw';
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -156,7 +156,7 @@ const HomeNavigator = () => {
           options={({ navigation, route }) => screenHeader(navigation, route)}
         />
         <Stack.Screen
-          name="SendBank"
+          name="Withdraw"
           component={Withdraw}
           options={({ navigation, route }) => screenHeader(navigation, route)}
         />

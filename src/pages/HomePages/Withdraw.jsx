@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useEffect, useState } from 'react';
-import PageContainer from '../../../components/PageContainer';
+import PageContainer from '../../components/PageContainer';
 import {
   ActivityIndicator,
   Pressable,
@@ -8,22 +8,22 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { AppContext } from '../../../components/AppContext';
-import Button from '../../../components/Button';
-import BoldText from '../../../components/fonts/BoldText';
-import FlagSelect from '../../../components/FlagSelect';
-import RegularText from '../../../components/fonts/RegularText';
+import { AppContext } from '../../components/AppContext';
+import Button from '../../components/Button';
+import BoldText from '../../components/fonts/BoldText';
+import FlagSelect from '../../components/FlagSelect';
+import RegularText from '../../components/fonts/RegularText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
-import { addingDecimal } from '../../../../utils/AddingZero';
-import ErrorMessage from '../../../components/ErrorMessage';
-import { useWalletContext } from '../../../context/WalletContext';
-import { getFetchData, postFetchData } from '../../../../utils/fetchAPI';
+import { addingDecimal } from '../../../utils/AddingZero';
+import ErrorMessage from '../../components/ErrorMessage';
+import { useWalletContext } from '../../context/WalletContext';
+import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import { randomUUID } from 'expo-crypto';
 import { useFocusEffect } from '@react-navigation/native';
-import AccInfoCard from '../../../components/AccInfoCard';
-import InputPin from '../../../components/InputPin';
+import AccInfoCard from '../../components/AccInfoCard';
+import InputPin from '../../components/InputPin';
 import { AddBankFields, BanksModal } from './AddWithdraw';
-import ChevronDown from '../../../../assets/images/chevron-down';
+import ChevronDown from '../../../assets/images/chevron-down';
 
 const Withdraw = ({ navigation }) => {
   const { appData, vh, selectedCurrency, setWalletRefresh } =

@@ -57,7 +57,7 @@ const ShakeModal = () => {
       routeName: 'Send to Others',
       routeDetails: 'Buy airtime via VTU',
       routeIcon: <FaIcon name="bank" size={24} color={'#1e1e1e'} />,
-      routeNavigate: 'SendBank',
+      routeNavigate: 'SendOthers',
     },
   ];
   return (

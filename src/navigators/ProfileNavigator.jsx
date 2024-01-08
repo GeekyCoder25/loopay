@@ -8,7 +8,7 @@ import TransactionPin from '../pages/MenuPages/TransactionPin';
 import MyInfo from '../pages/MenuPages/MyInfo';
 import Questions from '../pages/HomePages/Questions';
 import Limit from '../pages/HomePages/Limit';
-import Withdraw from '../pages/SendMenuPages/SendMoney/Withdraw';
+import SendOthers from '../pages/SendMenuPages/SendMoney/SendOthers';
 
 const ProfileNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -21,7 +21,7 @@ const ProfileNavigator = () => {
       }}>
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="Myinfo" component={MyInfo} />
-      <Stack.Screen name="Withdraw" component={Withdraw} />
+      <Stack.Screen name="Withdraw" component={SendOthers} />
       <Stack.Screen name="Password" component={ChangePassword} />
       <Stack.Screen name="Pin" component={TransactionPin} />
       <Stack.Screen name="Limit" component={Limit} />

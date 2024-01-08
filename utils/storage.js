@@ -37,6 +37,7 @@ export const logoutUser = async () => {
   await AsyncStorage.removeItem(StorageKeys.LOCAL_CURRENCY);
   await AsyncStorage.removeItem(StorageKeys.DEFAULT_CURRENCY);
   await AsyncStorage.removeItem(StorageKeys.INVALID_PIN);
+  await AsyncStorage.removeItem(StorageKeys.BIOMETRIC);
   await AsyncStorage.setItem(StorageKeys.LOGGED_IN, 'false');
 };
 

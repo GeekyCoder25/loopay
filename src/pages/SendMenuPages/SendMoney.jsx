@@ -34,7 +34,7 @@ const SendMoney = ({ navigation }) => {
       routeName: 'Send to other banks',
       routeDetails: `Send money to other ${selectedCurrency.acronym} bank accounts`,
       routeIcon: 'bank',
-      routeNavigate: 'SendBank',
+      routeNavigate: 'SendOthers',
     },
   ];
   return (

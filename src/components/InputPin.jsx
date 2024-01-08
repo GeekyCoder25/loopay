@@ -28,6 +28,7 @@ import { getInvalidPinStatus, setInvalidPinStatus } from '../../utils/storage';
 import Back from './Back';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LoadingModal from './LoadingModal';
+import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 
 const InputPin = ({
   setIsValidPin,
@@ -53,9 +54,26 @@ const InputPin = ({
   const codeLengths = [1, 2, 3, 4];
   const [hideDigits, setHideDigits] = useState(false);
   const [showBiometrics, setShowBiometrics] = useState(false);
+  const [errorAnimated, setErrorAnimated] = useState(false);
+  const errorPosition = useSharedValue(0);
+
   useLayoutEffect(() => {
     setShowTabBar(false);
   }, [setShowTabBar]);
+
+  const errorAnimation = () => {
+    if (!errorAnimated) {
+      errorPosition.value = withSpring(errorPosition.value - 10, {
+        duration: 100,
+      });
+      setTimeout(() => {
+        errorPosition.value = withSpring(errorPosition.value + 10, {
+          duration: 100,
+        });
+      }, 200);
+      setErrorAnimated(true);
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -234,7 +252,14 @@ const InputPin = ({
                     {codeLengths.map(code =>
                       pinCode.length >= code ? (
                         errorCode ? (
-                          <View key={code} style={styles.displayError} />
+                          <Animated.View
+                            key={code}
+                            style={{
+                              ...styles.displayError,
+                              left: errorPosition,
+                            }}
+                            onLayout={errorAnimation}
+                          />
                         ) : (
                           <View key={code} style={styles.displayFilled} />
                         )

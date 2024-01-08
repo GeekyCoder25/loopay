@@ -36,11 +36,13 @@ const AppStart = () => {
   }, [setInternetStatus]);
 
   useEffect(() => {
-    isSessionTimedOut &&
-      isLoggedIn &&
+    if (isSessionTimedOut && isLoggedIn) {
       setTimeout(() => {
-        setShowLockScreen(false);
-      }, 3000);
+        setShowLockScreen(true);
+      }, 2000);
+    } else {
+      setShowLockScreen(false);
+    }
   }, [isLoggedIn, isSessionTimedOut]);
 
   const [fontsLoaded] = useFonts({

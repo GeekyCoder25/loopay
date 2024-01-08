@@ -36,21 +36,21 @@ import { CurrencyFullDetails } from '../../../utils/allCountries.js';
 
 const Signup = ({ navigation }) => {
   const [formData, setFormData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    userName: 'johndoee',
-    email: 'john@gmail.com',
-    password: '123456',
-    confirmPassword: '123456',
+    firstName: '',
+    lastName: '',
+    userName: '',
+    email: '',
     phoneNumber: '',
-    referralCode: 'zt2sxh',
-    // firstName: 'Toyyib',
-    // lastName: 'Lawal',
-    // userName: 'Geeky Coder',
-    // email: 'toyibe25@gmail.com',
-    // phoneNumber: '9073002599',
-    // password: '251101',
-    // confirmPassword: '251101',
+    password: '',
+    confirmPassword: '',
+    // firstName: 'John',
+    // lastName: 'Doe',
+    // userName: 'johndoee',
+    // email: 'john@gmail.com',
+    // password: '123456',
+    // confirmPassword: '123456',
+    // phoneNumber: '',
+    // referralCode: 'zt2sxh',
     // role: 'admin',
   });
   const [errorMessage, setErrorMessage] = useState('');
@@ -59,7 +59,6 @@ const Signup = ({ navigation }) => {
   const [countryCode, setCountryCode] = useState('');
   const [countryCodeData, setCountryCodeData] = useState('');
   const [showPicker, setShowPicker] = useState(false);
-  const [deviceID, setDeviceID] = useState('');
   const { vh, setIsLoading } = useContext(AppContext);
   const [verifyEmail, setVerifyEmail] = useState(false);
 
@@ -522,6 +521,7 @@ export const EmailVerify = ({
     setInputCode(prev => `${prev}${input}`);
     if (inputCode.length + 1 >= codeLength.length) {
       try {
+        setIsLoading(true);
         const session = saveSessionOptions();
         const response = await putFetchData('auth/register', {
           otp: `${inputCode}${input}`,
@@ -529,7 +529,6 @@ export const EmailVerify = ({
           session,
         });
         if (response.status === 201) {
-          setIsLoading(true);
           setVerifyEmail(false);
           const result = response.data;
           const { firstName, lastName, userName, phoneNumber } = result.data;
@@ -545,7 +544,6 @@ export const EmailVerify = ({
             },
           };
           setAppData(data);
-          setIsLoading(false);
           setErrorMessage('');
           setSuccessMessage('');
           navigation.replace('AccountType');
