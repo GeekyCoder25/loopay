@@ -11,6 +11,7 @@ import { Audio } from 'expo-av';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import { allCurrencies } from '../../database/data';
+import RegularText from '../../components/fonts/RegularText';
 
 const Success = ({ navigation, route }) => {
   const { isAdmin, setShowTabBar, vh, setIsLoading } = useContext(AppContext);
@@ -22,6 +23,9 @@ const Success = ({ navigation, route }) => {
     dataPlan,
     billPlan,
     transaction,
+    headerTitle,
+    isCredit,
+    message,
   } = route.params;
 
   useFocusEffect(
@@ -297,8 +301,11 @@ const Success = ({ navigation, route }) => {
       <View style={{ ...styles.container, minHeight: vh * 0.8 }}>
         <View style={styles.header}>
           <Check />
-          <BoldText style={styles.headerText}>Transaction Successful</BoldText>
+          <BoldText style={styles.headerText}>
+            {headerTitle || 'Transaction'} Successful
+          </BoldText>
         </View>
+        <RegularText style={styles.message}>{message}</RegularText>
         <View style={styles.footer}>
           <FooterCard
             userToSendTo={userToSendTo}
@@ -307,10 +314,11 @@ const Success = ({ navigation, route }) => {
             airtime={airtime}
             dataPlan={dataPlan}
             billPlan={billPlan}
+            isCredit={isCredit}
           />
         </View>
         <View style={styles.buttons}>
-          {!isAdmin && (
+          {!isAdmin && transaction && (
             <Button
               text={'Share Receipt'}
               onPress={handleShare}
@@ -340,7 +348,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerText: {
-    fontSize: 18,
+    fontSize: 20,
+  },
+  message: {
+    marginHorizontal: 5 + '%',
+    marginVertical: 20,
+    textAlign: 'center',
+    fontSize: 17,
+    color: '#868585',
   },
   footer: {
     flex: 1,

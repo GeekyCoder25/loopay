@@ -29,12 +29,11 @@ const Signin = ({ navigation }) => {
     setIsAdmin,
     setCanChangeRole,
     setVerified,
+    setIsSessionTimedOut,
   } = useContext(AppContext);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    // email: 'toyibe25@gmail.com',
-    // password: '251101',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -73,6 +72,7 @@ const Signin = ({ navigation }) => {
           setIsLoggedIn(true);
           setIsLoading(false);
           setSuccessMessage('');
+          setIsSessionTimedOut(false);
         } else {
           if (typeof response === 'string') {
             setErrorMessage(response);

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -31,6 +31,7 @@ const Splash = ({ navigation }) => {
     setVerified,
     vw,
   } = useContext(AppContext);
+  const [darkSplash, setDarkSplash] = useState(true);
 
   useEffect(() => {
     console.log('splash');
@@ -119,11 +120,19 @@ const Splash = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.logo} />
-      <Image
-        source={require('../../assets/images/splash.png')}
-        resizeMode="contain"
-        style={{ width: vw * 1.2, height: vw * 1.2 }}
-      />
+      {darkSplash ? (
+        <Image
+          source={require('../../assets/images/splash.png')}
+          resizeMode="contain"
+          style={{ width: vw * 1.2, height: vw * 1.2 }}
+        />
+      ) : (
+        <Image
+          source={require('../../assets/images/splash2.png')}
+          resizeMode="contain"
+          style={{ width: vw * 1.2, height: vw * 1.2 }}
+        />
+      )}
       {internetStatus || isChecking ? (
         <ActivityIndicator
           color={'#1e1e1e'}
@@ -135,7 +144,7 @@ const Splash = ({ navigation }) => {
           <FaIcon name="refresh" size={35} color={'#1e1e1e'} />
         </Pressable>
       )}
-      <CustomBackground />
+      <CustomBackground setDarkSplash={setDarkSplash} />
     </View>
   );
 };

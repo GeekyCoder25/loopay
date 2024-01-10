@@ -16,6 +16,7 @@ const FooterCard = ({
   billPlan,
   token,
   reference,
+  isCredit,
 }) => {
   const { selectedCurrency } = useContext(AppContext);
   amountInput = addingDecimal(
@@ -33,7 +34,9 @@ const FooterCard = ({
   return (
     <View style={styles.footerCard}>
       <BoldText style={styles.cardAmount}>
-        {billPlan || dataPlan || `- ${currency + amountInput}`}
+        {billPlan ||
+          dataPlan ||
+          `${isCredit ? '' : '-'} ${currency + amountInput}`}
       </BoldText>
       {userToSendTo ? (
         <View style={styles.footerCardDetails}>
@@ -72,12 +75,13 @@ const FooterCard = ({
         </View>
       ) : (
         <View style={styles.footerCardDetails}>
-          {!billPlan && (
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>Phone Number</RegularText>
-              <BoldText style={styles.cardValue}>{airtime.phoneNo}</BoldText>
-            </View>
-          )}
+          {airtime ||
+            (dataPlan && (
+              <View style={styles.cardLine}>
+                <RegularText style={styles.cardKey}>Phone Number</RegularText>
+                <BoldText style={styles.cardValue}>{airtime.phoneNo}</BoldText>
+              </View>
+            ))}
           {dataPlan && (
             <View style={styles.cardLine}>
               <RegularText style={styles.cardKey}>Data Plan</RegularText>

@@ -3,7 +3,7 @@ import { Animated, StyleSheet, View } from 'react-native';
 import TopBg from '../../assets/images/bg1.svg';
 import { AppContext } from './AppContext';
 
-const CustomBackground = () => {
+const CustomBackground = ({ setDarkSplash }) => {
   const { vw, vh } = useContext(AppContext);
 
   const rotateY = useRef(new Animated.Value(0)).current;
@@ -22,9 +22,10 @@ const CustomBackground = () => {
           useNativeDriver: true,
         }),
       ]).start(animate);
+      setDarkSplash(prev => !prev);
     };
     animate();
-  }, [rotateY]);
+  }, [rotateY, setDarkSplash]);
 
   const interpolatedRotateY = rotateY.interpolate({
     inputRange: [0, 1],

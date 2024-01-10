@@ -29,19 +29,16 @@ const WalletAmount = () => {
     setShowBalance(!showAmount);
   };
 
+  let fontSize = vw / (walletAmount.length + 2);
+  fontSize = fontSize > 40 ? 40 : fontSize;
+
   return (
     <View style={styles.eyeContainer}>
       <BoldText
         style={{
           ...styles.amount,
           marginTop: showAmount ? undefined : 15,
-          fontSize: showAmount
-            ? walletAmount.length > 8
-              ? vw > 500
-                ? 35
-                : 22
-              : 35
-            : 30,
+          fontSize: showAmount ? fontSize : 30,
         }}>
         {showAmount ? walletAmount : '****'}
       </BoldText>

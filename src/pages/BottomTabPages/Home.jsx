@@ -584,13 +584,18 @@ const History = ({ history, navigation }) => {
     switch (transactionType?.toLowerCase()) {
       case 'credit':
         setTransactionTypeIcon(<FaIcon name="download" size={18} />);
-        setTransactionTypeTitle(
-          method
-            ? method === 'card'
-              ? 'Card self'
-              : 'Transfer self'
-            : 'Credit',
-        );
+        setTransactionTypeTitle(() => {
+          switch (method) {
+            case 'card':
+              return 'Card self';
+            case 'deposit':
+              return 'Transfer self';
+            case 'transfer':
+              return 'Transfer self';
+            default:
+              return 'Credit Transfer';
+          }
+        });
         setTransactionAccount(
           method ? (
             <BoldText>{receiverName}</BoldText>

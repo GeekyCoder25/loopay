@@ -93,11 +93,13 @@ const AddMoneyConfirm = ({ navigation }) => {
       const result = await response.json();
 
       if (response.ok) {
-        navigation.popToTop();
-        navigation.navigate('HomeNavigator');
-        ToastMessage(
-          'Uploaded successfully, your account will be credited soon',
-        );
+        navigation.replace('Success', {
+          headerTitle: 'Deposit',
+          amountInput: formDataState.amount,
+          isCredit: true,
+          message:
+            "Great news! Your request has been received successfully, and we're thrilled to confirm that your account will be credited with a complimentary confirmation soon. Stay tuned for the confirmation details",
+        });
       } else {
         const errormessage = result.status !== 500 ? result : 'Upload failed';
         ToastMessage(errormessage);

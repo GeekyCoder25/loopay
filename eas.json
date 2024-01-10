@@ -22,6 +22,10 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./assets/triluxy-app-396805-4032b6f30bcd.json"
+      }
+    }
   }
 }

@@ -45,12 +45,17 @@ const Signup = ({ navigation }) => {
     confirmPassword: '',
     // firstName: 'John',
     // lastName: 'Doe',
-    // userName: 'johndoee',
-    // email: 'john@gmail.com',
-    // password: '123456',
-    // confirmPassword: '123456',
+    // userName: 'johndoes',
+    // email: 'john25@gmail.com',
+    // password: '251101',
+    // confirmPassword: '251101',
     // phoneNumber: '',
     // referralCode: 'zt2sxh',
+    // localCurrencyCode: 'NGN',
+    // country: {
+    //   name: 'Nigeria',
+    //   code: 'NG',
+    // },
     // role: 'admin',
   });
   const [errorMessage, setErrorMessage] = useState('');
@@ -514,7 +519,8 @@ export const EmailVerify = ({
 }) => {
   const [inputCode, setInputCode] = useState('');
   const [errorCode, setErrorCode] = useState(false);
-  const { vw, vh, setAppData, setIsLoading } = useContext(AppContext);
+  const { vw, vh, setAppData, setIsLoading, setIsSessionTimedOut } =
+    useContext(AppContext);
 
   const handleInput = async input => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -546,6 +552,7 @@ export const EmailVerify = ({
           setAppData(data);
           setErrorMessage('');
           setSuccessMessage('');
+          setIsSessionTimedOut(false);
           navigation.replace('AccountType');
         } else {
           setErrorCode(true);
