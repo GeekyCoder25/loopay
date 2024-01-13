@@ -197,7 +197,7 @@ const LockScreen = () => {
                   top: logoPosition,
                   right: logoPosition,
                 }}
-                source={require('../../../assets/icon.png')}
+                source={require('../../../assets/images/icon.png')}
                 resizeMode="contain"
               />
               <Animated.View

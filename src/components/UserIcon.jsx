@@ -10,7 +10,7 @@ const UserIcon = props => {
     props.uri ? (
       props.uri === 'loopay' ? (
         <Image
-          source={require('../../assets/icon.png')}
+          source={require('../../assets/images/icon.png')}
           style={{ ...styles.userIconStyle, ...props.style }}
         />
       ) : (

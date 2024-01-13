@@ -142,7 +142,7 @@ const InputPin = ({
               ? setTimeout(() => {
                   setModalOpen(false);
                 }, 1000)
-              : setErrorMessage(customFuncStatus);
+              : setErrorMessage(`${customFuncStatus}`);
           }, 200);
         }
       }

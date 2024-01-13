@@ -302,8 +302,8 @@ const BuyData = ({ route, navigation }) => {
                       />
                     ))}
                   <BoldText style={styles.networkToBuySelected}>
-                    {networkToBuy.network}{' '}
-                    {isNigeria ? `-${networkToBuy.locale}` : ''}
+                    {networkToBuy.network}
+                    {isNigeria ? ` - ${networkToBuy.locale}` : ''}
                   </BoldText>
                 </View>
               ) : (
@@ -350,7 +350,7 @@ const BuyData = ({ route, navigation }) => {
                             </View>
                             <BoldText style={styles.networkToBuySelected}>
                               {`${provider.network}${
-                                isNigeria ? `-${provider.locale}` : ''
+                                isNigeria ? ` - ${provider.locale}` : ''
                               }`}
                             </BoldText>
                           </Pressable>

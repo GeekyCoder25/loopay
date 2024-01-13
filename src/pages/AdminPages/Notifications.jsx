@@ -307,7 +307,10 @@ export default Notifications;
 
 const Message = ({ notification, setModalData, setShowModal }) => {
   const [transactionTypeIcon, setTransactionTypeIcon] = useState(
-    <Image source={require('../../../assets/icon.png')} style={styles.image} />,
+    <Image
+      source={require('../../../assets/images/icon.png')}
+      style={styles.image}
+    />,
   );
   const { header, adminMessage, photo, createdAt, adminStatus, type } =
     notification;
@@ -361,7 +364,7 @@ const Message = ({ notification, setModalData, setShowModal }) => {
             <UserIcon uri={photo} />
           ) : (
             <Image
-              source={require('../../../assets/icon.png')}
+              source={require('../../../assets/images/icon.png')}
               style={styles.image}
             />
           ),
@@ -373,7 +376,7 @@ const Message = ({ notification, setModalData, setShowModal }) => {
             <UserIcon uri={photo} />
           ) : (
             <Image
-              source={require('../../../assets/icon.png')}
+              source={require('../../../assets/images/icon.png')}
               style={styles.image}
             />
           ),

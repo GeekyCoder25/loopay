@@ -27,7 +27,7 @@ const ToastMessage = message => {
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <Image
-          source={require('../../assets/icon.png')}
+          source={require('../../assets/images/icon.png')}
           style={styles.image}
           resizeMode="contain"
         />

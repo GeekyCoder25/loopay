@@ -27,7 +27,7 @@ const ShakeModal = () => {
       routeName: 'Send to Loopay',
       routeIcon: (
         <Image
-          source={require('../../assets/icon.png')}
+          source={require('../../assets/images/icon.png')}
           style={{ width: 50, height: 50, borderRadius: 50 }}
           resizeMode="contain"
         />

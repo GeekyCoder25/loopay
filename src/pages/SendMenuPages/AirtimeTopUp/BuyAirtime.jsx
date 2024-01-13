@@ -166,7 +166,7 @@ const BuyAirtime = ({ route, navigation }) => {
         networkProviders.find(index => network.startsWith(index.network)),
       );
     }
-    ToastMessage(`${response.data}`);
+    ToastMessage(`${response.data || response}`);
   };
 
   const handlePhoneInput = async phoneNo => {
@@ -276,8 +276,8 @@ const BuyAirtime = ({ route, navigation }) => {
                       />
                     ))}
                   <BoldText style={styles.networkToBuySelected}>
-                    {networkToBuy.network}{' '}
-                    {isNigeria ? `-${networkToBuy.locale}` : ''}
+                    {networkToBuy.network}
+                    {isNigeria ? ` - ${networkToBuy.locale}` : ''}
                   </BoldText>
                 </View>
               ) : (
@@ -323,7 +323,7 @@ const BuyAirtime = ({ route, navigation }) => {
                           </View>
                           <BoldText style={styles.networkToBuySelected}>
                             {`${provider.network}${
-                              isNigeria ? `-${provider.locale}` : ''
+                              isNigeria ? ` - ${provider.locale}` : ''
                             }`}
                           </BoldText>
                         </Pressable>

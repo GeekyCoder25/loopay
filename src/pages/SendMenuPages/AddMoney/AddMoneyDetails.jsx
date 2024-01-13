@@ -54,8 +54,14 @@ const AddMoneyDetails = ({ navigation, route }) => {
       };
       const response = await postFetchData('user/payment-proof', body);
       if (response.status === 200) {
-        navigation.popToTop();
-        navigation.navigate('HomeNavigator');
+        navigation.navigate('Success', {
+          headerTitle: 'Deposit',
+          amountInput: params.amount,
+          isCredit: true,
+          message:
+            "Great news! Your request has been received successfully, and we're thrilled to confirm that your account will be credited with a complimentary confirmation soon. Stay tuned for the confirmation details",
+          type: 'card',
+        });
       }
     } catch (error) {
       ToastMessage(error.message);

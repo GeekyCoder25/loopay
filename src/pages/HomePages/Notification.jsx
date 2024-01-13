@@ -215,7 +215,7 @@ export default Notification;
 const Message = ({ notification }) => {
   const { setWalletRefresh } = useContext(AppContext);
   const [transactionTypeIcon, setTransactionTypeIcon] = useState(
-    <Image source={require('../../../assets/icon.png')} style={styles.image} />,
+    <Image source={require('../../../assets/images/icon.png')} style={styles.image} />,
   );
   const {
     _id,
@@ -279,7 +279,7 @@ const Message = ({ notification }) => {
             <UserIcon uri={photo} />
           ) : (
             <Image
-              source={require('../../../assets/icon.png')}
+              source={require('../../../assets/images/icon.png')}
               style={styles.image}
             />
           ),
@@ -291,7 +291,7 @@ const Message = ({ notification }) => {
             <UserIcon uri={photo} />
           ) : (
             <Image
-              source={require('../../../assets/icon.png')}
+              source={require('../../../assets/images/icon.png')}
               style={styles.image}
             />
           ),

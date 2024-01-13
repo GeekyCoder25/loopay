@@ -26,6 +26,7 @@ const Success = ({ navigation, route }) => {
     headerTitle,
     isCredit,
     message,
+    type,
   } = route.params;
 
   useFocusEffect(
@@ -315,6 +316,7 @@ const Success = ({ navigation, route }) => {
             dataPlan={dataPlan}
             billPlan={billPlan}
             isCredit={isCredit}
+            type={type}
           />
         </View>
         <View style={styles.buttons}>

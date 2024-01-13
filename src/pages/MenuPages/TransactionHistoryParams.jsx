@@ -651,9 +651,7 @@ const TransactionHistoryParams = ({ route }) => {
                 {networkProvidersIcon(networkProvider)}
                 <View>
                   <BoldText style={styles.name}>{rechargePhoneNo}</BoldText>
-                  <RegularText style={styles.accNo}>
-                    Airtime purchase
-                  </RegularText>
+                  <RegularText style={styles.accNo}>Airtime</RegularText>
                 </View>
               </View>
 
@@ -746,7 +744,7 @@ const TransactionHistoryParams = ({ route }) => {
                 {networkProvidersIcon(networkProvider)}
                 <View>
                   <BoldText style={styles.name}>{rechargePhoneNo}</BoldText>
-                  <RegularText style={styles.accNo}>Data purchase</RegularText>
+                  <RegularText style={styles.accNo}>Data</RegularText>
                 </View>
               </View>
 

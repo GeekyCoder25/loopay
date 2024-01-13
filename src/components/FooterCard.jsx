@@ -17,6 +17,7 @@ const FooterCard = ({
   token,
   reference,
   isCredit,
+  type,
 }) => {
   const { selectedCurrency } = useContext(AppContext);
   amountInput = addingDecimal(
@@ -28,15 +29,15 @@ const FooterCard = ({
   const currency = airtime
     ? allCurrencies.find(
         currencyIndex => currencyIndex.currency === airtime.currency,
-      )?.symbol
-    : selectedCurrency.symbol;
+      )
+    : selectedCurrency;
 
   return (
     <View style={styles.footerCard}>
       <BoldText style={styles.cardAmount}>
         {billPlan ||
           dataPlan ||
-          `${isCredit ? '' : '-'} ${currency + amountInput}`}
+          `${isCredit ? '' : '-'} ${currency.symbol + amountInput}`}
       </BoldText>
       {userToSendTo ? (
         <View style={styles.footerCardDetails}>
@@ -60,7 +61,7 @@ const FooterCard = ({
           <View style={styles.cardLine}>
             <RegularText style={styles.cardKey}>Payment Method</RegularText>
             <BoldText style={{ ...styles.cardValue, color: '#006E53' }}>
-              Balance
+              {currency?.acronym} Balance
             </BoldText>
           </View>
           <View style={styles.cardLine}>
@@ -75,13 +76,12 @@ const FooterCard = ({
         </View>
       ) : (
         <View style={styles.footerCardDetails}>
-          {airtime ||
-            (dataPlan && (
-              <View style={styles.cardLine}>
-                <RegularText style={styles.cardKey}>Phone Number</RegularText>
-                <BoldText style={styles.cardValue}>{airtime.phoneNo}</BoldText>
-              </View>
-            ))}
+          {airtime && (
+            <View style={styles.cardLine}>
+              <RegularText style={styles.cardKey}>Phone Number</RegularText>
+              <BoldText style={styles.cardValue}>{airtime.phoneNo}</BoldText>
+            </View>
+          )}
           {dataPlan && (
             <View style={styles.cardLine}>
               <RegularText style={styles.cardKey}>Data Plan</RegularText>
@@ -103,7 +103,7 @@ const FooterCard = ({
           <View style={styles.cardLine}>
             <RegularText style={styles.cardKey}>Amount</RegularText>
             <BoldText style={styles.cardValue}>
-              {currency}
+              {currency?.symbol}
               {addingDecimal(amountInput)}
             </BoldText>
           </View>
@@ -117,8 +117,18 @@ const FooterCard = ({
           )}
           <View style={styles.cardLine}>
             <RegularText style={styles.cardKey}>Payment Method</RegularText>
-            <BoldText style={{ ...styles.cardValue, color: '#006E53' }}>
-              Balance
+            <BoldText
+              style={{
+                ...styles.cardValue,
+                color: '#006E53',
+              }}>
+              {isCredit ? (
+                <BoldText style={{ textTransform: 'capitalize' }}>
+                  {type || ''} Transfer
+                </BoldText>
+              ) : (
+                currency?.acronym + ' Balance'
+              )}
             </BoldText>
           </View>
         </View>

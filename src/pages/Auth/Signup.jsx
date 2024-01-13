@@ -578,7 +578,7 @@ export const EmailVerify = ({
       <View style={styles.verifyContainer}>
         <Image
           style={styles.logo}
-          source={require('../../../assets/icon.png')}
+          source={require('../../../assets/images/icon.png')}
           resizeMode="contain"
         />
         <RegularText>
