@@ -221,7 +221,9 @@ const BuyAirtime = ({ route, navigation }) => {
   return (
     <>
       <PageContainer padding paddingTop={0}>
-        <ScrollView style={styles.body}>
+        <ScrollView
+          style={styles.body}
+          automaticallyAdjustKeyboardInsets={true}>
           <View style={styles.header}>
             <RegularText>Beneficiaries</RegularText>
             {airtimeBeneficiaries.length > 3 && (

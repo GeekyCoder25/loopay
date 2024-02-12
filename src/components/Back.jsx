@@ -1,5 +1,12 @@
 import BackArrow from '../../assets/images/backArrow.svg';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { hideTabRoutes } from '../config/config';
 import { useContext, useEffect } from 'react';
 import RegularText from './fonts/RegularText';
@@ -22,23 +29,25 @@ const Back = ({ goBack, onPress, route }) => {
   }, [route?.name, setShowTabBar]);
 
   return (
-    <View style={styles.container}>
-      <Pressable
-        onPress={!onPress ? () => goBack() : onPress}
-        style={styles.container}>
-        <BackArrow />
-        <Text style={styles.text}>Back</Text>
-      </Pressable>
-      {canChangeRole && (
+    <SafeAreaView>
+      <View style={styles.container}>
         <Pressable
-          style={styles.switch}
-          onPress={() => setIsAdmin(prev => !prev)}>
-          <RegularText style={styles.switchText}>
-            Switch to {isAdmin ? 'User' : 'Admin'}
-          </RegularText>
+          onPress={!onPress ? () => goBack() : onPress}
+          style={styles.container}>
+          <BackArrow />
+          <Text style={styles.text}>Back</Text>
         </Pressable>
-      )}
-    </View>
+        {canChangeRole && (
+          <Pressable
+            style={styles.switch}
+            onPress={() => setIsAdmin(prev => !prev)}>
+            <RegularText style={styles.switchText}>
+              Switch to {isAdmin ? 'User' : 'Admin'}
+            </RegularText>
+          </Pressable>
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 

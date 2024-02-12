@@ -245,7 +245,9 @@ const BuyData = ({ route, navigation }) => {
   return (
     <>
       <PageContainer padding paddingTop={0}>
-        <ScrollView style={styles.body}>
+        <ScrollView
+          style={styles.body}
+          automaticallyAdjustKeyboardInsets={true}>
           <View style={styles.header}>
             <RegularText>Beneficiaries</RegularText>
             {dataBeneficiaries.length > 3 && (

@@ -400,7 +400,6 @@ export default ActiveUsers;
 
 const User = ({ status, userSession, users, isSearching }) => {
   const user = users.find(i => i.email === userSession.email);
-  const { email, userProfile } = user;
   const [isExpanded, setIsExpanded] = useState(false);
 
   const lastSeen = new Date(userSession.updatedAt);
@@ -413,8 +412,8 @@ const User = ({ status, userSession, users, isSearching }) => {
           <View style={styles.inActive} />
         )}
         <View>
-          <BoldText>{userProfile.fullName}</BoldText>
-          <RegularText>{email}</RegularText>
+          <BoldText>{user?.userProfile.fullName}</BoldText>
+          <RegularText>{user?.email}</RegularText>
         </View>
 
         <View style={styles.lastSeen}>
@@ -433,16 +432,16 @@ const User = ({ status, userSession, users, isSearching }) => {
           </Pressable>
         </View>
       </View>
-      {isExpanded && (
+      {isExpanded && user && (
         <View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Email</BoldText>
-            <RegularText style={styles.rowValue}>{user.email}</RegularText>
+            <RegularText style={styles.rowValue}>{user?.email}</RegularText>
           </View>
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Phone Number</BoldText>
             <RegularText style={styles.rowValue}>
-              {userProfile.phoneNumber}
+              {user.userProfile.phoneNumber}
             </RegularText>
           </View>
           <View style={styles.row}>
@@ -464,7 +463,7 @@ const User = ({ status, userSession, users, isSearching }) => {
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>Tag Name</BoldText>
             <RegularText style={styles.rowValue}>
-              {user.tagName || userProfile.userName}
+              {user.tagName || user.userProfile.userName}
             </RegularText>
           </View>
           <View style={styles.row}>

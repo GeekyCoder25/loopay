@@ -180,13 +180,13 @@ export default function App() {
     <AppContext.Provider value={contextValue}>
       <StatusBar style="auto" translucent={false} backgroundColor="#f5f5f5" />
       <RootSiblingParent>
-        <SafeAreaView style={styles.appContainer}>
+        <SafeAreaView style={styles.appContainer} {...panResponder.panHandlers}>
           <TouchableWithoutFeedback
             onPress={() => {
               Keyboard.dismiss();
             }}
             touchSoundDisabled={true}>
-            <View style={styles.appContainer} {...panResponder.panHandlers}>
+            <>
               {showConnected && (
                 <View style={styles.connected}>
                   <FaIcon name="wifi" color="#fff" size={20} />
@@ -194,7 +194,7 @@ export default function App() {
                 </View>
               )}
               <AppStart />
-            </View>
+            </>
           </TouchableWithoutFeedback>
           <LoadingModal isLoading={isLoading} />
         </SafeAreaView>

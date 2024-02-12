@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
-import TopBg from '../../assets/images/bg1.svg';
+import { Animated, Image, StyleSheet, View } from 'react-native';
 import { AppContext } from './AppContext';
 
 const CustomBackground = ({ setDarkSplash }) => {
-  const { vw, vh } = useContext(AppContext);
+  const { vh } = useContext(AppContext);
 
   const rotateY = useRef(new Animated.Value(0)).current;
 
@@ -39,14 +38,20 @@ const CustomBackground = ({ setDarkSplash }) => {
           ...styles.top,
           transform: [{ rotateY: interpolatedRotateY }],
         }}>
-        <TopBg width={`${vw}`} />
+        <Image
+          source={require('../../assets/images/bg1.png')}
+          resizeMode="contain"
+        />
       </Animated.View>
       <Animated.View
         style={{
           ...styles.bottom,
           transform: [{ rotateY: interpolatedRotateY }],
         }}>
-        <TopBg width={`${vw}`} />
+        <Image
+          source={require('../../assets/images/bg2.png')}
+          resizeMode="contain"
+        />
       </Animated.View>
     </View>
   );
@@ -60,11 +65,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   top: {
-    top: -100,
-    transform: [{ scale: 1.1 }],
+    top: -80,
   },
   bottom: {
-    bottom: -100,
-    transform: [{ rotateZ: '135deg' }, { scale: 1.1 }],
+    bottom: -80,
   },
 });

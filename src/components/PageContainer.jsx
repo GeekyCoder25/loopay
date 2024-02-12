@@ -11,6 +11,7 @@ const PageContainer = ({
   scroll,
   style,
   refreshFunc,
+  avoidKeyboardPushup,
 }) => {
   const { setWalletRefresh, isLoggedIn, noReload, refreshing, setRefreshing } =
     useContext(AppContext);
@@ -34,6 +35,7 @@ const PageContainer = ({
         flex: scroll ? undefined : 1,
         ...style,
       }}
+      automaticallyAdjustKeyboardInsets={!avoidKeyboardPushup}
       refreshControl={
         isLoggedIn && (
           <RefreshControl

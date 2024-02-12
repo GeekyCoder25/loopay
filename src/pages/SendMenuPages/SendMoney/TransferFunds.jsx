@@ -118,6 +118,15 @@ const TransferFunds = ({ navigation, route }) => {
     }
   };
 
+  if (canContinue) {
+    return (
+      <InputPin
+        customFunc={initiateTransfer}
+        handleCancel={() => setCanContinue(false)}
+      />
+    );
+  }
+
   return (
     <>
       <PageContainer paddingTop={0}>
@@ -162,75 +171,68 @@ const TransferFunds = ({ navigation, route }) => {
             </View>
           </View>
           <View style={styles.content}>
-            {!canContinue ? (
-              <>
-                <View style={styles.form}>
-                  <View>
-                    <BoldText>Amount</BoldText>
-                    <View style={styles.textInputContainer}>
-                      <Pressable
-                        onPress={() => {
-                          setModalOpen(true);
-                          setErrorKey('');
-                          setErrorMessage('');
-                        }}
-                        style={styles.symbolContainer}>
-                        <FlagSelect
-                          country={selectedCurrency.currency}
-                          style={styles.flag}
-                        />
-                        <BoldText style={styles.symbol}>
-                          {selectedCurrency.acronym}
-                        </BoldText>
-                        <FaIcon name="chevron-down" color={'#868585'} />
-                      </Pressable>
-                      <TextInput
-                        style={{
-                          ...styles.textInput,
-                          borderColor:
-                            errorKey === 'amountInput' ? 'red' : '#ccc',
-                        }}
-                        inputMode="decimal"
-                        value={amountInput}
-                        onChangeText={text => handleChange(text)}
-                        onBlur={handleBlur}
+            <>
+              <View style={styles.form}>
+                <View>
+                  <BoldText>Amount</BoldText>
+                  <View style={styles.textInputContainer}>
+                    <Pressable
+                      onPress={() => {
+                        setModalOpen(true);
+                        setErrorKey('');
+                        setErrorMessage('');
+                      }}
+                      style={styles.symbolContainer}>
+                      <FlagSelect
+                        country={selectedCurrency.currency}
+                        style={styles.flag}
                       />
-                    </View>
+                      <BoldText style={styles.symbol}>
+                        {selectedCurrency.acronym}
+                      </BoldText>
+                      <FaIcon name="chevron-down" color={'#868585'} />
+                    </Pressable>
+                    <TextInput
+                      style={{
+                        ...styles.textInput,
+                        borderColor:
+                          errorKey === 'amountInput' ? 'red' : '#ccc',
+                      }}
+                      inputMode="decimal"
+                      value={amountInput}
+                      onChangeText={text => handleChange(text)}
+                      onBlur={handleBlur}
+                    />
                   </View>
-                  <View>
-                    <BoldText>Description</BoldText>
-                    <View style={styles.textInputContainer}>
-                      <TextInput
-                        style={{
-                          ...styles.textInput,
-                          ...styles.descTextInput,
-                          borderColor: errorKey === 'desc' ? 'red' : '#ccc',
-                        }}
-                        inputMode="text"
-                        onChangeText={text => {
-                          setDescription(text);
-                          editInput();
-                        }}
-                        value={description}
-                        maxLength={40}
-                        placeholder="optional"
-                      />
-                    </View>
-                  </View>
-                  <ErrorMessage errorMessage={errorMessage} />
                 </View>
-                <Button
-                  text={'Continue'}
-                  style={styles.button}
-                  onPress={handleContinue}
-                />
-              </>
-            ) : (
-              <InputPin
-                customFunc={initiateTransfer}
-                handleCancel={() => setCanContinue(false)}
+                <View>
+                  <BoldText>Description</BoldText>
+                  <View style={styles.textInputContainer}>
+                    <TextInput
+                      style={{
+                        ...styles.textInput,
+                        ...styles.descTextInput,
+                        borderColor: errorKey === 'desc' ? 'red' : '#ccc',
+                      }}
+                      inputMode="text"
+                      onChangeText={text => {
+                        setDescription(text);
+                        editInput();
+                      }}
+                      value={description}
+                      maxLength={40}
+                      placeholder="optional"
+                    />
+                  </View>
+                </View>
+                <ErrorMessage errorMessage={errorMessage} />
+              </View>
+              <Button
+                text={'Continue'}
+                style={styles.button}
+                onPress={handleContinue}
               />
-            )}
+            </>
           </View>
         </ScrollView>
       </PageContainer>

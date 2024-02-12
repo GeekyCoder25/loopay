@@ -7,6 +7,7 @@ import {
   Modal,
   Pressable,
   StyleSheet,
+  Text,
   TextInput,
   View,
 } from 'react-native';
@@ -27,6 +28,7 @@ import FaIcon from '@expo/vector-icons/FontAwesome';
 import { randomUUID } from 'expo-crypto';
 import InputPin from '../../components/InputPin';
 import { setShowBalance } from '../../../utils/storage';
+import BackArrow from '../../../assets/images/backArrow.svg';
 
 const AdminTransfer = ({ navigation }) => {
   const {
@@ -178,204 +180,234 @@ const AdminTransfer = ({ navigation }) => {
     setShowAmount(prev => !prev);
     setShowBalance(!showAmount);
   };
-  return !askPin ? (
-    <PageContainer style={styles.body} scroll>
-      <BoldText style={styles.headerText}>Transfer</BoldText>
-      <View style={styles.recentContainer}>
-        <BoldText style={styles.recentHeader}>Recents</BoldText>
-        <View style={styles.recents}>
-          <FlatList
-            data={recent}
-            renderItem={({ item, index }) => (
-              <Pressable
-                style={{
-                  ...styles.recent,
-                  marginLeft: index === 0 ? vw * 0.05 : 0,
-                }}
-                onPress={() => {
-                  setUserFound(item);
-                  setUserInput(item.tagName);
-                  handleCheckAccount({ userInputParams: item.tagName });
-                }}>
-                <UserIcon uri={item.photo} />
-                {item.verificationStatus === 'verified' && (
-                  <Image
-                    source={require('../../../assets/images/verify.png')}
-                    style={styles.verify}
-                    resizeMode="contain"
-                  />
-                )}
-                <BoldText style={styles.recentName}>
-                  {item.userProfile?.fullName}
-                </BoldText>
-              </Pressable>
-            )}
-            keyExtractor={({ tagName }) => tagName}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-      </View>
 
-      <View style={styles.select}>
-        <RegularText style={styles.selectHeader}>From</RegularText>
-        <Pressable
-          onPress={() => setModalOpen(true)}
-          style={styles.selectInputContainer}>
-          <View style={styles.selectInput}>
-            <View style={styles.flagContainer}>
-              <FlagSelect country={transferCurrency.currency} />
-              <View>
-                <BoldText style={styles.currencyName}>
-                  {transferCurrency.currency} Balance
-                </BoldText>
-                <Pressable onPress={handleShow}>
-                  <RegularText style={styles.selectAmount}>
-                    {showAmount
-                      ? `${transferCurrency.symbol} ${addingDecimal(
-                          balance?.toLocaleString(),
-                        )}`
-                      : '***'}
-                  </RegularText>
-                </Pressable>
-              </View>
-            </View>
-            <ChevronDown />
-          </View>
-        </Pressable>
-      </View>
-      <View style={styles.transfer}>
-        <RegularText style={styles.label}>User to send to</RegularText>
-        <View style={styles.textInputContainer}>
-          <TextInput
-            style={{
-              ...styles.textInput,
-              paddingLeft: 15,
-            }}
-            onChangeText={text => {
-              setUserInput(text);
-              setUserFound(null);
-            }}
-            value={userInput}
-            placeholder="Input tag name or account number"
-            placeholderTextColor={'#525252'}
-            onBlur={handleCheckAccount}
-          />
-          <Pressable onPress={handleCheckAccount} style={styles.paste}>
-            <RegularText style={styles.pasteText}>Check</RegularText>
-            <FaIcon name="check-circle" color="#fff" />
-          </Pressable>
-        </View>
-        {isSearching && (
-          <View style={styles.loader}>
-            <ActivityIndicator size="small" color="#1E1E1E" />
-          </View>
-        )}
-        {!isSearching && userFound && (
-          <View style={styles.userFoundContainer}>
-            <RegularText style={styles.top}>Result</RegularText>
-            <View style={styles.userFound}>
-              <UserIcon uri={userFound.photoURL || userFound.photo} />
-              <View style={styles.userFoundDetails}>
-                <BoldText>
-                  {userFound.userProfile?.fullName || userFound.fullName}{' '}
-                  {userFound.verificationStatus === 'verified' && (
+  if (askPin) {
+    return (
+      <InputPin customFunc={handleSend} handleCancel={() => setAskPin(false)} />
+    );
+  }
+  return (
+    <>
+      <Pressable
+        onPress={() => {
+          navigation.goBack();
+        }}
+        style={styles.backContainer}>
+        <BackArrow />
+        <Text style={styles.backText}>Back</Text>
+      </Pressable>
+      <PageContainer style={styles.body} scroll>
+        <BoldText style={styles.headerText}>Transfer</BoldText>
+        <View style={styles.recentContainer}>
+          <BoldText style={styles.recentHeader}>Recents</BoldText>
+          <View style={styles.recents}>
+            <FlatList
+              data={recent}
+              renderItem={({ item, index }) => (
+                <Pressable
+                  style={{
+                    ...styles.recent,
+                    marginLeft: index === 0 ? vw * 0.05 : 0,
+                  }}
+                  onPress={() => {
+                    setUserFound(item);
+                    setUserInput(item.tagName);
+                    handleCheckAccount({ userInputParams: item.tagName });
+                  }}>
+                  <UserIcon uri={item.photo} />
+                  {item.verificationStatus === 'verified' && (
                     <Image
                       source={require('../../../assets/images/verify.png')}
                       style={styles.verify}
                       resizeMode="contain"
                     />
                   )}
-                </BoldText>
-                <BoldText>{userFound.tagName}</BoldText>
+                  <BoldText style={styles.recentName}>
+                    {item.userProfile?.fullName}
+                  </BoldText>
+                </Pressable>
+              )}
+              keyExtractor={({ tagName }) => tagName}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+        </View>
+
+        <View style={styles.select}>
+          <RegularText style={styles.selectHeader}>From</RegularText>
+          <Pressable
+            onPress={() => setModalOpen(true)}
+            style={styles.selectInputContainer}>
+            <View style={styles.selectInput}>
+              <View style={styles.flagContainer}>
+                <FlagSelect country={transferCurrency.currency} />
+                <View>
+                  <BoldText style={styles.currencyName}>
+                    {transferCurrency.currency} Balance
+                  </BoldText>
+                  <Pressable onPress={handleShow}>
+                    <RegularText style={styles.selectAmount}>
+                      {showAmount
+                        ? `${transferCurrency.symbol} ${addingDecimal(
+                            balance?.toLocaleString(),
+                          )}`
+                        : '***'}
+                    </RegularText>
+                  </Pressable>
+                </View>
+              </View>
+              <ChevronDown />
+            </View>
+          </Pressable>
+        </View>
+        <View style={styles.transfer}>
+          <RegularText style={styles.label}>User to send to</RegularText>
+          <View style={styles.textInputContainer}>
+            <TextInput
+              style={{
+                ...styles.textInput,
+                paddingLeft: 15,
+              }}
+              onChangeText={text => {
+                setUserInput(text);
+                setUserFound(null);
+              }}
+              value={userInput}
+              placeholder="Input tag name or account number"
+              placeholderTextColor={'#525252'}
+              onBlur={handleCheckAccount}
+            />
+            <Pressable onPress={handleCheckAccount} style={styles.paste}>
+              <RegularText style={styles.pasteText}>Check</RegularText>
+              <FaIcon name="check-circle" color="#fff" />
+            </Pressable>
+          </View>
+          {isSearching && (
+            <View style={styles.loader}>
+              <ActivityIndicator size="small" color="#1E1E1E" />
+            </View>
+          )}
+          {!isSearching && userFound && (
+            <View style={styles.userFoundContainer}>
+              <RegularText style={styles.top}>Result</RegularText>
+              <View style={styles.userFound}>
+                <UserIcon uri={userFound.photoURL || userFound.photo} />
+                <View style={styles.userFoundDetails}>
+                  <BoldText>
+                    {userFound.userProfile?.fullName || userFound.fullName}{' '}
+                    {userFound.verificationStatus === 'verified' && (
+                      <Image
+                        source={require('../../../assets/images/verify.png')}
+                        style={styles.verify}
+                        resizeMode="contain"
+                      />
+                    )}
+                  </BoldText>
+                  <BoldText>{userFound.tagName}</BoldText>
+                </View>
+              </View>
+            </View>
+          )}
+          <RegularText style={styles.label}>Amount to send</RegularText>
+          <View style={styles.textInputContainer}>
+            <BoldText style={styles.symbol}>{transferCurrency.symbol}</BoldText>
+            <TextInput
+              style={{
+                ...styles.textInput,
+                borderColor: errorKey ? 'red' : '#ccc',
+              }}
+              inputMode="decimal"
+              onChangeText={text => handlePriceInput(text)}
+              onBlur={handleAutoFill}
+              value={amountInput}
+              placeholder="Enter amount"
+              placeholderTextColor={'#525252'}
+            />
+            {errorMessage && (
+              <ErrorMessage
+                errorMessage={errorMessage}
+                style={styles.errorMessage}
+              />
+            )}
+          </View>
+
+          <Button text={'Send'} onPress={handleSend} />
+        </View>
+        <Modal
+          visible={modalOpen}
+          animationType="slide"
+          transparent
+          onRequestClose={handleModal}>
+          <Pressable style={styles.overlay} onPress={handleModal} />
+          <View style={styles.modalContainer}>
+            <View style={styles.modal}>
+              <BoldText style={styles.modalHeader}>
+                Select account to transfer
+              </BoldText>
+              <View style={styles.modalBorder} />
+              <View style={styles.modalContent}>
+                {allCurrencies
+                  .filter(i => i.currency !== transferCurrency.currency)
+                  .map(currency => (
+                    <Pressable
+                      key={currency.currency}
+                      style={styles.currency}
+                      onPress={() => {
+                        handleCurrencyChange(currency);
+                        setModalOpen(false);
+                      }}>
+                      <View style={styles.currencyIcon}>
+                        <FlagSelect country={currency.currency} />
+                        <View>
+                          <BoldText>{currency.acronym}</BoldText>
+                          <RegularText style={styles.currencyName}>
+                            {currency.currency}
+                          </RegularText>
+                        </View>
+                      </View>
+                      <BoldText>
+                        {showAmount
+                          ? currency.isLocal
+                            ? addingDecimal(
+                                allBalances.localBalance?.toLocaleString(),
+                              )
+                            : addingDecimal(
+                                allBalances[
+                                  `${currency.currency}Balance`
+                                ]?.toLocaleString(),
+                              )
+                          : '***'}
+                      </BoldText>
+                    </Pressable>
+                  ))}
               </View>
             </View>
           </View>
-        )}
-        <RegularText style={styles.label}>Amount to send</RegularText>
-        <View style={styles.textInputContainer}>
-          <BoldText style={styles.symbol}>{transferCurrency.symbol}</BoldText>
-          <TextInput
-            style={{
-              ...styles.textInput,
-              borderColor: errorKey ? 'red' : '#ccc',
-            }}
-            inputMode="decimal"
-            onChangeText={text => handlePriceInput(text)}
-            onBlur={handleAutoFill}
-            value={amountInput}
-            placeholder="Enter amount"
-            placeholderTextColor={'#525252'}
-          />
-          {errorMessage && (
-            <ErrorMessage
-              errorMessage={errorMessage}
-              style={styles.errorMessage}
-            />
-          )}
-        </View>
-
-        <Button text={'Send'} onPress={handleSend} />
-      </View>
-      <Modal
-        visible={modalOpen}
-        animationType="slide"
-        transparent
-        onRequestClose={handleModal}>
-        <Pressable style={styles.overlay} onPress={handleModal} />
-        <View style={styles.modalContainer}>
-          <View style={styles.modal}>
-            <BoldText style={styles.modalHeader}>
-              Select account to transfer
-            </BoldText>
-            <View style={styles.modalBorder} />
-            <View style={styles.modalContent}>
-              {allCurrencies
-                .filter(i => i.currency !== transferCurrency.currency)
-                .map(currency => (
-                  <Pressable
-                    key={currency.currency}
-                    style={styles.currency}
-                    onPress={() => {
-                      handleCurrencyChange(currency);
-                      setModalOpen(false);
-                    }}>
-                    <View style={styles.currencyIcon}>
-                      <FlagSelect country={currency.currency} />
-                      <View>
-                        <BoldText>{currency.acronym}</BoldText>
-                        <RegularText style={styles.currencyName}>
-                          {currency.currency}
-                        </RegularText>
-                      </View>
-                    </View>
-                    <BoldText>
-                      {showAmount
-                        ? currency.isLocal
-                          ? addingDecimal(
-                              allBalances.localBalance?.toLocaleString(),
-                            )
-                          : addingDecimal(
-                              allBalances[
-                                `${currency.currency}Balance`
-                              ]?.toLocaleString(),
-                            )
-                        : '***'}
-                    </BoldText>
-                  </Pressable>
-                ))}
-            </View>
-          </View>
-        </View>
-      </Modal>
-    </PageContainer>
-  ) : (
-    <InputPin customFunc={handleSend} handleCancel={() => setAskPin(false)} />
+        </Modal>
+      </PageContainer>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   body: {},
+  back: {
+    marginVertical: 10,
+    marginHorizontal: '3%',
+  },
+  backContainer: {
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 20,
+    paddingVertical: 15,
+    paddingHorizontal: '3%',
+  },
+  backText: {
+    fontFamily: 'OpenSans-600',
+    fontSize: 18,
+  },
   headerText: {
     fontSize: 20,
     color: '#525252',

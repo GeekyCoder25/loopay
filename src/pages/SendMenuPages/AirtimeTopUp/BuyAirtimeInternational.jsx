@@ -32,10 +32,8 @@ import ToastMessage from '../../../components/ToastMessage';
 import { setShowBalance } from '../../../../utils/storage';
 
 const BuyAirtimeInternational = ({ navigation }) => {
-  const { appData, setIsLoading, showAmount, setShowAmount } =
-    useContext(AppContext);
+  const { setIsLoading, showAmount, setShowAmount } = useContext(AppContext);
   const { wallet } = useWalletContext();
-  const countryCode = appData.country.code;
   const [modalOpen, setModalOpen] = useState(false);
   const [networkToBuy, setNetworkToBuy] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -144,7 +142,7 @@ const BuyAirtimeInternational = ({ navigation }) => {
     setErrorKey('');
     if (phoneNo.length === 11) {
       const response = await getFetchData(
-        `user/get-network?phone=${phoneNo}&country=${countryCode}`,
+        `user/get-network?phone=${phoneNo}&country=${countrySelected.code}`,
       );
       if (response.status === 200) {
         const network = response.data.name.toLowerCase();
@@ -176,8 +174,8 @@ const BuyAirtimeInternational = ({ navigation }) => {
       formData: {
         ...formData,
         id: randomUUID(),
-        currency: 'naira',
-        countryCode,
+        currency: countrySelected.name,
+        countryCode: countrySelected.code,
         type: 'airtime',
       },
       isInternational: true,

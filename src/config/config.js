@@ -11,6 +11,8 @@ export const hideTabRoutes = [
   'Profile',
   'Biometric',
   'SendOthers',
+  'TransferAirtime',
+  'DevicesAndSessions',
 ];
 
 export const timeForInactivityInSecond = 120;

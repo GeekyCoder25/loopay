@@ -3,6 +3,7 @@ import { getFetchData } from '../../utils/fetchAPI';
 import { AppContext } from '../components/AppContext';
 import useInterval from '../../utils/hooks/useInterval';
 import NoInternet from '../components/NoInternet';
+import LoadingModal from '../components/LoadingModal';
 
 export const AdminContext = createContext();
 
@@ -52,7 +53,7 @@ const AdminContextComponent = ({ children }) => {
         verifications,
         setVerifications,
       }}>
-      {adminData ? children : failToFetch && <NoInternet />}
+      {adminData ? children : failToFetch ? <NoInternet /> : <LoadingModal />}
     </AdminContext.Provider>
   );
 };

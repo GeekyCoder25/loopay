@@ -167,12 +167,12 @@ const styles = StyleSheet.create({
   },
   routeCount: {
     backgroundColor: '#FBD5D5',
-    width: 25,
-    height: 25,
-    borderRadius: 15,
-    textAlign: 'center',
-    textAlignVertical: 'center',
+    width: 30,
+    height: 30,
+    borderRadius: 30,
     alignSelf: 'flex-end',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginLeft: 'auto',
   },
   buttons: {
@@ -214,9 +214,9 @@ const RouteItem = ({ route, routeIcon }) => {
       <View style={styles.routeText}>
         <RegularText>{route}</RegularText>
         {hasRouteCount && (
-          <BoldText color="#9B1C1C" style={styles.routeCount}>
-            {routeCount}
-          </BoldText>
+          <View style={styles.routeCount}>
+            <BoldText color="#9B1C1C">{routeCount}</BoldText>
+          </View>
         )}
       </View>
     </View>
