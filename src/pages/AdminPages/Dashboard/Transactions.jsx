@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   Modal,
   Pressable,
+  SafeAreaView,
   StyleSheet,
   TextInput,
   View,
