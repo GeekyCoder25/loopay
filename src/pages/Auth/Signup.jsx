@@ -1,13 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import { useContext, useEffect, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  Modal,
-  Image,
-} from 'react-native';
+import { View, StyleSheet, TextInput, Pressable, Image } from 'react-native';
 import User from '../../../assets/images/user.svg';
 import Email from '../../../assets/images/mail.svg';
 import Phone from '../../../assets/images/phone.svg';
@@ -137,6 +130,17 @@ const Signup = ({ navigation }) => {
     setSuccessMessage('');
   };
 
+  if (verifyEmail) {
+    return (
+      <EmailVerify
+        email={formData.email}
+        setErrorMessage={setErrorMessage}
+        setSuccessMessage={setSuccessMessage}
+        navigation={navigation}
+        setVerifyEmail={setVerifyEmail}
+      />
+    );
+  }
   return (
     <PageContainer scroll>
       <View
@@ -212,15 +216,6 @@ const Signup = ({ navigation }) => {
           },
         }}
       />
-      {verifyEmail && (
-        <EmailVerify
-          email={formData.email}
-          setErrorMessage={setErrorMessage}
-          setSuccessMessage={setSuccessMessage}
-          navigation={navigation}
-          setVerifyEmail={setVerifyEmail}
-        />
-      )}
     </PageContainer>
   );
 };
@@ -519,12 +514,15 @@ export const EmailVerify = ({
 }) => {
   const [inputCode, setInputCode] = useState('');
   const [errorCode, setErrorCode] = useState(false);
+  const [errorMessage2, setErrorMessage2] = useState('');
   const { vw, vh, setAppData, setIsLoading, setIsSessionTimedOut } =
     useContext(AppContext);
 
   const handleInput = async input => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setInputCode(prev => `${prev}${input}`);
+    setErrorMessage2('');
+
     if (inputCode.length + 1 >= codeLength.length) {
       try {
         setIsLoading(true);
@@ -555,6 +553,8 @@ export const EmailVerify = ({
           setIsSessionTimedOut(false);
           navigation.replace('AccountType');
         } else {
+          console.log(response.data);
+          setErrorMessage2(response.data?.error || response.data);
           setErrorCode(true);
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
           setTimeout(() => {
@@ -574,119 +574,118 @@ export const EmailVerify = ({
   const codeLength = [1, 2, 3, 4];
 
   return (
-    <Modal>
-      <View style={styles.verifyContainer}>
-        <Image
-          style={styles.logo}
-          source={require('../../../assets/images/icon.png')}
-          resizeMode="contain"
-        />
-        <RegularText>
-          Enter the verification code sent to your email{' '}
-        </RegularText>
-        <View style={styles.displayContainer}>
-          {codeLength.map(code =>
-            inputCode.length >= code ? (
-              errorCode ? (
-                <View key={code} style={styles.displayError} />
-              ) : (
-                <View key={code} style={styles.displayFilled} />
-              )
+    <View style={styles.verifyContainer}>
+      <Image
+        style={styles.logo}
+        source={require('../../../assets/images/icon.png')}
+        resizeMode="contain"
+      />
+      <RegularText>Enter the verification code sent to your email </RegularText>
+      <View style={styles.displayContainer}>
+        {codeLength.map(code =>
+          inputCode.length >= code ? (
+            errorCode ? (
+              <View key={code} style={styles.displayError} />
             ) : (
-              <View key={code} style={styles.display} />
-            ),
-          )}
-        </View>
-        <View style={styles.digits}>
-          <View style={styles.row}>
-            <Pressable
-              disabled={inputCode.length >= codeLength.length}
-              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
-              onPress={() => handleInput('1')}>
-              <BoldText style={styles.digitText}>1</BoldText>
-            </Pressable>
-            <Pressable
-              disabled={inputCode.length >= codeLength.length}
-              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
-              onPress={() => handleInput('2')}>
-              <BoldText style={styles.digitText}>2</BoldText>
-            </Pressable>
-            <Pressable
-              disabled={inputCode.length >= codeLength.length}
-              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
-              onPress={() => handleInput('3')}>
-              <BoldText style={styles.digitText}>3</BoldText>
-            </Pressable>
-          </View>
-          <View style={styles.row}>
-            <Pressable
-              disabled={inputCode.length >= codeLength.length}
-              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
-              onPress={() => handleInput('4')}>
-              <BoldText style={styles.digitText}>4</BoldText>
-            </Pressable>
-            <Pressable
-              disabled={inputCode.length >= codeLength.length}
-              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
-              onPress={() => handleInput('5')}>
-              <BoldText style={styles.digitText}>5</BoldText>
-            </Pressable>
-            <Pressable
-              disabled={inputCode.length >= codeLength.length}
-              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
-              onPress={() => handleInput('6')}>
-              <BoldText style={styles.digitText}>6</BoldText>
-            </Pressable>
-          </View>
-          <View style={styles.row}>
-            <Pressable
-              disabled={inputCode.length >= codeLength.length}
-              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
-              onPress={() => handleInput('7')}>
-              <BoldText style={styles.digitText}>7</BoldText>
-            </Pressable>
-            <Pressable
-              disabled={inputCode.length >= codeLength.length}
-              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
-              onPress={() => handleInput('8')}>
-              <BoldText style={styles.digitText}>8</BoldText>
-            </Pressable>
-            <Pressable
-              disabled={inputCode.length >= codeLength.length}
-              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
-              onPress={() => handleInput('9')}>
-              <BoldText style={styles.digitText}>9</BoldText>
-            </Pressable>
-          </View>
-          <View style={styles.row}>
-            <Pressable
-              disabled={inputCode.length >= codeLength.length}
-              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
-            />
-            <Pressable
-              disabled={inputCode.length >= codeLength.length}
-              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
-              onPress={() => handleInput('0')}>
-              <BoldText style={styles.digitText}>0</BoldText>
-            </Pressable>
-
-            <Pressable
-              style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
-              onPress={() => setInputCode(prev => prev.slice(0, -1))}>
-              <Image
-                source={require('../../../assets/images/delete.png')}
-                style={styles.delete}
-              />
-            </Pressable>
-          </View>
-        </View>
-        <Pressable
-          onPress={() => {
-            setVerifyEmail(false);
-          }}>
-          <BoldText>Go Back</BoldText>
-        </Pressable>
+              <View key={code} style={styles.displayFilled} />
+            )
+          ) : (
+            <View key={code} style={styles.display} />
+          ),
+        )}
       </View>
-    </Modal>
+      <View style={styles.errorMessage}>
+        <ErrorMessage errorMessage={errorMessage2} />
+      </View>
+      <View style={styles.digits}>
+        <View style={styles.row}>
+          <Pressable
+            disabled={inputCode.length >= codeLength.length}
+            style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+            onPress={() => handleInput('1')}>
+            <BoldText style={styles.digitText}>1</BoldText>
+          </Pressable>
+          <Pressable
+            disabled={inputCode.length >= codeLength.length}
+            style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+            onPress={() => handleInput('2')}>
+            <BoldText style={styles.digitText}>2</BoldText>
+          </Pressable>
+          <Pressable
+            disabled={inputCode.length >= codeLength.length}
+            style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+            onPress={() => handleInput('3')}>
+            <BoldText style={styles.digitText}>3</BoldText>
+          </Pressable>
+        </View>
+        <View style={styles.row}>
+          <Pressable
+            disabled={inputCode.length >= codeLength.length}
+            style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+            onPress={() => handleInput('4')}>
+            <BoldText style={styles.digitText}>4</BoldText>
+          </Pressable>
+          <Pressable
+            disabled={inputCode.length >= codeLength.length}
+            style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+            onPress={() => handleInput('5')}>
+            <BoldText style={styles.digitText}>5</BoldText>
+          </Pressable>
+          <Pressable
+            disabled={inputCode.length >= codeLength.length}
+            style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+            onPress={() => handleInput('6')}>
+            <BoldText style={styles.digitText}>6</BoldText>
+          </Pressable>
+        </View>
+        <View style={styles.row}>
+          <Pressable
+            disabled={inputCode.length >= codeLength.length}
+            style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+            onPress={() => handleInput('7')}>
+            <BoldText style={styles.digitText}>7</BoldText>
+          </Pressable>
+          <Pressable
+            disabled={inputCode.length >= codeLength.length}
+            style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+            onPress={() => handleInput('8')}>
+            <BoldText style={styles.digitText}>8</BoldText>
+          </Pressable>
+          <Pressable
+            disabled={inputCode.length >= codeLength.length}
+            style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+            onPress={() => handleInput('9')}>
+            <BoldText style={styles.digitText}>9</BoldText>
+          </Pressable>
+        </View>
+        <View style={styles.row}>
+          <Pressable
+            disabled={inputCode.length >= codeLength.length}
+            style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+          />
+          <Pressable
+            disabled={inputCode.length >= codeLength.length}
+            style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+            onPress={() => handleInput('0')}>
+            <BoldText style={styles.digitText}>0</BoldText>
+          </Pressable>
+
+          <Pressable
+            style={{ ...styles.digit, width: vw * 0.2, height: vh * 0.08 }}
+            onPress={() => setInputCode(prev => prev.slice(0, -1))}>
+            <Image
+              source={require('../../../assets/images/delete.png')}
+              style={styles.delete}
+            />
+          </Pressable>
+        </View>
+      </View>
+      <Pressable
+        onPress={() => {
+          setVerifyEmail(false);
+        }}>
+        <BoldText>Go Back</BoldText>
+      </Pressable>
+    </View>
   );
 };

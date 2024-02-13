@@ -1,6 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
 import { StyleSheet, View } from 'react-native';
-import PageContainer from '../../../components/PageContainer';
 import RegularText from '../../../components/fonts/RegularText';
 import BoldText from '../../../components/fonts/BoldText';
 import InputPin from '../../../components/InputPin';
@@ -12,7 +11,7 @@ import { AppContext } from '../../../components/AppContext';
 import { randomUUID } from 'expo-crypto';
 
 const PendingRequestConfirm = ({ navigation, route }) => {
-  const { setWalletRefresh, vh } = useContext(AppContext);
+  const { setWalletRefresh } = useContext(AppContext);
   const { createdAt, description, fee, symbol, requesterAccount } =
     route.params;
 
@@ -56,78 +55,69 @@ const PendingRequestConfirm = ({ navigation, route }) => {
   };
 
   return (
-    <PageContainer style={{ ...styles.container, minHeight: vh * 0.8 }} scroll>
-      <RegularText style={styles.headerText}>
-        <BoldText> #{requesterAccount} </BoldText>
-        requested the sum of {symbol + amount.toLocaleString()}{' '}
-      </RegularText>
-      <InputPin
-        buttonText={'Continue'}
-        customFunc={() => handleConfirm('accept')}
-        style={styles.inputPin}>
-        <View style={styles.footerCard}>
-          <BoldText style={styles.cardAmount}>
-            {symbol + addingDecimal(amount.toLocaleString())}
-          </BoldText>
-          <View style={styles.footerCardDetails}>
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>Receiver</RegularText>
-              <BoldText style={styles.cardValue}>#{requesterAccount}</BoldText>
-            </View>
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>
-                Amount to be debited
-              </RegularText>
-              <BoldText style={styles.cardValue}>
-                {symbol + addingDecimal(amount.toLocaleString())}
-              </BoldText>
-            </View>
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>
-                Amount to be sent
-              </RegularText>
-              <BoldText style={styles.cardValue}>
-                {symbol + addingDecimal((amount - fee).toLocaleString())}
-              </BoldText>
-            </View>
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>Charges</RegularText>
-              <BoldText
-                style={{
-                  ...styles.cardValue,
-                  color: Number(fee) ? 'red' : '#006E53',
-                }}>
-                {Number(fee)
-                  ? symbol + addingDecimal(Number(fee).toLocaleString())
-                  : symbol + '0.00'}
-              </BoldText>
-            </View>
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>Date requested</RegularText>
-              <BoldText style={styles.cardValue}>
-                {new Date(createdAt).toDateString()}
-              </BoldText>
-            </View>
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>Time</RegularText>
-              <BoldText style={styles.cardValue}>
-                {new Date(createdAt)
-                  .toLocaleTimeString()
-                  .split(' ')[0]
-                  .slice(0, -3) +
-                  ' ' +
-                  (new Date(createdAt).toLocaleTimeString().split(' ')[1] ||
-                    '')}
-              </BoldText>
-            </View>
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>Reason</RegularText>
-              <BoldText style={styles.cardValue}>{description}</BoldText>
-            </View>
+    <InputPin
+      buttonText={'Continue'}
+      customFunc={() => handleConfirm('accept')}
+      style={styles.inputPin}>
+      <View style={styles.footerCard}>
+        <BoldText style={styles.cardAmount}>
+          {symbol + addingDecimal(amount.toLocaleString())}
+        </BoldText>
+        <View style={styles.footerCardDetails}>
+          <View style={styles.cardLine}>
+            <RegularText style={styles.cardKey}>Receiver</RegularText>
+            <BoldText style={styles.cardValue}>#{requesterAccount}</BoldText>
+          </View>
+          <View style={styles.cardLine}>
+            <RegularText style={styles.cardKey}>
+              Amount to be debited
+            </RegularText>
+            <BoldText style={styles.cardValue}>
+              {symbol + addingDecimal(amount.toLocaleString())}
+            </BoldText>
+          </View>
+          <View style={styles.cardLine}>
+            <RegularText style={styles.cardKey}>Amount to be sent</RegularText>
+            <BoldText style={styles.cardValue}>
+              {symbol + addingDecimal((amount - fee).toLocaleString())}
+            </BoldText>
+          </View>
+          <View style={styles.cardLine}>
+            <RegularText style={styles.cardKey}>Charges</RegularText>
+            <BoldText
+              style={{
+                ...styles.cardValue,
+                color: Number(fee) ? 'red' : '#006E53',
+              }}>
+              {Number(fee)
+                ? symbol + addingDecimal(Number(fee).toLocaleString())
+                : symbol + '0.00'}
+            </BoldText>
+          </View>
+          <View style={styles.cardLine}>
+            <RegularText style={styles.cardKey}>Date requested</RegularText>
+            <BoldText style={styles.cardValue}>
+              {new Date(createdAt).toDateString()}
+            </BoldText>
+          </View>
+          <View style={styles.cardLine}>
+            <RegularText style={styles.cardKey}>Time</RegularText>
+            <BoldText style={styles.cardValue}>
+              {new Date(createdAt)
+                .toLocaleTimeString()
+                .split(' ')[0]
+                .slice(0, -3) +
+                ' ' +
+                (new Date(createdAt).toLocaleTimeString().split(' ')[1] || '')}
+            </BoldText>
+          </View>
+          <View style={styles.cardLine}>
+            <RegularText style={styles.cardKey}>Reason</RegularText>
+            <BoldText style={styles.cardValue}>{description}</BoldText>
           </View>
         </View>
-      </InputPin>
-    </PageContainer>
+      </View>
+    </InputPin>
   );
 };
 

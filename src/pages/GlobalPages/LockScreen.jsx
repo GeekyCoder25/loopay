@@ -66,7 +66,7 @@ const LockScreen = () => {
           const options = {
             promptMessage: 'Login with Biometrics',
             cancelLabel: 'Use Loopay password instead',
-            disableDeviceFallback: true,
+            // disableDeviceFallback: true,
           };
           if (enableBiometric) {
             const { success } = await LocalAuthentication.authenticateAsync(

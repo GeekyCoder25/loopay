@@ -1,6 +1,3 @@
-import { CurrencyFullDetails } from '../../utils/allCountries';
-import { getCurrencyCode } from '../../utils/storage';
-
 export const signUpData = [
   {
     name: 'firstName',

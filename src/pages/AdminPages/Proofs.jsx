@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
 import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
@@ -14,32 +14,38 @@ import RegularText from '../../components/fonts/RegularText';
 import ToastMessage from '../../components/ToastMessage';
 import InputPin from '../../components/InputPin';
 import { addingDecimal } from '../../../utils/AddingZero';
+import { useFocusEffect } from '@react-navigation/native';
+import Back from '../../components/Back';
 
-const Proofs = () => {
+const Proofs = ({ navigation }) => {
   const { walletRefresh } = useContext(AppContext);
   const [proofs, setProofs] = useState([]);
   const [requestPin, setRequestPin] = useState(false);
   const [customFunc, setCustomFunc] = useState(null);
 
-  useEffect(() => {
-    const getProofs = async () => {
-      const response = await getFetchData('admin/proof');
-      if (response.status === 200) {
-        setProofs(response.data.data);
-      }
-    };
-    getProofs();
-  }, [walletRefresh]);
+  useFocusEffect(
+    useCallback(() => {
+      const getProofs = async () => {
+        const response = await getFetchData('admin/proof');
+        if (response.status === 200) {
+          setProofs(response.data.data);
+        }
+      };
+      getProofs();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [walletRefresh]),
+  );
 
-  return (
-    <PageContainer padding scroll>
-      <BoldText style={styles.headerText}>Submitted proofs</BoldText>
-      {requestPin ? (
-        <InputPin
-          handleCancel={() => setRequestPin(false)}
-          customFunc={() => customFunc()}
-        />
-      ) : (
+  return requestPin ? (
+    <InputPin
+      handleCancel={() => setRequestPin(false)}
+      customFunc={() => customFunc()}
+    />
+  ) : (
+    <>
+      <Back onPress={() => navigation.goBack()} />
+      <PageContainer padding scroll>
+        <BoldText style={styles.headerText}>Submitted proofs</BoldText>
         <View>
           {proofs.length ? (
             proofs.map(proof => (
@@ -55,8 +61,8 @@ const Proofs = () => {
             <BoldText>No proofs has been submitted</BoldText>
           )}
         </View>
-      )}
-    </PageContainer>
+      </PageContainer>
+    </>
   );
 };
 

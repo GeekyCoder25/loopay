@@ -28,7 +28,7 @@ const ShakeModal = () => {
       routeIcon: (
         <Image
           source={require('../../assets/images/icon.png')}
-          style={{ width: 50, height: 50, borderRadius: 50 }}
+          style={styles.loopayImage}
           resizeMode="contain"
         />
       ),
@@ -155,5 +155,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 25,
+  },
+  loopayImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
   },
 });

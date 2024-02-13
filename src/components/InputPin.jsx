@@ -8,11 +8,10 @@ import RegularText from './fonts/RegularText';
 import {
   Image,
   Pressable,
-  Modal,
   ScrollView,
   StyleSheet,
+  Text,
   View,
-  Platform,
 } from 'react-native';
 import { AppContext } from './AppContext';
 import { postFetchData } from '../../utils/fetchAPI';
@@ -25,10 +24,8 @@ import IonIcon from '@expo/vector-icons/Ionicons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Countdown from './Countdown';
 import { getInvalidPinStatus, setInvalidPinStatus } from '../../utils/storage';
-import Back from './Back';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import LoadingModal from './LoadingModal';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import BackArrow from '../../assets/images/backArrow.svg';
 
 const InputPin = ({
   setIsValidPin,
@@ -37,7 +34,6 @@ const InputPin = ({
   disableBiometric,
 }) => {
   const {
-    isLoading,
     setIsLoading,
     vw,
     vh,
@@ -97,7 +93,7 @@ const InputPin = ({
       const options = {
         promptMessage: 'Verify fingerprint',
         cancelLabel: 'Use payment pin instead',
-        disableDeviceFallback: true,
+        // disableDeviceFallback: true,
       };
       if (isBiometricSupported && enableBiometric && !disableBiometric) {
         const { success } = await LocalAuthentication.authenticateAsync(
@@ -191,39 +187,31 @@ const InputPin = ({
 
   const handleCancelDefault = () => {
     navigation.goBack();
-    setModalOpen(false);
+    // setModalOpen(false);
   };
 
   return (
     <>
-      <Modal
-        visible={modalOpen}
-        animationType="fade"
-        onRequestClose={() => {
-          handleCancel ? handleCancel() : handleCancelDefault();
-        }}>
-        <LoadingModal isLoading={isLoading} />
-        <SafeAreaView>
-          {Platform.OS === 'ios' ? (
-            <View style={styles.back}>
-              <Back
-                onPress={() => {
-                  handleCancel ? handleCancel() : handleCancelDefault();
-                }}
-              />
-            </View>
-          ) : (
-            <Back
-              onPress={() => {
-                handleCancel ? handleCancel() : handleCancelDefault();
-              }}
-            />
-          )}
+      {modalOpen && (
+        <View
+          onRequestClose={() => {
+            handleCancel ? handleCancel() : handleCancelDefault();
+          }}
+          style={styles.back}>
+          <Pressable
+            onPress={() => {
+              handleCancel ? handleCancel() : handleCancelDefault();
+            }}
+            style={styles.backContainer}>
+            <BackArrow />
+            <Text style={styles.backText}>Back</Text>
+          </Pressable>
           <ScrollView
             contentContainerStyle={{
               minHeight: vh * 0.9,
               ...styles.container,
-            }}>
+            }}
+            bounces={false}>
             <View
               style={{
                 ...styles.container,
@@ -424,22 +412,36 @@ const InputPin = ({
                 <Pressable
                   onPress={() => {
                     handleCancel ? handleCancel() : handleCancelDefault();
-                    navigation.navigate('TransactionPin', { forgotPin: true });
+                    navigation.navigate('TransactionPin', {
+                      forgotPin: true,
+                    });
                   }}>
                   <BoldText>Forgot PIN?</BoldText>
                 </Pressable>
               )}
             </View>
           </ScrollView>
-        </SafeAreaView>
-      </Modal>
+        </View>
+      )}
     </>
   );
 };
 
 const styles = StyleSheet.create({
   back: {
-    marginVertical: 20,
+    marginVertical: 10,
+    marginHorizontal: '3%',
+  },
+  backContainer: {
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 20,
+    paddingTop: 15,
+  },
+  backText: {
+    fontFamily: 'OpenSans-600',
+    fontSize: 18,
   },
   container: {
     justifyContent: 'center',

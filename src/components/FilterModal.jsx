@@ -3,6 +3,7 @@ import {
   Image,
   Modal,
   Pressable,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -274,127 +275,129 @@ const FilterModal = ({
         animationType="fade"
         transparent
         onRequestClose={hideFilter}>
-        <PageContainer padding paddingTop={20}>
-          <Pressable onPress={hideFilter}>
-            <IonIcon name="close" size={20} />
-          </Pressable>
-          <BoldText style={styles.headerText}>Filter</BoldText>
-          <RegularText style={styles.subText}>Accounts</RegularText>
-          <View style={styles.fields}>
-            <View style={styles.labelContainer}>
-              <RegularText style={styles.label}>Select Currency</RegularText>
-            </View>
-            <Pressable
-              onPress={() => setModalOpen(true)}
-              style={styles.selectInputContainer}>
-              <View style={styles.selectInput}>
-                {selectedCurrencies.length ? (
-                  <View style={styles.selected}>
-                    {allCurrencies.length === selectedCurrencies.length ? (
-                      <BoldText>All</BoldText>
-                    ) : (
-                      selectedCurrencies.map((currency, index) => (
-                        <BoldText key={currency}>
-                          {currency}
-                          {index < selectedCurrencies.length - 1 && ', '}
-                        </BoldText>
-                      ))
-                    )}
-                  </View>
-                ) : (
-                  <BoldText>No currency selected</BoldText>
-                )}
-                <ChevronDown />
-              </View>
+        <SafeAreaView style={styles.flex}>
+          <PageContainer padding paddingTop={20}>
+            <Pressable onPress={hideFilter}>
+              <IonIcon name="close" size={20} />
             </Pressable>
-          </View>
-          <RegularText style={styles.subText}>Period</RegularText>
+            <BoldText style={styles.headerText}>Filter</BoldText>
+            <RegularText style={styles.subText}>Accounts</RegularText>
+            <View style={styles.fields}>
+              <View style={styles.labelContainer}>
+                <RegularText style={styles.label}>Select Currency</RegularText>
+              </View>
+              <Pressable
+                onPress={() => setModalOpen(true)}
+                style={styles.selectInputContainer}>
+                <View style={styles.selectInput}>
+                  {selectedCurrencies.length ? (
+                    <View style={styles.selected}>
+                      {allCurrencies.length === selectedCurrencies.length ? (
+                        <BoldText>All</BoldText>
+                      ) : (
+                        selectedCurrencies.map((currency, index) => (
+                          <BoldText key={currency}>
+                            {currency}
+                            {index < selectedCurrencies.length - 1 && ', '}
+                          </BoldText>
+                        ))
+                      )}
+                    </View>
+                  ) : (
+                    <BoldText>No currency selected</BoldText>
+                  )}
+                  <ChevronDown />
+                </View>
+              </Pressable>
+            </View>
+            <RegularText style={styles.subText}>Period</RegularText>
 
-          <ScrollView style={styles.periods} horizontal>
-            {periods.map(period => (
-              <Pressable
-                key={period.label}
-                style={
-                  selectedPeriod.label === period.label
-                    ? styles.periodSelected
-                    : styles.period
-                }
-                onPress={() => {
-                  setFilterCleared(false);
-                  setSelectedPeriod(period);
-                }}>
-                <BoldText>{period.label}</BoldText>
-              </Pressable>
-            ))}
-          </ScrollView>
-          {selectedPeriod.label === 'Custom period' && (
-            <View>
-              {showPicker && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={defaultPickerDate()}
-                  onChange={handleDatePicker}
+            <ScrollView style={styles.periods} horizontal>
+              {periods.map(period => (
+                <Pressable
+                  key={period.label}
+                  style={
+                    selectedPeriod.label === period.label
+                      ? styles.periodSelected
+                      : styles.period
+                  }
+                  onPress={() => {
+                    setFilterCleared(false);
+                    setSelectedPeriod(period);
+                  }}>
+                  <BoldText>{period.label}</BoldText>
+                </Pressable>
+              ))}
+            </ScrollView>
+            {selectedPeriod.label === 'Custom period' && (
+              <View>
+                {showPicker && (
+                  <DateTimePicker
+                    testID="dateTimePicker"
+                    value={defaultPickerDate()}
+                    onChange={handleDatePicker}
+                  />
+                )}
+                <Text style={styles.topUp}>Start Date</Text>
+                <Pressable
+                  onPress={() => setShowPicker('start')}
+                  style={styles.dateTextInputContainer}>
+                  <View
+                    style={{
+                      ...styles.dateTextInput,
+                      ...styles.dateTextInputStyles,
+                    }}>
+                    <View style={styles.dateTextContainer}>
+                      <View style={styles.calendarIcon}>
+                        <CalendarIcon width={30} height={30} />
+                        <RegularText style={styles.newDate}>
+                          {new Date().getDate()}
+                        </RegularText>
+                      </View>
+                      <RegularText>{startValue}</RegularText>
+                    </View>
+                  </View>
+                </Pressable>
+                <Text style={styles.topUp}>End Date</Text>
+                <Pressable
+                  style={styles.dateTextInputContainer}
+                  onPress={() => setShowPicker('end')}>
+                  <View
+                    style={{
+                      ...styles.dateTextInput,
+                      ...styles.dateTextInputStyles,
+                    }}>
+                    <View style={styles.dateTextContainer}>
+                      <View style={styles.calendarIcon}>
+                        <CalendarIcon width={30} height={30} />
+                        <RegularText style={styles.newDate}>
+                          {new Date().getDate()}
+                        </RegularText>
+                      </View>
+                      <RegularText>{endValue}</RegularText>
+                    </View>
+                  </View>
+                </Pressable>
+              </View>
+            )}
+            <View style={styles.flexSpace}>
+              <View style={styles.flexSpace} />
+              <View style={styles.buttons}>
+                <Button
+                  text={'Clear all'}
+                  style={{ ...styles.button, ...styles.buttonClear }}
+                  color={'#000'}
+                  onPress={handleClear}
                 />
-              )}
-              <Text style={styles.topUp}>Start Date</Text>
-              <Pressable
-                onPress={() => setShowPicker('start')}
-                style={styles.dateTextInputContainer}>
-                <View
-                  style={{
-                    ...styles.dateTextInput,
-                    ...styles.dateTextInputStyles,
-                  }}>
-                  <View style={styles.dateTextContainer}>
-                    <View style={styles.calendarIcon}>
-                      <CalendarIcon width={30} height={30} />
-                      <RegularText style={styles.newDate}>
-                        {new Date().getDate()}
-                      </RegularText>
-                    </View>
-                    <RegularText>{startValue}</RegularText>
-                  </View>
-                </View>
-              </Pressable>
-              <Text style={styles.topUp}>End Date</Text>
-              <Pressable
-                style={styles.dateTextInputContainer}
-                onPress={() => setShowPicker('end')}>
-                <View
-                  style={{
-                    ...styles.dateTextInput,
-                    ...styles.dateTextInputStyles,
-                  }}>
-                  <View style={styles.dateTextContainer}>
-                    <View style={styles.calendarIcon}>
-                      <CalendarIcon width={30} height={30} />
-                      <RegularText style={styles.newDate}>
-                        {new Date().getDate()}
-                      </RegularText>
-                    </View>
-                    <RegularText>{endValue}</RegularText>
-                  </View>
-                </View>
-              </Pressable>
+                <Button
+                  text={'Apply'}
+                  style={styles.button}
+                  onPress={handleApply}
+                />
+              </View>
             </View>
-          )}
-          <View style={styles.flexSpace}>
-            <View style={styles.flexSpace} />
-            <View style={styles.buttons}>
-              <Button
-                text={'Clear all'}
-                style={{ ...styles.button, ...styles.buttonClear }}
-                color={'#000'}
-                onPress={handleClear}
-              />
-              <Button
-                text={'Apply'}
-                style={styles.button}
-                onPress={handleApply}
-              />
-            </View>
-          </View>
-        </PageContainer>
+          </PageContainer>
+        </SafeAreaView>
       </Modal>
 
       <Modal
@@ -402,82 +405,89 @@ const FilterModal = ({
         animationType="slide"
         transparent
         onRequestClose={handleModal}>
-        <Pressable style={styles.overlay} onPress={handleModal} />
-        <View style={styles.modalContainer}>
-          <View style={styles.modal}>
-            <Image
-              style={styles.bg}
-              source={require('../../assets/images/pageBg.png')}
-            />
-            <View style={styles.modalBorder} />
-            <View style={styles.modalHeader}>
-              <RegularText style={styles.textHeader}>Accounts</RegularText>
+        <SafeAreaView style={styles.flex}>
+          <Pressable style={styles.overlay} onPress={handleModal} />
+          <View style={styles.modalContainer}>
+            <View style={styles.modal}>
+              <Image
+                style={styles.bg}
+                source={require('../../assets/images/pageBg.png')}
+              />
+              <View style={styles.modalBorder} />
+              <View style={styles.modalHeader}>
+                <RegularText style={styles.textHeader}>Accounts</RegularText>
+              </View>
+
+              <ScrollView style={{ width: 100 + '%' }}>
+                <View style={styles.currency}>
+                  <View style={styles.currencyIcon}>
+                    <BoldText style={styles.headerText}>Select All</BoldText>
+                  </View>
+
+                  <View style={styles.checkbox}>
+                    {selectAll ? (
+                      <Pressable onPress={handleSelectAllClicked}>
+                        <IonIcon name="radio-button-on" size={24} />
+                      </Pressable>
+                    ) : (
+                      <Pressable onPress={handleSelectAllClicked}>
+                        <IonIcon name="radio-button-off" size={24} />
+                      </Pressable>
+                    )}
+                  </View>
+                </View>
+                <View style={styles.currencies}>
+                  {allCurrencies
+                    .filter(
+                      currency =>
+                        currency.currency === selectedCurrency.currency,
+                    )
+                    .map(selected => (
+                      <Currency
+                        key={selected.currency}
+                        selected={selected}
+                        setSelectAll={setSelectAll}
+                        selectedCurrencies={selectedCurrencies}
+                        setSelectedCurrencies={setSelectedCurrencies}
+                        setFilterCleared={setFilterCleared}
+                      />
+                    ))}
+                  {allCurrencies
+                    .filter(
+                      currency =>
+                        currency.currency !== selectedCurrency.currency,
+                    )
+                    .map(selected => (
+                      <Currency
+                        key={selected.currency}
+                        selected={selected}
+                        setSelectAll={setSelectAll}
+                        selectedCurrencies={selectedCurrencies}
+                        setSelectedCurrencies={setSelectedCurrencies}
+                        setFilterCleared={setFilterCleared}
+                      />
+                    ))}
+                </View>
+                <View style={styles.modalButtonContainer}>
+                  <Button
+                    text={'Apply'}
+                    style={styles.modalButton}
+                    onPress={handleModal}
+                  />
+                </View>
+              </ScrollView>
             </View>
-
-            <ScrollView style={{ width: 100 + '%' }}>
-              <View style={styles.currency}>
-                <View style={styles.currencyIcon}>
-                  <BoldText style={styles.headerText}>Select All</BoldText>
-                </View>
-
-                <View style={styles.checkbox}>
-                  {selectAll ? (
-                    <Pressable onPress={handleSelectAllClicked}>
-                      <IonIcon name="radio-button-on" size={24} />
-                    </Pressable>
-                  ) : (
-                    <Pressable onPress={handleSelectAllClicked}>
-                      <IonIcon name="radio-button-off" size={24} />
-                    </Pressable>
-                  )}
-                </View>
-              </View>
-              <View style={styles.currencies}>
-                {allCurrencies
-                  .filter(
-                    currency => currency.currency === selectedCurrency.currency,
-                  )
-                  .map(selected => (
-                    <Currency
-                      key={selected.currency}
-                      selected={selected}
-                      setSelectAll={setSelectAll}
-                      selectedCurrencies={selectedCurrencies}
-                      setSelectedCurrencies={setSelectedCurrencies}
-                      setFilterCleared={setFilterCleared}
-                    />
-                  ))}
-                {allCurrencies
-                  .filter(
-                    currency => currency.currency !== selectedCurrency.currency,
-                  )
-                  .map(selected => (
-                    <Currency
-                      key={selected.currency}
-                      selected={selected}
-                      setSelectAll={setSelectAll}
-                      selectedCurrencies={selectedCurrencies}
-                      setSelectedCurrencies={setSelectedCurrencies}
-                      setFilterCleared={setFilterCleared}
-                    />
-                  ))}
-              </View>
-              <View style={styles.modalButtonContainer}>
-                <Button
-                  text={'Apply'}
-                  style={styles.modalButton}
-                  onPress={handleModal}
-                />
-              </View>
-            </ScrollView>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   headerText: {
     fontSize: 22,
     marginVertical: 15,

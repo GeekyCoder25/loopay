@@ -15,8 +15,8 @@ import Bell from '../../../assets/images/bell.svg';
 import BellActive from '../../../assets/images/bellActive.svg';
 import ChevronDown from '../../../assets/images/chevron-down.svg';
 import Wallet from '../../../assets/images/wallet.svg';
-import UpAndDownArrowWhite from '../../../assets/images/left-right.svg';
 import SwapIcon from '../../../assets/images/swap.svg';
+import SwapIconWhie from '../../../assets/images/swap-white.svg';
 import Bg from '../../../assets/images/bg1.svg';
 import { AppContext } from '../../components/AppContext';
 import SelectCurrencyModal from '../../components/SelectCurrencyModal';
@@ -267,7 +267,7 @@ const Home = ({ navigation }) => {
             style={styles.quickLink}
             onPress={() => navigation.navigate('SwapFunds')}>
             <View style={styles.swapIcon}>
-              <UpAndDownArrowWhite />
+              <SwapIconWhie />
             </View>
             <BoldText style={styles.quickLinkText}>Swap funds</BoldText>
           </Pressable>
@@ -553,7 +553,9 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   swapIcon: {
-    transform: [{ rotateZ: '90deg' }],
+    backgroundColor: '#fff',
+    padding: 3,
+    borderRadius: 50,
   },
   swap: {},
 });

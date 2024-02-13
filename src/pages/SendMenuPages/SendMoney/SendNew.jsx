@@ -119,7 +119,7 @@ const SendNew = ({ navigation, route }) => {
   };
 
   return (
-    <PageContainer paddingTop={0}>
+    <PageContainer paddingTop={0} avoidKeyboardPushup>
       <ScrollView style={styles.body}>
         <View style={styles.top}>
           <AccInfoCard />

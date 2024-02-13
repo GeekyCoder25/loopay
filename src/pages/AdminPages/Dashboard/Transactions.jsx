@@ -195,96 +195,52 @@ const Transactions = ({ navigation, route }) => {
     }
   };
   return (
-    <View key={reload} style={{ flex: 1 }}>
-      <FilterModal
-        showModal={showFilterModal}
-        setShowModal={setShowFilterModal}
-        setTransactionHistory={setSelectedTransaction}
-        transactions={transactions}
-        setActiveTransactions={setTransactionState}
-        setTotalTransactionsLength={setTotalTransactionsLength}
-        setIsFiltered={setIsFiltered}
-      />
-      {isSearching ? (
-        <View style={styles.searchList}>
-          <FlatList
-            data={searchHistory}
-            renderItem={({ item }) => (
-              <Transaction
-                transaction={item}
-                navigation={navigation}
-                setTransactions={setSelectedTransaction}
-                setTransactionsModal={setTransactionsModal}
-                setModalData={setModalData}
-              />
-            )}
-            keyExtractor={({ _id, transactionType }) => transactionType + _id}
-            ListHeaderComponent={
-              <Header
-                setIsSearching={setIsSearching}
-                setSearchHistory={setSearchHistory}
-                setIsLocalLoading={setIsLocalLoading}
-                setShowFilterModal={setShowFilterModal}
-                searchTransactions={transactionState}
-                navigation={navigation}
-                setModalOpen={setModalOpen}
-                label={label}
-                selectedLabel={selectedLabel}
-              />
-            }
-            ListFooterComponent={
-              transactions.length &&
-              (transactions.length >= totalTransactionsLength ? (
-                <View style={styles.complete}>
-                  <BoldText>That&apos;s all for now</BoldText>
-                </View>
-              ) : (
-                reloading && <ActivityIndicator color={'#1e1e1e'} />
-              ))
-            }
-            onEndReachedThreshold={0.5}
-            onEndReached={
-              !isFiltered &&
-              !reloading &&
-              transactions.length &&
-              transactions.length < totalTransactionsLength
-                ? handleScrollMore
-                : undefined
-            }
-            bounces={false}
-            removeClippedSubviews
-          />
-        </View>
-      ) : !isLocalLoading ? (
-        <View style={styles.transactions}>
-          {selectedTransaction.length ? (
+    <>
+      <Modal
+        visible={modalOpen}
+        animationType="slide"
+        transparent
+        style={{ zIndex: 999 }}
+        onRequestClose={() => setModalOpen(prev => !prev)}>
+        <Pressable
+          style={styles.overlay}
+          onPress={() => setModalOpen(prev => !prev)}>
+          <View style={styles.modal}>
+            {selectOptions.map(option => (
+              <Pressable
+                key={option.status}
+                style={styles.select}
+                onPress={() => handleModal(option)}>
+                <RegularText>{option.label}</RegularText>
+              </Pressable>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
+      <View key={reload} style={{ flex: 1 }}>
+        <FilterModal
+          showModal={showFilterModal}
+          setShowModal={setShowFilterModal}
+          setTransactionHistory={setSelectedTransaction}
+          transactions={transactions}
+          setActiveTransactions={setTransactionState}
+          setTotalTransactionsLength={setTotalTransactionsLength}
+          setIsFiltered={setIsFiltered}
+        />
+        {isSearching ? (
+          <View style={styles.searchList}>
             <FlatList
-              keyExtractor={({ date }) => date}
-              data={selectedTransaction}
-              renderItem={({ item: dayHistory }) => (
-                <View key={dayHistory.date} style={styles.dateHistory}>
-                  <RegularText style={styles.date}>
-                    {dayHistory.date}
-                  </RegularText>
-                  <FlatList
-                    data={dayHistory.histories}
-                    renderItem={({ item }) => (
-                      <Transaction
-                        transaction={item}
-                        navigation={navigation}
-                        setTransactions={setSelectedTransaction}
-                        setTransactionsModal={setTransactionsModal}
-                        setModalData={setModalData}
-                      />
-                    )}
-                    keyExtractor={({ _id, transactionType }) =>
-                      transactionType + _id
-                    }
-                    bounces={false}
-                    removeClippedSubviews
-                  />
-                </View>
+              data={searchHistory}
+              renderItem={({ item }) => (
+                <Transaction
+                  transaction={item}
+                  navigation={navigation}
+                  setTransactions={setSelectedTransaction}
+                  setTransactionsModal={setTransactionsModal}
+                  setModalData={setModalData}
+                />
               )}
+              keyExtractor={({ _id, transactionType }) => transactionType + _id}
               ListHeaderComponent={
                 <Header
                   setIsSearching={setIsSearching}
@@ -320,95 +276,138 @@ const Transactions = ({ navigation, route }) => {
               bounces={false}
               removeClippedSubviews
             />
-          ) : (
-            <>
-              <Header
-                setIsSearching={setIsSearching}
-                setSearchHistory={setSearchHistory}
-                setIsLocalLoading={setIsLocalLoading}
-                setShowFilterModal={setShowFilterModal}
-                searchTransactions={transactionState}
-                navigation={navigation}
-                setModalOpen={setModalOpen}
-                label={label}
-                selectedLabel={selectedLabel}
-              />
-              <View style={styles.empty}>
-                <BoldText>
-                  No current {label2 || route.params.transactionStatus}{' '}
-                  transactions{' '}
-                </BoldText>
-              </View>
-            </>
-          )}
-        </View>
-      ) : (
-        <>
-          <Header
-            setIsSearching={setIsSearching}
-            setSearchHistory={setSearchHistory}
-            setIsLocalLoading={setIsLocalLoading}
-            setShowFilterModal={setShowFilterModal}
-            searchTransactions={transactionState}
-            navigation={navigation}
-            setModalOpen={setModalOpen}
-            label={label}
-            selectedLabel={selectedLabel}
-          />
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              marginTop: -50 + '%',
-            }}>
-            <ActivityIndicator
-              size={'large'}
-              color={'#1e1e1e'}
-              style={styles.loading}
-            />
           </View>
-        </>
-      )}
-      <Modal
-        visible={transactionsModal}
-        animationType="fade"
-        onRequestClose={() => {
-          setTransactionsModal(false);
-          setModalData(null);
-        }}>
-        <Back
-          onPress={() => {
+        ) : !isLocalLoading ? (
+          <View style={styles.transactions}>
+            {selectedTransaction.length ? (
+              <FlatList
+                keyExtractor={({ date }) => date}
+                data={selectedTransaction}
+                renderItem={({ item: dayHistory }) => (
+                  <View key={dayHistory.date} style={styles.dateHistory}>
+                    <RegularText style={styles.date}>
+                      {dayHistory.date}
+                    </RegularText>
+                    <FlatList
+                      data={dayHistory.histories}
+                      renderItem={({ item }) => (
+                        <Transaction
+                          transaction={item}
+                          navigation={navigation}
+                          setTransactions={setSelectedTransaction}
+                          setTransactionsModal={setTransactionsModal}
+                          setModalData={setModalData}
+                        />
+                      )}
+                      keyExtractor={({ _id, transactionType }) =>
+                        transactionType + _id
+                      }
+                      bounces={false}
+                      removeClippedSubviews
+                    />
+                  </View>
+                )}
+                ListHeaderComponent={
+                  <Header
+                    setIsSearching={setIsSearching}
+                    setSearchHistory={setSearchHistory}
+                    setIsLocalLoading={setIsLocalLoading}
+                    setShowFilterModal={setShowFilterModal}
+                    searchTransactions={transactionState}
+                    navigation={navigation}
+                    setModalOpen={setModalOpen}
+                    label={label}
+                    selectedLabel={selectedLabel}
+                  />
+                }
+                ListFooterComponent={
+                  transactions.length &&
+                  (transactions.length >= totalTransactionsLength ? (
+                    <View style={styles.complete}>
+                      <BoldText>That&apos;s all for now</BoldText>
+                    </View>
+                  ) : (
+                    reloading && <ActivityIndicator color={'#1e1e1e'} />
+                  ))
+                }
+                onEndReachedThreshold={0.5}
+                onEndReached={
+                  !isFiltered &&
+                  !reloading &&
+                  transactions.length &&
+                  transactions.length < totalTransactionsLength
+                    ? handleScrollMore
+                    : undefined
+                }
+                bounces={false}
+                removeClippedSubviews
+              />
+            ) : (
+              <>
+                <Header
+                  setIsSearching={setIsSearching}
+                  setSearchHistory={setSearchHistory}
+                  setIsLocalLoading={setIsLocalLoading}
+                  setShowFilterModal={setShowFilterModal}
+                  searchTransactions={transactionState}
+                  navigation={navigation}
+                  setModalOpen={setModalOpen}
+                  label={label}
+                  selectedLabel={selectedLabel}
+                />
+                <View style={styles.empty}>
+                  <BoldText>
+                    No current {label2 || route.params.transactionStatus}{' '}
+                    transactions{' '}
+                  </BoldText>
+                </View>
+              </>
+            )}
+          </View>
+        ) : (
+          <>
+            <Header
+              setIsSearching={setIsSearching}
+              setSearchHistory={setSearchHistory}
+              setIsLocalLoading={setIsLocalLoading}
+              setShowFilterModal={setShowFilterModal}
+              searchTransactions={transactionState}
+              navigation={navigation}
+              setModalOpen={setModalOpen}
+              label={label}
+              selectedLabel={selectedLabel}
+            />
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                marginTop: -50 + '%',
+              }}>
+              <ActivityIndicator
+                size={'large'}
+                color={'#1e1e1e'}
+                style={styles.loading}
+              />
+            </View>
+          </>
+        )}
+        <Modal
+          visible={transactionsModal}
+          animationType="fade"
+          onRequestClose={() => {
             setTransactionsModal(false);
             setModalData(null);
-          }}
-        />
-        <TransactionHistoryParams route={{ params: modalData }} />
-      </Modal>
-      <Modal
-        visible={modalOpen}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setModalOpen(prev => !prev)}>
-        <Pressable
-          style={styles.overlay}
-          onPress={() => setModalOpen(prev => !prev)}>
-          <View style={styles.modal}>
-            <View style={styles.modal}>
-              <View style={styles.modal}>
-                {selectOptions.map(option => (
-                  <Pressable
-                    key={option.status}
-                    style={styles.select}
-                    onPress={() => handleModal(option)}>
-                    <RegularText>{option.label}</RegularText>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
-          </View>
-        </Pressable>
-      </Modal>
-    </View>
+          }}>
+          <Back
+            onPress={() => {
+              setTransactionsModal(false);
+              setModalData(null);
+            }}
+          />
+          <TransactionHistoryParams route={{ params: modalData }} />
+        </Modal>
+      </View>
+    </>
   );
 };
 
@@ -656,24 +655,6 @@ const Transaction = memo(
         : transactionType === 'debit'
         ? senderAccount
         : debitAccount;
-
-    function convertTo12HourFormat(time24) {
-      let [hours, minutes] = time24.split(':');
-      let period = 'AM';
-
-      if (hours >= 12) {
-        period = 'PM';
-        if (hours > 12) {
-          hours -= 12;
-        }
-      }
-
-      if (hours === '00') {
-        hours = 12;
-      }
-
-      return `${hours}:${minutes} ${period}`;
-    }
 
     return (
       <View style={styles.expanded}>

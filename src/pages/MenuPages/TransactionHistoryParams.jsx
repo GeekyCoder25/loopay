@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
 import { Pressable, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
@@ -16,6 +16,8 @@ import { shareAsync } from 'expo-sharing';
 import { AppContext } from '../../components/AppContext';
 import { billIcon } from './TransactionHistory';
 import { setShowBalance } from '../../../utils/storage';
+import { postFetchData } from '../../../utils/fetchAPI';
+import ToastMessage from '../../components/ToastMessage';
 
 const TransactionHistoryParams = ({ route }) => {
   const { vh, showAmount, setShowAmount, setIsLoading, isAdmin } =
@@ -56,6 +58,7 @@ const TransactionHistoryParams = ({ route }) => {
     rate,
   } = history;
 
+  const [statusState, setStatusState] = useState(status);
   const currencySymbol = allCurrencies.find(
     id => currency === id.currency || currency === id.acronym,
   )?.symbol;
@@ -77,7 +80,7 @@ const TransactionHistoryParams = ({ route }) => {
   const swapToSymbol = allCurrencies.find(id => swapTo === id.currency)?.symbol;
 
   const statusColor = () => {
-    switch (status) {
+    switch (statusState) {
       case 'success':
         return (
           <View style={styles.status}>
@@ -86,7 +89,7 @@ const TransactionHistoryParams = ({ route }) => {
               style={{ ...styles.faIcon, color: '#38b34a' }}
             />
             <BoldText style={{ color: '#38b34a', ...styles.statusText }}>
-              {status}
+              {statusState}
             </BoldText>
           </View>
         );
@@ -98,7 +101,31 @@ const TransactionHistoryParams = ({ route }) => {
               style={{ ...styles.faIcon, color: '#ffa500' }}
             />
             <BoldText style={{ color: '#ffa500', ...styles.statusText }}>
-              {status}
+              {statusState}
+            </BoldText>
+          </View>
+        );
+      case 'reversed':
+        return (
+          <View style={styles.status}>
+            <FaIcon
+              name="undo"
+              style={{ ...styles.faIcon, color: '#ffa500' }}
+            />
+            <BoldText style={{ color: '#ffa500', ...styles.statusText }}>
+              {statusState}
+            </BoldText>
+          </View>
+        );
+      case 'refunded':
+        return (
+          <View style={styles.status}>
+            <FaIcon
+              name="undo"
+              style={{ ...styles.faIcon, color: '#ffa500' }}
+            />
+            <BoldText style={{ color: '#ffa500', ...styles.statusText }}>
+              {statusState}
             </BoldText>
           </View>
         );
@@ -110,7 +137,7 @@ const TransactionHistoryParams = ({ route }) => {
               style={{ ...styles.faIcon, color: 'rgb(255, 0, 0)' }}
             />
             <BoldText style={{ color: 'rgb(255, 0, 0)', ...styles.statusText }}>
-              {status}
+              {statusState}
             </BoldText>
           </View>
         );
@@ -122,11 +149,23 @@ const TransactionHistoryParams = ({ route }) => {
               style={{ ...styles.faIcon, color: '#ff0000' }}
             />
             <BoldText style={{ color: '#ff0000', ...styles.statusText }}>
-              {status}
+              {statusState}
             </BoldText>
           </View>
         );
     }
+  };
+
+  const handleReverse = async () => {
+    const response = await postFetchData('./admin/transfer/reverse', {
+      reference,
+    });
+
+    if (response.status === 200) {
+      setStatusState('reversed');
+      return ToastMessage(response.data.message);
+    }
+    ToastMessage(response.data.message);
   };
 
   const handleShare = async () => {
@@ -344,7 +383,7 @@ const TransactionHistoryParams = ({ route }) => {
               )
             }
           </div>
-          <span class="statusHeader ${status}">${status}</span>
+          <span class="statusHeader ${statusState}">${statusState}</span>
           <section>
             ${shareReceiptData()
               .map(
@@ -1055,6 +1094,11 @@ const TransactionHistoryParams = ({ route }) => {
           )}
         </View>
       </PageContainer>
+      {isAdmin && (
+        <View>
+          <Button text={'Reverse Transaction'} onPress={handleReverse} />
+        </View>
+      )}
       <View style={styles.button}>
         <Button text={'Share Receipt'} onPress={handleShare} />
       </View>

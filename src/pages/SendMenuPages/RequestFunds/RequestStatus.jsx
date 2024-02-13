@@ -40,7 +40,7 @@ const RequestStatus = ({ navigation, route }) => {
   const [amountInput, setAmountInput] = useState(null);
   const { wallet } = useWalletContext();
   const currency = allCurrencies.find(
-    index => index.currency === route.params.currency,
+    index => index.currency === route.params?.currency,
   );
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const RequestStatus = ({ navigation, route }) => {
     setAmountInput(text);
     setErrorMessage('');
     setErrorKey('');
-    if (text > wallet[`${currency.currency}Balance`]) {
+    if (text > wallet[`${currency?.currency}Balance`]) {
       setErrorKey('amountInput');
       setErrorMessage('Insufficient funds');
     }
@@ -83,9 +83,9 @@ const RequestStatus = ({ navigation, route }) => {
           } else if (!Number(amountInput)) {
             setErrorMessage('Please provide a valid amount');
             setErrorKey('amountInput');
-          } else if (amountInput < currency.minimumAmountToAdd) {
+          } else if (amountInput < currency?.minimumAmountToAdd) {
             setErrorMessage(
-              `Minimum transfer amount is ${selectedCurrency.symbol}${currency.minimumAmountToAdd}`,
+              `Minimum transfer amount is ${selectedCurrency.symbol}${currency?.minimumAmountToAdd}`,
             );
             setErrorKey('amountInput');
           } else if (amountInput > wallet.balance) {
@@ -184,11 +184,11 @@ const RequestStatus = ({ navigation, route }) => {
                 <View style={styles.textInputContainer}>
                   <Pressable style={styles.symbolContainer}>
                     <FlagSelect
-                      country={currency.currency}
+                      country={currency?.currency}
                       style={styles.flag}
                     />
                     <BoldText style={styles.symbol}>
-                      {currency.acronym}
+                      {currency?.acronym}
                     </BoldText>
                   </Pressable>
                   <TextInput

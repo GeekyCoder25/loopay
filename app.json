@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use FaceID"
+        "NSFaceIDUsageDescription": "Loopay uses Face ID to validate your identity"
       }
     },
     "android": {

@@ -52,7 +52,11 @@ const AdminNavigator = () => {
           options={{ headerShown: false }}
         />
         <Drawer.Screen name="Accounts" component={Accounts} />
-        <Drawer.Screen name="Transfer" component={AdminTransfer} />
+        <Drawer.Screen
+          name="Transfer"
+          component={AdminTransfer}
+          options={{ headerShown: false }}
+        />
         <Drawer.Screen
           name="Rate & Charges"
           component={Rate}
@@ -76,7 +80,11 @@ const AdminNavigator = () => {
           component={Notifications}
           options={({ navigation, route }) => BackHeader(navigation, route)}
         />
-        <Drawer.Screen name="Success" component={Success} />
+        <Drawer.Screen
+          name="Success"
+          component={Success}
+          options={{ headerShown: false }}
+        />
         <Drawer.Screen
           name="TransactionHistoryDetails"
           component={TransactionHistoryParams}
@@ -100,7 +108,7 @@ const AdminNavigator = () => {
         <Drawer.Screen
           name="Proofs"
           component={Proofs}
-          options={({ navigation, route }) => BackHeader(navigation, route)}
+          options={{ headerShown: false }}
         />
       </Drawer.Navigator>
       <AdminSelectCurrencyModal />

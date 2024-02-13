@@ -11,6 +11,13 @@ import { allCurrencies } from '../../../database/data';
 const PendingRequest = ({ navigation }) => {
   const { requestFunds: requests } = useRequestFundsContext();
 
+  const currenySymbol = request => {
+    return (
+      allCurrencies.find(currency => currency.currency === request.currency)
+        ?.symbol || ''
+    );
+  };
+
   return (
     <PageContainer style={styles.container} scroll>
       <BoldText style={styles.headerText}>
@@ -25,21 +32,14 @@ const PendingRequest = ({ navigation }) => {
               onPress={() =>
                 navigation.navigate('RequestStatus', {
                   ...request,
-                  symbol: allCurrencies.find(
-                    currency => currency.currency === request.currency,
-                  ).symbol,
+                  symbol: currenySymbol(request),
                 })
               }>
               <UserIcon uri={request.requesterPhoto} />
               <View>
                 <BoldText>{request.requesterName}</BoldText>
                 <RegularText>
-                  Requested the sum of{' '}
-                  {
-                    allCurrencies.find(
-                      currency => currency.currency === request.currency,
-                    ).symbol
-                  }
+                  Requested the sum of {currenySymbol(request)}
                   {addingDecimal(Number(request.amount).toLocaleString())}
                 </RegularText>
                 <RegularText>{request.description}</RegularText>
