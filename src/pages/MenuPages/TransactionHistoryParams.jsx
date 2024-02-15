@@ -1096,7 +1096,7 @@ const TransactionHistoryParams = ({ route }) => {
       </PageContainer>
       {isAdmin && (
         <View>
-          <Button text={'Reverse Transaction'} onPress={handleShare} />
+          <Button text={'Reverse Transaction'} onPress={handleReverse} />
         </View>
       )}
       <View style={styles.button}>
