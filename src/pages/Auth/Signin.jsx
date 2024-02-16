@@ -57,7 +57,9 @@ const Signin = ({ navigation }) => {
           setErrorMessage(Object.values(result)[0]);
           return setVerifyEmail(true);
         }
-        if (result?.data?.email === formData.email) {
+        if (
+          result?.data?.email.toLowerCase() === formData.email.toLowerCase()
+        ) {
           await postFetchData('user/session', sessionData, result.data.token);
           await loginUser(result.data, sessionData.deviceID);
           setErrorMessage('');
@@ -76,9 +78,14 @@ const Signin = ({ navigation }) => {
         } else {
           if (typeof response === 'string') {
             setErrorMessage(response);
-          } else {
+          } else if (typeof Object.keys(result)[0] === 'string') {
             setErrorKey(Object.keys(result)[0]);
             setErrorMessage(Object.values(result)[0]);
+          } else if (typeof Object.keys(result.data)[0] === 'string') {
+            setErrorKey(Object.keys(result.data)[0]);
+            setErrorMessage(Object.values(result.data)[0]);
+          } else {
+            setErrorMessage('Unexpected error');
           }
           setIsLoading(false);
         }

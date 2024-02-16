@@ -1,40 +1,61 @@
 /* eslint-disable react-native/no-inline-styles */
 import { useCallback, useContext, useState } from 'react';
-import PageContainer from '../../components/PageContainer';
-import { Linking, Pressable, StyleSheet, View } from 'react-native';
-import BoldText from '../../components/fonts/BoldText';
+import PageContainer from '../../../components/PageContainer';
+import {
+  ActivityIndicator,
+  Linking,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
+import BoldText from '../../../components/fonts/BoldText';
 import {
   deleteFetchData,
   getFetchData,
   postFetchData,
-} from '../../../utils/fetchAPI';
-import { allCurrencies } from '../../database/data';
-import { AppContext } from '../../components/AppContext';
-import RegularText from '../../components/fonts/RegularText';
-import ToastMessage from '../../components/ToastMessage';
-import InputPin from '../../components/InputPin';
-import { addingDecimal } from '../../../utils/AddingZero';
-import { useFocusEffect } from '@react-navigation/native';
-import Back from '../../components/Back';
+} from '../../../../utils/fetchAPI';
+import { allCurrencies } from '../../../database/data';
+import { AppContext } from '../../../components/AppContext';
+import RegularText from '../../../components/fonts/RegularText';
+import ToastMessage from '../../../components/ToastMessage';
+import InputPin from '../../../components/InputPin';
+import { addingDecimal } from '../../../../utils/AddingZero';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import Back from '../../../components/Back';
+import UpRightArrow from '../../../../assets/images/arrow-up-right-from-square-outline.svg';
 
 const Proofs = ({ navigation }) => {
   const { walletRefresh } = useContext(AppContext);
   const [proofs, setProofs] = useState([]);
   const [requestPin, setRequestPin] = useState(false);
   const [customFunc, setCustomFunc] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       const getProofs = async () => {
-        const response = await getFetchData('admin/proof');
-        if (response.status === 200) {
-          setProofs(response.data.data);
+        try {
+          setIsLoading(true);
+          const response = await getFetchData('admin/proof');
+          if (response.status === 200) {
+            setProofs(response.data.data);
+          }
+        } finally {
+          setIsLoading(false);
         }
       };
       getProofs();
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [walletRefresh]),
   );
+
+  if (isLoading) {
+    return (
+      <View style={styles.flex}>
+        <ActivityIndicator color={'#1e1e1e'} size={'large'} />
+      </View>
+    );
+  }
 
   return requestPin ? (
     <InputPin
@@ -67,6 +88,11 @@ const Proofs = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   headerText: {
     fontSize: 20,
     marginBottom: 20,
@@ -138,6 +164,7 @@ const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
     createdAt,
   } = proof;
 
+  const navigation = useNavigation();
   const symbol = allCurrencies.find(
     ({ acronym, currency }) =>
       currency === proof.currency || acronym === proof.currency,
@@ -179,14 +206,25 @@ const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
     ToastMessage(response.data);
   };
 
+  const handlePress = () => {};
+
   return (
-    <View style={styles.proof}>
+    <Pressable style={styles.proof} onPress={handlePress}>
       <BoldText style={styles.amount}>
         {symbol}
         {addingDecimal(Number(amount).toLocaleString())}
       </BoldText>
       <BoldText>
-        Email: <RegularText>{email}</RegularText>
+        Email:{' '}
+        <RegularText>
+          {email}
+          <Pressable
+            onPress={() =>
+              navigation.navigate('UserDetails', { email: proof.email })
+            }>
+            <UpRightArrow />
+          </Pressable>
+        </RegularText>
       </BoldText>
       <BoldText>
         Tag Name: <RegularText>{tagName}</RegularText>
@@ -249,6 +287,6 @@ const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
           <BoldText style={{ color: '#fff' }}>Request more</BoldText>
         </Pressable>
       </View>
-    </View>
+    </Pressable>
   );
 };

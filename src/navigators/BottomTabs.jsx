@@ -13,7 +13,7 @@ import Popup from '../components/Popup';
 import useShakeEvent from '../components/Shake';
 import ShakeModal from '../components/ShakeModal';
 
-const BottomTabs = ({ navigation }) => {
+const BottomTabs = () => {
   const {
     showTabBar,
     appData,

@@ -16,7 +16,7 @@ import BellActive from '../../../assets/images/bellActive.svg';
 import ChevronDown from '../../../assets/images/chevron-down.svg';
 import Wallet from '../../../assets/images/wallet.svg';
 import SwapIcon from '../../../assets/images/swap.svg';
-import SwapIconWhie from '../../../assets/images/swap-white.svg';
+import SwapIconWhite from '../../../assets/images/swapBeneficiary.svg';
 import Bg from '../../../assets/images/bg1.svg';
 import { AppContext } from '../../components/AppContext';
 import SelectCurrencyModal from '../../components/SelectCurrencyModal';
@@ -49,6 +49,8 @@ const Home = ({ navigation }) => {
     setWalletRefresh,
     setNoReload,
     setShowTabBar,
+    showAmount,
+    setShowAmount,
     vw,
   } = useContext(AppContext);
   const { transactions, wallet } = useWalletContext();
@@ -60,21 +62,6 @@ const Home = ({ navigation }) => {
   const [closeRequest, setCloseRequest] = useState(false);
   const { unread } = useNotificationsContext();
   const [isAndroid] = useState(Platform.OS === 'android');
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const getHistories = async () => {
-  //       const response = await getFetchData('user/transaction?swap=true');
-  //       if (response.status >= 400) {
-  //         return setTransactionHistory("Couldn't connect to server");
-  //       } else if (response.status === 204) return;
-  //       if (response.status === 200) {
-  //         return setTransactionHistory(response.data.transactions);
-  //       }
-  //     };
-  //     getHistories();
-  //     // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   }, [setShowTabBar, walletRefresh]),
-  // );
 
   useFocusEffect(
     React.useCallback(() => {
@@ -141,6 +128,10 @@ const Home = ({ navigation }) => {
     ToastMessage('Copied to clipboard');
   };
 
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
   return (
     <>
       <PageContainer refreshFunc={refreshPage}>
@@ -219,14 +210,25 @@ const Home = ({ navigation }) => {
                   </View>
                 </View>
               </View>
-              <Pressable
-                onPress={() => {
-                  setWalletRefresh(prev => !prev);
-                  setModalOpen(true);
-                }}
-                style={styles.chevronDown}>
-                <ChevronDown />
-              </Pressable>
+              <View style={styles.eyeContainer}>
+                {wallet && (
+                  <Pressable style={styles.eye} onPress={handleShow}>
+                    <FaIcon
+                      name={showAmount ? 'eye-slash' : 'eye'}
+                      size={25}
+                      color={'#fff'}
+                    />
+                  </Pressable>
+                )}
+                <Pressable
+                  onPress={() => {
+                    setWalletRefresh(prev => !prev);
+                    setModalOpen(true);
+                  }}
+                  style={styles.chevronDown}>
+                  <ChevronDown />
+                </Pressable>
+              </View>
             </View>
 
             <View style={styles.cardHeader}>
@@ -267,7 +269,7 @@ const Home = ({ navigation }) => {
             style={styles.quickLink}
             onPress={() => navigation.navigate('SwapFunds')}>
             <View style={styles.swapIcon}>
-              <SwapIconWhie />
+              <SwapIconWhite width={25} height={25} />
             </View>
             <BoldText style={styles.quickLinkText}>Swap funds</BoldText>
           </Pressable>
@@ -402,15 +404,15 @@ const styles = StyleSheet.create({
   },
   symbolContainer: {
     backgroundColor: '#fff',
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 16,
   },
   symbol: {
-    fontSize: 28,
+    fontSize: 22,
     fontFamily: 'AlfaSlabOne-Regular',
   },
   flagContainer: {
@@ -423,6 +425,14 @@ const styles = StyleSheet.create({
     color: '#fff',
     paddingLeft: 10,
     fontSize: 15,
+  },
+  eyeContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    columnGap: 10,
+  },
+  eye: {
+    marginLeft: 20,
   },
   chevronDown: {},
   cardDetails: {
@@ -554,8 +564,9 @@ const styles = StyleSheet.create({
   },
   swapIcon: {
     backgroundColor: '#fff',
-    padding: 3,
+    padding: 1,
     borderRadius: 50,
+    overflow: 'hidden',
   },
   swap: {},
 });
@@ -612,7 +623,7 @@ const History = ({ history, navigation }) => {
         setTransactionAccount(receiverName);
         break;
       case 'swap':
-        setTransactionTypeIcon(<SwapIcon width={22} height={22} />);
+        setTransactionTypeIcon(<SwapIcon width={35} height={35} />);
         setTransactionTypeTitle('Swap');
         setTransactionAccount(appData.userProfile.fullName);
         break;
@@ -733,8 +744,8 @@ const History = ({ history, navigation }) => {
                 )}`}
               </BoldText>
               <SwapIcon
-                width={14}
-                height={14}
+                width={25}
+                height={25}
                 style={vw > 360 ? styles.swap : styles.swapIcon}
               />
               <BoldText

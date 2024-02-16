@@ -24,6 +24,7 @@ import AccInfoCard from '../../../components/AccInfoCard';
 import InputPin from '../../../components/InputPin';
 import { AddBankFields, BanksModal } from './AddBank';
 import ChevronDown from '../../../../assets/images/chevron-down';
+import Back from '../../../components/Back';
 
 const SendOthers = ({ navigation }) => {
   const { appData, vh, selectedCurrency, setWalletRefresh } =
@@ -210,178 +211,189 @@ const SendOthers = ({ navigation }) => {
     }
   };
 
+  if (bankSelected && canContinue) {
+    return (
+      <InputPin
+        customFunc={() => initiateWithdrawal()}
+        handleCancel={() => setCanContinue(false)}
+      />
+    );
+  }
   return (
-    <PageContainer scroll>
-      <View style={{ ...styles.container, minHeight: vh * 0.75 }}>
-        <AccInfoCard disableSwitchCurrency={bankSelected} />
-        <RegularText style={styles.headerText}>
-          In cases of insufficient fund, you have to swap to{' '}
-          {selectedCurrency.acronym} before placing withdrawal.
-        </RegularText>
-        {!bankSelected ? (
-          <View>
-            <View style={styles.form}>
-              {formFields.map(field => (
-                <AddBankFields
-                  key={field.id}
-                  field={field}
-                  errorKey={errorKey}
+    <>
+      <Back onPress={() => navigation.goBack()} />
+      <PageContainer scroll>
+        <View style={{ ...styles.container, minHeight: vh * 0.75 }}>
+          <AccInfoCard disableSwitchCurrency={bankSelected} />
+          <RegularText style={styles.headerText}>
+            In cases of insufficient fund, you have to swap to{' '}
+            {selectedCurrency.acronym} before placing withdrawal.
+          </RegularText>
+          {!bankSelected ? (
+            <View>
+              <View style={styles.form}>
+                {formFields.map(field => (
+                  <AddBankFields
+                    key={field.id}
+                    field={field}
+                    errorKey={errorKey}
+                    setErrorKey={setErrorKey}
+                    setErrorMessage={setErrorMessage}
+                    setFormData={setFormData}
+                    formData={formData}
+                  />
+                ))}
+                <BoldText>Bank Name</BoldText>
+                <Pressable
+                  style={styles.textInputContainer}
+                  onPress={() => setShowBankModal(true)}>
+                  <View
+                    style={{
+                      ...styles.bankInput,
+                      borderColor: errorKey === 'bank' ? 'red' : '#B1B1B1',
+                    }}>
+                    <BoldText>{selectedBank?.name || 'Choose bank'}</BoldText>
+                    <ChevronDown />
+                  </View>
+                </Pressable>
+                <BanksModal
+                  modalOpen={showBankModal}
+                  setModalOpen={setShowBankModal}
+                  banks={banks}
+                  setSelectedBank={setSelectedBank}
+                  setFormData={setFormData}
                   setErrorKey={setErrorKey}
                   setErrorMessage={setErrorMessage}
-                  setFormData={setFormData}
-                  formData={formData}
+                  noBanks={noBanks}
                 />
-              ))}
-              <BoldText>Bank Name</BoldText>
-              <Pressable
-                style={styles.textInputContainer}
-                onPress={() => setShowBankModal(true)}>
-                <View
-                  style={{
-                    ...styles.bankInput,
-                    borderColor: errorKey === 'bank' ? 'red' : '#B1B1B1',
-                  }}>
-                  <BoldText>{selectedBank?.name || 'Choose bank'}</BoldText>
-                  <ChevronDown />
-                </View>
-              </Pressable>
-              <BanksModal
-                modalOpen={showBankModal}
-                setModalOpen={setShowBankModal}
-                banks={banks}
-                setSelectedBank={setSelectedBank}
-                setFormData={setFormData}
-                setErrorKey={setErrorKey}
-                setErrorMessage={setErrorMessage}
-                noBanks={noBanks}
-              />
-              {!isLoading ? (
-                fullName && (
+                {!isLoading ? (
+                  fullName && (
+                    <BoldText style={styles.name}>
+                      <FaIcon name="check-circle" size={20} color="green" />
+                      {'  '}
+                      {fullName}
+                    </BoldText>
+                  )
+                ) : (
                   <BoldText style={styles.name}>
-                    <FaIcon name="check-circle" size={20} color="green" />
-                    {'  '}
-                    {fullName}
+                    <ActivityIndicator
+                      color={'green'}
+                      style={{ alignItems: 'flex-start' }}
+                    />
                   </BoldText>
-                )
-              ) : (
-                <BoldText style={styles.name}>
-                  <ActivityIndicator
-                    color={'green'}
-                    style={{ alignItems: 'flex-start' }}
-                  />
-                </BoldText>
+                )}
+                <ErrorMessage errorMessage={errorMessage} />
+              </View>
+              {!fullName && (
+                <View style={styles.recent}>
+                  <BoldText style={styles.headerText}>Recent</BoldText>
+                  <View>
+                    {addedBanks.length ? (
+                      addedBanks.map(bank => (
+                        <Pressable
+                          key={bank.accNo + bank.bankName}
+                          style={styles.bank}
+                          onPress={() => setBankSelected(bank)}>
+                          <View style={styles.bankDetails}>
+                            <RegularText style={styles.bankName}>
+                              {bank.name}
+                            </RegularText>
+                            <BoldText>{bank.accNo}</BoldText>
+                            <RegularText>{bank.bankName}</RegularText>
+                          </View>
+                          <FaIcon name="chevron-right" size={18} />
+                        </Pressable>
+                      ))
+                    ) : (
+                      <View style={styles.noBank}>
+                        <BoldText>No recent banks will show here</BoldText>
+                      </View>
+                    )}
+                  </View>
+                </View>
               )}
-              <ErrorMessage errorMessage={errorMessage} />
+              <View style={styles.button}>
+                <Button
+                  text={'Continue'}
+                  onPress={recipientData ? handleContinue : handleConfirm}
+                />
+              </View>
             </View>
-            {!fullName && (
-              <View style={styles.recent}>
-                <BoldText style={styles.headerText}>Recent</BoldText>
+          ) : (
+            !canContinue && (
+              <View style={styles.form}>
                 <View>
-                  {addedBanks.length ? (
-                    addedBanks.map(bank => (
-                      <Pressable
-                        key={bank.accNo + bank.bankName}
-                        style={styles.bank}
-                        onPress={() => setBankSelected(bank)}>
-                        <View style={styles.bankDetails}>
-                          <RegularText style={styles.bankName}>
-                            {bank.name}
-                          </RegularText>
-                          <BoldText>{bank.accNo}</BoldText>
-                          <RegularText>{bank.bankName}</RegularText>
-                        </View>
-                        <FaIcon name="chevron-right" size={18} />
-                      </Pressable>
-                    ))
-                  ) : (
-                    <View style={styles.noBank}>
-                      <BoldText>No recent banks will show here</BoldText>
+                  <BoldText>Amount</BoldText>
+                  <View style={styles.textInputContainer}>
+                    <View style={styles.textInputSymbolContainer}>
+                      <FlagSelect
+                        country={selectedCurrency.currency}
+                        style={styles.flag}
+                      />
+                      <BoldText style={styles.textInputSymbol}>
+                        {selectedCurrency.acronym}
+                      </BoldText>
                     </View>
-                  )}
+                    <TextInput
+                      style={{
+                        ...styles.textInput,
+                        borderColor:
+                          errorKey === 'amountInput' ? 'red' : '#ccc',
+                      }}
+                      inputMode="decimal"
+                      value={amountInput}
+                      onChangeText={text => {
+                        setAmountInput(text);
+                        editInput();
+                      }}
+                      onBlur={handleBlur}
+                    />
+                  </View>
+                </View>
+                <View>
+                  <BoldText>Description</BoldText>
+                  <View style={styles.textInputContainer}>
+                    <TextInput
+                      style={{
+                        ...styles.textInput,
+                        ...styles.descTextInput,
+                        borderColor: errorKey === 'desc' ? 'red' : '#ccc',
+                      }}
+                      inputMode="text"
+                      onChangeText={text => {
+                        setDescription(text);
+                        editInput();
+                      }}
+                      value={description}
+                      maxLength={40}
+                      placeholder="optional"
+                    />
+                  </View>
+                </View>
+                <ErrorMessage errorMessage={errorMessage} />
+                <View style={styles.feeTextInputContainer}>
+                  <View style={styles.feeTextInput}>
+                    <RegularText>Send money to other banks</RegularText>
+                  </View>
+                  <View style={styles.fee}>
+                    <RegularText style={styles.feeText}>
+                      Service Charge
+                    </RegularText>
+                    <RegularText style={styles.feeText}>
+                      {selectedCurrency.symbol}
+                      {addingDecimal(`${fee}`)}
+                    </RegularText>
+                  </View>
+                </View>
+                <View style={styles.button}>
+                  <Button text="Send" onPress={handleWithdraw} />
                 </View>
               </View>
-            )}
-            <View style={styles.button}>
-              <Button
-                text={'Continue'}
-                onPress={recipientData ? handleContinue : handleConfirm}
-              />
-            </View>
-          </View>
-        ) : !canContinue ? (
-          <View style={styles.form}>
-            <View>
-              <BoldText>Amount</BoldText>
-              <View style={styles.textInputContainer}>
-                <View style={styles.textInputSymbolContainer}>
-                  <FlagSelect
-                    country={selectedCurrency.currency}
-                    style={styles.flag}
-                  />
-                  <BoldText style={styles.textInputSymbol}>
-                    {selectedCurrency.acronym}
-                  </BoldText>
-                </View>
-                <TextInput
-                  style={{
-                    ...styles.textInput,
-                    borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
-                  }}
-                  inputMode="decimal"
-                  value={amountInput}
-                  onChangeText={text => {
-                    setAmountInput(text);
-                    editInput();
-                  }}
-                  onBlur={handleBlur}
-                />
-              </View>
-            </View>
-            <View>
-              <BoldText>Description</BoldText>
-              <View style={styles.textInputContainer}>
-                <TextInput
-                  style={{
-                    ...styles.textInput,
-                    ...styles.descTextInput,
-                    borderColor: errorKey === 'desc' ? 'red' : '#ccc',
-                  }}
-                  inputMode="text"
-                  onChangeText={text => {
-                    setDescription(text);
-                    editInput();
-                  }}
-                  value={description}
-                  maxLength={40}
-                  placeholder="optional"
-                />
-              </View>
-            </View>
-            <ErrorMessage errorMessage={errorMessage} />
-            <View style={styles.feeTextInputContainer}>
-              <View style={styles.feeTextInput}>
-                <RegularText>Send money to other banks</RegularText>
-              </View>
-              <View style={styles.fee}>
-                <RegularText style={styles.feeText}>Service Charge</RegularText>
-                <RegularText style={styles.feeText}>
-                  {selectedCurrency.symbol}
-                  {addingDecimal(`${fee}`)}
-                </RegularText>
-              </View>
-            </View>
-            <View style={styles.button}>
-              <Button text="Send" onPress={handleWithdraw} />
-            </View>
-          </View>
-        ) : (
-          <InputPin
-            customFunc={() => initiateWithdrawal()}
-            handleCancel={() => setCanContinue(false)}
-          />
-        )}
-      </View>
-    </PageContainer>
+            )
+          )}
+        </View>
+      </PageContainer>
+    </>
   );
 };
 

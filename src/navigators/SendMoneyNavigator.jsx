@@ -24,7 +24,11 @@ const SendMoneyNavigator = () => {
       <Stack.Screen name="SendLoopay" component={SendLoopay} />
       <Stack.Screen name="SendBeneficiary" component={SendBeneficiary} />
       <Stack.Screen name="SendNew" component={SendNew} />
-      <Stack.Screen name="SendOthers" component={SendOthers} />
+      <Stack.Screen
+        name="SendOthers"
+        component={SendOthers}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="SendProfile" component={Profile} />
       <Stack.Screen name="LoopayTag" component={LoopayTag} />
       <Stack.Screen

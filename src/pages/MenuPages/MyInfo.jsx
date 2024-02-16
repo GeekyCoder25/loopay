@@ -14,6 +14,7 @@ import Button from '../../components/Button';
 import { postFetchData } from '../../../utils/fetchAPI';
 import ToastMessage from '../../components/ToastMessage';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import FaIcon from '@expo/vector-icons/FontAwesome';
 
 const MyInfo = () => {
   const [isEditable, setIsEditable] = useState(false);
@@ -102,12 +103,20 @@ const MyInfo = () => {
       setIsEditable(false);
       setIsLoading(false);
       setInputFocus('');
+      setShowPicker(false);
     }
   };
 
   return (
     <PageContainer justify={true} style={styles.container} scroll>
       <BoldText style={styles.headerText}>Personal information</BoldText>
+      {!isEditable && (
+        <Pressable onPress={() => setIsEditable(true)} style={styles.edit}>
+          <BoldText style={styles.editText}>
+            <FaIcon name="edit" size={20} />
+          </BoldText>
+        </Pressable>
+      )}
       <View style={styles.tagContainer}>
         <View>
           <RegularText style={styles.label}>Your unique Loopay tag</RegularText>
@@ -164,111 +173,145 @@ const MyInfo = () => {
           <BoldText style={styles.copyText}>Copy</BoldText>
         </Pressable>
       </View>
-      {!isEditable && (
-        <Pressable onPress={() => setIsEditable(true)} style={styles.edit}>
-          <BoldText style={styles.editText}>Edit Profile</BoldText>
-        </Pressable>
-      )}
-      <View style={styles.form}>
-        <View style={styles.row}>
-          <View style={styles.field}>
-            <BoldText>Last name</BoldText>
-            <TextInput
-              name="lastName"
-              value={userProfile.lastName}
-              onChangeText={text => handleChange(text)}
-              style={
-                inputFocus === 'lastName' ? styles.inputFocus : styles.input
-              }
-              editable={isEditable}
-              onFocus={() => handleFocus('lastName')}
-            />
-          </View>
-          <View style={styles.field}>
-            <BoldText>First name</BoldText>
-            <TextInput
-              name="firstName"
-              value={userProfile.firstName}
-              onChangeText={text => handleChange(text)}
-              style={
-                inputFocus === 'firstName' ? styles.inputFocus : styles.input
-              }
-              editable={isEditable}
-              onFocus={() => handleFocus('firstName')}
-            />
-          </View>
+      <View style={styles.tagContainer}>
+        <View style={styles.field}>
+          <RegularText style={styles.label}>Last name</RegularText>
+          <TextInput
+            name="lastName"
+            value={userProfile.lastName}
+            onChangeText={text => handleChange(text)}
+            style={
+              isEditable
+                ? inputFocus === 'lastName'
+                  ? styles.inputFocus
+                  : styles.input
+                : styles.tagName
+            }
+            editable={isEditable}
+            onFocus={() => handleFocus('lastName')}
+          />
         </View>
-        <View style={styles.row}>
-          <View style={styles.field}>
-            <BoldText>Address</BoldText>
-            <TextInput
-              name="address"
-              value={userProfile.address}
-              onChangeText={text => handleChange(text)}
-              style={
-                inputFocus === 'address' ? styles.inputFocus : styles.input
-              }
-              editable={isEditable}
-              onFocus={() => handleFocus('address')}
-            />
-          </View>
+      </View>
+      <View style={styles.tagContainer}>
+        <View style={styles.field}>
+          <RegularText style={styles.label}>First name</RegularText>
+          <TextInput
+            name="firstName"
+            value={userProfile.firstName}
+            onChangeText={text => handleChange(text)}
+            style={
+              isEditable
+                ? inputFocus === 'firstName'
+                  ? styles.inputFocus
+                  : styles.input
+                : styles.tagName
+            }
+            editable={isEditable}
+            onFocus={() => handleFocus('firstName')}
+          />
         </View>
-        <View style={styles.row}>
-          <View style={styles.field}>
-            <BoldText>Zip</BoldText>
-            <TextInput
-              name="zipCode"
-              value={userProfile.zipCode?.toString()}
-              onChangeText={text => handleChange(text)}
-              style={
-                inputFocus === 'zipCode' ? styles.inputFocus : styles.input
-              }
-              editable={isEditable}
-              onFocus={() => handleFocus('zipCode')}
-            />
-          </View>
-          <View style={styles.field}>
-            <BoldText>City</BoldText>
-            <TextInput
-              name="city"
-              value={userProfile.city}
-              onChangeText={text => handleChange(text)}
-              style={inputFocus === 'city' ? styles.inputFocus : styles.input}
-              editable={isEditable}
-              onFocus={() => handleFocus('city')}
-            />
-          </View>
-          <View style={styles.field}>
-            <BoldText>State</BoldText>
-            <TextInput
-              name="state"
-              value={userProfile.state}
-              onChangeText={text => handleChange(text)}
-              style={inputFocus === 'state' ? styles.inputFocus : styles.input}
-              editable={isEditable}
-              onFocus={() => handleFocus('state')}
-            />
-          </View>
+      </View>
+      <View style={styles.tagContainer}>
+        <View style={styles.field}>
+          <RegularText style={styles.label}>Address</RegularText>
+          <TextInput
+            name="address"
+            value={userProfile.address}
+            onChangeText={text => handleChange(text)}
+            style={
+              isEditable
+                ? inputFocus === 'address'
+                  ? styles.inputFocus
+                  : styles.input
+                : styles.tagName
+            }
+            editable={isEditable}
+            onFocus={() => handleFocus('address')}
+          />
         </View>
-        <View style={styles.row}>
-          <View style={styles.field}>
-            <BoldText>Date of Birth</BoldText>
-            <Pressable
-              style={inputFocus === 'dob' ? styles.inputFocus : styles.input}
-              onPress={() => isEditable && handleDOB()}>
-              <RegularText>
-                {userProfile.dob &&
-                  new Date(userProfile.dob).toLocaleDateString()}
-              </RegularText>
-            </Pressable>
-            {showPicker && (
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={defaultPickerDate()}
-                onChange={handleDatePicker}
-              />
-            )}
-          </View>
+      </View>
+      <View style={styles.tagContainer}>
+        <View style={styles.field}>
+          <RegularText style={styles.label}>Zip</RegularText>
+          <TextInput
+            name="zipCode"
+            value={userProfile.zipCode?.toString()}
+            onChangeText={text => handleChange(text)}
+            style={
+              isEditable
+                ? inputFocus === 'zipCode'
+                  ? styles.inputFocus
+                  : styles.input
+                : styles.tagName
+            }
+            editable={isEditable}
+            onFocus={() => handleFocus('zipCode')}
+            inputMode="numeric"
+          />
+        </View>
+      </View>
+      <View style={styles.tagContainer}>
+        <View style={styles.field}>
+          <RegularText style={styles.label}>City</RegularText>
+          <TextInput
+            name="city"
+            value={userProfile.city}
+            onChangeText={text => handleChange(text)}
+            style={
+              isEditable
+                ? inputFocus === 'city'
+                  ? styles.inputFocus
+                  : styles.input
+                : styles.tagName
+            }
+            editable={isEditable}
+            onFocus={() => handleFocus('city')}
+          />
+        </View>
+      </View>
+      <View style={styles.tagContainer}>
+        <View style={styles.field}>
+          <RegularText style={styles.label}>State</RegularText>
+          <TextInput
+            name="state"
+            value={userProfile.state}
+            onChangeText={text => handleChange(text)}
+            style={
+              isEditable
+                ? inputFocus === 'state'
+                  ? styles.inputFocus
+                  : styles.input
+                : styles.tagName
+            }
+            editable={isEditable}
+            onFocus={() => handleFocus('state')}
+          />
+        </View>
+      </View>
+      <View style={styles.tagContainer}>
+        <View style={styles.field}>
+          <RegularText style={styles.label}>Date of Birth</RegularText>
+          <Pressable
+            style={
+              isEditable
+                ? inputFocus === 'dob'
+                  ? styles.inputFocus
+                  : styles.input
+                : styles.tagName
+            }
+            onPress={() => isEditable && handleDOB()}>
+            <RegularText style={styles.tagName}>
+              {userProfile.dob &&
+                new Date(userProfile.dob).toLocaleDateString()}
+            </RegularText>
+          </Pressable>
+          {showPicker && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={defaultPickerDate()}
+              onChange={handleDatePicker}
+            />
+          )}
         </View>
       </View>
       {isEditable ? (
@@ -316,6 +359,8 @@ const styles = StyleSheet.create({
   },
   tagName: {
     fontSize: 16,
+    fontFamily: 'OpenSans-700',
+    color: '#000',
   },
   edit: {
     alignSelf: 'flex-end',
@@ -324,6 +369,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     elevation: 20,
+    marginBottom: 30,
   },
   editText: {
     color: '#fff',
@@ -338,22 +384,28 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   input: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#525252',
+    borderWidth: 1,
+    borderColor: '#525252',
     color: '#525252',
     fontFamily: 'OpenSans-500',
     fontSize: 15,
     marginTop: 8,
     minHeight: 30,
+    paddingLeft: 5,
+    justifyContent: 'center',
+    borderRadius: 3,
   },
   inputFocus: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#525252',
+    borderWidth: 1,
+    borderColor: '#000',
     color: '#000',
-    fontFamily: 'OpenSans-500',
+    fontFamily: 'OpenSans-700',
     fontSize: 15,
     marginTop: 8,
     minHeight: 30,
+    paddingLeft: 5,
+    justifyContent: 'center',
+    borderRadius: 3,
   },
   button: {
     marginBottom: 50,

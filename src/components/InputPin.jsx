@@ -211,7 +211,8 @@ const InputPin = ({
               minHeight: vh * 0.9,
               ...styles.container,
             }}
-            bounces={false}>
+            bounces={false}
+            showsVerticalScrollIndicator={false}>
             <View
               style={{
                 ...styles.container,

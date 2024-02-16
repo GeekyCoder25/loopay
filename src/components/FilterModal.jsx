@@ -397,87 +397,90 @@ const FilterModal = ({
               </View>
             </View>
           </PageContainer>
-        </SafeAreaView>
-      </Modal>
-
-      <Modal
-        visible={modalOpen}
-        animationType="slide"
-        transparent
-        onRequestClose={handleModal}>
-        <SafeAreaView style={styles.flex}>
-          <Pressable style={styles.overlay} onPress={handleModal} />
-          <View style={styles.modalContainer}>
-            <View style={styles.modal}>
-              <Image
-                style={styles.bg}
-                source={require('../../assets/images/pageBg.png')}
-              />
-              <View style={styles.modalBorder} />
-              <View style={styles.modalHeader}>
-                <RegularText style={styles.textHeader}>Accounts</RegularText>
-              </View>
-
-              <ScrollView style={{ width: 100 + '%' }}>
-                <View style={styles.currency}>
-                  <View style={styles.currencyIcon}>
-                    <BoldText style={styles.headerText}>Select All</BoldText>
-                  </View>
-
-                  <View style={styles.checkbox}>
-                    {selectAll ? (
-                      <Pressable onPress={handleSelectAllClicked}>
-                        <IonIcon name="radio-button-on" size={24} />
-                      </Pressable>
-                    ) : (
-                      <Pressable onPress={handleSelectAllClicked}>
-                        <IonIcon name="radio-button-off" size={24} />
-                      </Pressable>
-                    )}
-                  </View>
-                </View>
-                <View style={styles.currencies}>
-                  {allCurrencies
-                    .filter(
-                      currency =>
-                        currency.currency === selectedCurrency.currency,
-                    )
-                    .map(selected => (
-                      <Currency
-                        key={selected.currency}
-                        selected={selected}
-                        setSelectAll={setSelectAll}
-                        selectedCurrencies={selectedCurrencies}
-                        setSelectedCurrencies={setSelectedCurrencies}
-                        setFilterCleared={setFilterCleared}
-                      />
-                    ))}
-                  {allCurrencies
-                    .filter(
-                      currency =>
-                        currency.currency !== selectedCurrency.currency,
-                    )
-                    .map(selected => (
-                      <Currency
-                        key={selected.currency}
-                        selected={selected}
-                        setSelectAll={setSelectAll}
-                        selectedCurrencies={selectedCurrencies}
-                        setSelectedCurrencies={setSelectedCurrencies}
-                        setFilterCleared={setFilterCleared}
-                      />
-                    ))}
-                </View>
-                <View style={styles.modalButtonContainer}>
-                  <Button
-                    text={'Apply'}
-                    style={styles.modalButton}
-                    onPress={handleModal}
+          <Modal
+            visible={modalOpen}
+            animationType="slide"
+            transparent
+            onRequestClose={handleModal}>
+            <SafeAreaView style={styles.flex}>
+              <Pressable style={styles.overlay} onPress={handleModal} />
+              <View style={styles.modalContainer}>
+                <View style={styles.modal}>
+                  <Image
+                    style={styles.bg}
+                    source={require('../../assets/images/pageBg.png')}
                   />
+                  <View style={styles.modalBorder} />
+                  <View style={styles.modalHeader}>
+                    <RegularText style={styles.textHeader}>
+                      Accounts
+                    </RegularText>
+                  </View>
+
+                  <ScrollView style={{ width: 100 + '%' }}>
+                    <View style={styles.currency}>
+                      <View style={styles.currencyIcon}>
+                        <BoldText style={styles.headerText}>
+                          Select All
+                        </BoldText>
+                      </View>
+
+                      <View style={styles.checkbox}>
+                        {selectAll ? (
+                          <Pressable onPress={handleSelectAllClicked}>
+                            <IonIcon name="radio-button-on" size={24} />
+                          </Pressable>
+                        ) : (
+                          <Pressable onPress={handleSelectAllClicked}>
+                            <IonIcon name="radio-button-off" size={24} />
+                          </Pressable>
+                        )}
+                      </View>
+                    </View>
+                    <View style={styles.currencies}>
+                      {allCurrencies
+                        .filter(
+                          currency =>
+                            currency.currency === selectedCurrency.currency,
+                        )
+                        .map(selected => (
+                          <Currency
+                            key={selected.currency}
+                            selected={selected}
+                            setSelectAll={setSelectAll}
+                            selectedCurrencies={selectedCurrencies}
+                            setSelectedCurrencies={setSelectedCurrencies}
+                            setFilterCleared={setFilterCleared}
+                          />
+                        ))}
+                      {allCurrencies
+                        .filter(
+                          currency =>
+                            currency.currency !== selectedCurrency.currency,
+                        )
+                        .map(selected => (
+                          <Currency
+                            key={selected.currency}
+                            selected={selected}
+                            setSelectAll={setSelectAll}
+                            selectedCurrencies={selectedCurrencies}
+                            setSelectedCurrencies={setSelectedCurrencies}
+                            setFilterCleared={setFilterCleared}
+                          />
+                        ))}
+                    </View>
+                    <View style={styles.modalButtonContainer}>
+                      <Button
+                        text={'Apply'}
+                        style={styles.modalButton}
+                        onPress={handleModal}
+                      />
+                    </View>
+                  </ScrollView>
                 </View>
-              </ScrollView>
-            </View>
-          </View>
+              </View>
+            </SafeAreaView>
+          </Modal>
         </SafeAreaView>
       </Modal>
     </>

@@ -35,6 +35,7 @@ import AirtimeTopUpNavigator from './AirtimeTopUpNavigator';
 import PayABillParams from '../pages/SendMenuPages/PayABill/PayABillParams';
 import TransferBill from '../pages/SendMenuPages/PayABill/TransferBill';
 import TransferFunds from '../pages/SendMenuPages/SendMoney/TransferFunds';
+import SendOthers from '../pages/SendMenuPages/SendMoney/SendOthers';
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -99,9 +100,7 @@ const HomeNavigator = () => {
         <Stack.Screen
           name="TransferAirtime"
           component={TransferAirtime}
-          options={{
-            animation: 'none',
-          }}
+          options={{ animation: 'none', headerShown: false }}
         />
         <Stack.Screen
           name="Success"
@@ -129,6 +128,11 @@ const HomeNavigator = () => {
         />
         <Stack.Screen name="Biometric" component={Biometric} />
         <Stack.Screen name="SendLoopay" component={SendLoopay} />
+        <Stack.Screen
+          name="SendOthers"
+          component={SendOthers}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="Withdraw" component={Withdraw} />
         <Stack.Screen name="PayABill" component={PayABill} />
         <Stack.Screen

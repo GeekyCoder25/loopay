@@ -83,9 +83,7 @@ const SendMenuNavigator = () => {
       <Stack.Screen
         name="AirtimeTopUpNavigator"
         component={AirtimeTopUpNavigator}
-        options={{
-          headerShown: false,
-        }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen name="PayABill" component={PayABill} />
       <Stack.Screen

@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react';
 import { Accelerometer } from 'expo-sensors';
 import { AppContext } from './AppContext';
 
-const THRESHOLD = 500;
+const THRESHOLD = 200;
 
 const useShakeEvent = handler => {
   const { isShaking } = useContext(AppContext);

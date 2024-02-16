@@ -226,6 +226,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 25,
+    overflow: 'hidden',
   },
   routeTexts: {
     flex: 1,
