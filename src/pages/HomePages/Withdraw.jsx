@@ -210,6 +210,15 @@ const Withdraw = ({ navigation }) => {
     }
   };
 
+  if (bankSelected && canContinue) {
+    return (
+      <InputPin
+        customFunc={() => initiateWithdrawal()}
+        handleCancel={() => setCanContinue(false)}
+      />
+    );
+  }
+
   return (
     <PageContainer scroll>
       <View style={{ ...styles.container, minHeight: vh * 0.75 }}>
@@ -308,77 +317,76 @@ const Withdraw = ({ navigation }) => {
               />
             </View>
           </View>
-        ) : !canContinue ? (
-          <View style={styles.form}>
-            <View>
-              <BoldText>Amount</BoldText>
-              <View style={styles.textInputContainer}>
-                <View style={styles.textInputSymbolContainer}>
-                  <FlagSelect
-                    country={selectedCurrency.currency}
-                    style={styles.flag}
-                  />
-                  <BoldText style={styles.textInputSymbol}>
-                    {selectedCurrency.acronym}
-                  </BoldText>
-                </View>
-                <TextInput
-                  style={{
-                    ...styles.textInput,
-                    borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
-                  }}
-                  inputMode="decimal"
-                  value={amountInput}
-                  onChangeText={text => {
-                    setAmountInput(text);
-                    editInput();
-                  }}
-                  onBlur={handleBlur}
-                />
-              </View>
-            </View>
-            <View>
-              <BoldText>Description</BoldText>
-              <View style={styles.textInputContainer}>
-                <TextInput
-                  style={{
-                    ...styles.textInput,
-                    ...styles.descTextInput,
-                    borderColor: errorKey === 'desc' ? 'red' : '#ccc',
-                  }}
-                  inputMode="text"
-                  onChangeText={text => {
-                    setDescription(text);
-                    editInput();
-                  }}
-                  value={description}
-                  maxLength={40}
-                  placeholder="optional"
-                />
-              </View>
-            </View>
-            <ErrorMessage errorMessage={errorMessage} />
-            <View style={styles.feeTextInputContainer}>
-              <View style={styles.feeTextInput}>
-                <RegularText>Send money to other banks</RegularText>
-              </View>
-              <View style={styles.fee}>
-                <RegularText style={styles.feeText}>Service Charge</RegularText>
-                <RegularText style={styles.feeText}>
-                  {selectedCurrency.symbol}
-                  {addingDecimal(`${fee}`)}
-                </RegularText>
-              </View>
-            </View>
-            <View style={styles.button}>
-              <Button text="Send" onPress={handleWithdraw} />
-            </View>
-          </View>
         ) : (
-          <InputPin
-            customFunc={() => initiateWithdrawal()}
-            handleCancel={() => setCanContinue(false)}
-          />
+          !canContinue && (
+            <View style={styles.form}>
+              <View>
+                <BoldText>Amount</BoldText>
+                <View style={styles.textInputContainer}>
+                  <View style={styles.textInputSymbolContainer}>
+                    <FlagSelect
+                      country={selectedCurrency.currency}
+                      style={styles.flag}
+                    />
+                    <BoldText style={styles.textInputSymbol}>
+                      {selectedCurrency.acronym}
+                    </BoldText>
+                  </View>
+                  <TextInput
+                    style={{
+                      ...styles.textInput,
+                      borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
+                    }}
+                    inputMode="decimal"
+                    value={amountInput}
+                    onChangeText={text => {
+                      setAmountInput(text);
+                      editInput();
+                    }}
+                    onBlur={handleBlur}
+                  />
+                </View>
+              </View>
+              <View>
+                <BoldText>Description</BoldText>
+                <View style={styles.textInputContainer}>
+                  <TextInput
+                    style={{
+                      ...styles.textInput,
+                      ...styles.descTextInput,
+                      borderColor: errorKey === 'desc' ? 'red' : '#ccc',
+                    }}
+                    inputMode="text"
+                    onChangeText={text => {
+                      setDescription(text);
+                      editInput();
+                    }}
+                    value={description}
+                    maxLength={40}
+                    placeholder="optional"
+                  />
+                </View>
+              </View>
+              <ErrorMessage errorMessage={errorMessage} />
+              <View style={styles.feeTextInputContainer}>
+                <View style={styles.feeTextInput}>
+                  <RegularText>Send money to other banks</RegularText>
+                </View>
+                <View style={styles.fee}>
+                  <RegularText style={styles.feeText}>
+                    Service Charge
+                  </RegularText>
+                  <RegularText style={styles.feeText}>
+                    {selectedCurrency.symbol}
+                    {addingDecimal(`${fee}`)}
+                  </RegularText>
+                </View>
+              </View>
+              <View style={styles.button}>
+                <Button text="Send" onPress={handleWithdraw} />
+              </View>
+            </View>
+          )
         )}
       </View>
     </PageContainer>

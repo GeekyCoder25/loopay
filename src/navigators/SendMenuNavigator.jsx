@@ -58,9 +58,7 @@ const SendMenuNavigator = () => {
       <Stack.Screen
         name="Success"
         component={Success}
-        options={{
-          headerShown: false,
-        }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="SwapFunds"
@@ -72,6 +70,7 @@ const SendMenuNavigator = () => {
         name="RequestConfirm"
         component={RequestConfirm}
         options={{
+          headerShown: false,
           animation: 'none',
         }}
       />

@@ -1,6 +1,14 @@
 /* eslint-disable react-native/no-inline-styles */
 import { useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, TextInput, Pressable, Image } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  Image,
+  ScrollView,
+  Dimensions,
+} from 'react-native';
 import User from '../../../assets/images/user.svg';
 import Email from '../../../assets/images/mail.svg';
 import Phone from '../../../assets/images/phone.svg';
@@ -49,7 +57,7 @@ const Signup = ({ navigation }) => {
     //   name: 'Nigeria',
     //   code: 'NG',
     // },
-    role: 'admin',
+    // role: 'admin',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -101,7 +109,10 @@ const Signup = ({ navigation }) => {
           localCurrencyCode,
         });
         const result = response.data;
-        if (response.status === 200 && result.email === email) {
+        if (
+          response.status === 200 &&
+          result.email.toLowerCase() === email.toLowerCase()
+        ) {
           setIsLoading(false);
           setTimeout(() => {
             setVerifyEmail(false);
@@ -318,10 +329,10 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   verifyContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 50,
+    minHeight: Dimensions.get('screen').height * 0.9,
   },
   logo: {
     width: 100,
@@ -460,8 +471,8 @@ const FormField = ({
             redBorder
               ? 'red'
               : inputFocus
-              ? '#000'
-              : '#B1B1B1',
+                ? '#000'
+                : '#B1B1B1',
         }}
         placeholder={inputForm.placeholder}
         placeholderTextColor={inputFocus ? '#000' : '#80808080'}
@@ -574,7 +585,7 @@ export const EmailVerify = ({
   const codeLength = [1, 2, 3, 4];
 
   return (
-    <View style={styles.verifyContainer}>
+    <ScrollView contentContainerStyle={styles.verifyContainer}>
       <Image
         style={styles.logo}
         source={require('../../../assets/images/icon.png')}
@@ -686,6 +697,6 @@ export const EmailVerify = ({
         }}>
         <BoldText>Go Back</BoldText>
       </Pressable>
-    </View>
+    </ScrollView>
   );
 };

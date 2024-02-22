@@ -89,9 +89,7 @@ const Referrals = ({ navigation }) => {
           <View style={styles.card}>
             <View style={styles.cardMain}>
               <BoldText style={styles.cardTitle}>Rewards</BoldText>
-              <BoldText style={styles.cardValue}>
-                {selectedCurrency.symbol} {reward}
-              </BoldText>
+              <BoldText style={styles.cardValue}>$ {reward}</BoldText>
             </View>
             <Pressable style={styles.claim} onPress={handleClaim}>
               <RegularText style={styles.claimText}>Claim</RegularText>

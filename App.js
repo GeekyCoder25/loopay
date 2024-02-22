@@ -39,7 +39,7 @@ export default function App() {
   const [internetStatus, setInternetStatus] = useState('true');
   const [isChecking, setIsChecking] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [appData, setAppData] = useState({});
+  const [appData, setAppData] = useState({ pin: false });
   const [isLoading, setIsLoading] = useState(false);
   const [loadingModalBg, setLoadingModalBg] = useState(null);
   const [walletRefresh, setWalletRefresh] = useState(false);

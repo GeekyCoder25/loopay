@@ -21,7 +21,11 @@ const ProfileNavigator = () => {
       }}>
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="Myinfo" component={MyInfo} />
-      <Stack.Screen name="Withdraw" component={SendOthers} />
+      <Stack.Screen
+        name="Withdraw"
+        component={SendOthers}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="Password" component={ChangePassword} />
       <Stack.Screen name="Pin" component={TransactionPin} />
       <Stack.Screen name="Limit" component={Limit} />

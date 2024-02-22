@@ -2,7 +2,7 @@
   "expo": {
     "name": "Loopay",
     "slug": "Loopay",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -20,7 +20,7 @@
     },
     "android": {
       "package": "com.loopay",
-      "versionCode": 3,
+      "versionCode": 5,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
@@ -37,20 +37,21 @@
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "Allow $(PRODUCT_NAME) to use FaceID"
+          "faceIDPermission": "Loopay uses Face ID to validate your identity"
         }
       ]
     ],
     "extra": {
       "eas": {
-        "projectId": "b24b1981-cbbb-496d-b3e2-4f61e985c360"
+        "projectId": "055518e9-09c1-4eb9-99b2-42d79d874996"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/b24b1981-cbbb-496d-b3e2-4f61e985c360"
-    }
+      "url": "https://u.expo.dev/055518e9-09c1-4eb9-99b2-42d79d874996"
+    },
+    "useCLassicUpdates": true
   }
 }

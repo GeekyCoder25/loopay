@@ -1,5 +1,5 @@
 {
-  "name": "loopay",
+  "name": "Loopay",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "expo-application": "~5.3.0",
     "expo-auth-session": "~5.0.2",
     "expo-av": "~13.4.1",
-    "expo-crypto": "^12.2.2",
+    "expo-crypto": "~12.4.1",
     "expo-device": "~5.4.0",
     "expo-file-system": "~15.4.5",
     "expo-font": "~11.4.0",
@@ -39,9 +39,9 @@
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
     "expo-updates": "~0.18.19",
-    "expo-web-browser": "^12.1.1",
+    "expo-web-browser": "~12.3.2",
     "react": "18.2.0",
-    "react-native": "0.72.6",
+    "react-native": "0.72.10",
     "react-native-country-codes-picker": "^2.3.4",
     "react-native-gesture-handler": "~2.12.0",
     "react-native-html-to-pdf": "^0.12.0",

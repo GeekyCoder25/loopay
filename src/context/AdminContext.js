@@ -53,7 +53,7 @@ const AdminContextComponent = ({ children }) => {
         verifications,
         setVerifications,
       }}>
-      {adminData ? children : failToFetch ? <NoInternet /> : <></>}
+      {adminData ? children : failToFetch ? <NoInternet /> : <LoadingModal />}
     </AdminContext.Provider>
   );
 };

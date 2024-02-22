@@ -95,7 +95,11 @@ const HomeNavigator = () => {
             animation: 'none',
           })}
         />
-        <Stack.Screen name="RequestConfirm" component={RequestConfirm} />
+        <Stack.Screen
+          name="RequestConfirm"
+          component={RequestConfirm}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="RequestSuccess" component={RequestSuccess} />
         <Stack.Screen
           name="TransferAirtime"

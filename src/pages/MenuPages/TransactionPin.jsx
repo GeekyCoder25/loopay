@@ -21,7 +21,7 @@ const TransactionPin = ({ navigation, route }) => {
   const [canEditPin, setCanEditPin] = useState(false);
   const [remembersPassword, setRemembersPassword] = useState(true);
   const [inputOldPin, setInputOldPin] = useState(
-    appData.pin ?? !route.params?.forgotPin,
+    JSON.parse(appData.pin) ?? !route.params?.forgotPin,
   );
   const [reload, setReload] = useState(false);
 
@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     padding: 3 + '%',
   },
   logo: {
+    flex: 1,
     height: 100,
     justifyContent: 'center',
   },

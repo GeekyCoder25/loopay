@@ -6,10 +6,13 @@ import InputPin from '../../../components/InputPin';
 import RegularText from '../../../components/fonts/RegularText';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import { postFetchData } from '../../../../utils/fetchAPI';
-import ToastMessage from '../../../components/ToastMessage';
+import { useState } from 'react';
+import Button from '../../../components/Button';
+import Back from '../../../components/Back';
 
 const RequestConfirm = ({ navigation, route }) => {
   const { amount, fee, symbol, tagName, toReceive } = route.params;
+  const [canContinue, setCanContinue] = useState(false);
 
   const handleConfirm = async () => {
     const response = await postFetchData('user/request', route.params);
@@ -21,50 +24,58 @@ const RequestConfirm = ({ navigation, route }) => {
     return response.data;
   };
 
-  return (
-    <PageContainer style={styles.container} scroll>
-      <RegularText style={styles.headerText}>
-        You’re about to request the sum of {symbol + amount.toLocaleString()}{' '}
-        from
-        <BoldText> #{tagName}</BoldText>
-      </RegularText>
-      <InputPin buttonText={'Confirm'} customFunc={handleConfirm}>
-        <View style={styles.footerCard}>
-          <BoldText style={styles.cardAmount}>
-            {symbol + addingDecimal(amount.toLocaleString())}
-          </BoldText>
-          <View style={styles.footerCardDetails}>
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>Loopay user</RegularText>
-              <BoldText style={styles.cardValue}>#{tagName}</BoldText>
-            </View>
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>Amount</RegularText>
-              <BoldText style={styles.cardValue}>
-                {symbol + addingDecimal(amount.toLocaleString())}
-              </BoldText>
-            </View>
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>
-                Amount to be received
-              </RegularText>
-              <BoldText style={styles.cardValue}>
-                {symbol + addingDecimal(toReceive.toLocaleString())}
-              </BoldText>
-            </View>
-            <View style={styles.cardLine}>
-              <RegularText style={styles.cardKey}>Charges</RegularText>
-              <BoldText
-                style={{ ...styles.cardValue, color: fee ? 'red' : '#006E53' }}>
-                {fee
-                  ? symbol + addingDecimal(fee.toLocaleString())
-                  : symbol + '0.00'}
-              </BoldText>
-            </View>
+  return !canContinue ? (
+    <>
+      <Back onPress={() => navigation.goBack()} />
+      <PageContainer style={styles.container} scroll>
+        <RegularText style={styles.headerText}>
+          You’re about to request the sum of {symbol + amount.toLocaleString()}{' '}
+          from
+          <BoldText> #{tagName}</BoldText>
+        </RegularText>
+        <Button text={'Continue'} onPress={() => setCanContinue(true)} />
+      </PageContainer>
+    </>
+  ) : (
+    <InputPin buttonText={'Confirm'} customFunc={handleConfirm}>
+      <View style={styles.footerCard}>
+        <BoldText style={styles.cardAmount}>
+          {symbol + addingDecimal(amount.toLocaleString())}
+        </BoldText>
+        <View style={styles.footerCardDetails}>
+          <View style={styles.cardLine}>
+            <RegularText style={styles.cardKey}>Loopay user</RegularText>
+            <BoldText style={styles.cardValue}>#{tagName}</BoldText>
+          </View>
+          <View style={styles.cardLine}>
+            <RegularText style={styles.cardKey}>Amount</RegularText>
+            <BoldText style={styles.cardValue}>
+              {symbol + addingDecimal(amount.toLocaleString())}
+            </BoldText>
+          </View>
+          <View style={styles.cardLine}>
+            <RegularText style={styles.cardKey}>
+              Amount to be received
+            </RegularText>
+            <BoldText style={styles.cardValue}>
+              {symbol + addingDecimal(toReceive.toLocaleString())}
+            </BoldText>
+          </View>
+          <View style={styles.cardLine}>
+            <RegularText style={styles.cardKey}>Charges</RegularText>
+            <BoldText
+              style={{
+                ...styles.cardValue,
+                color: fee ? 'red' : '#006E53',
+              }}>
+              {fee
+                ? symbol + addingDecimal(fee.toLocaleString())
+                : symbol + '0.00'}
+            </BoldText>
           </View>
         </View>
-      </InputPin>
-    </PageContainer>
+      </View>
+    </InputPin>
   );
 };
 

@@ -20,8 +20,14 @@ const AppPagesNavigator = () => {
   const Stack = createNativeStackNavigator();
 
   getNotFirstTime().then(result => setNotFirstTime(result));
-  const notAllowed =
-    !appData?.accountType || appData?.accountType === '' || !appData?.pin;
+  const hasSetPin = appData.accountType
+    ? appData.pin === 'true' ||
+      appData.pin === 'false' ||
+      typeof appData.pin === 'boolean'
+      ? JSON.parse(appData.pin)
+      : false
+    : true;
+  const notAllowed = !hasSetPin || !appData?.accountType;
 
   return (
     <NavigationContainer
@@ -52,7 +58,7 @@ const AppPagesNavigator = () => {
         ) : (
           <Stack.Group>
             {notAllowed ? (
-              !appData?.pin ? (
+              !hasSetPin ? (
                 <Stack.Screen name="FirstPage" component={TransactionPin} />
               ) : (
                 <Stack.Screen name="FirstPage" component={AccountType} />
