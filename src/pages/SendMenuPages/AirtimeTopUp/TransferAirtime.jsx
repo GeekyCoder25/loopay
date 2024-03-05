@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import { View, StyleSheet } from 'react-native';
 import { AppContext } from '../../../components/AppContext';
 import InputPin from '../../../components/InputPin';
 import { postFetchData } from '../../../../utils/fetchAPI';
@@ -15,7 +14,7 @@ const TransferAirtime = ({ navigation, route }) => {
       return errRes;
     }
     setWalletRefresh(prev => !prev);
-    navigation.navigate('Success', {
+    navigation.replace('Success', {
       airtime: { ...formData, reference: response.data.reference },
       amountInput: response.data.transaction?.amount || formData.amount,
       dataPlan: formData.plan?.value || undefined,

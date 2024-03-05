@@ -5,7 +5,6 @@ import Signup from '../../src/pages/Auth/Signup';
 import Signin from '../../src/pages/Auth/Signin';
 import AccountType from '../../src/pages/Auth/AccountType';
 import ForgotPassword from '../../src/pages/Auth/ForgotPassword';
-import BottomTabs from '../../src/navigators/BottomTabs';
 import { useContext, useState } from 'react';
 import { AppContext } from '../components/AppContext';
 import { getNotFirstTime } from '../../utils/storage';
@@ -13,6 +12,7 @@ import TransactionPin from '../pages/MenuPages/TransactionPin';
 import AdminNavigator from './AdminNavigator';
 import ChangePassword from '../pages/MenuPages/ChangePassword';
 import Onboarding from '../pages/Auth/Onboarding';
+import TabsNavigator from './TabsNavigator';
 
 const AppPagesNavigator = () => {
   const { isLoggedIn, isAdmin, appData } = useContext(AppContext);
@@ -66,7 +66,7 @@ const AppPagesNavigator = () => {
             ) : isAdmin ? (
               <Stack.Screen name="FirstPage" component={AdminNavigator} />
             ) : (
-              <Stack.Screen name="FirstPage" component={BottomTabs} />
+              <Stack.Screen name="FirstPage" component={TabsNavigator} />
             )}
           </Stack.Group>
         )}

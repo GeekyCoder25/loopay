@@ -12,6 +12,7 @@ export const hideTabRoutes = [
   'Biometric',
   'SendOthers',
   'TransferAirtime',
+  'TransactionPin',
   'DevicesAndSessions',
 ];
 

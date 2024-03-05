@@ -146,7 +146,9 @@ const Referral = ({ navigation }) => {
       </View>
       <View style={styles.code}>
         <RegularText style={styles.text}>Your Referral code</RegularText>
-        <BoldText style={styles.referralCode}>{referralCode}</BoldText>
+        <Pressable onPress={handleShare}>
+          <BoldText style={styles.referralCode}>{referralCode}</BoldText>
+        </Pressable>
       </View>
       <Button text={'Share Link'} onPress={handleShare} />
     </PageContainer>

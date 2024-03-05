@@ -31,6 +31,7 @@ import ToastMessage from '../../../components/ToastMessage';
 import { setShowBalance } from '../../../../utils/storage';
 import FlagSelect from '../../../components/FlagSelect';
 import Back from '../../../components/Back';
+import RecurringSwitch from '../../../components/RecurringSwitch';
 
 const BuyAirtime = ({ route, navigation }) => {
   const { appData, setIsLoading, showAmount, setShowAmount, selectedCurrency } =
@@ -45,6 +46,7 @@ const BuyAirtime = ({ route, navigation }) => {
   const [errorMessage2, setErrorMessage2] = useState('');
   const [errorKey, setErrorKey] = useState('');
   const [amountInput, setAmountInput] = useState('');
+  const [isRecurring, setIsRecurring] = useState(!!route.params?.schedule);
   const [isNigeria] = useState(countryCode === 'NG');
   const [networkProviders, setNetworkProviders] = useState(
     isNigeria
@@ -198,6 +200,24 @@ const BuyAirtime = ({ route, navigation }) => {
     } else if (formData.amount > balance) {
       setErrorMessage('Insufficient balance');
       return setErrorKey('amountInput');
+    }
+    if (isRecurring) {
+      return navigation.navigate('SchedulePayment', {
+        type: route.params?.schedule?.id || 'airtime',
+        scheduleData: {
+          formData: {
+            ...formData,
+            id: randomUUID(),
+            currency: allCurrencies.find(
+              currency => currency.acronym === selected.acronym,
+            ).currency,
+            countryCode,
+            paymentCurrency: selected.acronym,
+            type: 'airtime',
+          },
+          isInternational: !isNigeria,
+        },
+      });
     }
     navigation.navigate('TransferAirtime', {
       formData: {
@@ -373,16 +393,22 @@ const BuyAirtime = ({ route, navigation }) => {
             </Pressable>
           </View>
           <View style={styles.textInputContainer}>
-            <TextInput
-              style={{
-                ...styles.textInput,
-                ...styles.textInputStyles,
-                borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
-              }}
-              inputMode="decimal"
-              onChangeText={text => handleAmountInput(text)}
-              onBlur={handleBlur}
-              value={amountInput}
+            <View style={styles.textInputContainer}>
+              <TextInput
+                style={{
+                  ...styles.textInput,
+                  ...styles.textInputStyles,
+                  borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
+                }}
+                inputMode="decimal"
+                onChangeText={text => handleAmountInput(text)}
+                onBlur={handleBlur}
+                value={amountInput}
+              />
+            </View>
+            <RecurringSwitch
+              isRecurring={isRecurring}
+              setIsRecurring={setIsRecurring}
             />
             {errorMessage && (
               <View style={{ marginTop: 15 }}>
@@ -390,7 +416,6 @@ const BuyAirtime = ({ route, navigation }) => {
               </View>
             )}
           </View>
-
           <Button text={'Buy Airtime'} onPress={handleInputPin} />
         </ScrollView>
       </PageContainer>
@@ -399,7 +424,7 @@ const BuyAirtime = ({ route, navigation }) => {
         animationType="slide"
         transparent
         onRequestClose={() => setPaymentModal(false)}>
-        <Back route={route} onPress={() => setPaymentModal(false)} />
+        <Back onPress={() => setPaymentModal(false)} />
         <View style={styles.paymentModal}>
           <BoldText style={styles.paymentModalHeader}>
             Select account to pay with

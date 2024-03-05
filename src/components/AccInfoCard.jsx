@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   ImageBackground,
   Pressable,
@@ -15,9 +15,11 @@ import WalletAmount from './WalletAmount';
 import SelectCurrencyModal from './SelectCurrencyModal';
 import { useWalletContext } from '../context/WalletContext';
 import { addingDecimal } from '../../utils/AddingZero';
+import { setShowBalance } from '../../utils/storage';
+import FaIcon from '@expo/vector-icons/FontAwesome';
 
 const AccInfoCard = ({ disableSwitchCurrency }) => {
-  const { selectedCurrency, showAmount, setShowAmount } =
+  const { selectedCurrency, showAmount, setShowAmount, isAndroid } =
     useContext(AppContext);
   const [modalOpen, setModalOpen] = useState(false);
   const { wallet } = useWalletContext();
@@ -25,6 +27,11 @@ const AccInfoCard = ({ disableSwitchCurrency }) => {
   const pendingBalance = addingDecimal(
     (wallet.bookBalance || wallet.balance).toLocaleString(),
   );
+
+  const handleShow = () => {
+    setShowAmount(prev => !prev);
+    setShowBalance(!showAmount);
+  };
 
   return (
     <>
@@ -35,7 +42,17 @@ const AccInfoCard = ({ disableSwitchCurrency }) => {
         <View style={styles.cardHeader}>
           <View style={styles.amountContainer}>
             <View style={styles.symbolContainer}>
-              <Text style={styles.symbol}>{selectedCurrency.symbol}</Text>
+              <Text
+                style={
+                  isAndroid
+                    ? {
+                        ...styles.symbol,
+                        transform: [{ translateY: -3.5 }, { translateX: -0.5 }],
+                      }
+                    : styles.symbol
+                }>
+                {selectedCurrency.symbol}
+              </Text>
             </View>
             <View>
               <WalletAmount
@@ -50,13 +67,25 @@ const AccInfoCard = ({ disableSwitchCurrency }) => {
               </View>
             </View>
           </View>
-          {!disableSwitchCurrency && (
-            <Pressable
-              onPress={() => setModalOpen(true)}
-              style={styles.chevronDown}>
-              <ChevronDown />
-            </Pressable>
-          )}
+          <View style={styles.eyeContainer}>
+            {wallet && (
+              <Pressable style={styles.eye} onPress={handleShow}>
+                <FaIcon
+                  name={showAmount ? 'eye-slash' : 'eye'}
+                  size={25}
+                  color={'#fff'}
+                />
+              </Pressable>
+            )}
+
+            {!disableSwitchCurrency && (
+              <Pressable
+                onPress={() => setModalOpen(true)}
+                style={styles.chevronDown}>
+                <ChevronDown />
+              </Pressable>
+            )}
+          </View>
         </View>
 
         <View style={styles.cardHeader}>
@@ -99,16 +128,16 @@ const styles = StyleSheet.create({
   },
   symbolContainer: {
     backgroundColor: '#fff',
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 16,
   },
   symbol: {
-    fontSize: 28,
+    fontSize: 22,
     fontFamily: 'AlfaSlabOne-Regular',
-    transform: [{ translateY: -4 }],
   },
   amount: {
     color: '#ccc',
@@ -118,12 +147,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    marginLeft: -5,
   },
   currencyType: {
     color: '#fff',
     paddingLeft: 10,
     fontSize: 15,
     textTransform: 'capitalize',
+  },
+  eyeContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    columnGap: 10,
+  },
+  eye: {
+    marginLeft: 20,
   },
   chevronDown: {},
   cardDetails: {

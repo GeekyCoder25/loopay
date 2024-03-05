@@ -25,8 +25,9 @@ import InputPin from '../../../components/InputPin';
 import { AddBankFields, BanksModal } from './AddBank';
 import ChevronDown from '../../../../assets/images/chevron-down';
 import Back from '../../../components/Back';
+import RecurringSwitch from '../../../components/RecurringSwitch';
 
-const SendOthers = ({ navigation }) => {
+const SendOthers = ({ navigation, route }) => {
   const { appData, vh, selectedCurrency, setWalletRefresh } =
     useContext(AppContext);
   const { wallet } = useWalletContext();
@@ -45,6 +46,7 @@ const SendOthers = ({ navigation }) => {
   const [addedBanks, setAddedBanks] = useState([]);
   const [fee, setFee] = useState(0);
   const [recipientData, setRecipientData] = useState(null);
+  const [isRecurring, setIsRecurring] = useState(!!route.params?.schedule);
   const [formData, setFormData] = useState({
     accNo: '',
     bank: '',
@@ -53,9 +55,7 @@ const SendOthers = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       getFetchData(
-        `user/savedbanks?limit=${3}&currency=${selectedCurrency.currency},${
-          selectedCurrency.acronym
-        }`,
+        `user/savedbanks?limit=${3}&currency=${selectedCurrency.currency},${selectedCurrency.acronym}`,
       ).then(response => {
         if (response.status === 200) {
           return setAddedBanks(response.data);
@@ -174,6 +174,21 @@ const SendOthers = ({ navigation }) => {
       setErrorKey('amountInput');
       setErrorMessage('Insufficient funds');
     } else {
+      if (isRecurring) {
+        return navigation.navigate('SchedulePayment', {
+          type: route.params?.schedule?.id || 'others',
+          scheduleData: {
+            ...bankSelected,
+            reason: description,
+            amount: amountInput,
+            fee,
+            senderPhoto: appData.photoURL,
+            id: randomUUID(),
+            bankSelected,
+            bankData: formData,
+          },
+        });
+      }
       setCanContinue(true);
     }
   };
@@ -219,6 +234,7 @@ const SendOthers = ({ navigation }) => {
       />
     );
   }
+
   return (
     <>
       <Back onPress={() => navigation.goBack()} />
@@ -385,6 +401,11 @@ const SendOthers = ({ navigation }) => {
                     </RegularText>
                   </View>
                 </View>
+
+                <RecurringSwitch
+                  isRecurring={isRecurring}
+                  setIsRecurring={setIsRecurring}
+                />
                 <View style={styles.button}>
                   <Button text="Send" onPress={handleWithdraw} />
                 </View>

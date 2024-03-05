@@ -1,32 +1,11 @@
 import BackArrow from '../../assets/images/backArrow.svg';
-import {
-  Platform,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { hideTabRoutes } from '../config/config';
-import { useContext, useEffect } from 'react';
+import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { useContext } from 'react';
 import RegularText from './fonts/RegularText';
 import { AppContext } from './AppContext';
 
-const Back = ({ goBack, onPress, route }) => {
-  const { isAdmin, setIsAdmin, canChangeRole, setShowTabBar } =
-    useContext(AppContext);
-
-  useEffect(() => {
-    const decision = () => {
-      if (hideTabRoutes.includes(route?.name)) return false;
-    };
-    const status = decision();
-    Platform.OS === 'android'
-      ? setShowTabBar(status === false ? status : true)
-      : setTimeout(() => {
-          setShowTabBar(status === false ? status : true);
-        }, 300);
-  }, [route?.name, setShowTabBar]);
+const Back = ({ goBack, onPress }) => {
+  const { isAdmin, setIsAdmin, canChangeRole } = useContext(AppContext);
 
   return (
     <SafeAreaView>

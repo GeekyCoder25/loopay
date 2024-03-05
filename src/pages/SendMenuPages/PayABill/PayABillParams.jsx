@@ -21,6 +21,12 @@ import { allCurrencies } from '../../../database/data';
 import FlagSelect from '../../../components/FlagSelect';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import { setShowBalance } from '../../../../utils/storage';
+import { postFetchData } from '../../../../utils/fetchAPI';
+import BillElectricity from './BillElectricity';
+import { randomUUID } from 'expo-crypto';
+import BillTV from './BillTV';
+import BillSchool from './BillSchool';
+import RecurringSwitch from '../../../components/RecurringSwitch';
 
 const PayABillParams = ({ route, navigation }) => {
   const { selectedCurrency, showAmount, setShowAmount } =
@@ -31,7 +37,12 @@ const PayABillParams = ({ route, navigation }) => {
   const [errorKey, setErrorKey] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selected, setSelected] = useState(selectedCurrency);
+  const [fetchStepState, setFetchStepState] = useState(1);
+  const [globalApiBody, setGlobalApiBody] = useState({});
+  const [apiBody, setApiBody] = useState('');
   const { buttonText, data: fields } = route.params;
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [isRecurring, setIsRecurring] = useState(!!route.params?.schedule);
 
   useEffect(() => {
     fields.forEach(element => {
@@ -45,51 +56,38 @@ const PayABillParams = ({ route, navigation }) => {
     });
   }, [fields]);
 
-  // const handleVerify = () => {
-  //   console.log(stateFields);
-  // };
+  useEffect(() => {
+    const fetchData = async field => {
+      try {
+        if (field.apiUrl.startsWith('https')) {
+          const response = await fetch(field.apiUrl);
+          const json = await response.json();
+          console.log(json.slice(0, 2));
+          return (field.modalData = json.slice(0, 20));
+        }
 
-  const fetchModal = () => {
-    return [{ title: 'DSTV' }, { title: 'Gotv' }, { title: 'startimes' }];
-  };
+        if (field.type === 'select' && field.apiUrl) {
+          const response = await postFetchData(field.apiUrl, apiBody);
+          if (response.status === 200) {
+            const data = response.data;
+            return (field.modalData = data);
+          }
+        } else if (field.type === 'select' && field.selectData) {
+          field.modalData = field.selectData;
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
 
-  const VerifyCardNumber = () => {
-    if (Object.values(stateFields).includes('')) {
-      return setErrorMessage('Please provide all required fields');
-    }
-    navigation.push('PayABillParams', {
-      headerText: 'Cable TV',
-      data: [
-        {
-          title: 'User Info',
-          type: 'select',
-          placeholder: 'User Info',
-          id: 'userInfo',
-        },
-        {
-          title: 'Package',
-          type: 'select',
-          placeholder: 'Select Package',
-          id: 'package',
-        },
-        {
-          title: 'Duration',
-          type: 'select',
-          placeholder: 'Duration',
-          id: 'duration',
-        },
-      ],
-      buttonText: 'Pay',
-      buttonFunc: PayCableTv,
-    });
-  };
-
-  const PayCableTv = () => {
-    console.log('shit');
-  };
+    const field = fields.find(
+      fieldIndex => fieldIndex.fetchStep === fetchStepState,
+    );
+    field && fetchData(field);
+  }, [fetchStepState, fields, apiBody]);
 
   const payElectricity = () => {
-    if (Object.values({ ...stateFields, message: 'message' }).includes('')) {
+    if (Object.values(stateFields).includes('')) {
       return setErrorMessage('Please provide all required fields');
     } else if (stateFields.amount > wallet.localBalance) {
       setErrorMessage('Insufficient balance');
@@ -112,8 +110,22 @@ const PayABillParams = ({ route, navigation }) => {
       return setErrorKey('amount');
     }
 
+    if (isRecurring) {
+      return navigation.navigate('SchedulePayment', {
+        type: route.params?.schedule?.id || 'bill',
+        scheduleData: {
+          ...stateFields,
+          ...globalApiBody,
+          referenceId: randomUUID().split('-').join(''),
+          routeId: route.params.title,
+          paymentCurrency: selected.acronym,
+        },
+      });
+    }
     navigation.navigate('TransferBill', {
       ...stateFields,
+      ...globalApiBody,
+      referenceId: randomUUID().split('-').join(''),
       routeId: route.params.title,
       paymentCurrency: selected.acronym,
     });
@@ -128,10 +140,11 @@ const PayABillParams = ({ route, navigation }) => {
         payElectricity();
         break;
       case 'TV':
-        VerifyCardNumber();
+        payElectricity();
         break;
 
       default:
+        payElectricity();
         break;
     }
   };
@@ -145,7 +158,75 @@ const PayABillParams = ({ route, navigation }) => {
     setShowAmount(prev => !prev);
     setShowBalance(!showAmount);
   };
+  let childComponent;
 
+  switch (route.params.title) {
+    case 'electricity':
+      childComponent = (
+        <BillElectricity
+          fields={fields}
+          stateFields={stateFields}
+          setStateFields={setStateFields}
+          errorKey={errorKey}
+          setErrorKey={setErrorKey}
+          setErrorMessage={setErrorMessage}
+          globalApiBody={globalApiBody}
+          setGlobalApiBody={setGlobalApiBody}
+          setIsButtonDisabled={setIsButtonDisabled}
+        />
+      );
+      break;
+    case 'TV':
+      childComponent = (
+        <BillTV
+          fields={fields}
+          stateFields={stateFields}
+          setStateFields={setStateFields}
+          errorKey={errorKey}
+          setErrorKey={setErrorKey}
+          setErrorMessage={setErrorMessage}
+          globalApiBody={globalApiBody}
+          setGlobalApiBody={setGlobalApiBody}
+          setIsButtonDisabled={setIsButtonDisabled}
+        />
+      );
+      break;
+    case 'school':
+      childComponent = (
+        <BillSchool
+          fields={fields}
+          stateFields={stateFields}
+          setStateFields={setStateFields}
+          errorKey={errorKey}
+          setErrorKey={setErrorKey}
+          setErrorMessage={setErrorMessage}
+          globalApiBody={globalApiBody}
+          setGlobalApiBody={setGlobalApiBody}
+          setIsButtonDisabled={setIsButtonDisabled}
+        />
+      );
+      break;
+
+    default:
+      childComponent = fields.map(field => (
+        <SelectInputField
+          fields={fields}
+          key={field.title}
+          selectInput={field}
+          stateFields={stateFields}
+          setStateFields={setStateFields}
+          showBalance={field.balance}
+          errorKey={errorKey}
+          setErrorMessage={setErrorMessage}
+          setErrorKey={setErrorKey}
+          selectedCurrency={selected}
+          modalData={field.modalData || []}
+          setFetchStepState={setFetchStepState}
+          setApiBody={setApiBody}
+        />
+      ));
+      break;
+  }
   return (
     <>
       <PageContainer paddingTop={0} padding>
@@ -173,26 +254,26 @@ const PayABillParams = ({ route, navigation }) => {
               </View>
             </Pressable>
           </View>
-          {fields.map(field => (
-            <SelectInputField
-              key={field.title}
-              selectInput={field}
-              setStateFields={setStateFields}
-              customFunc={fetchModal}
-              showBalance={field.balance}
-              errorKey={errorKey}
-              setErrorMessage={setErrorMessage}
-              setErrorKey={setErrorKey}
-              selectedCurrency={selected}
+          <View style={styles.textInputContainer} />
+          {childComponent}
+          <View style={styles.recurringContainer}>
+            <RecurringSwitch
+              isRecurring={isRecurring}
+              setIsRecurring={setIsRecurring}
             />
-          ))}
-          {errorMessage && (
-            <View>
-              <ErrorMessage errorMessage={errorMessage} />
-            </View>
-          )}
+            {errorMessage && (
+              <View>
+                <ErrorMessage errorMessage={errorMessage} />
+              </View>
+            )}
+          </View>
           <View style={styles.button}>
-            <Button text={buttonText} onPress={buttonFunc} />
+            <Button
+              text={buttonText}
+              onPress={buttonFunc}
+              disabled={isButtonDisabled}
+              style={isButtonDisabled && styles.disabledButton}
+            />
           </View>
         </ScrollView>
       </PageContainer>
@@ -201,7 +282,7 @@ const PayABillParams = ({ route, navigation }) => {
         animationType="slide"
         transparent
         onRequestClose={() => setModalOpen(false)}>
-        <Back route={route} onPress={() => setModalOpen(false)} />
+        <Back onPress={() => setModalOpen(false)} />
         <View style={styles.modal}>
           <BoldText style={styles.modalHeader}>
             Select account to pay with
@@ -263,7 +344,10 @@ const styles = StyleSheet.create({
   textInputContainer: {
     position: 'relative',
     marginTop: 5,
-    marginBottom: 12,
+  },
+  recurringContainer: {
+    marginTop: 15,
+    rowGap: 25,
   },
   textInput: {
     borderRadius: 5,
@@ -313,6 +397,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   currencyName: { textTransform: 'capitalize' },
+  disabledButton: { backgroundColor: 'rgba(28, 28, 28, 0.5)' },
   modal: {
     backgroundColor: '#fff',
     width: 100 + '%',

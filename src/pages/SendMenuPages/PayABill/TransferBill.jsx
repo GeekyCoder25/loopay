@@ -14,14 +14,15 @@ const TransferBill = ({ navigation, route }) => {
     try {
       setIsLoading(true);
       const response = await postFetchData(
-        `user/bill?${formData.routeId}`,
+        `user/bill-pay?${formData.routeId}`,
         formData,
       );
       if (response.status === 200) {
         setWalletRefresh(prev => !prev);
-        navigation.navigate('Success', {
+        navigation.replace('Success', {
           amountInput: formData.amount,
           billPlan: formData.provider.name,
+          token: response.data.token,
           reference: response.data.referenceId,
           transaction: response.data.transaction,
         });
@@ -118,7 +119,6 @@ const styles = StyleSheet.create({
     maxWidth: 120,
   },
   content: {
-    paddingHorizontal: 5 + '%',
     paddingBottom: 40,
   },
   footer: {

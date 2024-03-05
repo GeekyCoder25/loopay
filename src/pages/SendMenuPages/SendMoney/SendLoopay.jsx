@@ -47,21 +47,21 @@ const SendLoopay = ({ navigation, route }) => {
       setShowPaste(copiedText);
     };
     getClipboard();
-
-    if (route.params) {
-      setInputValue(route.params.tagName);
-      setUserFound(route.params);
-      const beneficiariesTagName = beneficiaryState?.map(
-        beneficiary => beneficiary.tagName,
-      );
-      if (route.params.tagName && beneficiariesTagName) {
-        if (beneficiariesTagName.includes(route.params.tagName)) {
-          setNewBeneficiary(false);
-          setSaveAsBeneficiary(true);
-        }
-      }
-    }
-  }, [beneficiaryState, route.params]);
+    // if (route.params) {
+    //   setInputValue(route.params.tagName);
+    //   setUserFound(route.params);
+    //   const beneficiariesTagName = beneficiaryState?.map(
+    //     beneficiary => beneficiary.tagName,
+    //   );
+    //   if (route.params.tagName && beneficiariesTagName) {
+    //     if (beneficiariesTagName.includes(route.params.tagName)) {
+    //       setNewBeneficiary(false);
+    //       setSaveAsBeneficiary(true);
+    //     }
+    //   }
+    // }
+  }, []);
+  // console  .log(route.params);
 
   const handlePaste = async () => {
     const copiedText = await Clipboard.getString();
@@ -103,7 +103,11 @@ const SendLoopay = ({ navigation, route }) => {
   };
 
   const handleContinue = async () => {
-    navigation.navigate('TransferFunds', { saveAsBeneficiary, ...userFound });
+    const params = { saveAsBeneficiary, ...userFound };
+    if (route.params?.schedule) {
+      params.schedule = route.params?.schedule;
+    }
+    navigation.navigate('TransferFunds', params);
   };
 
   return (

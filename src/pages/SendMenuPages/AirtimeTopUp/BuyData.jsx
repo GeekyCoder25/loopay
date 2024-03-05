@@ -31,6 +31,7 @@ import FlagSelect from '../../../components/FlagSelect';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import Back from '../../../components/Back';
 import { setShowBalance } from '../../../../utils/storage';
+import RecurringSwitch from '../../../components/RecurringSwitch';
 
 const BuyData = ({ route, navigation }) => {
   const { appData, setIsLoading, showAmount, setShowAmount, selectedCurrency } =
@@ -46,6 +47,8 @@ const BuyData = ({ route, navigation }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
   const [isNigeria] = useState(countryCode === 'NG');
+  const [isRecurring, setIsRecurring] = useState(!!route.params?.schedule);
+
   const [formData, setFormData] = useState({
     network: '',
     phoneNo: '',
@@ -207,6 +210,25 @@ const BuyData = ({ route, navigation }) => {
     } else if (selected.acronym === 'NGN' && formData.amount > balance) {
       setErrorMessage('Insufficient balance');
       return setErrorKey('amountInput');
+    }
+
+    if (isRecurring) {
+      return navigation.navigate('SchedulePayment', {
+        type: route.params?.schedule?.id || 'data',
+        scheduleData: {
+          formData: {
+            ...formData,
+            id: randomUUID(),
+            currency: allCurrencies.find(
+              currency => currency.acronym === selected.acronym,
+            ).currency,
+            countryCode,
+            paymentCurrency: selected.acronym,
+            type: 'data',
+          },
+          isInternational: !isNigeria,
+        },
+      });
     }
     navigation.navigate('TransferAirtime', {
       formData: {
@@ -438,6 +460,11 @@ const BuyData = ({ route, navigation }) => {
                 <ChevronDown />
               </View>
             </Pressable>
+
+            <RecurringSwitch
+              isRecurring={isRecurring}
+              setIsRecurring={setIsRecurring}
+            />
             {errorMessage && (
               <View style={{ marginTop: 15 }}>
                 <ErrorMessage errorMessage={errorMessage} />
@@ -452,7 +479,7 @@ const BuyData = ({ route, navigation }) => {
         animationType="slide"
         transparent
         onRequestClose={() => setPaymentModal(false)}>
-        <Back route={route} onPress={() => setPaymentModal(false)} />
+        <Back onPress={() => setPaymentModal(false)} />
         <View style={styles.paymentModal}>
           <BoldText style={styles.paymentModalHeader}>
             Select account to pay with

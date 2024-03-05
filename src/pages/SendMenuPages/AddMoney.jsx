@@ -216,7 +216,7 @@ const AddMoney = ({ navigation, route }) => {
               animationType="slide"
               transparent
               onRequestClose={handleModal}>
-              <Back route={route} onPress={() => setModalOpen(false)} />
+              <Back onPress={() => setModalOpen(false)} />
               <View style={styles.modal}>
                 <BoldText style={styles.modalHeader}>
                   Select account to top up

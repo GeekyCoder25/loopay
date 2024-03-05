@@ -31,7 +31,7 @@ const TransactionPin = ({ navigation, route }) => {
   }, [appData.pin, inputOldPin, remembersPassword]);
 
   return (
-    <PageContainer justify={true}>
+    <PageContainer justify={true} avoidKeyboardPushup avoidBounce>
       <View style={{ ...styles.container, minHeight: vh * 0.8 }}>
         <View style={styles.logo}>
           <Logo />

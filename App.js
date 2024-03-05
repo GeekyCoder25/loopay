@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import {
   Keyboard,
   PanResponder,
+  Platform,
   SafeAreaView,
   StyleSheet,
   TouchableWithoutFeedback,
@@ -56,9 +57,10 @@ export default function App() {
   const [showAmount, setShowAmount] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const [openShake, setOpenShake] = useState(false);
-  const timerId = useRef(false);
+  const isAndroid = Platform.OS === 'android';
   const vw = useWindowDimensions().width;
   const vh = useWindowDimensions().height;
+  const timerId = useRef(false);
 
   const contextValue = {
     vw,
@@ -110,6 +112,7 @@ export default function App() {
     setIsShaking,
     openShake,
     setOpenShake,
+    isAndroid,
   };
 
   useEffect(() => {

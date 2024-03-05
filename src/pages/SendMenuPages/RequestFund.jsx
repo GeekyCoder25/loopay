@@ -208,7 +208,9 @@ const RequestFund = ({ navigation, route }) => {
 
         <RegularText style={styles.label}>Request Amount</RegularText>
         <View style={styles.textInputContainer}>
-          <BoldText style={styles.symbol}>{selected.symbol}</BoldText>
+          <View style={styles.symbolContainer}>
+            <BoldText style={styles.symbol}>{selected.symbol}</BoldText>
+          </View>
           <TextInput
             style={{
               ...styles.textInput,
@@ -224,7 +226,9 @@ const RequestFund = ({ navigation, route }) => {
 
         <RegularText style={styles.label}>Amount you’ll receive</RegularText>
         <View style={styles.textInputContainer}>
-          <BoldText style={styles.symbol}>{selected.symbol}</BoldText>
+          <View style={styles.symbolContainer}>
+            <BoldText style={styles.symbol}>{selected.symbol}</BoldText>
+          </View>
           <View style={{ ...styles.textInput, ...styles.textInputStyles }}>
             <RegularText style={{ fontSize: styles.textInputStyles.fontSize }}>
               {toReceive}
@@ -270,7 +274,7 @@ const RequestFund = ({ navigation, route }) => {
         animationType="slide"
         transparent
         onRequestClose={handleModal}>
-        <Back route={route} onPress={() => setModalOpen(false)} />
+        <Back onPress={() => setModalOpen(false)} />
         <View style={styles.modal}>
           <BoldText style={styles.modalHeader}>
             Select account to top up
@@ -356,12 +360,16 @@ const styles = StyleSheet.create({
     right: 10,
   },
   success: { marginTop: -15 },
-  symbol: {
+  symbolContainer: {
     position: 'absolute',
-    fontSize: 28,
+    height: 50,
+    width: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 9,
-    top: 5,
-    left: 15,
+  },
+  symbol: {
+    fontSize: 28,
   },
   selectInput: {
     backgroundColor: '#eee',

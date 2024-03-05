@@ -418,13 +418,7 @@ const AccStatement = () => {
         </View>
       </Pressable>
       <SelectCurrencyModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
-      {showPicker && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={defaultPickerDate()}
-          onChange={handleDatePicker}
-        />
-      )}
+
       <Text style={styles.topUp}>Start Date</Text>
       <Pressable
         onPress={() => setShowPicker('start')}
@@ -434,10 +428,21 @@ const AccStatement = () => {
             <View style={styles.calendarIcon}>
               <CalendarIcon width={30} height={30} />
               <RegularText style={styles.newDate}>
-                {new Date().getDate()}
+                {generateData.start
+                  ? new Date(generateData.start).getDate()
+                  : new Date().getDate()}
               </RegularText>
             </View>
-            <RegularText>{startValue}</RegularText>
+            {showPicker === 'start' ? (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={defaultPickerDate()}
+                onChange={handleDatePicker}
+                style={styles.picker}
+              />
+            ) : (
+              <RegularText>{startValue}</RegularText>
+            )}
           </View>
         </View>
       </Pressable>
@@ -450,10 +455,21 @@ const AccStatement = () => {
             <View style={styles.calendarIcon}>
               <CalendarIcon width={30} height={30} />
               <RegularText style={styles.newDate}>
-                {new Date().getDate()}
+                {endValue
+                  ? new Date(generateData.end).getDate()
+                  : new Date().getDate()}
               </RegularText>
             </View>
-            <RegularText>{endValue}</RegularText>
+            {showPicker === 'end' ? (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={defaultPickerDate()}
+                onChange={handleDatePicker}
+                style={styles.picker}
+              />
+            ) : (
+              <RegularText>{endValue}</RegularText>
+            )}
           </View>
         </View>
       </Pressable>
@@ -550,8 +566,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 30,
   },
+  picker: { marginLeft: -10 },
   newDate: {
     position: 'absolute',
+    top: '25%',
   },
   formatType: {
     paddingBottom: 80,

@@ -41,6 +41,7 @@ const InputPin = ({
     isBiometricSupported,
     enableBiometric,
     isAdmin,
+    isAndroid,
   } = useContext(AppContext);
   const [errorMessage, setErrorMessage] = useState('');
   const [errorCode, setErrorCode] = useState(false);
@@ -93,12 +94,11 @@ const InputPin = ({
       const options = {
         promptMessage: 'Verify fingerprint',
         cancelLabel: 'Use payment pin instead',
-        // disableDeviceFallback: true,
+        disableDeviceFallback: !isAndroid,
       };
       if (isBiometricSupported && enableBiometric && !disableBiometric) {
-        const { success } = await LocalAuthentication.authenticateAsync(
-          options,
-        );
+        const { success } =
+          await LocalAuthentication.authenticateAsync(options);
         if (success) {
           setIsLoading(true);
           setIsValidPin && setIsValidPin(true);
@@ -138,7 +138,7 @@ const InputPin = ({
               ? setTimeout(() => {
                   setModalOpen(false);
                 }, 1000)
-              : setErrorMessage(`${customFuncStatus}`);
+              : setErrorMessage(`${customFuncStatus || ''}`);
           }, 200);
         }
       }
@@ -193,11 +193,7 @@ const InputPin = ({
   return (
     <>
       {modalOpen && (
-        <View
-          onRequestClose={() => {
-            handleCancel ? handleCancel() : handleCancelDefault();
-          }}
-          style={styles.back}>
+        <View style={styles.back}>
           <Pressable
             onPress={() => {
               handleCancel ? handleCancel() : handleCancelDefault();
@@ -208,7 +204,7 @@ const InputPin = ({
           </Pressable>
           <ScrollView
             contentContainerStyle={{
-              minHeight: vh * 0.9,
+              minHeight: vh * 0.85,
               ...styles.container,
             }}
             bounces={false}

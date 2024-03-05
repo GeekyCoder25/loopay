@@ -11,66 +11,36 @@ import {
 } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
 import RegularText from '../../../components/fonts/RegularText';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
 import { AppContext } from '../../../components/AppContext';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import { useWalletContext } from '../../../context/WalletContext';
-import { getFetchData } from '../../../../utils/fetchAPI';
 import { randomUUID } from 'expo-crypto';
 import { setShowBalance } from '../../../../utils/storage';
+import ToastMessage from '../../../components/ToastMessage';
 
 export default function SelectInputField({
   selectInput,
+  fields,
+  stateFields,
   setStateFields,
-  customFunc,
   showBalance,
   errorKey,
   setErrorMessage,
   setErrorKey,
   selectedCurrency,
+  modalData,
+  onChange,
+  onRefetch,
+  setGlobalApiBody,
 }) {
   const { showAmount, setShowAmount } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [selected, setSelected] = useState(false);
-  const [modalData, setModalData] = useState([]);
-  const {
-    title,
-    type,
-    placeholder,
-    id,
-    apiUrl,
-    data: selectData,
-  } = selectInput;
+  const { title, type, placeholder, id, inputMode } = selectInput;
   const [modalOpen, setModalOpen] = useState(false);
   const [inputText, setInputText] = useState('');
-
-  useEffect(() => {
-    const setModalDataFunc = async () => {
-      try {
-        if (apiUrl.startsWith('https')) {
-          const response = await fetch(apiUrl);
-          const json = await response.json();
-          console.log(json.slice(0, 2));
-          return setModalData(json.slice(0, 20));
-        }
-        const response = await getFetchData(apiUrl);
-        if (response.status === 200) {
-          const data = response.data;
-          return setModalData(data);
-        }
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-
-    if (type === 'select' && apiUrl) {
-      setModalDataFunc();
-    } else if (type === 'select' && selectData) {
-      setModalData(selectData);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleBlur = () => {
     if (id === 'amount') {
@@ -81,12 +51,67 @@ export default function SelectInputField({
           [id]: addingDecimal(inputText),
         };
       });
+      if (Number(inputText) > wallet.balance) {
+        setErrorKey('amount');
+        setErrorMessage('Insufficient funds');
+      }
+      onChange({ inputText });
     }
+    onChange && onChange({ inputText });
+  };
+
+  const handleOpenModal = () => {
+    const currentIndex = Object.keys(stateFields).indexOf(id);
+    const previousIndex = currentIndex - 1 < 0 ? 0 : currentIndex - 1;
+    const previousValue = Object.values(stateFields)[previousIndex];
+    const previousTitle = fields[previousIndex].title;
+    const previousID = fields[previousIndex].id;
+    if (!previousValue && currentIndex !== 0) {
+      return ToastMessage(
+        `Please select ${previousTitle.toLowerCase()} field first`,
+      );
+    }
+
+    !modalData.length &&
+      onRefetch &&
+      onRefetch({ inputText: stateFields[previousID] });
+    setModalOpen(true);
   };
 
   const handleShow = () => {
     setShowAmount(prev => !prev);
     setShowBalance(!showAmount);
+  };
+
+  const handleChangeText = text => {
+    const currentIndex = Object.keys(stateFields).indexOf(id);
+    const previousIndex = currentIndex - 1 < 0 ? 0 : currentIndex - 1;
+    const previousValue = Object.values(stateFields)[previousIndex];
+    const previousTitle = fields[previousIndex].title;
+    const previousType = fields[previousIndex].type;
+    const previousID = fields[previousIndex].id;
+
+    if (!previousValue && currentIndex !== 0) {
+      return ToastMessage(
+        previousType === 'select'
+          ? `Please select ${previousTitle.toLowerCase()} field first`
+          : '',
+      );
+    }
+    !modalData.length &&
+      text.length === 1 &&
+      onRefetch &&
+      onRefetch({ inputText: stateFields[previousID] });
+
+    setInputText(text);
+    setErrorMessage(null);
+    setErrorKey(null);
+    setStateFields(prev => {
+      return {
+        ...prev,
+        [id]: text,
+      };
+    });
   };
 
   return (
@@ -117,18 +142,8 @@ export default function SelectInputField({
               ...styles.textInputStyles,
               borderColor: errorKey === id ? 'red' : '#ccc',
             }}
-            inputMode="tel"
-            onChangeText={text => {
-              setInputText(text);
-              setErrorMessage(null);
-              setErrorKey(null);
-              setStateFields(prev => {
-                return {
-                  ...prev,
-                  [id]: text,
-                };
-              });
-            }}
+            inputMode={inputMode || 'tel'}
+            onChangeText={text => handleChangeText(text)}
             placeholder={placeholder}
             onBlur={handleBlur}
             value={inputText}
@@ -138,7 +153,7 @@ export default function SelectInputField({
         <>
           <View style={styles.textInputContainer}>
             <Pressable
-              onPress={() => setModalOpen(true)}
+              onPress={handleOpenModal}
               style={styles.textInputContainer}>
               <View style={styles.textInput}>
                 {selected ? (
@@ -161,6 +176,8 @@ export default function SelectInputField({
             setStateFields={setStateFields}
             setErrorMessage={setErrorMessage}
             setErrorKey={setErrorKey}
+            onChange={onChange}
+            setGlobalApiBody={setGlobalApiBody}
             id={id}
           />
         </>
@@ -178,6 +195,8 @@ const LocalModal = ({
   setStateFields,
   setErrorMessage,
   setErrorKey,
+  onChange,
+  setGlobalApiBody,
   id,
 }) => {
   const handleModal = () => {
@@ -189,6 +208,13 @@ const LocalModal = ({
     setModalOpen(false);
     setErrorMessage(null);
     setErrorKey(null);
+    onChange && onChange(provider);
+    setGlobalApiBody(prev => {
+      return {
+        ...prev,
+        ...provider,
+      };
+    });
     setStateFields(prev => {
       return {
         ...prev,

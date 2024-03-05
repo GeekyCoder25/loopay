@@ -40,6 +40,7 @@ const LockScreen = () => {
     enableBiometric,
     setEnableBiometric,
     timerId,
+    isAndroid,
   } = useContext(AppContext);
   const [inputCode, setInputCode] = useState('');
   const [hasForgot, setHasForgot] = useState(false);
@@ -66,7 +67,7 @@ const LockScreen = () => {
           const options = {
             promptMessage: 'Login with Biometrics',
             cancelLabel: 'Use Loopay password instead',
-            // disableDeviceFallback: true,
+            disableDeviceFallback: !isAndroid,
           };
           if (enableBiometric) {
             const { success } = await LocalAuthentication.authenticateAsync(
@@ -94,6 +95,7 @@ const LockScreen = () => {
     setEnableBiometric,
     enableBiometric,
     timerId,
+    isAndroid,
   ]);
 
   useEffect(() => {

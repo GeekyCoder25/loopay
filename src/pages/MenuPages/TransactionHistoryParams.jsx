@@ -189,9 +189,10 @@ const TransactionHistoryParams = ({ route }) => {
           },
           { key: 'Bill Type', value: billType },
           { key: 'Bill Service', value: billName },
+          token && { key: 'Token', value: token },
           { key: 'Reference Id', value: reference },
           { key: 'Status', value: status },
-        ];
+        ].filter(Boolean);
       } else if (transactionType === 'swap') {
         return [
           { key: 'Transaction type', value: 'Swap' },
@@ -930,12 +931,12 @@ const TransactionHistoryParams = ({ route }) => {
                     <RegularText style={styles.cardKey}>Bill Plan</RegularText>
                     <BoldText style={styles.cardValue}>{billName}</BoldText>
                   </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>Token</RegularText>
-                    <BoldText style={styles.cardValue}>
-                      {token || 'null'}
-                    </BoldText>
-                  </View>
+                  {token && (
+                    <View style={styles.cardLine}>
+                      <RegularText style={styles.cardKey}>Token</RegularText>
+                      <BoldText style={styles.cardValue}>{token}</BoldText>
+                    </View>
+                  )}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Reference</RegularText>
                     <BoldText style={styles.cardValue}>{reference}</BoldText>

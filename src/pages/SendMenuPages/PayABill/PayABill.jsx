@@ -9,6 +9,7 @@ import ElectricityIcon from '../../../../assets/images/billElectricity.svg';
 import RegularText from '../../../components/fonts/RegularText';
 import { AppContext } from '../../../components/AppContext';
 import IonIcon from '@expo/vector-icons/Ionicons';
+import { useRoute } from '@react-navigation/native';
 
 const PayABill = ({ navigation }) => {
   const { appData } = useContext(AppContext);
@@ -19,19 +20,38 @@ const PayABill = ({ navigation }) => {
       title: 'TV',
       desc: 'TV Cable',
       headerText: 'Cable TV',
-      buttonText: 'Verify Card Number',
+      buttonText: 'Make Payment',
       data: [
         {
-          title: 'Select a Provider',
+          title: 'Provider',
           type: 'select',
           placeholder: 'Select a Provider',
           id: 'provider',
-          apiUrl: 'https://jsonplaceholder.typicode.com/todos',
+          apiUrl: `user/bill-merchants?type=tv&country=${countryCode}`,
+        },
+        {
+          title: 'Decoder type',
+          type: 'select',
+          placeholder: 'Select decoder type',
+          id: 'meterType',
         },
         {
           title: 'Enter Card Number',
           type: 'input',
-          id: 'cardNumber',
+          id: 'meterNo',
+        },
+        {
+          title: 'Amount',
+          type: 'input',
+          id: 'amount',
+        },
+        {
+          title: 'Message',
+          type: 'input',
+          placeholder: '(optional)',
+          id: 'description',
+          optional: true,
+          inputMode: 'text',
         },
       ],
     },
@@ -71,27 +91,30 @@ const PayABill = ({ navigation }) => {
       title: 'school',
       desc: 'School payment',
       headerText: 'School Payment',
-      buttonText: 'Verify Matric Number',
+      buttonText: 'Make Payment',
       data: [
         {
-          title: 'Select School',
+          title: 'School',
           type: 'select',
           placeholder: 'Select School',
           id: 'school',
-          apiUrl: '',
         },
         {
           title: 'Select Locality',
           type: 'select',
           placeholder: 'Select Locality',
           id: 'locality',
-          apiUrl: 'user/bill?electricity',
         },
         {
           title: 'Enter Matric Number',
           type: 'input',
           placeholder: 'Matric Number',
           id: 'matricNo',
+        },
+        {
+          title: 'Amount',
+          type: 'input',
+          id: 'amount',
         },
       ],
     },
@@ -102,11 +125,11 @@ const PayABill = ({ navigation }) => {
       buttonText: 'Make Payment',
       data: [
         {
-          title: 'Select Provider',
+          title: 'Provider',
           type: 'select',
           placeholder: 'Select Provider',
           id: 'provider',
-          apiUrl: `user/bill?type=electricity&country=${countryCode}`,
+          apiUrl: `user/bill-merchants?type=electricity&country=${countryCode}`,
         },
         // {
         //   title: 'Package',
@@ -119,27 +142,14 @@ const PayABill = ({ navigation }) => {
           type: 'select',
           placeholder: 'Select meter type',
           id: 'meterType',
-          data: [
-            {
-              title: 'Prepaid',
-            },
-            {
-              title: 'Postpaid',
-            },
-          ],
+          apiUrl: 'user/bill-services',
         },
         {
           title: 'Meter number',
           type: 'input',
           placeholder: 'Enter Meter number',
-          id: 'subscriberAccountNumber',
+          id: 'meterNo',
         },
-        // {
-        //   title: 'User',
-        //   type: 'select',
-        //   placeholder: 'Select User',
-        //   id: 'user',
-        // },
         {
           title: 'Amount',
           type: 'input',
@@ -152,6 +162,7 @@ const PayABill = ({ navigation }) => {
           placeholder: '(optional)',
           id: 'message',
           optional: true,
+          inputMode: 'text',
         },
       ],
     },
@@ -168,24 +179,12 @@ const PayABill = ({ navigation }) => {
           id: 'provider',
           apiUrl: 'user/bill?water',
         },
-        // {
-        //   title: 'Package',
-        //   type: 'select',
-        //   placeholder: 'Select Package',
-        //   id: 'package',
-        // },
         {
           title: 'Registration number',
           type: 'input',
           placeholder: 'Enter registration number',
           id: 'subscriberAccountNumber',
         },
-        // {
-        //   title: 'User',
-        //   type: 'select',
-        //   placeholder: 'Select User',
-        //   id: 'user',
-        // },
         {
           title: 'Amount',
           type: 'input',
@@ -197,6 +196,7 @@ const PayABill = ({ navigation }) => {
           type: 'input',
           placeholder: '(optional)',
           id: 'message',
+          inputMode: 'text',
         },
       ],
     },
@@ -248,6 +248,7 @@ export default PayABill;
 
 const Bill = ({ bill, navigation }) => {
   const { vw } = useContext(AppContext);
+  const route = useRoute();
   const svgIcon = (width, height) => {
     switch (bill.title) {
       case 'TV':
@@ -267,12 +268,17 @@ const Bill = ({ bill, navigation }) => {
   const { headerText, data, buttonText, title } = bill;
 
   const handleNavigate = () => {
-    navigation.navigate('PayABillParams', {
+    const params = {
       headerText,
       data,
       buttonText,
       title,
-    });
+    };
+
+    if (route.params?.schedule) {
+      params.schedule = route.params.schedule;
+    }
+    navigation.navigate('PayABillParams', params);
   };
   return (
     <Pressable

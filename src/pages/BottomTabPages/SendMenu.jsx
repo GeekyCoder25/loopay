@@ -83,6 +83,12 @@ const SendMenu = ({ navigation }) => {
       routeNavigate: 'PayABill',
     },
     {
+      routeName: 'Schedule Payments',
+      routeDetails: 'Send scheduled payments anytime to friends and family',
+      routeIcon: 'schedule',
+      routeNavigate: 'SchedulePayments',
+    },
+    {
       routeName: 'Card',
       routeDetails: 'Virtual Debit Card',
       routeIcon: 'card',
@@ -259,6 +265,8 @@ export const RouteLink = ({ route, navigation }) => {
         return <Recipient />;
       case 'wallet':
         return <WalletIcon />;
+      case 'schedule':
+        return <FaIcon name="clock-o" size={30} color={'#5c5c5c'} />;
       case 'globe':
         return <FaIcon name="globe" size={24} color={'#5c5c5c'} />;
       case 'bank':

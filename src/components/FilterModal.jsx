@@ -56,14 +56,10 @@ const FilterModal = ({
       setIsLoading(true);
       const response = isAdmin
         ? await getFetchData(
-            `user/transaction?currency=${currencies}&limit=${0}&page=${1}&start=${
-              selectedPeriod.start
-            }&end=${selectedPeriod.end}`,
+            `user/transaction?currency=${currencies}&limit=${0}&page=${1}&start=${selectedPeriod.start}&end=${selectedPeriod.end}`,
           )
         : await getFetchData(
-            `admin/transactions?currency=${currencies}&limit=${0}&page=${1}&start=${
-              selectedPeriod.start
-            }&end=${selectedPeriod.end}`,
+            `admin/transactions?currency=${currencies}&limit=${0}&page=${1}&start=${selectedPeriod.start}&end=${selectedPeriod.end}`,
           );
 
       if (response.status === 200) {
@@ -725,8 +721,8 @@ const Currency = ({
       return isSelected
         ? prev.filter(currencies => currencies !== selected.acronym)
         : !prev.includes(selected.acronym)
-        ? [...prev, selected.acronym]
-        : prev;
+          ? [...prev, selected.acronym]
+          : prev;
     });
     setIsSelected(prev => !prev);
     setFilterCleared(false);

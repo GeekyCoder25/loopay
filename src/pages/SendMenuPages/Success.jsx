@@ -27,6 +27,7 @@ const Success = ({ navigation, route }) => {
     isCredit,
     message,
     type,
+    token,
   } = route.params;
 
   useFocusEffect(
@@ -99,9 +100,10 @@ const Success = ({ navigation, route }) => {
           },
           { key: 'Bill Type', value: billType },
           { key: 'Bill Service', value: billName },
+          token && { key: 'Token', value: token },
           { key: 'Reference Id', value: reference },
           { key: 'Status', value: status },
-        ];
+        ].filter(Boolean);
       }
       return [
         { key: 'Receiver Account', value: receiverAccount },
@@ -294,9 +296,9 @@ const Success = ({ navigation, route }) => {
       return navigation.navigate('Dashboard');
     }
     navigation.popToTop();
-    navigation.navigate('HomeNavigator');
     navigation.navigate('Home');
   };
+
   return (
     <PageContainer scroll>
       <View style={{ ...styles.container, minHeight: vh * 0.8 }}>
@@ -317,6 +319,7 @@ const Success = ({ navigation, route }) => {
             billPlan={billPlan}
             isCredit={isCredit}
             type={type}
+            token={token}
           />
         </View>
         <View style={styles.buttons}>

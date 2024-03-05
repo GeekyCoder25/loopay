@@ -37,7 +37,7 @@
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "Loopay uses Face ID to validate your identity"
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID to validate your identity"
         }
       ]
     ],

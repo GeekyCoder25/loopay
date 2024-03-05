@@ -12,6 +12,7 @@ const PageContainer = ({
   style,
   refreshFunc,
   avoidKeyboardPushup,
+  avoidBounce,
 }) => {
   const { setWalletRefresh, isLoggedIn, noReload, refreshing, setRefreshing } =
     useContext(AppContext);
@@ -44,7 +45,8 @@ const PageContainer = ({
             enabled={!noReload}
           />
         )
-      }>
+      }
+      bounces={!avoidBounce}>
       {children}
     </ScrollView>
   );

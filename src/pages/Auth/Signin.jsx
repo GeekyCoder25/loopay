@@ -104,7 +104,7 @@ const Signin = ({ navigation }) => {
 
   return (
     <>
-      <PageContainer scroll avoidKeyboardPushup>
+      <PageContainer scroll avoidKeyboardPushup avoidBounce>
         <View style={{ ...styles.container, minHeight: vh }}>
           <View style={styles.headers}>
             <Logo />
@@ -302,8 +302,8 @@ const FormField = ({
             errorKey === inputForm.name || redBorder
               ? 'red'
               : inputFocus
-              ? '#000'
-              : '#B1B1B1',
+                ? '#000'
+                : '#B1B1B1',
         }}
         placeholder={inputForm.placeholder}
         placeholderTextColor={inputFocus ? '#000' : '#80808080'}

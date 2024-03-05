@@ -26,6 +26,7 @@ import { useWalletContext } from '../../../context/WalletContext';
 import { randomUUID } from 'expo-crypto';
 import InputPin from '../../../components/InputPin';
 import { useBeneficiaryContext } from '../../../context/BeneficiariesContext';
+import RecurringSwitch from '../../../components/RecurringSwitch';
 
 const TransferFunds = ({ navigation, route }) => {
   const { appData, selectedCurrency, setWalletRefresh } =
@@ -39,6 +40,7 @@ const TransferFunds = ({ navigation, route }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
   const [canContinue, setCanContinue] = useState(false);
+  const [isRecurring, setIsRecurring] = useState(!!route.params?.schedule);
   const { minimumAmountToAdd } = selectedCurrency;
   const editInput = () => {
     setErrorMessage('');
@@ -80,6 +82,21 @@ const TransferFunds = ({ navigation, route }) => {
       setErrorKey('amountInput');
       setErrorMessage('Insufficient funds');
     } else {
+      if (isRecurring) {
+        return navigation.navigate('SchedulePayment', {
+          type: route.params?.schedule?.id || 'loopay',
+          scheduleData: {
+            ...userToSendTo,
+            currency: selectedCurrency.currency,
+            amount: amountInput,
+            description,
+            senderPhoto: appData.photoURL,
+            id: randomUUID(),
+            saveAsBeneficiary: !!route.params.saveAsBeneficiary,
+            userToSendTo,
+          },
+        });
+      }
       setCanContinue(true);
     }
   };
@@ -104,7 +121,7 @@ const TransferFunds = ({ navigation, route }) => {
           setRefetchBeneficiary(prev => !prev);
         }
         setWalletRefresh(prev => !prev);
-        navigation.navigate('Success', {
+        navigation.replace('Success', {
           userToSendTo,
           amountInput,
           transaction: response.data.transaction,
@@ -226,6 +243,13 @@ const TransferFunds = ({ navigation, route }) => {
                   </View>
                 </View>
                 <ErrorMessage errorMessage={errorMessage} />
+              </View>
+
+              <View style={styles.recurringContainer}>
+                <RecurringSwitch
+                  isRecurring={isRecurring}
+                  setIsRecurring={setIsRecurring}
+                />
               </View>
               <Button
                 text={'Continue'}
@@ -400,6 +424,10 @@ const styles = StyleSheet.create({
   feeText: {
     color: '#f9f9f9',
     fontSize: 13,
+  },
+
+  recurringContainer: {
+    marginVertical: 20,
   },
   button: {
     marginBottom: 50,

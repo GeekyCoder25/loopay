@@ -94,10 +94,12 @@ const FooterCard = ({
                 <RegularText style={styles.cardKey}>Bill Plan</RegularText>
                 <BoldText style={styles.cardValue}>{billPlan}</BoldText>
               </View>
-              <View style={styles.cardLine}>
-                <RegularText style={styles.cardKey}>Token</RegularText>
-                <BoldText style={styles.cardValue}>{token}</BoldText>
-              </View>
+              {token && (
+                <View style={styles.cardLine}>
+                  <RegularText style={styles.cardKey}>Token</RegularText>
+                  <BoldText style={styles.cardValue}>{token}</BoldText>
+                </View>
+              )}
             </>
           )}
           <View style={styles.cardLine}>

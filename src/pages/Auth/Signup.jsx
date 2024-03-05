@@ -153,7 +153,7 @@ const Signup = ({ navigation }) => {
     );
   }
   return (
-    <PageContainer scroll>
+    <PageContainer scroll avoidBounce>
       <View
         style={{
           ...styles.container,
@@ -585,7 +585,7 @@ export const EmailVerify = ({
   const codeLength = [1, 2, 3, 4];
 
   return (
-    <ScrollView contentContainerStyle={styles.verifyContainer}>
+    <ScrollView contentContainerStyle={styles.verifyContainer} bounces={false}>
       <Image
         style={styles.logo}
         source={require('../../../assets/images/icon.png')}

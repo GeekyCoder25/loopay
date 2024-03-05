@@ -12,14 +12,15 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import ToastMessage from '../../components/ToastMessage';
 
 const Biometric = () => {
-  const { enableBiometric, setEnableBiometric } = useContext(AppContext);
+  const { enableBiometric, setEnableBiometric, isAndroid } =
+    useContext(AppContext);
 
   const handleSwitchBiometric = async () => {
     if (!enableBiometric) {
       const options = {
         promptMessage: 'Setup login with Biometrics',
         cancelLabel: 'Cancel',
-        // disableDeviceFallback: true,
+        disableDeviceFallback: !isAndroid,
       };
       const { success } = await LocalAuthentication.authenticateAsync(options);
       if (success) {
