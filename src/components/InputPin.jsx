@@ -1,6 +1,7 @@
 import React, {
   useCallback,
   useContext,
+  useEffect,
   useLayoutEffect,
   useState,
 } from 'react';
@@ -26,6 +27,7 @@ import Countdown from './Countdown';
 import { getInvalidPinStatus, setInvalidPinStatus } from '../../utils/storage';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import BackArrow from '../../assets/images/backArrow.svg';
+import FaceIDIcon from '../../assets/images/face-id.svg';
 
 const InputPin = ({
   setIsValidPin,
@@ -37,11 +39,9 @@ const InputPin = ({
     setIsLoading,
     vw,
     vh,
-    setShowTabBar,
     isBiometricSupported,
     enableBiometric,
     isAdmin,
-    isAndroid,
   } = useContext(AppContext);
   const [errorMessage, setErrorMessage] = useState('');
   const [errorCode, setErrorCode] = useState(false);
@@ -52,11 +52,14 @@ const InputPin = ({
   const [hideDigits, setHideDigits] = useState(false);
   const [showBiometrics, setShowBiometrics] = useState(false);
   const [errorAnimated, setErrorAnimated] = useState(false);
+  const [hasFaceID, setHasFaceID] = useState(false);
   const errorPosition = useSharedValue(0);
 
-  useLayoutEffect(() => {
-    setShowTabBar(false);
-  }, [setShowTabBar]);
+  useEffect(() => {
+    LocalAuthentication.supportedAuthenticationTypesAsync().then(result =>
+      setHasFaceID(result[0] === 2),
+    );
+  }, []);
 
   const errorAnimation = () => {
     if (!errorAnimated) {
@@ -94,7 +97,7 @@ const InputPin = ({
       const options = {
         promptMessage: 'Verify fingerprint',
         cancelLabel: 'Use payment pin instead',
-        disableDeviceFallback: !isAndroid,
+        disableDeviceFallback: true,
       };
       if (isBiometricSupported && enableBiometric && !disableBiometric) {
         const { success } =
@@ -365,7 +368,11 @@ const InputPin = ({
                           height: vh * 0.08,
                         }}
                         onPress={checkFingerprint}>
-                        <IonIcon name="finger-print-sharp" size={50} />
+                        {hasFaceID ? (
+                          <FaceIDIcon width={50} height={50} />
+                        ) : (
+                          <IonIcon name="finger-print-sharp" size={50} />
+                        )}
                       </Pressable>
                     ) : (
                       <Pressable

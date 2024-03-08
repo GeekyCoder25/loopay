@@ -61,6 +61,7 @@ import DeleteAccount from '../pages/MenuPages/DeleteAccount';
 import Referral from '../pages/MenuPages/Referral';
 import ChangePassword from '../pages/MenuPages/ChangePassword';
 import BottomTabs from './BottomTabs';
+import NotificationsContextComponent from '../context/NotificationContext';
 
 const TabsNavigator = () => {
   const {
@@ -98,181 +99,189 @@ const TabsNavigator = () => {
 
   return (
     <WalletContextComponent>
-      <BeneficiaryContextComponent>
-        <RequestFundsContextComponent>
-          <Stack.Navigator
-            screenOptions={({ navigation, route }) =>
-              screenHeader(navigation, route)
-            }
-            backBehavior="initialRoute">
-            <Stack.Screen
-              name="BottomTabs"
-              component={BottomTabs}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="Notification" component={Notification} />
-            <Stack.Screen name="LoopayTag" component={LoopayTag} />
-            <Stack.Screen name="AccountDetails" component={AccountDetails} />
-            <Stack.Screen name="AddMoneyFromHome" component={AddMoney} />
-            <Stack.Screen
-              name="SwapFunds"
-              component={SwapFunds}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="AddMoneyConfirm" component={AddMoneyConfirm} />
-            <Stack.Screen name="AddMoneyDetails" component={AddMoneyDetails} />
-            <Stack.Screen name="AddNewCard" component={AddNewCard} />
-            <Stack.Screen
-              name="SendMoneyNavigatorFromHome"
-              component={SendMoneyNavigator}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="SwapFundsFromHome" component={SwapFunds} />
-            <Stack.Screen
-              name="AirtimeTopUpNavigator"
-              component={AirtimeTopUpNavigator}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="BuyAirtime" component={BuyAirtime} />
-            <Stack.Screen name="BuyData" component={BuyData} />
-            <Stack.Screen
-              name="RequestFund"
-              component={RequestFund}
-              options={({ navigation, route }) => ({
-                ...screenHeader(navigation, route),
-                animation: 'none',
-              })}
-            />
-            <Stack.Screen
-              name="RequestConfirm"
-              component={RequestConfirm}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="RequestSuccess" component={RequestSuccess} />
-            <Stack.Screen
-              name="TransferAirtime"
-              component={TransferAirtime}
-              options={{ animation: 'none', headerShown: false }}
-            />
-            <Stack.Screen
-              name="Success"
-              component={Success}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="TransactionHistory"
-              component={TransactionHistory}
-            />
-            <Stack.Screen
-              name="TransactionHistoryDetails"
-              component={TransactionHistoryParams}
-            />
-            <Stack.Screen name="PendingRequest" component={PendingRequest} />
-            <Stack.Screen
-              name="PendingRequestConfirm"
-              component={PendingRequestConfirm}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="RequestStatus"
-              component={RequestStatus}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="Biometric" component={Biometric} />
-            <Stack.Screen name="SendLoopay" component={SendLoopay} />
-            <Stack.Screen
-              name="SendOthers"
-              component={SendOthers}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="Withdraw" component={Withdraw} />
-            <Stack.Screen name="PayABill" component={PayABill} />
-            <Stack.Screen
-              name="TransactionPin"
-              component={TransactionPin}
-              options={{
-                animation: 'none',
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen name="PayABillParams" component={PayABillParams} />
-            <Stack.Screen
-              name="TransferFunds"
-              component={TransferFunds}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="TransferBill"
-              component={TransferBill}
-              options={{
-                headerShown: false,
-                animation: 'none',
-              }}
-            />
-            <Stack.Screen
-              name="ProfileNavigator"
-              component={ProfileNavigator}
-              options={{ headerShown: false }}
-            />
+      <NotificationsContextComponent>
+        <BeneficiaryContextComponent>
+          <RequestFundsContextComponent>
+            <Stack.Navigator
+              screenOptions={({ navigation, route }) =>
+                screenHeader(navigation, route)
+              }
+              backBehavior="initialRoute">
+              <Stack.Screen
+                name="BottomTabs"
+                component={BottomTabs}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="Notification" component={Notification} />
+              <Stack.Screen name="LoopayTag" component={LoopayTag} />
+              <Stack.Screen name="AccountDetails" component={AccountDetails} />
+              <Stack.Screen name="AddMoneyFromHome" component={AddMoney} />
+              <Stack.Screen
+                name="SwapFunds"
+                component={SwapFunds}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="AddMoneyConfirm"
+                component={AddMoneyConfirm}
+              />
+              <Stack.Screen
+                name="AddMoneyDetails"
+                component={AddMoneyDetails}
+              />
+              <Stack.Screen name="AddNewCard" component={AddNewCard} />
+              <Stack.Screen
+                name="SendMoneyNavigatorFromHome"
+                component={SendMoneyNavigator}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="SwapFundsFromHome" component={SwapFunds} />
+              <Stack.Screen
+                name="AirtimeTopUpNavigator"
+                component={AirtimeTopUpNavigator}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="BuyAirtime" component={BuyAirtime} />
+              <Stack.Screen name="BuyData" component={BuyData} />
+              <Stack.Screen
+                name="RequestFund"
+                component={RequestFund}
+                options={({ navigation, route }) => ({
+                  ...screenHeader(navigation, route),
+                  animation: 'none',
+                })}
+              />
+              <Stack.Screen
+                name="RequestConfirm"
+                component={RequestConfirm}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="RequestSuccess" component={RequestSuccess} />
+              <Stack.Screen
+                name="TransferAirtime"
+                component={TransferAirtime}
+                options={{ animation: 'none', headerShown: false }}
+              />
+              <Stack.Screen
+                name="Success"
+                component={Success}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="TransactionHistory"
+                component={TransactionHistory}
+              />
+              <Stack.Screen
+                name="TransactionHistoryDetails"
+                component={TransactionHistoryParams}
+              />
+              <Stack.Screen name="PendingRequest" component={PendingRequest} />
+              <Stack.Screen
+                name="PendingRequestConfirm"
+                component={PendingRequestConfirm}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="RequestStatus"
+                component={RequestStatus}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="Biometric" component={Biometric} />
+              <Stack.Screen name="SendLoopay" component={SendLoopay} />
+              <Stack.Screen
+                name="SendOthers"
+                component={SendOthers}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="Withdraw" component={Withdraw} />
+              <Stack.Screen name="PayABill" component={PayABill} />
+              <Stack.Screen
+                name="TransactionPin"
+                component={TransactionPin}
+                options={{
+                  animation: 'none',
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen name="PayABillParams" component={PayABillParams} />
+              <Stack.Screen
+                name="TransferFunds"
+                component={TransferFunds}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="TransferBill"
+                component={TransferBill}
+                options={{
+                  headerShown: false,
+                  animation: 'none',
+                }}
+              />
+              <Stack.Screen
+                name="ProfileNavigator"
+                component={ProfileNavigator}
+                options={{ headerShown: false }}
+              />
 
-            <Stack.Screen name="AddMoney" component={AddMoney} />
-            <Stack.Screen
-              name="SendMoneyNavigator"
-              component={SendMoneyNavigator}
-              options={{
-                headerShown: false,
-              }}
-            />
+              <Stack.Screen name="AddMoney" component={AddMoney} />
+              <Stack.Screen
+                name="SendMoneyNavigator"
+                component={SendMoneyNavigator}
+                options={{
+                  headerShown: false,
+                }}
+              />
 
-            <Stack.Screen name="VirtualCard" component={VirtualCard} />
-            <Stack.Screen
-              name="VirtualCardDetails"
-              component={VirtualCardDetails}
-            />
-            <Stack.Screen name="AccStatement" component={AccStatement} />
-            <Stack.Screen
-              name="SchedulePayment"
-              component={SchedulePayment}
-              options={{
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="SchedulePayments"
-              component={SchedulePayments}
-            />
-            <Stack.Screen name="MyInfo" component={MyInfo} />
-            <Stack.Screen
-              name="VerificationStatus"
-              component={VerificationStatus}
-            />
-            <Stack.Screen
-              name="IdentityVerification"
-              component={IdentityVerification}
-            />
-            <Stack.Screen
-              name="VerificationInformation"
-              component={VerificationInformation}
-            />
-            <Stack.Screen name="VerifyInput" component={VerifyInputNumber} />
-            <Stack.Screen name="VerifyImage" component={VerifyImage} />
+              <Stack.Screen name="VirtualCard" component={VirtualCard} />
+              <Stack.Screen
+                name="VirtualCardDetails"
+                component={VirtualCardDetails}
+              />
+              <Stack.Screen name="AccStatement" component={AccStatement} />
+              <Stack.Screen
+                name="SchedulePayment"
+                component={SchedulePayment}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="SchedulePayments"
+                component={SchedulePayments}
+              />
+              <Stack.Screen name="MyInfo" component={MyInfo} />
+              <Stack.Screen
+                name="VerificationStatus"
+                component={VerificationStatus}
+              />
+              <Stack.Screen
+                name="IdentityVerification"
+                component={IdentityVerification}
+              />
+              <Stack.Screen
+                name="VerificationInformation"
+                component={VerificationInformation}
+              />
+              <Stack.Screen name="VerifyInput" component={VerifyInputNumber} />
+              <Stack.Screen name="VerifyImage" component={VerifyImage} />
 
-            <Stack.Screen name="ChangePassword" component={ChangePassword} />
-            <Stack.Screen
-              name="DevicesAndSessions"
-              component={DevicesAndSessions}
-            />
-            <Stack.Screen name="Settings" component={Settings} />
-            <Stack.Screen name="Referral" component={Referral} />
-            <Stack.Screen name="Referrals" component={Referrals} />
-            <Stack.Screen name="Support" component={Support} />
-            <Stack.Screen name="Beneficiaries" component={Beneficiaries} />
-            <Stack.Screen name="DeleteAccount" component={DeleteAccount} />
-          </Stack.Navigator>
-          {showPopUp && !isSessionTimedOut && <Popup />}
-          {<ShakeModal />}
-        </RequestFundsContextComponent>
-      </BeneficiaryContextComponent>
+              <Stack.Screen name="ChangePassword" component={ChangePassword} />
+              <Stack.Screen
+                name="DevicesAndSessions"
+                component={DevicesAndSessions}
+              />
+              <Stack.Screen name="Settings" component={Settings} />
+              <Stack.Screen name="Referral" component={Referral} />
+              <Stack.Screen name="Referrals" component={Referrals} />
+              <Stack.Screen name="Support" component={Support} />
+              <Stack.Screen name="Beneficiaries" component={Beneficiaries} />
+              <Stack.Screen name="DeleteAccount" component={DeleteAccount} />
+            </Stack.Navigator>
+            {showPopUp && !isSessionTimedOut && <Popup />}
+            {<ShakeModal />}
+          </RequestFundsContextComponent>
+        </BeneficiaryContextComponent>
+      </NotificationsContextComponent>
     </WalletContextComponent>
   );
 };

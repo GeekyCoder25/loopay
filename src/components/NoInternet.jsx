@@ -54,7 +54,7 @@ const NoInternet = ({ modalOpen }) => {
               color={globalStyles.themeColorSolo}
             /> */}
           </View>
-          <BoldText style={styles.text}>{apiUrl}</BoldText>
+          {/* <BoldText style={styles.text}>{apiUrl}</BoldText> */}
           <BoldText style={styles.text}>No Internet Connection</BoldText>
           {isChecking ? (
             <ActivityIndicator

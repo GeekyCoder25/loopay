@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import {
   Image,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -20,6 +21,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import { timeForInactivityInSecond } from '../../config/config';
 import { getBiometric } from '../../../utils/storage';
+import FaceIDIcon from '../../../assets/images/face-id.svg';
 import Animated, {
   Easing,
   useSharedValue,
@@ -40,7 +42,6 @@ const LockScreen = () => {
     enableBiometric,
     setEnableBiometric,
     timerId,
-    isAndroid,
   } = useContext(AppContext);
   const [inputCode, setInputCode] = useState('');
   const [hasForgot, setHasForgot] = useState(false);
@@ -50,11 +51,17 @@ const LockScreen = () => {
   const codeLength = [1, 2, 3, 4, 5, 6];
   const [errorAnimated, setErrorAnimated] = useState(false);
   const [switchIcon, setSwitchIcon] = useState(false);
+  const [hasFaceID, setHasFaceID] = useState(false);
 
   const logoPosition = useSharedValue(0);
   const iconPosition = useSharedValue(100);
   const errorPosition = useSharedValue(0);
 
+  useEffect(() => {
+    LocalAuthentication.supportedAuthenticationTypesAsync().then(result =>
+      setHasFaceID(result[0] === 2),
+    );
+  }, []);
   useEffect(() => {
     const checkFingerprint = async () => {
       const biometric = (await getBiometric()) || false;
@@ -67,12 +74,11 @@ const LockScreen = () => {
           const options = {
             promptMessage: 'Login with Biometrics',
             cancelLabel: 'Use Loopay password instead',
-            disableDeviceFallback: !isAndroid,
+            disableDeviceFallback: true,
           };
           if (enableBiometric) {
-            const { success } = await LocalAuthentication.authenticateAsync(
-              options,
-            );
+            const { success } =
+              await LocalAuthentication.authenticateAsync(options);
             if (success) {
               setIsSessionTimedOut(false);
               setWalletRefresh(prev => !prev);
@@ -95,7 +101,6 @@ const LockScreen = () => {
     setEnableBiometric,
     enableBiometric,
     timerId,
-    isAndroid,
   ]);
 
   useEffect(() => {
@@ -325,7 +330,11 @@ const LockScreen = () => {
                       ...digitDimension,
                     }}
                     onPress={() => setBiometricSwitch(prev => !prev)}>
-                    <IonIcon name="finger-print-sharp" size={50} />
+                    {hasFaceID ? (
+                      <FaceIDIcon width={50} height={50} />
+                    ) : (
+                      <IonIcon name="finger-print-sharp" size={50} />
+                    )}
                   </Pressable>
                 ) : (
                   <View
