@@ -25,6 +25,11 @@
     "production": {
       "android": {
         "serviceAccountKeyPath": "./assets/triluxy-app-396805-4032b6f30bcd.json"
+      },
+      "ios": {
+        "appleId": "john.ogbonna@hmghomes.com",
+        "ascAppId": "6479015391",
+        "appleTeamId": "ZAL955P745"
       }
     }
   }

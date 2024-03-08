@@ -1,8 +1,14 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useState } from 'react';
-import PageContainer from '../../../components/PageContainer';
+import React, { useContext, useEffect, useState } from 'react';
 import BoldText from '../../../components/fonts/BoldText';
-import { Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import {
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import RegularText from '../../../components/fonts/RegularText';
 import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
 import FlagSelect from '../../../components/FlagSelect';
@@ -12,7 +18,6 @@ import { useWalletContext } from '../../../context/WalletContext';
 import Button from '../../../components/Button';
 import { allCurrencies } from '../../../database/data';
 import Back from '../../../components/Back';
-import { postFetchData } from '../../../../utils/fetchAPI';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { randomUUID } from 'expo-crypto';
 import FaIcon from '@expo/vector-icons/FontAwesome';
@@ -20,14 +25,16 @@ import IonIcon from '@expo/vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ToastMessage from '../../../components/ToastMessage';
 import CalendarIcon from '../../../../assets/images/calendar.svg';
-import InputPin from '../../../components/InputPin';
-import { useBeneficiaryContext } from '../../../context/BeneficiariesContext';
 
-const SchedulePayment = ({ navigation, route }) => {
-  const { selectedCurrency, setIsLoading, setWalletRefresh, isAndroid } =
-    useContext(AppContext);
-  const { wallet, setWallet } = useWalletContext();
-  const { setRefetchBeneficiary } = useBeneficiaryContext();
+const SchedulePayment = ({
+  type,
+  scheduleData,
+  setScheduleData,
+  isRecurring,
+  setIsRecurring,
+}) => {
+  const { selectedCurrency, isAndroid } = useContext(AppContext);
+  const { wallet } = useWalletContext();
   const [selected, setSelected] = useState(selectedCurrency);
   const [stateFields, setStateFields] = useState({
     id: randomUUID(),
@@ -37,7 +44,6 @@ const SchedulePayment = ({ navigation, route }) => {
   const [errorKey, setErrorKey] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
-  const [value, setValue] = useState('');
   const [selectedFrequency, setSelectedFrequency] = useState({});
   const [frequencyModalOpen, setFrequencyModalOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState({});
@@ -48,32 +54,18 @@ const SchedulePayment = ({ navigation, route }) => {
   const [endValue, setEndValue] = useState('DD/MM/YYYY');
   const [interval, setInterval] = useState({});
   const [showPicker, setShowPicker] = useState(false);
-  const [canContinue, setCanContinue] = useState(false);
-  const { minimumAmountToAdd } = selected;
+  const [recurringModal, setRecurringModal] = useState(true);
 
-  const handlePriceInput = text => {
-    setValue(text);
-    text = Number(text);
+  const transactionType =
+    (type && type === 'loopay') || type === 'others' ? 'Transfer' : 'Payment';
 
-    setStateFields(prev => {
-      return {
-        ...prev,
-        amount: text,
-      };
-    });
-    setErrorKey(false);
-    setErrorMessage(false);
-  };
+  useEffect(() => {
+    setRecurringModal(isRecurring);
+  }, [isRecurring]);
 
-  const handleAutoFill = () => {
-    if (value && value < minimumAmountToAdd) {
-      setErrorKey(true);
-      setErrorMessage(
-        `Minimum amount is ${selected.symbol}${minimumAmountToAdd}`,
-      );
-    }
-    value && setValue(addingDecimal(value));
-  };
+  useEffect(() => {
+    setScheduleData(stateFields);
+  }, [setScheduleData, stateFields]);
 
   const handleCurrencyChange = newSelect => {
     setErrorKey('');
@@ -136,6 +128,8 @@ const SchedulePayment = ({ navigation, route }) => {
         period: formattedTime,
         label: formattedTime.toTimeString().split(' ')[0],
       });
+      setErrorMessage('');
+      setErrorKey('');
     }
   };
   const handleMonthlyPicker = timeEvent => {
@@ -147,6 +141,8 @@ const SchedulePayment = ({ navigation, route }) => {
         period: formattedTime,
         label: formattedTime.getDate(),
       });
+      setErrorMessage('');
+      setErrorKey('');
     }
   };
 
@@ -182,7 +178,8 @@ const SchedulePayment = ({ navigation, route }) => {
           });
         } else if (showPicker === 'end') {
           if (interval.start && interval.start > selectedDate) {
-            selectedDate = new Date(interval.start);
+            setErrorKey('end');
+            return setErrorMessage("Start date can't be before end date");
           }
           selectedDate.setMilliseconds(999);
           selectedDate.setSeconds(59);
@@ -210,15 +207,11 @@ const SchedulePayment = ({ navigation, route }) => {
     if (!stateFields.title) {
       setErrorKey('title');
       return setErrorMessage('Please provide a name title for your schedule');
-    } else if (!value) {
-      setErrorKey('amount');
-      return setErrorMessage('Please provide schedule amount');
     } else if (!stateFields.frequency) {
       setErrorKey('frequency');
       return setErrorMessage('Please select schedule frequency');
     } else if (!selectedPeriod.period) {
       setErrorKey('frequencyIndex');
-
       if (selectedFrequency.id === 'hourly') {
         return setErrorMessage('Please select schedule frequency minute');
       } else if (selectedFrequency.id === 'daily') {
@@ -234,156 +227,36 @@ const SchedulePayment = ({ navigation, route }) => {
     } else if (!interval.start) {
       setErrorKey('start');
       return setErrorMessage('Please select schedule start');
-    } else if (value && value < minimumAmountToAdd) {
-      setErrorKey(true);
-      return setErrorMessage(
-        `Minimum schedule amount is ${selected.symbol}${minimumAmountToAdd}`,
-      );
     } else {
       console.log(stateFields);
-      return setCanContinue(true);
-    }
-  };
-  const transferLoopay = async () => {
-    try {
-      const data = route.params.scheduleData;
-      const response = await postFetchData('user/loopay/transfer', data);
-      if (response.status === 200) {
-        const balance = response.data.amount;
-        setWallet(prev => {
-          return { ...prev, balance: prev.balance - Number(balance) };
-        });
-        if (data.saveAsBeneficiary) {
-          await postFetchData('user/beneficiary', data.userToSendTo);
-          setRefetchBeneficiary(prev => !prev);
-        }
-        setWalletRefresh(prev => !prev);
-        navigation.replace('Success', {
-          userToSendTo: data.userToSendTo,
-          amountInput: data.amount,
-          transaction: response.data.transaction,
-        });
-        return response.status;
-      }
-      return response.data;
-    } catch (error) {
-      console.log(error);
+      return setRecurringModal(false);
     }
   };
 
-  const transferOthers = async () => {
-    try {
-      const data = route.params.scheduleData;
-      const id = randomUUID();
-      const response = await postFetchData('user/transfer', data);
-      if (response.status === 200) {
-        const { transaction } = response.data;
-        await postFetchData('user/savedbanks', data.bankData);
-        navigation.replace('Success', {
-          userToSendTo: data.bankSelected,
-          amount: data.amount,
-          fee: data.fee,
-          id,
-          transaction,
-        });
-        setWalletRefresh(prev => !prev);
-        return response.status;
-      }
-      typeof response === 'string'
-        ? setErrorMessage(response)
-        : setErrorMessage(response.data);
-      return response.data;
-    } catch (error) {
-      console.log(error.message);
-    }
+  const handleClose = () => {
+    setRecurringModal(false);
+    setScheduleData(null);
+    setIsRecurring(false);
   };
-
-  const transferBill = async () => {
-    try {
-      const data = route.params.scheduleData;
-      setIsLoading(true);
-      const response = await postFetchData(
-        `user/bill-pay?${data.routeId}`,
-        data,
-      );
-      if (response.status === 200) {
-        setWalletRefresh(prev => !prev);
-        navigation.replace('Success', {
-          amountInput: data.amount,
-          billPlan: data.provider.name,
-          token: response.data.token,
-          reference: response.data.referenceId,
-          transaction: response.data.transaction,
-        });
-        return response.status;
-      }
-      return response.data;
-    } catch (error) {
-      ToastMessage(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const transferAirtime = async setErrorMessageParam => {
-    try {
-      const data = route.params.scheduleData.formData;
-
-      const response = await postFetchData(`user/${data.type}`, data);
-      if (!response.status || response.status !== 200) {
-        const errRes = response.data?.message || response.data || response;
-        setErrorMessageParam(errRes);
-        return errRes;
-      }
-      setWalletRefresh(prev => !prev);
-      navigation.replace('Success', {
-        airtime: { ...data, reference: response.data.reference },
-        amountInput: response.data.transaction?.amount || data.amount,
-        dataPlan: data.plan?.value || undefined,
-        transaction: response.data.transaction,
-      });
-      return response.status;
-    } finally {
-    }
-  };
-  const handleSchedule = async () => {
-    switch (route.params.type) {
-      case 'loopay':
-        await transferLoopay();
-        break;
-      case 'others':
-        await transferOthers();
-        break;
-      case 'bill':
-        await transferBill();
-        break;
-      case 'airtime':
-        await transferAirtime();
-        break;
-      case 'data':
-        await transferAirtime();
-        break;
-
-      default:
-        break;
-    }
-  };
-
-  if (canContinue) {
-    return (
-      <InputPin
-        customFunc={handleSchedule}
-        handleCancel={() => setCanContinue(false)}
-      />
-    );
-  }
 
   return (
-    <>
-      <Back goBack={navigation.goBack} />
-      <PageContainer style={styles.container} scroll>
-        <BoldText style={styles.headerText}>Schedule Payment</BoldText>
-        <View style={styles.body}>
+    <Modal
+      visible={recurringModal}
+      animationType="slide"
+      transparent
+      onRequestClose={handleModal}>
+      <Pressable style={styles.overlay} />
+      <View style={styles.modalContainer}>
+        {/* <PageContainer style={styles.container} scroll> */}
+        <ScrollView style={styles.body} automaticallyAdjustKeyboardInsets>
+          <View style={styles.header}>
+            <BoldText style={styles.headerText}>
+              Schedule {transactionType}
+            </BoldText>
+            <Pressable onPress={handleClose}>
+              <IonIcon name="close" size={24} />
+            </Pressable>
+          </View>
           <RegularText style={styles.label}>Schedule Title</RegularText>
           <View style={styles.textInputContainer}>
             <TextInput
@@ -402,6 +275,7 @@ const SchedulePayment = ({ navigation, route }) => {
                 });
               }}
               placeholder="Name"
+              value={scheduleData.title}
             />
           </View>
 
@@ -410,7 +284,7 @@ const SchedulePayment = ({ navigation, route }) => {
           </View>
           <Pressable
             onPress={() =>
-              route.params.type === 'others'
+              type === 'others'
                 ? ToastMessage(
                     'Naira is the only supported currency for inter bank transfers at the moment',
                   )
@@ -428,49 +302,6 @@ const SchedulePayment = ({ navigation, route }) => {
               <ChevronDown />
             </View>
           </Pressable>
-          {/* {route.params.type === 'loopay' && (
-          <>
-            <View style={styles.labelContainer}>
-              <RegularText style={styles.label}>
-                Enter user Loopay tag or account number
-              </RegularText>
-            </View>
-            <View style={styles.textInputContainer}>
-              <TextInput
-                style={{
-                  ...styles.textInput,
-                  borderColor: errorKey === 'tagName' ? 'red' : '#ccc',
-                }}
-                onChangeText={text => handleTagCheck(text)}
-                placeholder={'#username'}
-                onBlur={handleCheck}
-              />
-              {userFound && (
-                <Pressable style={styles.textInputRight}>
-                  <Check />
-                </Pressable>
-              )}
-            </View>
-          </>
-        )} */}
-
-          <RegularText style={styles.label}>Amount</RegularText>
-          <View style={styles.textInputContainer}>
-            <View style={styles.symbolContainer}>
-              <BoldText style={styles.symbol}>{selected.symbol}</BoldText>
-            </View>
-            <TextInput
-              style={{
-                ...styles.textInput,
-                ...styles.textInputStyles,
-                borderColor: errorKey === 'amount' ? 'red' : '#ccc',
-              }}
-              inputMode="decimal"
-              onChangeText={text => handlePriceInput(text)}
-              onBlur={handleAutoFill}
-              value={value}
-            />
-          </View>
 
           <View style={styles.labelContainer}>
             <RegularText style={styles.label}>Frequency</RegularText>
@@ -673,7 +504,11 @@ const SchedulePayment = ({ navigation, route }) => {
           <Pressable
             style={styles.textInputContainer}
             onPress={() => setShowPicker('end')}>
-            <View style={{ ...styles.textInput }}>
+            <View
+              style={{
+                ...styles.textInput,
+                borderColor: errorKey === 'end' ? 'red' : '#ccc',
+              }}>
               <View style={styles.dateTextContainer}>
                 <View style={styles.calendarIcon}>
                   <CalendarIcon width={30} height={30} />
@@ -718,123 +553,121 @@ const SchedulePayment = ({ navigation, route }) => {
             />
           </View>
           {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
-        </View>
-        <View style={styles.button}>
-          <Button
-            text="Continue"
-            onPress={() => handleContinue(selectedCurrency)}
-          />
-        </View>
+          <View style={styles.button}>
+            <Button
+              text="Confirm"
+              onPress={() => handleContinue(selectedCurrency)}
+            />
+          </View>
+        </ScrollView>
+      </View>
 
-        <Modal
-          visible={modalOpen}
-          animationType="slide"
-          transparent
-          onRequestClose={handleModal}>
-          <Back onPress={() => setModalOpen(false)} />
-          <View style={styles.modal}>
-            <BoldText style={styles.modalHeader}>Select currency</BoldText>
-            {allCurrencies
-              .filter(i => i.currency !== selected.currency)
-              .map(select => (
-                <Pressable
-                  key={select.currency}
-                  style={styles.currency}
-                  onPress={() => {
-                    handleCurrencyChange(select);
-                    setModalOpen(false);
-                  }}>
-                  <View style={styles.currencyIcon}>
-                    <FlagSelect country={select.currency} />
-                    <View>
-                      <BoldText>{select.acronym}</BoldText>
-                      <RegularText style={styles.currencyName}>
-                        {select.currency}
-                      </RegularText>
-                    </View>
+      <Modal
+        visible={modalOpen}
+        animationType="slide"
+        transparent
+        onRequestClose={handleModal}>
+        <Back onPress={() => setModalOpen(false)} />
+        <View style={styles.modal}>
+          <BoldText style={styles.modalHeader}>Select currency</BoldText>
+          {allCurrencies
+            .filter(i => i.currency !== selected.currency)
+            .map(select => (
+              <Pressable
+                key={select.currency}
+                style={styles.currency}
+                onPress={() => {
+                  handleCurrencyChange(select);
+                  setModalOpen(false);
+                }}>
+                <View style={styles.currencyIcon}>
+                  <FlagSelect country={select.currency} />
+                  <View>
+                    <BoldText>{select.acronym}</BoldText>
+                    <RegularText style={styles.currencyName}>
+                      {select.currency}
+                    </RegularText>
                   </View>
-                  <BoldText style={styles.amount}>
-                    {select.symbol +
-                      addingDecimal(
-                        wallet[`${select.currency}Balance`]?.toLocaleString(),
-                      )}
+                </View>
+                <BoldText style={styles.amount}>
+                  {select.symbol +
+                    addingDecimal(
+                      wallet[`${select.currency}Balance`]?.toLocaleString(),
+                    )}
+                </BoldText>
+              </Pressable>
+            ))}
+        </View>
+      </Modal>
+
+      <Modal
+        visible={frequencyModalOpen}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setFrequencyModalOpen(false)}>
+        <Back onPress={() => setFrequencyModalOpen(false)} />
+        <View style={styles.modal}>
+          <BoldText style={styles.modalHeader}>Select Order Frequency</BoldText>
+          {frequencies.map(frequency => (
+            <Pressable
+              key={frequency.id}
+              style={styles.currency}
+              onPress={() => {
+                handleFrequencyChange(frequency);
+                setFrequencyModalOpen(false);
+              }}>
+              <View style={styles.currencyIcon}>
+                <View>
+                  <BoldText style={styles.currencyName}>
+                    {frequency.label}
                   </BoldText>
-                </Pressable>
-              ))}
-          </View>
-        </Modal>
-
-        <Modal
-          visible={frequencyModalOpen}
-          animationType="slide"
-          transparent
-          onRequestClose={() => setFrequencyModalOpen(false)}>
-          <Back onPress={() => setFrequencyModalOpen(false)} />
-          <View style={styles.modal}>
-            <BoldText style={styles.modalHeader}>
-              Select Order Frequency
-            </BoldText>
-            {frequencies.map(frequency => (
-              <Pressable
-                key={frequency.id}
-                style={styles.currency}
-                onPress={() => {
-                  handleFrequencyChange(frequency);
-                  setFrequencyModalOpen(false);
-                }}>
-                <View style={styles.currencyIcon}>
-                  <View>
-                    <BoldText style={styles.currencyName}>
-                      {frequency.label}
-                    </BoldText>
-                  </View>
                 </View>
-                <BoldText style={styles.amount}>
-                  {selectedFrequency?.id === frequency.id ? (
-                    <FaIcon name="check-circle" size={24} />
-                  ) : (
-                    <FaIcon name="circle-o" size={24} />
-                  )}
-                </BoldText>
-              </Pressable>
-            ))}
-          </View>
-        </Modal>
+              </View>
+              <BoldText style={styles.amount}>
+                {selectedFrequency?.id === frequency.id ? (
+                  <FaIcon name="check-circle" size={24} />
+                ) : (
+                  <FaIcon name="circle-o" size={24} />
+                )}
+              </BoldText>
+            </Pressable>
+          ))}
+        </View>
+      </Modal>
 
-        <Modal
-          visible={selectedPeriodModal}
-          animationType="slide"
-          transparent
-          onRequestClose={() => setSelectedPeriodModal(false)}>
-          <Back onPress={() => setSelectedPeriodModal(false)} />
-          <View style={styles.modal}>
-            <BoldText style={styles.modalHeader}>Select Day</BoldText>
-            {days.map(day => (
-              <Pressable
-                key={day}
-                style={styles.currency}
-                onPress={() => {
-                  setSelectedPeriod({ label: day, period: day });
-                  setSelectedPeriodModal(false);
-                }}>
-                <View style={styles.currencyIcon}>
-                  <View>
-                    <BoldText style={styles.currencyName}>{day}</BoldText>
-                  </View>
+      <Modal
+        visible={selectedPeriodModal}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setSelectedPeriodModal(false)}>
+        <Back onPress={() => setSelectedPeriodModal(false)} />
+        <View style={styles.modal}>
+          <BoldText style={styles.modalHeader}>Select Day</BoldText>
+          {days.map(day => (
+            <Pressable
+              key={day}
+              style={styles.currency}
+              onPress={() => {
+                setSelectedPeriod({ label: day, period: day });
+                setSelectedPeriodModal(false);
+              }}>
+              <View style={styles.currencyIcon}>
+                <View>
+                  <BoldText style={styles.currencyName}>{day}</BoldText>
                 </View>
-                <BoldText style={styles.amount}>
-                  {selectedPeriod === day ? (
-                    <FaIcon name="check-circle" size={24} />
-                  ) : (
-                    <FaIcon name="circle-o" size={24} />
-                  )}
-                </BoldText>
-              </Pressable>
-            ))}
-          </View>
-        </Modal>
-      </PageContainer>
-    </>
+              </View>
+              <BoldText style={styles.amount}>
+                {selectedPeriod.period === day ? (
+                  <FaIcon name="check-circle" size={24} />
+                ) : (
+                  <FaIcon name="circle-o" size={24} />
+                )}
+              </BoldText>
+            </Pressable>
+          ))}
+        </View>
+      </Modal>
+    </Modal>
   );
 };
 
@@ -842,11 +675,44 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 5 + '%',
   },
-  headerText: {
-    fontSize: 20,
+  overlay: {
+    backgroundColor: '#000',
+    opacity: 0.7,
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    position: 'absolute',
+    height: 60 + '%',
+    flex: 1,
+    maxHeight: 700,
+    width: 100 + '%',
+    bottom: 0,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    overflow: 'hidden',
+    elevation: 10,
   },
   body: {
-    marginVertical: 40,
+    paddingHorizontal: 5 + '%',
+    zIndex: 9,
+    width: 100 + '%',
+    height: 100 + '%',
+    paddingTop: 40,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 30,
+    columnGap: 50,
+  },
+  headerText: {
+    fontSize: 20,
   },
   labelContainer: {
     flexDirection: 'row',
@@ -948,13 +814,6 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 8,
   },
-  overlay: {
-    backgroundColor: '#000',
-    opacity: 0.5,
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
   modal: {
     backgroundColor: '#fff',
     width: 100 + '%',
@@ -985,7 +844,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     justifyContent: 'flex-end',
-    marginBottom: 30,
+    marginBottom: 150,
   },
 });
 

@@ -103,7 +103,9 @@ const FooterCard = ({
             </>
           )}
           <View style={styles.cardLine}>
-            <RegularText style={styles.cardKey}>Amount</RegularText>
+            <RegularText style={styles.cardKey}>
+              {isCredit ? 'Deposit Amount' : 'Amount'}
+            </RegularText>
             <BoldText style={styles.cardValue}>
               {currency?.symbol}
               {addingDecimal(amountInput)}
@@ -126,7 +128,7 @@ const FooterCard = ({
               }}>
               {isCredit ? (
                 <BoldText style={{ textTransform: 'capitalize' }}>
-                  {type || ''} Transfer
+                  {type || 'Transfer'}
                 </BoldText>
               ) : (
                 currency?.acronym + ' Balance'

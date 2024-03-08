@@ -26,6 +26,7 @@ import { AddBankFields, BanksModal } from './AddBank';
 import ChevronDown from '../../../../assets/images/chevron-down';
 import Back from '../../../components/Back';
 import RecurringSwitch from '../../../components/RecurringSwitch';
+import SchedulePayment from '../SchedulePayments/SchedulePayment';
 
 const SendOthers = ({ navigation, route }) => {
   const { appData, vh, selectedCurrency, setWalletRefresh } =
@@ -46,11 +47,13 @@ const SendOthers = ({ navigation, route }) => {
   const [addedBanks, setAddedBanks] = useState([]);
   const [fee, setFee] = useState(0);
   const [recipientData, setRecipientData] = useState(null);
-  const [isRecurring, setIsRecurring] = useState(!!route.params?.schedule);
+  const [isRecurring, setIsRecurring] = useState(false);
   const [formData, setFormData] = useState({
     accNo: '',
     bank: '',
   });
+  const [scheduleData, setScheduleData] = useState(null);
+  const [hasAskedPin, setHasAskedPin] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -174,21 +177,10 @@ const SendOthers = ({ navigation, route }) => {
       setErrorKey('amountInput');
       setErrorMessage('Insufficient funds');
     } else {
-      if (isRecurring) {
-        return navigation.navigate('SchedulePayment', {
-          type: route.params?.schedule?.id || 'others',
-          scheduleData: {
-            ...bankSelected,
-            reason: description,
-            amount: amountInput,
-            fee,
-            senderPhoto: appData.photoURL,
-            id: randomUUID(),
-            bankSelected,
-            bankData: formData,
-          },
-        });
-      }
+      // navigation.navigate('SchedulePayment', {
+      //   type: route.params?.schedule?.id || 'others',
+      // });
+      setHasAskedPin(true);
       setCanContinue(true);
     }
   };
@@ -238,7 +230,7 @@ const SendOthers = ({ navigation, route }) => {
   return (
     <>
       <Back onPress={() => navigation.goBack()} />
-      <PageContainer scroll>
+      <PageContainer scroll avoidKeyboardPushup={isRecurring}>
         <View style={{ ...styles.container, minHeight: vh * 0.75 }}>
           <AccInfoCard disableSwitchCurrency={bankSelected} />
           <RegularText style={styles.headerText}>
@@ -405,6 +397,10 @@ const SendOthers = ({ navigation, route }) => {
                 <RecurringSwitch
                   isRecurring={isRecurring}
                   setIsRecurring={setIsRecurring}
+                  scheduleData={scheduleData}
+                  setScheduleData={setScheduleData}
+                  setHasAskedPin={setHasAskedPin}
+                  type="others"
                 />
                 <View style={styles.button}>
                   <Button text="Send" onPress={handleWithdraw} />
@@ -414,6 +410,15 @@ const SendOthers = ({ navigation, route }) => {
           )}
         </View>
       </PageContainer>
+      {scheduleData && !hasAskedPin && (
+        <SchedulePayment
+          isRecurring={isRecurring}
+          setIsRecurring={setIsRecurring}
+          scheduleData={scheduleData}
+          setScheduleData={setScheduleData}
+          type="others"
+        />
+      )}
     </>
   );
 };

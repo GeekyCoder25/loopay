@@ -2,13 +2,25 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import BoldText from './fonts/BoldText';
 
-const RecurringSwitch = ({ isRecurring, setIsRecurring }) => {
+const RecurringSwitch = ({
+  isRecurring,
+  setIsRecurring,
+  scheduleData,
+  setScheduleData,
+  setHasAskedPin,
+  type,
+}) => {
   const handlePress = () => {
     setIsRecurring(prev => !prev);
+    !scheduleData && setScheduleData({});
+    setHasAskedPin(false);
   };
+
+  const transactionType =
+    (type && type === 'loopay') || type === 'others' ? 'transfer' : 'payment';
   return (
     <View style={styles.container}>
-      <BoldText>Make this a recurring transfer</BoldText>
+      <BoldText>Make this a recurring {transactionType}</BoldText>
 
       <TouchableOpacity onPress={handlePress}>
         {isRecurring ? (

@@ -27,6 +27,7 @@ import { randomUUID } from 'expo-crypto';
 import InputPin from '../../../components/InputPin';
 import { useBeneficiaryContext } from '../../../context/BeneficiariesContext';
 import RecurringSwitch from '../../../components/RecurringSwitch';
+import SchedulePayment from '../SchedulePayments/SchedulePayment';
 
 const TransferFunds = ({ navigation, route }) => {
   const { appData, selectedCurrency, setWalletRefresh } =
@@ -40,7 +41,9 @@ const TransferFunds = ({ navigation, route }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
   const [canContinue, setCanContinue] = useState(false);
-  const [isRecurring, setIsRecurring] = useState(!!route.params?.schedule);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [scheduleData, setScheduleData] = useState(null);
+  const [hasAskedPin, setHasAskedPin] = useState(false);
   const { minimumAmountToAdd } = selectedCurrency;
   const editInput = () => {
     setErrorMessage('');
@@ -82,22 +85,8 @@ const TransferFunds = ({ navigation, route }) => {
       setErrorKey('amountInput');
       setErrorMessage('Insufficient funds');
     } else {
-      if (isRecurring) {
-        return navigation.navigate('SchedulePayment', {
-          type: route.params?.schedule?.id || 'loopay',
-          scheduleData: {
-            ...userToSendTo,
-            currency: selectedCurrency.currency,
-            amount: amountInput,
-            description,
-            senderPhoto: appData.photoURL,
-            id: randomUUID(),
-            saveAsBeneficiary: !!route.params.saveAsBeneficiary,
-            userToSendTo,
-          },
-        });
-      }
       setCanContinue(true);
+      setHasAskedPin(true);
     }
   };
 
@@ -249,6 +238,10 @@ const TransferFunds = ({ navigation, route }) => {
                 <RecurringSwitch
                   isRecurring={isRecurring}
                   setIsRecurring={setIsRecurring}
+                  scheduleData={scheduleData}
+                  setScheduleData={setScheduleData}
+                  setHasAskedPin={setHasAskedPin}
+                  type="loopay"
                 />
               </View>
               <Button
@@ -260,6 +253,15 @@ const TransferFunds = ({ navigation, route }) => {
           </View>
         </ScrollView>
       </PageContainer>
+      {scheduleData && !hasAskedPin && (
+        <SchedulePayment
+          isRecurring={isRecurring}
+          setIsRecurring={setIsRecurring}
+          scheduleData={scheduleData}
+          setScheduleData={setScheduleData}
+          type="loopay"
+        />
+      )}
       <SelectCurrencyModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
     </>
   );

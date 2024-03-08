@@ -27,6 +27,7 @@ import { randomUUID } from 'expo-crypto';
 import BillTV from './BillTV';
 import BillSchool from './BillSchool';
 import RecurringSwitch from '../../../components/RecurringSwitch';
+import SchedulePayment from '../SchedulePayments/SchedulePayment';
 
 const PayABillParams = ({ route, navigation }) => {
   const { selectedCurrency, showAmount, setShowAmount } =
@@ -42,7 +43,9 @@ const PayABillParams = ({ route, navigation }) => {
   const [apiBody, setApiBody] = useState('');
   const { buttonText, data: fields } = route.params;
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  const [isRecurring, setIsRecurring] = useState(!!route.params?.schedule);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [scheduleData, setScheduleData] = useState(null);
+  const [hasAskedPin, setHasAskedPin] = useState(false);
 
   useEffect(() => {
     fields.forEach(element => {
@@ -109,19 +112,8 @@ const PayABillParams = ({ route, navigation }) => {
       );
       return setErrorKey('amount');
     }
+    setHasAskedPin(true);
 
-    if (isRecurring) {
-      return navigation.navigate('SchedulePayment', {
-        type: route.params?.schedule?.id || 'bill',
-        scheduleData: {
-          ...stateFields,
-          ...globalApiBody,
-          referenceId: randomUUID().split('-').join(''),
-          routeId: route.params.title,
-          paymentCurrency: selected.acronym,
-        },
-      });
-    }
     navigation.navigate('TransferBill', {
       ...stateFields,
       ...globalApiBody,
@@ -173,6 +165,7 @@ const PayABillParams = ({ route, navigation }) => {
           globalApiBody={globalApiBody}
           setGlobalApiBody={setGlobalApiBody}
           setIsButtonDisabled={setIsButtonDisabled}
+          selectedCurrency={selected}
         />
       );
       break;
@@ -188,6 +181,7 @@ const PayABillParams = ({ route, navigation }) => {
           globalApiBody={globalApiBody}
           setGlobalApiBody={setGlobalApiBody}
           setIsButtonDisabled={setIsButtonDisabled}
+          selectedCurrency={selected}
         />
       );
       break;
@@ -203,6 +197,7 @@ const PayABillParams = ({ route, navigation }) => {
           globalApiBody={globalApiBody}
           setGlobalApiBody={setGlobalApiBody}
           setIsButtonDisabled={setIsButtonDisabled}
+          selectedCurrency={selected}
         />
       );
       break;
@@ -260,6 +255,9 @@ const PayABillParams = ({ route, navigation }) => {
             <RecurringSwitch
               isRecurring={isRecurring}
               setIsRecurring={setIsRecurring}
+              scheduleData={scheduleData}
+              setScheduleData={setScheduleData}
+              setHasAskedPin={setHasAskedPin}
             />
             {errorMessage && (
               <View>
@@ -321,6 +319,15 @@ const PayABillParams = ({ route, navigation }) => {
             ))}
         </View>
       </Modal>
+
+      {scheduleData && !hasAskedPin && (
+        <SchedulePayment
+          isRecurring={isRecurring}
+          setIsRecurring={setIsRecurring}
+          scheduleData={scheduleData}
+          setScheduleData={setScheduleData}
+        />
+      )}
     </>
   );
 };

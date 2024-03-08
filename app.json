@@ -2,7 +2,7 @@
   "expo": {
     "name": "Loopay",
     "slug": "Loopay",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,11 +16,13 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSFaceIDUsageDescription": "Loopay uses Face ID to validate your identity"
-      }
+      },
+      "bundleIdentifier": "com.loopay",
+      "icon": "./assets/ios-icon.png"
     },
     "android": {
       "package": "com.loopay",
-      "versionCode": 5,
+      "versionCode": 6,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"

@@ -32,6 +32,7 @@ import { addingDecimal } from '../../../../utils/AddingZero';
 import Back from '../../../components/Back';
 import { setShowBalance } from '../../../../utils/storage';
 import RecurringSwitch from '../../../components/RecurringSwitch';
+import SchedulePayment from '../SchedulePayments/SchedulePayment';
 
 const BuyData = ({ route, navigation }) => {
   const { appData, setIsLoading, showAmount, setShowAmount, selectedCurrency } =
@@ -47,7 +48,9 @@ const BuyData = ({ route, navigation }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
   const [isNigeria] = useState(countryCode === 'NG');
-  const [isRecurring, setIsRecurring] = useState(!!route.params?.schedule);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [scheduleData, setScheduleData] = useState(null);
+  const [hasAskedPin, setHasAskedPin] = useState(false);
 
   const [formData, setFormData] = useState({
     network: '',
@@ -212,24 +215,8 @@ const BuyData = ({ route, navigation }) => {
       return setErrorKey('amountInput');
     }
 
-    if (isRecurring) {
-      return navigation.navigate('SchedulePayment', {
-        type: route.params?.schedule?.id || 'data',
-        scheduleData: {
-          formData: {
-            ...formData,
-            id: randomUUID(),
-            currency: allCurrencies.find(
-              currency => currency.acronym === selected.acronym,
-            ).currency,
-            countryCode,
-            paymentCurrency: selected.acronym,
-            type: 'data',
-          },
-          isInternational: !isNigeria,
-        },
-      });
-    }
+    setHasAskedPin(true);
+
     navigation.navigate('TransferAirtime', {
       formData: {
         ...formData,
@@ -464,7 +451,18 @@ const BuyData = ({ route, navigation }) => {
             <RecurringSwitch
               isRecurring={isRecurring}
               setIsRecurring={setIsRecurring}
+              scheduleData={scheduleData}
+              setScheduleData={setScheduleData}
+              setHasAskedPin={setHasAskedPin}
             />
+            {scheduleData && !hasAskedPin && (
+              <SchedulePayment
+                isRecurring={isRecurring}
+                setIsRecurring={setIsRecurring}
+                scheduleData={scheduleData}
+                setScheduleData={setScheduleData}
+              />
+            )}
             {errorMessage && (
               <View style={{ marginTop: 15 }}>
                 <ErrorMessage errorMessage={errorMessage} />
