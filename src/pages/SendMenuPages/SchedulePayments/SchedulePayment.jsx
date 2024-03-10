@@ -2,6 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import BoldText from '../../../components/fonts/BoldText';
 import {
+  Keyboard,
   Modal,
   Pressable,
   ScrollView,
@@ -28,7 +29,6 @@ import CalendarIcon from '../../../../assets/images/calendar.svg';
 
 const SchedulePayment = ({
   type,
-  scheduleData,
   setScheduleData,
   isRecurring,
   setIsRecurring,
@@ -165,12 +165,22 @@ const SchedulePayment = ({
     switch (event.type) {
       case 'set':
         if (showPicker === 'start') {
+          if (interval.end && interval.end < selectedDate) {
+            setErrorKey('start');
+            return setErrorMessage("Start date can't be before end date");
+          }
           selectedDate.setMilliseconds(0);
           selectedDate.setSeconds(0);
           selectedDate.setMinutes(0);
           selectedDate.setHours(0);
           setStartValue(new Date(selectedDate).toLocaleDateString('en-GB'));
           setInterval(prev => {
+            return {
+              ...prev,
+              start: selectedDate,
+            };
+          });
+          setStateFields(prev => {
             return {
               ...prev,
               start: selectedDate,
@@ -187,6 +197,12 @@ const SchedulePayment = ({
           selectedDate.setHours(23);
           setEndValue(new Date(selectedDate).toLocaleDateString('en-GB'));
           setInterval(prev => {
+            return {
+              ...prev,
+              end: selectedDate,
+            };
+          });
+          setStateFields(prev => {
             return {
               ...prev,
               end: selectedDate,
@@ -228,7 +244,7 @@ const SchedulePayment = ({
       setErrorKey('start');
       return setErrorMessage('Please select schedule start');
     } else {
-      console.log(stateFields);
+      setScheduleData(stateFields);
       return setRecurringModal(false);
     }
   };
@@ -245,10 +261,13 @@ const SchedulePayment = ({
       animationType="slide"
       transparent
       onRequestClose={handleModal}>
-      <Pressable style={styles.overlay} />
+      <Pressable style={styles.overlay} onPress={Keyboard.dismiss} />
       <View style={styles.modalContainer}>
         {/* <PageContainer style={styles.container} scroll> */}
-        <ScrollView style={styles.body} automaticallyAdjustKeyboardInsets>
+        <ScrollView
+          style={styles.body}
+          automaticallyAdjustKeyboardInsets
+          bounces={false}>
           <View style={styles.header}>
             <BoldText style={styles.headerText}>
               Schedule {transactionType}
@@ -275,7 +294,7 @@ const SchedulePayment = ({
                 });
               }}
               placeholder="Name"
-              value={scheduleData.title}
+              value={stateFields.title}
             />
           </View>
 
@@ -550,6 +569,7 @@ const SchedulePayment = ({
                 });
               }}
               placeholder="(optional)"
+              value={stateFields.description}
             />
           </View>
           {errorMessage && <ErrorMessage errorMessage={errorMessage} />}

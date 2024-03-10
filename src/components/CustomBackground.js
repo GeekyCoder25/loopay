@@ -3,7 +3,7 @@ import { Animated, Image, StyleSheet, View } from 'react-native';
 import { AppContext } from './AppContext';
 
 const CustomBackground = ({ setDarkSplash }) => {
-  const { vh } = useContext(AppContext);
+  const { vw, vh } = useContext(AppContext);
 
   const rotateY = useRef(new Animated.Value(0)).current;
 
@@ -40,7 +40,8 @@ const CustomBackground = ({ setDarkSplash }) => {
         }}>
         <Image
           source={require('../../assets/images/bg1.png')}
-          resizeMode="contain"
+          resizeMode="cover"
+          style={{ width: vw * 1.4, height: vw }}
         />
       </Animated.View>
       <Animated.View
@@ -50,7 +51,8 @@ const CustomBackground = ({ setDarkSplash }) => {
         }}>
         <Image
           source={require('../../assets/images/bg2.png')}
-          resizeMode="contain"
+          resizeMode="cover"
+          style={{ width: vw * 1.4, height: vw }}
         />
       </Animated.View>
     </View>

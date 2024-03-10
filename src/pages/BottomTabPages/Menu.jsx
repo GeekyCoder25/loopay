@@ -203,8 +203,8 @@ const RouteLink = ({ route, navigation }) => {
               verified === 'pending'
                 ? 'orange'
                 : verified === 'verified'
-                ? '#a2f247'
-                : 'red',
+                  ? '#a2f247'
+                  : 'red',
           }}>
           {verified === 'pending' ? (
             <BoldText style={styles.verifiedText}>Pending</BoldText>

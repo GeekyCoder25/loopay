@@ -120,6 +120,7 @@ const PayABillParams = ({ route, navigation }) => {
       referenceId: randomUUID().split('-').join(''),
       routeId: route.params.title,
       paymentCurrency: selected.acronym,
+      scheduleData,
     });
   };
 

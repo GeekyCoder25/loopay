@@ -68,8 +68,14 @@ const MyInfo = () => {
     if (selectedDate > Date.now()) {
       selectedDate = new Date(Date.now());
     }
+    const minimumDate = new Date(Date.now()).setFullYear(
+      new Date(Date.now()).getFullYear() - 10,
+    );
     switch (event.type) {
       case 'set':
+        if (selectedDate > minimumDate) {
+          return ToastMessage('Invalid date selected');
+        }
         selectedDate.setMilliseconds(0);
         selectedDate.setSeconds(0);
         selectedDate.setMinutes(0);
@@ -180,14 +186,8 @@ const MyInfo = () => {
             name="lastName"
             value={userProfile.lastName}
             onChangeText={text => handleChange(text)}
-            style={
-              isEditable
-                ? inputFocus === 'lastName'
-                  ? styles.inputFocus
-                  : styles.input
-                : styles.tagName
-            }
-            editable={isEditable}
+            style={styles.tagName}
+            editable={false}
             onFocus={() => handleFocus('lastName')}
           />
         </View>
@@ -199,14 +199,8 @@ const MyInfo = () => {
             name="firstName"
             value={userProfile.firstName}
             onChangeText={text => handleChange(text)}
-            style={
-              isEditable
-                ? inputFocus === 'firstName'
-                  ? styles.inputFocus
-                  : styles.input
-                : styles.tagName
-            }
-            editable={isEditable}
+            style={styles.tagName}
+            editable={false}
             onFocus={() => handleFocus('firstName')}
           />
         </View>
@@ -292,26 +286,23 @@ const MyInfo = () => {
         <View style={styles.field}>
           <RegularText style={styles.label}>Date of Birth</RegularText>
           <Pressable
-            style={
-              isEditable
-                ? inputFocus === 'dob'
-                  ? styles.inputFocus
-                  : styles.input
-                : styles.tagName
-            }
+            style={styles.tagName}
             onPress={() => isEditable && handleDOB()}>
             <RegularText style={styles.tagName}>
-              {userProfile.dob &&
-                new Date(userProfile.dob).toLocaleDateString()}
+              {showPicker ? (
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  value={defaultPickerDate()}
+                  onChange={handleDatePicker}
+                  style={styles.picker}
+                />
+              ) : userProfile.dob ? (
+                new Date(userProfile.dob).toLocaleDateString()
+              ) : (
+                isEditable && <BoldText>Select Date</BoldText>
+              )}
             </RegularText>
           </Pressable>
-          {showPicker && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={defaultPickerDate()}
-              onChange={handleDatePicker}
-            />
-          )}
         </View>
       </View>
       {isEditable ? (
@@ -362,6 +353,9 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-700',
     color: '#000',
   },
+  picker: {
+    transform: [{ translateX: -10 }, { translateY: 10 }],
+  },
   edit: {
     alignSelf: 'flex-end',
     backgroundColor: '#1c1c1c',
@@ -390,7 +384,7 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-500',
     fontSize: 15,
     marginTop: 8,
-    minHeight: 30,
+    minHeight: 40,
     paddingLeft: 5,
     justifyContent: 'center',
     borderRadius: 3,
@@ -402,7 +396,7 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-700',
     fontSize: 15,
     marginTop: 8,
-    minHeight: 30,
+    minHeight: 40,
     paddingLeft: 5,
     justifyContent: 'center',
     borderRadius: 3,

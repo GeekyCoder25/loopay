@@ -13,6 +13,7 @@ import UserIconSVG from '../../../../assets/images/userMenu.svg';
 import { useBeneficiaryContext } from '../../../context/BeneficiariesContext';
 import RegularText from '../../../components/fonts/RegularText';
 import { useState } from 'react';
+import UserIcon from '../../../components/UserIcon';
 
 const SendBeneficiary = ({ navigation }) => {
   const { beneficiaryState } = useBeneficiaryContext();
@@ -53,7 +54,6 @@ const SendBeneficiary = ({ navigation }) => {
             onChangeText={text => handleSearch(text)}
             placeholder="Search"
             placeholderTextColor={'#525252'}
-            maxLength={10}
           />
         </View>
         <View style={styles.beneficiaries}>
@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(160, 160, 160, 0.6)',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   userFoundDetails: {
     gap: 5,
@@ -160,16 +161,7 @@ const Beneficiary = ({ beneficiary, handleContinue }) => {
   return (
     <Pressable onPress={() => handleContinue(beneficiary)}>
       <View style={styles.userFound}>
-        {beneficiary.photo ? (
-          <Image
-            source={{ uri: beneficiary.photo }}
-            style={styles.userIconStyle}
-          />
-        ) : (
-          <View style={styles.nonUserIconStyle}>
-            <UserIconSVG width={25} height={25} />
-          </View>
-        )}
+        <UserIcon uri={beneficiary.photo} />
         <View style={styles.userFoundDetails}>
           <BoldText>
             {beneficiary.fullName}{' '}

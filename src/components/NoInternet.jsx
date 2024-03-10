@@ -29,7 +29,7 @@ const NoInternet = ({ modalOpen }) => {
 
   const handlePress = () => {
     setIsChecking(true);
-    getFetchData('network').then(data => {
+    getFetchData().then(data => {
       setIsChecking(false);
       if (data.network === true) {
         setInternetStatus(true);

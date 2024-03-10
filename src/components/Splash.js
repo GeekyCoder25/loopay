@@ -16,6 +16,7 @@ import {
 import { AppContext } from './AppContext';
 import { apiUrl, deleteFetchData } from '../../utils/fetchAPI';
 import FaIcon from '@expo/vector-icons/FontAwesome';
+import { allCurrencies } from '../database/data';
 
 const Splash = ({ navigation }) => {
   const {
@@ -56,11 +57,14 @@ const Splash = ({ navigation }) => {
               await deleteFetchData(`user/session/${sessionID}`);
               logoutUser();
               setIsSessionTimedOut(false);
+              setAppData({});
+              setCanChangeRole(false);
+              allCurrencies.shift();
               return navigation.replace('FirstPage');
             }
             setVerified(data.verificationStatus || false);
             const response = await getFetchData('user/role');
-            if (response.role === 'admin') {
+            if (response.role === 'sadmin') {
               setIsAdmin(true);
               setCanChangeRole(true);
             }

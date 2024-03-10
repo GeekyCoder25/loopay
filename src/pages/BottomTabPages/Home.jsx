@@ -268,9 +268,7 @@ const Home = ({ navigation }) => {
           <Pressable
             style={styles.quickLink}
             onPress={() => navigation.navigate('SwapFunds')}>
-            <View style={styles.swapIcon}>
-              <SwapIconWhite width={25} height={25} />
-            </View>
+            <SwapIconWhite fill={'#fff'} width={25} height={25} />
             <BoldText style={styles.quickLinkText}>Swap funds</BoldText>
           </Pressable>
         </ScrollView>
@@ -542,9 +540,7 @@ const styles = StyleSheet.create({
   historyTitle: {
     flex: 1,
   },
-  transactionAccount: {
-    textTransform: 'capitalize',
-  },
+  transactionAccount: {},
   transactionAmountTextRow: {
     flexDirection: 'row',
     gap: 5,
@@ -623,7 +619,7 @@ const History = ({ history, navigation }) => {
         setTransactionAccount(receiverName);
         break;
       case 'swap':
-        setTransactionTypeIcon(<SwapIcon width={35} height={35} />);
+        setTransactionTypeIcon(<SwapIcon width={26} height={26} />);
         setTransactionTypeTitle('Swap');
         setTransactionAccount(appData.userProfile.fullName);
         break;
@@ -678,21 +674,12 @@ const History = ({ history, navigation }) => {
       onPress={() => navigation.navigate('TransactionHistoryDetails', history)}
       style={styles.history}>
       <View style={styles.historyIcon}>
-        {transactionType === 'swap' ? (
-          <View style={styles.historyIconText}>{transactionTypeIcon}</View>
-        ) : (
-          <View style={styles.historyIconText}>{transactionTypeIcon}</View>
-        )}
+        <View style={styles.historyIconText}>{transactionTypeIcon}</View>
       </View>
       <View style={styles.historyTitle}>
-        {transactionType?.toLowerCase() === 'airtime' ||
-        transactionType?.toLowerCase() === 'data' ? (
-          <BoldText>{transactionAccount}</BoldText>
-        ) : (
-          <BoldText style={styles.transactionAccount}>
-            {transactionAccount}
-          </BoldText>
-        )}
+        <BoldText style={styles.transactionAccount}>
+          {transactionAccount}
+        </BoldText>
         <RegularText>{transactionTypeTitle}</RegularText>
       </View>
       {showAmount ? (

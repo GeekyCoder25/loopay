@@ -12,6 +12,7 @@ import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import { allCurrencies } from '../../database/data';
 import RegularText from '../../components/fonts/RegularText';
+import ToastMessage from '../../components/ToastMessage';
 
 const Success = ({ navigation, route }) => {
   const { isAdmin, setShowTabBar, vh, setIsLoading } = useContext(AppContext);
@@ -57,69 +58,72 @@ const Success = ({ navigation, route }) => {
   }, []);
 
   const handleShare = async () => {
-    const {
-      status,
-      receiverName,
-      amount,
-      transactionType,
-      createdAt,
-      sourceBank,
-      destinationBank,
-      senderAccount,
-      receiverAccount,
-      currency,
-      description,
-      reference,
-      networkProvider,
-      rechargePhoneNo,
-      billType,
-      billName,
-    } = transaction;
+    try {
+      const {
+        status,
+        receiverName,
+        amount,
+        transactionType,
+        createdAt,
+        sourceBank,
+        destinationBank,
+        senderAccount,
+        receiverAccount,
+        currency,
+        description,
+        reference,
+        networkProvider,
+        rechargePhoneNo,
+        billType,
+        billName,
+      } = transaction;
 
-    const currencySymbol = allCurrencies.find(
-      id => currency === id.currency,
-    )?.symbol;
+      const currencySymbol = allCurrencies.find(
+        id => currency === id.currency,
+      )?.symbol;
 
-    const shareReceiptData = () => {
-      if (transactionType === 'airtime' || transactionType === 'data') {
+      const shareReceiptData = () => {
+        if (transactionType === 'airtime' || transactionType === 'data') {
+          return [
+            {
+              key: 'Transaction type',
+              value: `Debit - ${transactionType} `,
+            },
+            { key: 'Network', value: networkProvider },
+            { key: 'Phone Number', value: rechargePhoneNo },
+            { key: 'Reference ID', value: reference },
+            { key: 'Status', value: status },
+          ];
+        } else if (transactionType === 'bill') {
+          return [
+            {
+              key: 'Transaction type',
+              value: `${transactionType} Payment - Debit`,
+            },
+            { key: 'Bill Type', value: billType },
+            { key: 'Bill Service', value: billName },
+            token && { key: 'Token', value: token },
+            { key: 'Reference Id', value: reference },
+            { key: 'Status', value: status },
+          ].filter(Boolean);
+        }
         return [
+          { key: 'Receiver Account', value: receiverAccount },
+          { key: 'Sender Account', value: senderAccount },
+          { key: 'Receiver Name', value: receiverName },
+          { key: 'Transaction type', value: transactionType },
           {
-            key: 'Transaction type',
-            value: `Debit - ${transactionType} `,
+            key: [
+              transactionType === 'credit' ? 'Sender Bank' : 'Receiver Bank',
+            ],
+            value: transactionType === 'credit' ? sourceBank : destinationBank,
           },
-          { key: 'Network', value: networkProvider },
-          { key: 'Phone Number', value: rechargePhoneNo },
           { key: 'Reference ID', value: reference },
+          { key: 'Narration', value: description, noTransform: true },
           { key: 'Status', value: status },
         ];
-      } else if (transactionType === 'bill') {
-        return [
-          {
-            key: 'Transaction type',
-            value: `${transactionType} Payment - Debit`,
-          },
-          { key: 'Bill Type', value: billType },
-          { key: 'Bill Service', value: billName },
-          token && { key: 'Token', value: token },
-          { key: 'Reference Id', value: reference },
-          { key: 'Status', value: status },
-        ].filter(Boolean);
-      }
-      return [
-        { key: 'Receiver Account', value: receiverAccount },
-        { key: 'Sender Account', value: senderAccount },
-        { key: 'Receiver Name', value: receiverName },
-        { key: 'Transaction type', value: transactionType },
-        {
-          key: [transactionType === 'credit' ? 'Sender Bank' : 'Receiver Bank'],
-          value: transactionType === 'credit' ? sourceBank : destinationBank,
-        },
-        { key: 'Reference ID', value: reference },
-        { key: 'Narration', value: description, noTransform: true },
-        { key: 'Status', value: status },
-      ];
-    };
-    const html = String.raw` <html lang="en">
+      };
+      const html = String.raw` <html lang="en">
       <head>
         <meta
           name="viewport"
@@ -242,10 +246,14 @@ const Success = ({ navigation, route }) => {
               alt=""
               class="logo" />
           </header>
-          <div class="amount">
-            <h4>${currencySymbol}</h4>
-            <h1>${Number(amount).toLocaleString().split('.')[0]}</h1>
-            <h5>.${Number(amount).toLocaleString().split('.')[1] || '00'}</h5>
+           <div class="amount">
+                <h4>${currencySymbol}</h4>
+                <h1>
+                  ${Number(amount).toLocaleString().split('.')[0]}
+                </h1>
+                <h5>
+                  .${Number(amount).toLocaleString().split('.')[1] || '00'}
+                </h5>
           </div>
           <span class="statusHeader ${status}">${status}</span>
           <section>
@@ -281,7 +289,10 @@ const Success = ({ navigation, route }) => {
         </div>
       </body>
     </html>`;
-    createPDF(html);
+      await createPDF(html);
+    } catch (error) {
+      ToastMessage(error.message);
+    }
   };
 
   const createPDF = async html => {

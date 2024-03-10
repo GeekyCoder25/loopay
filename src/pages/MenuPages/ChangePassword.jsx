@@ -5,6 +5,7 @@ import Logo from '../../components/Logo';
 import { useContext, useState } from 'react';
 import { AppContext } from '../../components/AppContext';
 import Eye from '../../../assets/images/eye.svg';
+import EyeClosed from '../../../assets/images/eye-slash.svg';
 import Button from '../../components/Button';
 import BoldText from '../../components/fonts/BoldText';
 import { postFetchData } from '../../../utils/fetchAPI';
@@ -212,7 +213,7 @@ export default ChangePassword;
 
 export const FormField = ({ inputForm, errorKey, setFormData, editInput }) => {
   const [inputFocus, setInputFocus] = useState(false);
-  const [hidePassword, setHidePassword] = useState(true);
+  const [showPassword, setShowPassword] = useState(true);
 
   return (
     <>
@@ -234,13 +235,17 @@ export const FormField = ({ inputForm, errorKey, setFormData, editInput }) => {
           autoCapitalize="none"
           onFocus={() => setInputFocus(true)}
           onBlur={() => setInputFocus(false)}
-          secureTextEntry={hidePassword}
+          secureTextEntry={showPassword}
           maxLength={6}
         />
         <Pressable
           style={styles.eye2}
-          onPress={() => setHidePassword(prev => !prev)}>
-          <Eye />
+          onPress={() => setShowPassword(prev => !prev)}>
+          <Pressable
+            style={styles.eye}
+            onPress={() => setShowPassword(prev => !prev)}>
+            {showPassword ? <Eye /> : <EyeClosed />}
+          </Pressable>
         </Pressable>
       </View>
     </>

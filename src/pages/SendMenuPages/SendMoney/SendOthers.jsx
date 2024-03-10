@@ -195,6 +195,7 @@ const SendOthers = ({ navigation, route }) => {
         fee,
         senderPhoto: appData.photoURL,
         id,
+        scheduleData,
       });
       if (response.status === 200) {
         const { transaction } = response.data;

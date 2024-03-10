@@ -227,6 +227,7 @@ const BuyData = ({ route, navigation }) => {
         countryCode,
         paymentCurrency: selected.acronym,
         type: 'data',
+        scheduleData,
       },
       isInternational: !isNigeria,
     });

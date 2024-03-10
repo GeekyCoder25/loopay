@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, TextInput, Pressable } from 'react-native';
 import Email from '../../../assets/images/mail.svg';
 import Lock from '../../../assets/images/lock.svg';
@@ -19,6 +19,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import SuccessMessage from '../../components/SuccessMessage';
 import saveSessionOptions from '../../services/saveSession.js';
 import { EmailVerify } from './Signup.jsx';
+import { timeForInactivityInSecond } from '../../config/config.js';
 
 const Signin = ({ navigation }) => {
   const {
@@ -39,6 +40,7 @@ const Signin = ({ navigation }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
   const [verifyEmail, setVerifyEmail] = useState(false);
+  const timerId = useRef(false);
 
   const handleLogin = async () => {
     setErrorMessage('');
@@ -75,6 +77,9 @@ const Signin = ({ navigation }) => {
           setIsLoading(false);
           setSuccessMessage('');
           setIsSessionTimedOut(false);
+          return (timerId.current = setTimeout(() => {
+            setIsSessionTimedOut(true);
+          }, timeForInactivityInSecond * 1000));
         } else {
           if (typeof response === 'string') {
             setErrorMessage(response);

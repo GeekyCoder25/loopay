@@ -216,6 +216,7 @@ const BuyAirtime = ({ route, navigation }) => {
         countryCode,
         paymentCurrency: selected.acronym,
         type: 'airtime',
+        scheduleData,
       },
       isInternational: !isNigeria,
     });

@@ -3,26 +3,56 @@ import { getFetchData } from '../../utils/fetchAPI';
 import { AppContext } from '../components/AppContext';
 import { allCurrencies } from '../database/data';
 import useInterval from '../../utils/hooks/useInterval';
+import { logoutUser } from '../../utils/storage';
+import ToastMessage from '../components/ToastMessage';
 
 const WalletContext = createContext();
 
 const WalletContextComponent = memo(({ children }) => {
-  const { walletRefresh, selectedCurrency, setShowConnected, refreshing } =
-    useContext(AppContext);
+  const {
+    walletRefresh,
+    selectedCurrency,
+    setShowConnected,
+    refreshing,
+    setIsLoading,
+    isLoggedIn,
+    setIsLoggedIn,
+    setAppData,
+    setCanChangeRole,
+    setVerified,
+  } = useContext(AppContext);
   const [wallet, setWallet] = useState({ balance: 0 });
   const [transactions, setTransactions] = useState([]);
 
+  const handleLogout = async () => {
+    try {
+      setIsLoading(true);
+      setVerified(false);
+      logoutUser();
+      setIsLoggedIn(false);
+      setAppData({});
+      setCanChangeRole(false);
+      allCurrencies.shift();
+      ToastMessage('Your account has been logged in on another device');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const fetchWallet = () => {
     getFetchData('user/wallet')
-      .then(result => {
-        if (result.status === 400) throw new Error(result.data);
+      .then(response => {
+        if (response.status === 401 && isLoggedIn) {
+          return handleLogout();
+        }
+        if (response.status === 400) throw new Error(response.data);
         if (refreshing) {
           setShowConnected(true);
           setTimeout(() => {
             setShowConnected(false);
           }, 3000);
         }
-        walletToSet(result.data);
+        walletToSet(response.data);
       })
       .catch(err => {
         console.log(err.message);
@@ -32,9 +62,12 @@ const WalletContextComponent = memo(({ children }) => {
     getFetchData(
       `user/transaction?currency=${selectedCurrency.currency},${selectedCurrency.acronym}&limit=4`,
     )
-      .then(result => {
-        if (result.status === 400) throw new Error(result.data);
-        setTransactions(result.data.data);
+      .then(response => {
+        if (response.status === 401 && isLoggedIn) {
+          return handleLogout();
+        }
+        if (response.status === 400) throw new Error(response.data);
+        setTransactions(response.data.data);
       })
       .catch(err => {
         console.log(err.message);

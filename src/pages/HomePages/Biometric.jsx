@@ -19,7 +19,7 @@ const Biometric = () => {
       const options = {
         promptMessage: 'Setup login with Biometrics',
         cancelLabel: 'Cancel',
-        disableDeviceFallback: false,
+        disableDeviceFallback: true,
       };
       const { success } = await LocalAuthentication.authenticateAsync(options);
       if (success) {

@@ -99,6 +99,7 @@ const TransferFunds = ({ navigation, route }) => {
         description,
         senderPhoto: appData.photoURL,
         id: randomUUID(),
+        scheduleData,
       });
       if (response.status === 200) {
         const balance = response.data.amount;
@@ -135,7 +136,7 @@ const TransferFunds = ({ navigation, route }) => {
 
   return (
     <>
-      <PageContainer paddingTop={0}>
+      <PageContainer paddingTop={0} avoidKeyboardPushup={isRecurring}>
         <View style={styles.backContainer}>
           <Pressable
             onPress={() => navigation.goBack()}

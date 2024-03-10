@@ -14,13 +14,10 @@ const ToastMessage = message => {
   }
 
   const options = {
-    position: -50,
-    backgroundColor: '#f0f0f3',
-    textColor: '#000',
+    backgroundColor: '#1e1e1e',
     animation: true,
-    shadow: true,
     opacity: 1,
-    shadowColor: 'rgba(0,0,0,0.5)',
+    containerStyle: styles.containerStyle,
   };
 
   return Toast.show(
@@ -39,27 +36,33 @@ const ToastMessage = message => {
 };
 
 const styles = StyleSheet.create({
+  containerStyle: {
+    maxWidth: 350,
+    paddingHorizontal: 10,
+    borderRadius: 50,
+    overflow: 'hidden',
+  },
   container: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
     maxWidth: 350,
-    paddingHorizontal: 2,
     overflow: 'hidden',
+    transform: [{ translateY: 1 }],
   },
   imageContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
+    borderRadius: 200,
   },
   image: {
-    borderRadius: 15,
+    borderRadius: 255,
     width: 25,
     height: 25,
   },
   message: {
+    marginLeft: 10,
     maxWidth: 250,
     textAlign: 'center',
+    color: '#fff',
   },
 });
 export default ToastMessage;

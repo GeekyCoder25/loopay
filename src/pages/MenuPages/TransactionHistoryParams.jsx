@@ -418,7 +418,7 @@ const TransactionHistoryParams = ({ route }) => {
         </div>
       </body>
     </html>`;
-    createPDF(html);
+    await createPDF(html);
   };
 
   const createPDF = async html => {
@@ -456,9 +456,9 @@ const TransactionHistoryParams = ({ route }) => {
 
   return (
     <>
-      <PageContainer justify={true} scroll>
+      <PageContainer justify={true} scroll avoidBounce>
         <BoldText style={styles.historyHeader}>Transaction history</BoldText>
-        <View style={{ ...styles.body, minHeight: vh * 0.8 }}>
+        <View style={{ ...styles.body, minHeight: vh * 0.5 }}>
           {transactionType?.toLowerCase() === 'credit' && (
             <>
               <View style={styles.headerContainer}>

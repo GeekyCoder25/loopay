@@ -26,6 +26,7 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
     setAppData,
     isLoggedIn,
     setVerified,
+    setCanChangeRole,
   } = useContext(AppContext);
   const [codeSent, setCodeSent] = useState(false);
   const [formData, setFormData] = useState({
@@ -77,11 +78,12 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
     }
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = async ({ pinCode: paramsPinCode }) => {
+    const code = paramsPinCode || otpCode;
     setIsLoading(true);
     try {
       const fetchResult = await postFetchData(
-        `auth/confirm-otp/${otpCode || 'fake'}`,
+        `auth/confirm-otp/${code || 'fake'}`,
         formData,
       );
       const { data: result } = fetchResult;
@@ -97,10 +99,14 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
         return setErrorMessage(result.error);
       }
       const sessionData = saveSessionOptions();
+      await postFetchData('user/session', sessionData, result.data.token);
       await loginUser(result.data, sessionData.deviceID);
       const response = await getFetchData('user?popup=true');
       setAppData(response.data);
       setVerified(response.data.verificationStatus || false);
+      if (result.data.role === 'admin') {
+        setCanChangeRole(true);
+      }
       setCanChange ? setCanChange(true) : navigation.replace('ChangePassword');
     } catch (err) {
       setErrorMessage(err.message);
@@ -136,7 +142,7 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
   }, [appData.email, isLoggedIn, isSessionTimedOut]);
 
   return (
-    <PageContainer padding justify={true}>
+    <PageContainer padding justify={true} avoidKeyboardPushup>
       <View style={{ ...styles.container, minHeight: vh * 0.95 }}>
         <View style={styles.logo}>
           <Logo />
@@ -157,6 +163,8 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
             onChangeText={text => {
               setOtpCode(text);
               text.length === codeLengths.length && Keyboard.dismiss();
+              text.length === codeLengths.length &&
+                handleConfirm({ pinCode: text });
               setErrorMessage('');
               setErrorKey('');
             }}
@@ -184,7 +192,7 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
                 </RegularText>
               </View>
               <ErrorMessage errorMessage={errorMessage} />
-              {/* <View style={styles.didnt}>
+              <View style={styles.didnt}>
                 <BoldText>Didn&apos;t receive the code? Resend </BoldText>
                 {typeof otpResend === 'number' ? (
                   <BoldText>
@@ -199,7 +207,7 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
                     <BoldText style={styles.now}>{otpResend}</BoldText>
                   </Pressable>
                 )}
-              </View> */}
+              </View>
             </>
           ) : (
             <>

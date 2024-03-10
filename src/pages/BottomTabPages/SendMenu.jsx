@@ -41,9 +41,10 @@ const SendMenu = ({ navigation }) => {
     navigation.navigate('TransferFunds', beneficiary);
   };
 
-  const selectedAcronym = allCurrencies.find(
-    currency => currency.acronym === selectedCurrency.acronym,
-  ).acronym;
+  const selectedAcronym =
+    allCurrencies.find(
+      currency => currency.acronym === selectedCurrency.acronym,
+    )?.acronym || '';
 
   const sendMenuRoutes = [
     {
@@ -246,7 +247,7 @@ export const RouteLink = ({ route, navigation }) => {
       case 'add':
         return <AddIcon />;
       case 'swap':
-        return <SwapIcon />;
+        return <SwapIcon fill={'#5c5c5c'} />;
       case 'card':
         return <CardIcon />;
       case 'bill':
