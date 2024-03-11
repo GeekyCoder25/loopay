@@ -76,12 +76,12 @@ const Profile = ({ navigation, children, route }) => {
   };
 
   const selectImage = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      return ToastMessage('Camera permission was denied by user');
+      return ToastMessage('Permission was denied by user');
     }
 
-    const result = await ImagePicker.launchCameraAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],

@@ -159,12 +159,12 @@ const SchedulePayment = ({
 
   const handleDatePicker = (event, selectedDate) => {
     setShowPicker(false);
-    if (selectedDate < Date.now()) {
-      selectedDate = new Date(Date.now());
-    }
     switch (event.type) {
       case 'set':
         if (showPicker === 'start') {
+          if (selectedDate < Date.now()) {
+            selectedDate = new Date(Date.now());
+          }
           if (interval.end && interval.end < selectedDate) {
             setErrorKey('start');
             return setErrorMessage("Start date can't be before end date");

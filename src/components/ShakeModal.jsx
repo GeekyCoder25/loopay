@@ -47,7 +47,7 @@ const ShakeModal = () => {
     },
     {
       routeName: 'Swap Funds',
-      routeIcon: <SwapIcon />,
+      routeIcon: <SwapIcon fill="#1e1e1e" />,
       routeNavigate: 'SwapFunds',
     },
     {

@@ -15,7 +15,8 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSFaceIDUsageDescription": "Loopay uses Face ID to validate your identity"
+        "NSFaceIDUsageDescription": "Loopay uses Face ID to validate your identity",
+        "NSCameraUsageDescription": "Loopay uses the camera to set yor profile picture"
       },
       "bundleIdentifier": "com.loopay",
       "icon": "./assets/ios-icon.png"
@@ -40,6 +41,13 @@
         "expo-local-authentication",
         {
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID to validate your identity"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Loopay access your photos to set your profile picture",
+          "cameraPermission": "Loopay will use your camera to set yor profile picture"
         }
       ]
     ],

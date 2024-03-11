@@ -63,9 +63,6 @@ const WalletContextComponent = memo(({ children }) => {
       `user/transaction?currency=${selectedCurrency.currency},${selectedCurrency.acronym}&limit=4`,
     )
       .then(response => {
-        if (response.status === 401 && isLoggedIn) {
-          return handleLogout();
-        }
         if (response.status === 400) throw new Error(response.data);
         setTransactions(response.data.data);
       })

@@ -110,7 +110,7 @@ const Signin = ({ navigation }) => {
   return (
     <>
       <PageContainer scroll avoidKeyboardPushup avoidBounce>
-        <View style={{ ...styles.container, minHeight: vh }}>
+        <View style={{ ...styles.container, minHeight: vh * 0.99 }}>
           <View style={styles.headers}>
             <Logo />
           </View>
