@@ -64,7 +64,7 @@ const Splash = ({ navigation }) => {
             }
             setVerified(data.verificationStatus || false);
             const response = await getFetchData('user/role');
-            if (response.role === 'sadmin') {
+            if (response.role === 'admin') {
               setIsAdmin(true);
               setCanChangeRole(true);
             }

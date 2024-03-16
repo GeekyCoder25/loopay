@@ -241,7 +241,7 @@ const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
       <BoldText>
         Verification Status:{' '}
         <RegularText style={styles.capitalize}>
-          {userData.verificationStatus}
+          {userData.verificationStatus || 'unverified'}
         </RegularText>
       </BoldText>
       <BoldText>

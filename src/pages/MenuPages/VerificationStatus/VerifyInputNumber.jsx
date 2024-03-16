@@ -33,7 +33,6 @@ const VerifyInputNumber = ({ route, navigation }) => {
           'Verification submitted successfully, awaiting confirmation',
         );
         navigation.popToTop();
-        navigation.navigate('HomeNavigator');
         return navigation.navigate('Home');
       }
       throw new Error(response.data.message);

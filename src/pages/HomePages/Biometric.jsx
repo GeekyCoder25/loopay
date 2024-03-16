@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
 import { Pressable, StyleSheet, View } from 'react-native';
+import FaceIDIcon from '../../../assets/images/face-id.svg';
 import BiometricIcon from '../../../assets/images/biometric.svg';
 import RegularText from '../../components/fonts/RegularText';
 import SwitchOn from '../../../assets/images/switch.svg';
@@ -12,7 +13,8 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import ToastMessage from '../../components/ToastMessage';
 
 const Biometric = () => {
-  const { enableBiometric, setEnableBiometric } = useContext(AppContext);
+  const { enableBiometric, setEnableBiometric, hasFaceID } =
+    useContext(AppContext);
 
   const handleSwitchBiometric = async () => {
     if (!enableBiometric) {
@@ -40,7 +42,11 @@ const Biometric = () => {
       <View style={styles.body}>
         <View style={styles.route}>
           <View style={styles.routeIcon}>
-            <BiometricIcon />
+            {hasFaceID ? (
+              <FaceIDIcon width={40} height={40} />
+            ) : (
+              <BiometricIcon />
+            )}
           </View>
           <View style={styles.routeTexts}>
             <BoldText style={styles.routeName}>Use biometric</BoldText>

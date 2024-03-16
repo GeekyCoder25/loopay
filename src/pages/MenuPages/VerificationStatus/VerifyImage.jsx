@@ -79,7 +79,6 @@ const VerifyImage = ({ route, navigation }) => {
         setVerified('pending');
         ToastMessage('Submitted successfully, verification is pending');
         navigation.popToTop();
-        navigation.navigate('HomeNavigator');
         navigation.navigate('Home');
       } else {
         const errormessage = result.message.includes(

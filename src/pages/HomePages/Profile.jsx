@@ -18,12 +18,18 @@ import SettingsIcon from '../../../assets/images/settings.svg';
 import QuestionsIcon from '../../../assets/images/questions.svg';
 import ProfileIcon from '../../../assets/images/profile.svg';
 import ChevronLeft from '../../../assets/images/chevron-right.svg';
+import FaceIDIcon from '../../../assets/images/face-id.svg';
 import BiometricIcon from '../../../assets/images/biometric.svg';
 import ToastMessage from '../../components/ToastMessage';
 
 const Profile = ({ navigation, children, route }) => {
-  const { appData, setAppData, isBiometricSupported, selectedCurrency } =
-    useContext(AppContext);
+  const {
+    appData,
+    setAppData,
+    isBiometricSupported,
+    selectedCurrency,
+    hasFaceID,
+  } = useContext(AppContext);
   const { email } = appData;
   const { firstName, lastName } = appData.userProfile;
   const fullName = `${firstName} ${lastName}`;
@@ -76,12 +82,12 @@ const Profile = ({ navigation, children, route }) => {
   };
 
   const selectImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      return ToastMessage('Permission was denied by user');
+      return ToastMessage('Camera permission was denied by user');
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
@@ -366,6 +372,7 @@ const styles = StyleSheet.create({
 export default Profile;
 
 const RouteLink = ({ route, navigation }) => {
+  const { hasFaceID } = useContext(AppContext);
   const routeIcon = () => {
     switch (route.routeIcon) {
       case 'withdraw':
@@ -381,7 +388,11 @@ const RouteLink = ({ route, navigation }) => {
       case 'info':
         return <ProfileIcon />;
       case 'biometric':
-        return <BiometricIcon />;
+        return hasFaceID ? (
+          <FaceIDIcon width={35} height={35} />
+        ) : (
+          <BiometricIcon />
+        );
     }
   };
   const handleNavigate = () => {

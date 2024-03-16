@@ -48,7 +48,6 @@ const Referral = ({ navigation }) => {
         ToastMessage('Withdrawn to dollar account successfully');
         setIsLoading(false);
         navigation.popToTop();
-        navigation.navigate('HomeNavigator');
         return navigation.navigate('Home');
       }
       throw new Error(response.data);

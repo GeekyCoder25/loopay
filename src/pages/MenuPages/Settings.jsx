@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PageContainer from '../../components/PageContainer';
 import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { settingsRoutes } from '../../database/data';
@@ -11,9 +11,11 @@ import LockIcon from '../../../assets/images/lockMenu.svg';
 import DevicesIcon from '../../../assets/images/devices.svg';
 import KeyIcon from '../../../assets/images/key.svg';
 import DualUserIcon from '../../../assets/images/dualUser.svg';
+import FaceIDIcon from '../../../assets/images/face-id.svg';
 import BiometricIcon from '../../../assets/images/biometric.svg';
 import BoldText from '../../components/fonts/BoldText';
 import MaIcon from '@expo/vector-icons/MaterialIcons';
+import { AppContext } from '../../components/AppContext';
 
 const Settings = ({ navigation }) => {
   return (
@@ -71,6 +73,7 @@ const styles = StyleSheet.create({
 });
 
 const RouteLink = ({ route, navigation }) => {
+  const { hasFaceID } = useContext(AppContext);
   const routeIcon = () => {
     switch (route.routeIcon) {
       case 'user':
@@ -90,7 +93,7 @@ const RouteLink = ({ route, navigation }) => {
       case 'dualUser':
         return <DualUserIcon />;
       case 'biometric':
-        return <BiometricIcon />;
+        return hasFaceID ? <FaceIDIcon fill={'#868585'} /> : <BiometricIcon />;
       case 'support':
         return <MaIcon name="support-agent" size={24} color={'#868585'} />;
       case 'trash':

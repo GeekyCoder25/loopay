@@ -48,6 +48,8 @@ const LockScreen = () => {
     setAppData,
     setCanChangeRole,
     setVerified,
+    hasFaceID,
+    setHasFaceID,
   } = useContext(AppContext);
   const [inputCode, setInputCode] = useState('');
   const [hasForgot, setHasForgot] = useState(false);
@@ -57,7 +59,6 @@ const LockScreen = () => {
   const codeLength = [1, 2, 3, 4, 5, 6];
   const [errorAnimated, setErrorAnimated] = useState(false);
   const [switchIcon, setSwitchIcon] = useState(false);
-  const [hasFaceID, setHasFaceID] = useState(false);
 
   const logoPosition = useSharedValue(0);
   const iconPosition = useSharedValue(100);
@@ -67,7 +68,7 @@ const LockScreen = () => {
     LocalAuthentication.supportedAuthenticationTypesAsync().then(result =>
       setHasFaceID(result[0] === 2),
     );
-  }, []);
+  }, [setHasFaceID]);
   useEffect(() => {
     const checkFingerprint = async () => {
       const biometric = (await getBiometric()) || false;

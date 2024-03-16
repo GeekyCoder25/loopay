@@ -12,7 +12,6 @@ const RequestSuccess = ({ navigation, route }) => {
 
   const handleHome = () => {
     navigation.popToTop();
-    navigation.navigate('HomeNavigator');
   };
 
   useEffect(() => {

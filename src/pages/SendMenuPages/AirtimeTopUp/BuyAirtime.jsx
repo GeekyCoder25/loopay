@@ -403,6 +403,7 @@ const BuyAirtime = ({ route, navigation }) => {
             />
             {scheduleData && !hasAskedPin && (
               <SchedulePayment
+                type="airtime"
                 isRecurring={isRecurring}
                 setIsRecurring={setIsRecurring}
                 scheduleData={scheduleData}

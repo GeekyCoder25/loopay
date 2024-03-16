@@ -109,7 +109,6 @@ const RequestStatus = ({ navigation, route }) => {
 
   const handleHome = () => {
     navigation.popToTop();
-    navigation.navigate('HomeNavigator');
   };
 
   const handleCancel = async () => {

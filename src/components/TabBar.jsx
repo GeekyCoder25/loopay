@@ -83,7 +83,7 @@ const TabRoute = ({ routePage, navigation, state, index }) => {
     <TouchableOpacity
       onPress={() => {
         navigation.navigate(`${routePage.route}`);
-        routePage.route === 'HomeNavigator' && setWalletRefresh(prev => !prev);
+        routePage.route === 'Home' && setWalletRefresh(prev => !prev);
       }}
       style={styles.routeIcon}>
       <View>{routeIcon(fillColor)}</View>

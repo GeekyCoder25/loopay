@@ -33,7 +33,7 @@ const Verifications = ({ navigation, route }) => {
       try {
         setIsLoading(true);
         const response = await getFetchData(
-          `admin/verifications?${selectedLabel}`,
+          `admin/verification?${selectedLabel}`,
         );
         if (response.status === 200) {
           setVerifications(response.data);
@@ -51,7 +51,7 @@ const Verifications = ({ navigation, route }) => {
     setSelectedLabel(selected);
     try {
       setIsLoading(true);
-      const response = await getFetchData(`admin/verifications?${selected}`);
+      const response = await getFetchData(`admin/verification?${selected}`);
       if (response.status === 200) {
         setVerifications(response.data);
       }

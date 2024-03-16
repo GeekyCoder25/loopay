@@ -458,6 +458,7 @@ const BuyData = ({ route, navigation }) => {
             />
             {scheduleData && !hasAskedPin && (
               <SchedulePayment
+                type="data"
                 isRecurring={isRecurring}
                 setIsRecurring={setIsRecurring}
                 scheduleData={scheduleData}

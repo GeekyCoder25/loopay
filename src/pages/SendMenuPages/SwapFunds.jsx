@@ -307,7 +307,6 @@ const SwapFunds = ({ navigation }) => {
 
   const handleGoBack = () => {
     navigation.popToTop();
-    navigation.navigate('HomeNavigator');
     navigation.navigate('Home');
   };
 

@@ -323,6 +323,7 @@ const PayABillParams = ({ route, navigation }) => {
 
       {scheduleData && !hasAskedPin && (
         <SchedulePayment
+          type="bill"
           isRecurring={isRecurring}
           setIsRecurring={setIsRecurring}
           scheduleData={scheduleData}

@@ -19,6 +19,7 @@ import FaIcon from '@expo/vector-icons/FontAwesome';
 import ToastMessage from '../../../components/ToastMessage';
 import ErrorMessage from '../../../components/ErrorMessage';
 import * as Linking from 'expo-linking';
+import Back from '../../../components/Back';
 
 const Verification = ({ route, modalOpen, setModalOpen }) => {
   const { country, email, idType, idValue, front, back, status, _id } = route;
@@ -281,6 +282,7 @@ const MessageModal = ({ showModal, setShowModal, data, setModalOpen }) => {
   };
   return (
     <Modal visible={showModal} onRequestClose={() => setShowModal(false)}>
+      <Back onPress={() => setShowModal(false)} />
       <PageContainer padding paddingTop={30}>
         <BoldText style={styles.headerText}>Message Draft</BoldText>
         <View style={styles.form}>

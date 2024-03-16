@@ -12,49 +12,55 @@ import {
 } from 'react-native';
 import RegularText from '../../../components/fonts/RegularText';
 import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
-import FlagSelect from '../../../components/FlagSelect';
 import { AppContext } from '../../../components/AppContext';
-import { addingDecimal } from '../../../../utils/AddingZero';
 import { useWalletContext } from '../../../context/WalletContext';
 import Button from '../../../components/Button';
-import { allCurrencies } from '../../../database/data';
 import Back from '../../../components/Back';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { randomUUID } from 'expo-crypto';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import ToastMessage from '../../../components/ToastMessage';
 import CalendarIcon from '../../../../assets/images/calendar.svg';
+import { putFetchData } from '../../../../utils/fetchAPI';
 
 const SchedulePayment = ({
+  isEditing,
+  refreshFunc,
   type,
-  setScheduleData,
   isRecurring,
   setIsRecurring,
+  scheduleData,
+  setScheduleData,
 }) => {
-  const { selectedCurrency, isAndroid } = useContext(AppContext);
-  const { wallet } = useWalletContext();
-  const [selected, setSelected] = useState(selectedCurrency);
+  const { selectedCurrency, isAndroid, setIsLoading } = useContext(AppContext);
+  const [selected] = useState(selectedCurrency);
   const [stateFields, setStateFields] = useState({
     id: randomUUID(),
     currency: selected.currency,
     symbol: selected.symbol,
+    frequency: {},
+    ...scheduleData,
   });
   const [errorKey, setErrorKey] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedFrequency, setSelectedFrequency] = useState({});
+  const [selectedFrequency, setSelectedFrequency] = useState(
+    stateFields.frequency,
+  );
   const [frequencyModalOpen, setFrequencyModalOpen] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState({});
+  const [selectedPeriod, setSelectedPeriod] = useState(
+    stateFields.period || {},
+  );
   const [selectedPeriodModal, setSelectedPeriodModal] = useState({});
   const [showDailyClock, setShowDailyClock] = useState(false);
   const [showMonthlyDate, setShowMonthlyDate] = useState(false);
+  const [showYearlyDate, setShowYearlyDate] = useState(false);
   const [startValue, setStartValue] = useState('DD/MM/YYYY');
   const [endValue, setEndValue] = useState('DD/MM/YYYY');
   const [interval, setInterval] = useState({});
   const [showPicker, setShowPicker] = useState(false);
   const [recurringModal, setRecurringModal] = useState(true);
+  const [justOpenedModal, setJustOpenedModal] = useState(true);
 
   const transactionType =
     (type && type === 'loopay') || type === 'others' ? 'Transfer' : 'Payment';
@@ -64,24 +70,48 @@ const SchedulePayment = ({
   }, [isRecurring]);
 
   useEffect(() => {
-    setScheduleData(stateFields);
-  }, [setScheduleData, stateFields]);
+    if (scheduleData.startDate) {
+      setStartValue(
+        new Date(scheduleData.startDate).toLocaleDateString('en-GB'),
+      );
 
-  const handleCurrencyChange = newSelect => {
-    setErrorKey('');
-    setErrorMessage('');
-    setSelected(newSelect);
+      setInterval(prev => {
+        return {
+          ...prev,
+          start: scheduleData.startDate,
+        };
+      });
+    }
+
+    if (scheduleData.endDate) {
+      setEndValue(new Date(scheduleData.endDate).toLocaleDateString('en-GB'));
+
+      setInterval(prev => {
+        return {
+          ...prev,
+          end: scheduleData.endDate,
+        };
+      });
+    }
+  }, [scheduleData.endDate, scheduleData.startDate]);
+
+  useEffect(() => {
+    justOpenedModal && setScheduleData(stateFields);
+    setJustOpenedModal(false);
+  }, [justOpenedModal, setScheduleData, stateFields]);
+
+  useEffect(() => {
     setStateFields(prev => {
       return {
         ...prev,
-        currency: newSelect.currency,
-        symbol: newSelect.symbol,
+        period: selectedPeriod,
       };
     });
-  };
+  }, [selectedPeriod]);
 
   const handleModal = () => {
-    setModalOpen(prev => !prev);
+    setRecurringModal(prev => !prev);
+    !scheduleData.title && setIsRecurring(false);
   };
 
   const handleFrequencyChange = frequency => {
@@ -111,6 +141,10 @@ const SchedulePayment = ({
       label: 'Monthly',
       id: 'monthly',
     },
+    {
+      label: 'Annually',
+      id: 'annually',
+    },
   ];
 
   const defaultPickerDate = period => {
@@ -118,6 +152,20 @@ const SchedulePayment = ({
   };
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
 
   const handleDailyPicker = timeEvent => {
     setShowDailyClock(false);
@@ -244,8 +292,22 @@ const SchedulePayment = ({
       setErrorKey('start');
       return setErrorMessage('Please select schedule start');
     } else {
-      setScheduleData(stateFields);
-      return setRecurringModal(false);
+      if (isEditing) {
+        setIsLoading(true);
+        const response = await putFetchData(
+          `user/schedule/${scheduleData._id}`,
+          stateFields,
+        );
+        if (response.status === 200) {
+          refreshFunc();
+          setScheduleData(null);
+        }
+        setIsLoading(false);
+        console.log(response);
+      } else {
+        setScheduleData({ transactionType: type, ...stateFields });
+        return setRecurringModal(false);
+      }
     }
   };
 
@@ -295,32 +357,9 @@ const SchedulePayment = ({
               }}
               placeholder="Name"
               value={stateFields.title}
+              maxLength={18}
             />
           </View>
-
-          <View style={styles.labelContainer}>
-            <RegularText style={styles.label}>Select Currency</RegularText>
-          </View>
-          <Pressable
-            onPress={() =>
-              type === 'others'
-                ? ToastMessage(
-                    'Naira is the only supported currency for inter bank transfers at the moment',
-                  )
-                : setModalOpen(true)
-            }
-            style={styles.textInputContainer}>
-            <View style={{ ...styles.textInput, ...styles.selectInput }}>
-              <View style={styles.selected}>
-                <FlagSelect country={selected.currency} />
-                <RegularText
-                  style={
-                    styles.selectedText
-                  }>{`${selected.acronym} (${selected.fullName})`}</RegularText>
-              </View>
-              <ChevronDown />
-            </View>
-          </Pressable>
 
           <View style={styles.labelContainer}>
             <RegularText style={styles.label}>Frequency</RegularText>
@@ -369,7 +408,7 @@ const SchedulePayment = ({
                       />
                     ) : (
                       <RegularText style={styles.selectedText}>
-                        {selectedPeriod.label || 'Hour of the day'}
+                        {selectedPeriod.label || 'Minute of every hour'}
                       </RegularText>
                     )}
                   </View>
@@ -487,6 +526,43 @@ const SchedulePayment = ({
               </Pressable>
             </>
           )}
+          {selectedFrequency.id === 'annually' && (
+            <>
+              <View style={styles.labelContainer}>
+                <RegularText style={styles.label}>Select Month</RegularText>
+              </View>
+              <Pressable
+                onPress={() => setShowYearlyDate(true)}
+                style={styles.textInputContainer}>
+                <View
+                  style={{
+                    ...styles.textInput,
+                    ...styles.selectInput,
+                    borderColor: errorKey === 'frequencyIndex' ? 'red' : '#ccc',
+                  }}>
+                  <View style={styles.selected}>
+                    <View style={styles.dateTextContainer}>
+                      <View style={styles.calendarIcon}>
+                        <CalendarIcon width={30} height={30} />
+                        <RegularText style={styles.newDate}>
+                          {selectedPeriod.period
+                            ? selectedPeriod.period
+                            : new Date().getMonth()}
+                        </RegularText>
+                      </View>
+
+                      <RegularText style={styles.selectedText}>
+                        {selectedPeriod.label
+                          ? selectedPeriod.label
+                          : 'Month of the year'}
+                      </RegularText>
+                    </View>
+                  </View>
+                  <ChevronDown />
+                </View>
+              </Pressable>
+            </>
+          )}
 
           <RegularText style={styles.topUp}>Start Date</RegularText>
           <Pressable
@@ -575,50 +651,12 @@ const SchedulePayment = ({
           {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
           <View style={styles.button}>
             <Button
-              text="Confirm"
+              text={isEditing ? 'Update' : 'Confirm'}
               onPress={() => handleContinue(selectedCurrency)}
             />
           </View>
         </ScrollView>
       </View>
-
-      <Modal
-        visible={modalOpen}
-        animationType="slide"
-        transparent
-        onRequestClose={handleModal}>
-        <Back onPress={() => setModalOpen(false)} />
-        <View style={styles.modal}>
-          <BoldText style={styles.modalHeader}>Select currency</BoldText>
-          {allCurrencies
-            .filter(i => i.currency !== selected.currency)
-            .map(select => (
-              <Pressable
-                key={select.currency}
-                style={styles.currency}
-                onPress={() => {
-                  handleCurrencyChange(select);
-                  setModalOpen(false);
-                }}>
-                <View style={styles.currencyIcon}>
-                  <FlagSelect country={select.currency} />
-                  <View>
-                    <BoldText>{select.acronym}</BoldText>
-                    <RegularText style={styles.currencyName}>
-                      {select.currency}
-                    </RegularText>
-                  </View>
-                </View>
-                <BoldText style={styles.amount}>
-                  {select.symbol +
-                    addingDecimal(
-                      wallet[`${select.currency}Balance`]?.toLocaleString(),
-                    )}
-                </BoldText>
-              </Pressable>
-            ))}
-        </View>
-      </Modal>
 
       <Modal
         visible={frequencyModalOpen}
@@ -678,6 +716,38 @@ const SchedulePayment = ({
               </View>
               <BoldText style={styles.amount}>
                 {selectedPeriod.period === day ? (
+                  <FaIcon name="check-circle" size={24} />
+                ) : (
+                  <FaIcon name="circle-o" size={24} />
+                )}
+              </BoldText>
+            </Pressable>
+          ))}
+        </View>
+      </Modal>
+      <Modal
+        visible={showYearlyDate}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowYearlyDate(false)}>
+        <Back onPress={() => setShowYearlyDate(false)} />
+        <View style={styles.modal}>
+          <BoldText style={styles.modalHeader}>Select Month</BoldText>
+          {months.map((month, index) => (
+            <Pressable
+              key={month}
+              style={styles.currency}
+              onPress={() => {
+                setSelectedPeriod({ label: month, period: index + 1 });
+                setShowYearlyDate(false);
+              }}>
+              <View style={styles.currencyIcon}>
+                <View>
+                  <BoldText style={styles.currencyName}>{month}</BoldText>
+                </View>
+              </View>
+              <BoldText style={styles.amount}>
+                {selectedPeriod.period === month ? (
                   <FaIcon name="check-circle" size={24} />
                 ) : (
                   <FaIcon name="circle-o" size={24} />

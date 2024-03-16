@@ -455,7 +455,7 @@ const AccStatement = () => {
             <View style={styles.calendarIcon}>
               <CalendarIcon width={30} height={30} />
               <RegularText style={styles.newDate}>
-                {endValue
+                {generateData.end
                   ? new Date(generateData.end).getDate()
                   : new Date().getDate()}
               </RegularText>
