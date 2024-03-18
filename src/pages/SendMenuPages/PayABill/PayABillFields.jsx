@@ -34,6 +34,7 @@ export default function SelectInputField({
   onChange,
   onRefetch,
   setGlobalApiBody,
+  showModalPrice,
 }) {
   const { showAmount, setShowAmount } = useContext(AppContext);
   const { wallet } = useWalletContext();
@@ -157,7 +158,7 @@ export default function SelectInputField({
               style={styles.textInputContainer}>
               <View style={styles.textInput}>
                 {selected ? (
-                  <BoldText style={styles.modalSelected}>{selected}</BoldText>
+                  <BoldText style={styles.modalTitle}>{selected}</BoldText>
                 ) : (
                   <RegularText style={styles.networkToBuy}>
                     {placeholder}
@@ -178,6 +179,7 @@ export default function SelectInputField({
             setErrorKey={setErrorKey}
             onChange={onChange}
             setGlobalApiBody={setGlobalApiBody}
+            showModalPrice={showModalPrice}
             id={id}
           />
         </>
@@ -197,6 +199,7 @@ const LocalModal = ({
   setErrorKey,
   onChange,
   setGlobalApiBody,
+  showModalPrice,
   id,
 }) => {
   const handleModal = () => {
@@ -216,11 +219,16 @@ const LocalModal = ({
       };
     });
     setStateFields(prev => {
-      return {
+      const body = {
         ...prev,
         [id]: provider,
         referenceId: randomUUID(),
       };
+
+      if (showModalPrice) {
+        body.amount = provider.price;
+      }
+      return body;
     });
   };
 
@@ -246,9 +254,15 @@ const LocalModal = ({
                         : 'transparent',
                   }}
                   onPress={() => handleModalSelect(provider)}>
-                  <BoldText style={styles.modalSelected}>
-                    {provider.title || provider.name}
-                  </BoldText>
+                  <View style={styles.modalListRow}>
+                    <BoldText>
+                      {showModalPrice &&
+                        '₦' + Number(provider.price)?.toLocaleString() + ' - '}
+                    </BoldText>
+                    <BoldText style={styles.modalTitle}>
+                      {provider.title || provider.name}
+                    </BoldText>
+                  </View>
                 </Pressable>
               ))
             ) : (
@@ -295,7 +309,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
   },
-  modalSelected: {
+  modalTitle: {
     textTransform: 'uppercase',
     flexDirection: 'row',
     alignItems: 'center',
@@ -347,8 +361,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     paddingHorizontal: 5 + '%',
-    paddingVertical: 10,
+    paddingVertical: 15,
     gap: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#bbb',
+  },
+  modalListRow: {
+    flexDirection: 'row',
   },
   textHeader: {
     fontSize: 24,

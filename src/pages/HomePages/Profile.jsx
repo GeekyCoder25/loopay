@@ -23,13 +23,8 @@ import BiometricIcon from '../../../assets/images/biometric.svg';
 import ToastMessage from '../../components/ToastMessage';
 
 const Profile = ({ navigation, children, route }) => {
-  const {
-    appData,
-    setAppData,
-    isBiometricSupported,
-    selectedCurrency,
-    hasFaceID,
-  } = useContext(AppContext);
+  const { appData, setAppData, isBiometricSupported, selectedCurrency } =
+    useContext(AppContext);
   const { email } = appData;
   const { firstName, lastName } = appData.userProfile;
   const fullName = `${firstName} ${lastName}`;

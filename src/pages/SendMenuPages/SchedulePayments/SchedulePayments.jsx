@@ -19,6 +19,7 @@ import Phone from '../../../../assets/images/airtime.svg';
 import BillIcon from '../../../../assets/images/bill.svg';
 import SchedulePayment from './SchedulePayment';
 import ToastMessage from '../../../components/ToastMessage';
+import { addingDecimal } from '../../../../utils/AddingZero';
 
 const SchedulePayments = ({ navigation }) => {
   const [addNew, setAddNew] = useState(false);
@@ -163,7 +164,12 @@ const SchedulePayments = ({ navigation }) => {
                   <View style={styles.scheduleRow}>
                     <RegularText>Amount: </RegularText>
                     <BoldText>
-                      {symbol(schedule) + schedule.transactionData.amount}
+                      {symbol(schedule) +
+                        addingDecimal(
+                          Number(
+                            schedule.transactionData.amount,
+                          ).toLocaleString(),
+                        )}
                     </BoldText>
                   </View>
                   <View style={styles.scheduleRow}>
@@ -293,17 +299,27 @@ const ScheduleTypeIcon = ({ schedule }) => {
 };
 
 const Type = ({ schedule }) => {
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
   switch (schedule.frequency.id) {
     case 'hourly':
       return (
         <View style={styles.scheduleRow}>
-          <RegularText>Time: </RegularText>
-          <BoldText>
-            {schedule.minute}:
-            {schedule.second
-              ? schedule.second.length === 1 && '0' + schedule.second
-              : '00'}
-          </BoldText>
+          <RegularText>Minute: </RegularText>
+          <BoldText>{schedule.minute}</BoldText>
         </View>
       );
     case 'daily':
@@ -336,7 +352,7 @@ const Type = ({ schedule }) => {
       return (
         <View style={styles.scheduleRow}>
           <RegularText>Month: </RegularText>
-          <BoldText>{schedule.month}</BoldText>
+          <BoldText>{months[schedule.month + 1]}</BoldText>
         </View>
       );
 

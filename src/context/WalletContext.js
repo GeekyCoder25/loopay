@@ -133,9 +133,9 @@ const WalletContextComponent = memo(({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletRefresh, selectedCurrency]);
 
-  useInterval(() => {
-    fetchWallet();
-  }, 60000);
+  // useInterval(() => {
+  //   fetchWallet();
+  // }, 60000);
 
   return (
     <WalletContext.Provider

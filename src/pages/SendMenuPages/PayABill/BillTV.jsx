@@ -117,9 +117,9 @@ const BillTV = ({
       />
       <SelectInputField
         selectInput={{
-          title: 'Decoder type',
+          title: 'Subscription',
           type: 'select',
-          placeholder: 'Select decoder type',
+          placeholder: 'Select subscription',
           id: 'meterType',
         }}
         fields={fields}
@@ -132,6 +132,7 @@ const BillTV = ({
         modalData={providerServices}
         setGlobalApiBody={setGlobalApiBody}
         onRefetch={fetchProviderServices}
+        showModalPrice
       />
       <SelectInputField
         selectInput={{
@@ -168,25 +169,6 @@ const BillTV = ({
         )
       )}
 
-      <SelectInputField
-        selectInput={{
-          title: 'Amount',
-          type: 'input',
-          id: 'amount',
-        }}
-        fields={fields}
-        stateFields={stateFields}
-        setStateFields={setStateFields}
-        errorKey={errorKey}
-        setErrorMessage={setErrorMessage}
-        setErrorKey={setErrorKey}
-        selectedCurrency={selectedCurrency}
-        modalData={providerServices}
-        setGlobalApiBody={setGlobalApiBody}
-        onChange={handleAmountInput}
-        onRefetch={fetchCustomerDetails}
-        showBalance={true}
-      />
       <SelectInputField
         selectInput={{
           title: 'Message',

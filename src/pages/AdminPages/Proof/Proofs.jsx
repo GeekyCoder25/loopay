@@ -259,12 +259,14 @@ const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
       <BoldText>
         Time: <RegularText>{new Date(createdAt).toTimeString()}</RegularText>
       </BoldText>
-      <View style={styles.row}>
-        <BoldText>Image Proof:</BoldText>
-        <Pressable onPress={() => Linking.openURL(image)}>
-          <RegularText style={styles.link}>click here</RegularText>
-        </Pressable>
-      </View>
+      {type === 'transfer' && (
+        <View style={styles.row}>
+          <BoldText>Image Proof:</BoldText>
+          <Pressable onPress={() => Linking.openURL(image)}>
+            <RegularText style={styles.link}>click here</RegularText>
+          </Pressable>
+        </View>
+      )}
 
       <View style={styles.buttons}>
         <Pressable

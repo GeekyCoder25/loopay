@@ -75,7 +75,7 @@ const AppStart = () => {
     <>
       <View onLayout={onLayoutRootView} />
       <AppPagesNavigator />
-      {showLockScreen && <LockScreen />}
+      {/* {showLockScreen && <LockScreen />} */}
       <NoInternet modalOpen={!internetStatus} />
     </>
   );

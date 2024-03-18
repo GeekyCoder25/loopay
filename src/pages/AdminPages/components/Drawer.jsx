@@ -8,6 +8,7 @@ import RateIcon from '../../../../assets/images/rate.svg';
 import UsersIcon from '../../../../assets/images/users.svg';
 import HistoryIcon from '../../../../assets/images/histories.svg';
 import StatementIcon from '../../../../assets/images/statement.svg';
+import SettingsIcon from '../../../../assets/images/settings.svg';
 import Xmark from '../../../../assets/images/xmark.svg';
 import Button from '../../../components/Button';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -43,6 +44,7 @@ const CustomDrawer = props => {
     'History',
     'Announcements',
     'Statement',
+    'Server APIs',
   ];
   const routeIcon = icon => {
     switch (icon) {
@@ -74,6 +76,8 @@ const CustomDrawer = props => {
         return <HistoryIcon />;
       case 'Statement':
         return <StatementIcon />;
+      case 'Server APIs':
+        return <SettingsIcon fill={'#868585'} />;
     }
   };
 
