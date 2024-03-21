@@ -10,12 +10,13 @@ import ArrowIcon from '../../../assets/images/referralArrow.svg';
 import Button from '../../components/Button';
 import { AppContext } from '../../components/AppContext';
 import UserIcon from '../../components/UserIcon';
-import { getFetchData } from '../../../utils/fetchAPI';
 import ToastMessage from '../../components/ToastMessage';
 import { addingDecimal } from '../../../utils/AddingZero';
 import IonIcon from '@expo/vector-icons/FontAwesome';
+import useFetchData from '../../../utils/fetchAPI';
 
 const Referral = ({ navigation }) => {
+  const { getFetchData } = useFetchData();
   const { appData, walletRefresh, setWalletRefresh, setIsLoading, vw } =
     useContext(AppContext);
   const { referralCode } = appData;
@@ -33,6 +34,7 @@ const Referral = ({ navigation }) => {
       }
     };
     getReferrals();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletRefresh]);
 
   const handleClaim = async () => {

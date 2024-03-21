@@ -1,134 +1,177 @@
-import { getToken } from './storage';
+import { useContext } from 'react';
+import { getToken, logoutUser } from './storage';
+import { AppContext } from '../src/components/AppContext';
+import { allCurrencies } from '../src/database/data';
+import ToastMessage from '../src/components/ToastMessage';
 
 // export const apiUrl = 'http://10.0.2.2:8000/api';
 // export const apiUrl = 'http://172.20.10.2:8000/api';
-// export const apiUrl = 'http://192.168.69.247:8000/api';
+// export const apiUrl = 'http://192.168.226.247:8000/api';
 export const apiUrl = 'https://loopay-api.cyclic.app/api';
 
 const timeoutSeconds = 30;
-export const getFetchData = async apiEndpoint => {
-  const API_URL = `${apiUrl}/${apiEndpoint}`;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => {
-    controller.abort();
-    return { data: "Couldn't connect to server", status: 404 };
-  }, timeoutSeconds * 1000);
-  const token = await getToken();
 
-  try {
-    const response = await fetch(API_URL, {
-      signal: controller.signal,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    clearTimeout(timeout);
-    const data = await response.json();
-    return { data, status: response.status };
-  } catch (err) {
-    clearTimeout(timeout);
-    return "Couldn't connect to server";
-  }
-};
+const useFetchData = () => {
+  const {
+    isLoggedIn,
+    setIsLoggedIn,
+    setAppData,
+    setCanChangeRole,
+    setVerified,
+  } = useContext(AppContext);
 
-export const postFetchData = async (apiEndpoint, bodyData, token) => {
-  const API_URL = `${apiUrl}/${apiEndpoint}`;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => {
-    controller.abort();
-    return { data: "Couldn't connect to server", status: 404 };
-  }, timeoutSeconds * 1000);
-  token = token || (await getToken());
+  const handleLogout = async () => {
+    try {
+      setIsLoggedIn(false);
+      setVerified(false);
+      await logoutUser();
+      setAppData({});
+      setCanChangeRole(false);
+      allCurrencies.length > 3 && allCurrencies.shift();
+    } finally {
+      ToastMessage('Your account has been logged in on another device');
+    }
+  };
 
-  function removeTrailingWhiteSpace(obj) {
-    const newObj = {};
+  const getFetchData = async apiEndpoint => {
+    const API_URL = `${apiUrl}/${apiEndpoint}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => {
+      controller.abort();
+      return { data: "Couldn't connect to server", status: 404 };
+    }, timeoutSeconds * 1000);
+    const token = await getToken();
 
-    for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        const value = obj[key];
-        if (typeof value === 'string') {
-          newObj[key] = value.trimRight(); // Removes trailing white spaces
-        } else {
-          newObj[key] = value;
+    try {
+      const response = await fetch(API_URL, {
+        signal: controller.signal,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      clearTimeout(timeout);
+      const data = await response.json();
+      if (response.status === 401 && isLoggedIn) {
+        await handleLogout();
+      }
+      return { data, status: response.status };
+    } catch (err) {
+      clearTimeout(timeout);
+      return "Couldn't connect to server";
+    }
+  };
+
+  const postFetchData = async (apiEndpoint, bodyData, token) => {
+    const API_URL = `${apiUrl}/${apiEndpoint}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => {
+      controller.abort();
+      return { data: "Couldn't connect to server", status: 404 };
+    }, timeoutSeconds * 1000);
+    token = token || (await getToken());
+
+    function removeTrailingWhiteSpace(obj) {
+      const newObj = {};
+
+      for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          const value = obj[key];
+          if (typeof value === 'string') {
+            newObj[key] = value.trimRight(); // Removes trailing white spaces
+          } else {
+            newObj[key] = value;
+          }
         }
       }
+
+      return newObj;
     }
+    bodyData = removeTrailingWhiteSpace(bodyData);
 
-    return newObj;
-  }
-  bodyData = removeTrailingWhiteSpace(bodyData);
+    try {
+      const response = await fetch(API_URL, {
+        signal: controller.signal,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(bodyData),
+      });
+      clearTimeout(timeout);
+      const data = await response.json();
+      if (response.status === 401 && isLoggedIn) {
+        await handleLogout();
+      }
+      return { data, status: response.status };
+    } catch (err) {
+      clearTimeout(timeout);
+      return "Couldn't connect to server";
+    }
+  };
 
-  try {
-    const response = await fetch(API_URL, {
-      signal: controller.signal,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(bodyData),
-    });
-    clearTimeout(timeout);
-    const data = await response.json();
-    return { data, status: response.status };
-  } catch (err) {
-    clearTimeout(timeout);
-    return "Couldn't connect to server";
-  }
+  const putFetchData = async (apiEndpoint, bodyData) => {
+    const API_URL = `${apiUrl}/${apiEndpoint}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => {
+      controller.abort();
+      return { data: "Couldn't connect to server", status: 404 };
+    }, timeoutSeconds * 1000);
+    const token = await getToken();
+
+    try {
+      const response = await fetch(API_URL, {
+        signal: controller.signal,
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(bodyData),
+      });
+      clearTimeout(timeout);
+      const data = await response.json();
+      if (response.status === 401 && isLoggedIn) {
+        await handleLogout();
+      }
+      return { data, status: response.status };
+    } catch (err) {
+      clearTimeout(timeout);
+      return "Couldn't connect to server";
+    }
+  };
+
+  const deleteFetchData = async (apiEndpoint, bodyData) => {
+    const API_URL = `${apiUrl}/${apiEndpoint}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => {
+      controller.abort();
+      return { data: "Couldn't connect to server", status: 404 };
+    }, timeoutSeconds * 1000);
+    const token = await getToken();
+
+    try {
+      const response = await fetch(API_URL, {
+        signal: controller.signal,
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(bodyData),
+      });
+      clearTimeout(timeout);
+      const data = await response.json();
+      if (response.status === 401 && isLoggedIn) {
+        await handleLogout();
+      }
+      return { data, status: response.status };
+    } catch (err) {
+      clearTimeout(timeout);
+      return "Couldn't connect to server";
+    }
+  };
+  return { getFetchData, postFetchData, putFetchData, deleteFetchData };
 };
 
-export const putFetchData = async (apiEndpoint, bodyData) => {
-  const API_URL = `${apiUrl}/${apiEndpoint}`;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => {
-    controller.abort();
-    return { data: "Couldn't connect to server", status: 404 };
-  }, timeoutSeconds * 1000);
-  const token = await getToken();
-
-  try {
-    const response = await fetch(API_URL, {
-      signal: controller.signal,
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(bodyData),
-    });
-    clearTimeout(timeout);
-    const data = await response.json();
-    return { data, status: response.status };
-  } catch (err) {
-    clearTimeout(timeout);
-    return "Couldn't connect to server";
-  }
-};
-
-export const deleteFetchData = async (apiEndpoint, bodyData) => {
-  const API_URL = `${apiUrl}/${apiEndpoint}`;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => {
-    controller.abort();
-    return { data: "Couldn't connect to server", status: 404 };
-  }, timeoutSeconds * 1000);
-  const token = await getToken();
-
-  try {
-    const response = await fetch(API_URL, {
-      signal: controller.signal,
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(bodyData),
-    });
-    clearTimeout(timeout);
-    const data = await response.json();
-    return { data, status: response.status };
-  } catch (err) {
-    clearTimeout(timeout);
-    return "Couldn't connect to server";
-  }
-};
+export default useFetchData;

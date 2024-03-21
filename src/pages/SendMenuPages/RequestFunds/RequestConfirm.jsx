@@ -5,12 +5,13 @@ import BoldText from '../../../components/fonts/BoldText';
 import InputPin from '../../../components/InputPin';
 import RegularText from '../../../components/fonts/RegularText';
 import { addingDecimal } from '../../../../utils/AddingZero';
-import { postFetchData } from '../../../../utils/fetchAPI';
 import { useState } from 'react';
 import Button from '../../../components/Button';
 import Back from '../../../components/Back';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const RequestConfirm = ({ navigation, route }) => {
+  const { postFetchData } = useFetchData();
   const { amount, fee, symbol, tagName, toReceive } = route.params;
   const [canContinue, setCanContinue] = useState(false);
 

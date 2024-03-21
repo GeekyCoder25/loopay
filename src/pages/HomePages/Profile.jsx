@@ -377,7 +377,7 @@ const RouteLink = ({ route, navigation }) => {
       case 'pin':
         return <PinIcon />;
       case 'settings':
-        return <SettingsIcon />;
+        return <SettingsIcon fill="#000" />;
       case 'questions':
         return <QuestionsIcon />;
       case 'info':

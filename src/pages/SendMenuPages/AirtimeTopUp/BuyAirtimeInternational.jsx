@@ -23,15 +23,16 @@ import { useWalletContext } from '../../../context/WalletContext';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { randomUUID } from 'expo-crypto';
-import { getFetchData } from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
 import { allCurrencies } from '../../../database/data';
 import { CountriesSelect } from '../../MenuPages/VerificationStatus/IdentityVerification';
 import { allCountries } from '../../../../utils/allCountries';
 import ToastMessage from '../../../components/ToastMessage';
 import { setShowBalance } from '../../../../utils/storage';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const BuyAirtimeInternational = ({ navigation }) => {
+  const { getFetchData } = useFetchData();
   const { setIsLoading, showAmount, setShowAmount } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [modalOpen, setModalOpen] = useState(false);
@@ -90,6 +91,7 @@ const BuyAirtimeInternational = ({ navigation }) => {
     if (countrySelected) {
       getInternationalOperators();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countrySelected, setIsLoading]);
 
   const handleNetworkModal = () => {

@@ -17,12 +17,13 @@ import ChevronDown from '../../../../assets/images/drop-down.svg';
 import { ScrollView } from 'react-native-gesture-handler';
 import BackIcon from '../../../../assets/images/backArrow.svg';
 import SortIcon from '../../../../assets/images/sort.svg';
-import { getFetchData } from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const Users = ({ navigation }) => {
+  const { getFetchData } = useFetchData();
   const { walletRefresh, vh } = useContext(AppContext);
   const { adminData } = useAdminDataContext();
   const [users, setUsers] = useState([]);
@@ -57,6 +58,7 @@ const Users = ({ navigation }) => {
       }
     };
     getUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletRefresh]);
 
   function sortFunc(a, b) {

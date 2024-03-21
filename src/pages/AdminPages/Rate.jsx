@@ -9,12 +9,13 @@ import RegularText from '../../components/fonts/RegularText';
 import Button from '../../components/Button';
 import { AppContext } from '../../components/AppContext';
 import { allCurrencies } from '../../database/data';
-import { getFetchData, putFetchData } from '../../../utils/fetchAPI';
+import useFetchData from '../../../utils/fetchAPI';
 import ErrorMessage from '../../components/ErrorMessage';
 import { useAdminDataContext } from '../../context/AdminContext';
 import AdminSelectCurrencyModal from './components/AdminSelectCurrency';
 
 const Rate = ({ navigation }) => {
+  const { getFetchData, putFetchData } = useFetchData();
   const { selectedCurrency, vh, setIsLoading } = useContext(AppContext);
   const [defaultTab, setDefaultTab] = useState(0);
   const { setModalFunc, setModalOpen } = useAdminDataContext();
@@ -51,6 +52,7 @@ const Rate = ({ navigation }) => {
       response.status === 200 && setAllFees(response.data);
     };
     !defaultTab ? getRates() : getFees();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultTab, rateRefetch]);
 
   useEffect(() => {

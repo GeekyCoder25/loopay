@@ -5,7 +5,7 @@ import NoInternet from './NoInternet';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { AppContext } from './AppContext';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 import LockScreen from '../pages/GlobalPages/LockScreen';
 
 const AppStart = () => {
@@ -75,7 +75,7 @@ const AppStart = () => {
     <>
       <View onLayout={onLayoutRootView} />
       <AppPagesNavigator />
-      {/* {showLockScreen && <LockScreen />} */}
+      {showLockScreen && <LockScreen />}
       <NoInternet modalOpen={!internetStatus} />
     </>
   );

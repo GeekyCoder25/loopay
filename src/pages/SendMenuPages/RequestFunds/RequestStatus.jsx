@@ -9,7 +9,6 @@ import Check from '../../../../assets/images/check.svg';
 import Xmark from '../../../../assets/images/cancel.svg';
 import Block from '../../../../assets/images/block.svg';
 import Back from '../../../components/Back';
-import { postFetchData } from '../../../../utils/fetchAPI';
 import ToastMessage from '../../../components/ToastMessage';
 import { AppContext } from '../../../components/AppContext';
 import { Audio } from 'expo-av';
@@ -20,8 +19,10 @@ import FlagSelect from '../../../components/FlagSelect';
 import { useWalletContext } from '../../../context/WalletContext';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import { allCurrencies } from '../../../database/data';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const RequestStatus = ({ navigation, route }) => {
+  const { postFetchData } = useFetchData();
   const { selectedCurrency, setWalletRefresh, setIsLoading, vh } =
     useContext(AppContext);
   const {

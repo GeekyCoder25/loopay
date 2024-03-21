@@ -11,12 +11,14 @@ import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import { AppContext } from '../../components/AppContext';
 import Button from '../../components/Button';
-import { postFetchData } from '../../../utils/fetchAPI';
 import ToastMessage from '../../components/ToastMessage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import FaIcon from '@expo/vector-icons/FontAwesome';
+import useFetchData from '../../../utils/fetchAPI';
 
 const MyInfo = () => {
+  const { postFetchData } = useFetchData();
+
   const [isEditable, setIsEditable] = useState(false);
   const { appData, setAppData, setIsLoading } = useContext(AppContext);
   const [inputFocus, setInputFocus] = useState('');

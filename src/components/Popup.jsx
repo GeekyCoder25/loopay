@@ -12,10 +12,12 @@ import IonIcon from '@expo/vector-icons/Ionicons';
 
 import { AppContext } from './AppContext';
 import RegularText from './fonts/RegularText';
-import { deleteFetchData } from '../../utils/fetchAPI';
+import useFetchData from '../../utils/fetchAPI';
 import { ResizeMode, Video } from 'expo-av';
 
 const Popup = () => {
+  const { deleteFetchData } = useFetchData();
+
   const { showPopUp, setShowPopUp, appData, setAppData, setPopUpClosed, vw } =
     useContext(AppContext);
   const [popUps, setPopUps] = useState(appData.popUps);

@@ -16,10 +16,12 @@ import { shareAsync } from 'expo-sharing';
 import { AppContext } from '../../components/AppContext';
 import { billIcon } from './TransactionHistory';
 import { setShowBalance } from '../../../utils/storage';
-import { postFetchData } from '../../../utils/fetchAPI';
 import ToastMessage from '../../components/ToastMessage';
+import useFetchData from '../../../utils/fetchAPI';
 
 const TransactionHistoryParams = ({ route }) => {
+  const { postFetchData } = useFetchData();
+
   const { vh, showAmount, setShowAmount, setIsLoading, isAdmin } =
     useContext(AppContext);
   const history = route.params;

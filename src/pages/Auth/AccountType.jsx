@@ -9,10 +9,11 @@ import Header from '../../components/Header';
 import RegularText from '../../components/fonts/RegularText';
 import BoldText from '../../components/fonts/BoldText';
 import { AppContext } from '../../components/AppContext';
-import { putFetchData } from '../../../utils/fetchAPI';
 import FaIcon from '@expo/vector-icons/FontAwesome';
+import useFetchData from '../../../utils/fetchAPI';
 
 const AccountType = () => {
+  const { putFetchData } = useFetchData();
   const { setIsLoggedIn, setAppData, setIsLoading } = useContext(AppContext);
   const [accountTypeState, setAccountTypeState] = useState('');
   const [isError, setIsError] = useState(false);

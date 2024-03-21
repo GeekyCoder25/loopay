@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { getFetchData } from '../../../utils/fetchAPI';
 import BoldText from '../../components/fonts/BoldText';
 import {
   ActivityIndicator,
@@ -17,8 +16,10 @@ import IonIcon from '@expo/vector-icons/Ionicons';
 import { useAdminDataContext } from '../../context/AdminContext';
 import Verification from './components/Verification';
 import Back from '../../components/Back';
+import useFetchData from '../../../utils/fetchAPI';
 
 const Verifications = ({ navigation, route }) => {
+  const { getFetchData } = useFetchData();
   const { verifications, setVerifications } = useAdminDataContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [openVerification, setOpenVerification] = useState(false);

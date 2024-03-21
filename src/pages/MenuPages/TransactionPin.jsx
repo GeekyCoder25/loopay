@@ -8,11 +8,11 @@ import CheckPassword from '../../components/CheckPassword';
 import LoggedInForgetPassword from '../../components/LoggedInForgetPassword';
 import ErrorMessage from '../../components/ErrorMessage';
 import Button from '../../components/Button';
-import { postFetchData } from '../../../utils/fetchAPI';
 import SuccessMessage from '../../components/SuccessMessage';
 import RegularText from '../../components/fonts/RegularText';
 import InputPinPage, { PINInputFields } from '../../components/InputPinPage';
 import { useWalletContext } from '../../context/WalletContext';
+import useFetchData from '../../../utils/fetchAPI';
 
 const TransactionPin = ({ navigation, route }) => {
   const { vh, appData } = useContext(AppContext);
@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
 export default TransactionPin;
 
 const ChangePin = ({ navigation, setReload }) => {
+  const { postFetchData } = useFetchData();
   const { appData, setAppData, setIsLoading } = useContext(AppContext);
   const walletContext = useWalletContext();
   const [pinCode, setPinCode] = useState('');

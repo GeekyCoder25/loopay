@@ -2,9 +2,9 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import SelectInputField from './PayABillFields';
 import { AppContext } from '../../../components/AppContext';
-import { postFetchData } from '../../../../utils/fetchAPI';
 import BoldText from '../../../components/fonts/BoldText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const BillElectricity = ({
   fields,
@@ -18,6 +18,7 @@ const BillElectricity = ({
   setIsButtonDisabled,
   selectedCurrency,
 }) => {
+  const { postFetchData } = useFetchData();
   const { appData } = useContext(AppContext);
   const [providers, setProviders] = useState([]);
   const [providerServices, setProviderServices] = useState([]);

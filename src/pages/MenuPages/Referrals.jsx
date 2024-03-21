@@ -11,10 +11,11 @@ import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import { AppContext } from '../../components/AppContext';
 import ToastMessage from '../../components/ToastMessage';
-import { getFetchData } from '../../../utils/fetchAPI';
 import UserIcon from '../../components/UserIcon';
+import useFetchData from '../../../utils/fetchAPI';
 
 const Referrals = ({ navigation }) => {
+  const { getFetchData } = useFetchData();
   const {
     selectedCurrency,
     appData,
@@ -35,6 +36,7 @@ const Referrals = ({ navigation }) => {
       }
     };
     getReferrals();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletRefresh]);
   const handleShare = () => {
     Clipboard.setString(referralLink);

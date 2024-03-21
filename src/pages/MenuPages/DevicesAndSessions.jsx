@@ -3,10 +3,11 @@ import BoldText from '../../components/fonts/BoldText';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import Profile from '../HomePages/Profile';
 import RegularText from '../../components/fonts/RegularText';
-import { getFetchData, putFetchData } from '../../../utils/fetchAPI';
 import { getSessionID } from '../../../utils/storage';
+import useFetchData from '../../../utils/fetchAPI';
 
 const DevicesAndSessions = ({ navigation }) => {
+  const { getFetchData, putFetchData } = useFetchData();
   const [activeSessions, setActiveSessions] = useState(null);
   const [isLocalLoading, setIsLocalLoading] = useState(true);
 
@@ -22,6 +23,7 @@ const DevicesAndSessions = ({ navigation }) => {
       setIsLocalLoading(false);
     };
     getSessions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <Profile navigation={navigation}>

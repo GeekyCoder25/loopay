@@ -8,7 +8,6 @@ import { useContext, useEffect, useState } from 'react';
 import { addingDecimal } from '../../../utils/AddingZero';
 import { AppContext } from '../../components/AppContext';
 import Donut from './components/Donut';
-import { getFetchData } from '../../../utils/fetchAPI';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CalendarIcon from '../../../assets/images/calendar.svg';
 import { shareAsync } from 'expo-sharing';
@@ -17,8 +16,10 @@ import * as Print from 'expo-print';
 import ToastMessage from '../../components/ToastMessage';
 import { useAdminDataContext } from '../../context/AdminContext';
 import { setShowBalance } from '../../../utils/storage';
+import useFetchData from '../../../utils/fetchAPI';
 
 const Statement = () => {
+  const { getFetchData } = useFetchData();
   const { selectedCurrency, setIsLoading, showAmount, setShowAmount } =
     useContext(AppContext);
   const { adminData } = useAdminDataContext();
@@ -48,6 +49,7 @@ const Statement = () => {
       }
     };
     getSummary();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCurrency]);
 
   useEffect(() => {

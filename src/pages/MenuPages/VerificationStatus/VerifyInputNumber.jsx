@@ -5,11 +5,12 @@ import { View, StyleSheet, TextInput } from 'react-native';
 import ErrorMessage from '../../../components/ErrorMessage';
 import RegularText from '../../../components/fonts/RegularText';
 import Button from '../../../components/Button';
-import { postFetchData } from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
 import ToastMessage from '../../../components/ToastMessage';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const VerifyInputNumber = ({ route, navigation }) => {
+  const { postFetchData } = useFetchData();
   const { setIsLoading, setVerified } = useContext(AppContext);
   const [errorKey, setErrorKey] = useState();
   const params = route.params;

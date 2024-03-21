@@ -5,12 +5,13 @@ import BoldText from '../../../components/fonts/BoldText';
 import InputPin from '../../../components/InputPin';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import ToastMessage from '../../../components/ToastMessage';
-import { postFetchData } from '../../../../utils/fetchAPI';
 import { useContext } from 'react';
 import { AppContext } from '../../../components/AppContext';
 import { randomUUID } from 'expo-crypto';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const PendingRequestConfirm = ({ navigation, route }) => {
+  const { postFetchData } = useFetchData();
   const { setWalletRefresh } = useContext(AppContext);
   const { createdAt, description, fee, symbol, requesterAccount } =
     route.params;

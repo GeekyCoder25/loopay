@@ -14,19 +14,15 @@ import { randomUUID } from 'expo-crypto';
 import Button from '../../components/Button';
 import { AppContext } from '../../components/AppContext';
 import ErrorMessage from '../../components/ErrorMessage';
-import {
-  deleteFetchData,
-  getFetchData,
-  postFetchData,
-  putFetchData,
-} from '../../../utils/fetchAPI';
 import ToastMessage from '../../components/ToastMessage';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import Back from '../../components/Back';
 import { FlatList } from 'react-native-gesture-handler';
+import useFetchData from '../../../utils/fetchAPI';
 
 const Announcements = () => {
+  const { deleteFetchData, getFetchData } = useFetchData();
   const { setWalletRefresh } = useContext(AppContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [announcements, setAnnouncements] = useState([]);
@@ -42,6 +38,7 @@ const Announcements = () => {
       }
     };
     getAnnouncements();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reload]);
 
   const handleEdit = announcement => {
@@ -302,6 +299,7 @@ const styles = StyleSheet.create({
 export default Announcements;
 
 const AddNew = ({ editFormData, handleClose, setReload, setModalOpen }) => {
+  const { postFetchData, putFetchData } = useFetchData();
   const { vh, setIsLoading, setWalletRefresh } = useContext(AppContext);
   const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({

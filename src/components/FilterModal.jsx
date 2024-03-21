@@ -25,7 +25,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import CalendarIcon from '../../assets/images/calendar.svg';
 import ToastMessage from './ToastMessage';
 import { groupTransactionsByDate } from '../../utils/groupTransactions';
-import { getFetchData } from '../../utils/fetchAPI';
+import useFetchData from '../../utils/fetchAPI';
 
 const FilterModal = ({
   showModal,
@@ -35,6 +35,7 @@ const FilterModal = ({
   setIsFiltered,
   transactions,
 }) => {
+  const { getFetchData } = useFetchData();
   const { selectedCurrency, setIsLoading, isAdmin } = useContext(AppContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectAll, setSelectAll] = useState(true);

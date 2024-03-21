@@ -3,12 +3,13 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import BoldText from '../../components/fonts/BoldText';
 import IonIcon from '@expo/vector-icons/Ionicons';
-import { getFetchData, putFetchData } from '../../../utils/fetchAPI';
 import ToastMessage from '../../components/ToastMessage';
 import Button from '../../components/Button';
 import { AppContext } from '../../components/AppContext';
+import useFetchData from '../../../utils/fetchAPI';
 
 const ServerAPIs = () => {
+  const { getFetchData, putFetchData } = useFetchData();
   const { setIsLoading } = useContext(AppContext);
   const [selectedTab, setSelectedTab] = useState('airtime');
   const [apiSelected, setApiSelected] = useState({});
@@ -22,6 +23,7 @@ const ServerAPIs = () => {
         }
       })
       .catch(err => ToastMessage(err.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleUpdate = () => {

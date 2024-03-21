@@ -27,13 +27,14 @@ import FilterModal from '../../components/FilterModal';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import { billIcon } from '../MenuPages/TransactionHistory';
 import { AppContext } from '../../components/AppContext';
-import { getFetchData } from '../../../utils/fetchAPI';
 import Back from '../../components/Back';
 import TransactionHistoryParams from '../MenuPages/TransactionHistoryParams';
 import { useFocusEffect } from '@react-navigation/native';
 import BalanceCard from './components/BalanceCard';
+import useFetchData from '../../../utils/fetchAPI';
 
 const History = () => {
+  const { getFetchData } = useFetchData();
   const { selectedCurrency, vh } = useContext(AppContext);
   const [histories, setHistories] = useState([]);
   const [searchHistory, setSearchHistory] = useState([]);
@@ -55,9 +56,7 @@ const History = () => {
         try {
           setIsLocalLoading(true);
           const response = await getFetchData(
-            `admin/transactions?currency=${selectedCurrency.currency},${
-              selectedCurrency.acronym
-            }&limit=${limit}&page=${1}`,
+            `admin/transactions?currency=${selectedCurrency.currency},${selectedCurrency.acronym}&limit=${limit}&page=${1}`,
           );
 
           if (response.status === 200) {
@@ -78,6 +77,7 @@ const History = () => {
         }
       };
       getTransactions();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [limit, selectedCurrency]),
   );
 
@@ -424,8 +424,8 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
     transactionType === 'credit'
       ? receiverAccount
       : transactionType === 'debit'
-      ? senderAccount
-      : debitAccount;
+        ? senderAccount
+        : debitAccount;
 
   useEffect(() => {
     setCurrencySymbol(

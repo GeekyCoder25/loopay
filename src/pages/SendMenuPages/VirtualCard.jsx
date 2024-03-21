@@ -18,9 +18,10 @@ import AtmChevronRight from '../../../assets/images/atmChevronRight.svg';
 import RegularText from '../../components/fonts/RegularText';
 import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../components/AppContext';
-import { getFetchData } from '../../../utils/fetchAPI';
+import useFetchData from '../../../utils/fetchAPI';
 
 const VirtualCard = ({ navigation }) => {
+  const { getFetchData } = useFetchData();
   const { appData } = useContext(AppContext);
   const { fullName } = appData?.userProfile;
   const [activeCards, setActiveCards] = useState([
@@ -40,6 +41,7 @@ const VirtualCard = ({ navigation }) => {
         setActiveCards(response.data);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <PageContainer paddingTop={10} style={styles.body} scroll>

@@ -2,7 +2,6 @@
 import React, { memo, useContext, useEffect, useState } from 'react';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
-import PageContainer from '../../components/PageContainer';
 import {
   ActivityIndicator,
   Image,
@@ -15,13 +14,14 @@ import {
 } from 'react-native';
 import { AppContext } from '../../components/AppContext';
 import UserIcon from '../../components/UserIcon';
-import { getFetchData, putFetchData } from '../../../utils/fetchAPI';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
 import Back from '../../components/Back';
 import TransactionHistoryParams from '../MenuPages/TransactionHistoryParams';
+import useFetchData from '../../../utils/fetchAPI';
 
 const Notifications = () => {
+  const { getFetchData } = useFetchData();
   const { vh } = useContext(AppContext);
   const [searchHistory, setSearchHistory] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -52,6 +52,7 @@ const Notifications = () => {
       };
       getNotifications();
       return () => setPage(1);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [limit]),
   );
 

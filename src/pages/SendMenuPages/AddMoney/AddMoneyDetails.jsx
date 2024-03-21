@@ -6,12 +6,13 @@ import RegularText from '../../../components/fonts/RegularText';
 import Button from '../../../components/Button';
 import { AppContext } from '../../../components/AppContext';
 import { addingDecimal } from '../../../../utils/AddingZero';
-import { postFetchData } from '../../../../utils/fetchAPI';
 import { useWalletContext } from '../../../context/WalletContext';
 import { randomUUID } from 'expo-crypto';
 import ToastMessage from '../../../components/ToastMessage';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const AddMoneyDetails = ({ navigation, route }) => {
+  const { postFetchData } = useFetchData();
   const { appData, selectedCurrency, setIsLoading } = useContext(AppContext);
   const { acronym, symbol } = selectedCurrency;
   const { params } = route;

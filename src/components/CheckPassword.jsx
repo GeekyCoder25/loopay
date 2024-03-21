@@ -5,10 +5,10 @@ import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Lock from '../../assets/images/lock.svg';
 import Eye from '../../assets/images/eye.svg';
 import { AppContext } from './AppContext';
-import { postFetchData } from '../../utils/fetchAPI';
 import ErrorMessage from './ErrorMessage';
 import Button from './Button';
 import BoldText from './fonts/BoldText';
+import useFetchData from '../../utils/fetchAPI';
 
 const CheckPassword = ({
   setPasswordIsValid,
@@ -19,6 +19,7 @@ const CheckPassword = ({
   setErrorKey,
   header,
 }) => {
+  const { postFetchData } = useFetchData();
   const { appData, setIsLoading } = useContext(AppContext);
   const [hidePassword, setHidePassword] = useState(true);
   const [inputFocus, setInputFocus] = useState(false);

@@ -1,50 +1,21 @@
 import { createContext, memo, useContext, useEffect, useState } from 'react';
-import { getFetchData } from '../../utils/fetchAPI';
+import useFetchData from '../../utils/fetchAPI';
 import { AppContext } from '../components/AppContext';
 import { allCurrencies } from '../database/data';
 import useInterval from '../../utils/hooks/useInterval';
-import { logoutUser } from '../../utils/storage';
-import ToastMessage from '../components/ToastMessage';
 
 const WalletContext = createContext();
 
 const WalletContextComponent = memo(({ children }) => {
-  const {
-    walletRefresh,
-    selectedCurrency,
-    setShowConnected,
-    refreshing,
-    setIsLoading,
-    isLoggedIn,
-    setIsLoggedIn,
-    setAppData,
-    setCanChangeRole,
-    setVerified,
-  } = useContext(AppContext);
+  const { getFetchData } = useFetchData();
+  const { walletRefresh, selectedCurrency, setShowConnected, refreshing } =
+    useContext(AppContext);
   const [wallet, setWallet] = useState({ balance: 0 });
   const [transactions, setTransactions] = useState([]);
-
-  const handleLogout = async () => {
-    try {
-      setIsLoading(true);
-      setVerified(false);
-      logoutUser();
-      setIsLoggedIn(false);
-      setAppData({});
-      setCanChangeRole(false);
-      allCurrencies.shift();
-      ToastMessage('Your account has been logged in on another device');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const fetchWallet = () => {
     getFetchData('user/wallet')
       .then(response => {
-        if (response.status === 401 && isLoggedIn) {
-          return handleLogout();
-        }
         if (response.status === 400) throw new Error(response.data);
         if (refreshing) {
           setShowConnected(true);

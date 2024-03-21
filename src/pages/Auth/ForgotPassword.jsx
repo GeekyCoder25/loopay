@@ -10,13 +10,14 @@ import PageContainer from '../../components/PageContainer';
 import RegularText from '../../components/fonts/RegularText';
 import BoldText from '../../components/fonts/BoldText';
 import { AppContext } from '../../components/AppContext';
-import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import { loginUser } from '../../../utils/storage';
 import ErrorMessage from '../../components/ErrorMessage';
 import saveSessionOptions from '../../services/saveSession';
 import { PINInputFields } from '../../components/InputPinPage';
+import useFetchData from '../../../utils/fetchAPI';
 
 const ForgotPassword = ({ navigation, setCanChange }) => {
+  const { getFetchData, postFetchData } = useFetchData();
   const {
     appData,
     isSessionTimedOut,
@@ -139,6 +140,7 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
           }
         },
       );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appData.email, isLoggedIn, isSessionTimedOut]);
 
   return (

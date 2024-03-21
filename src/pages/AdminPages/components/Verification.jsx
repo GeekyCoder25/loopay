@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
 import BoldText from '../../../components/fonts/BoldText';
-import { getFetchData, putFetchData } from '../../../../utils/fetchAPI';
+import useFetchData from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
 import {
   Image,
@@ -22,6 +22,7 @@ import * as Linking from 'expo-linking';
 import Back from '../../../components/Back';
 
 const Verification = ({ route, modalOpen, setModalOpen }) => {
+  const { getFetchData, putFetchData } = useFetchData();
   const { country, email, idType, idValue, front, back, status, _id } = route;
   const { setIsLoading, vw } = useContext(AppContext);
   const [userData, setUserData] = useState(null);
@@ -36,6 +37,7 @@ const Verification = ({ route, modalOpen, setModalOpen }) => {
       ToastMessage(response.data);
     };
     getUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email]);
 
   const handleImageClick = image => {
@@ -247,6 +249,7 @@ const styles = StyleSheet.create({
 export default Verification;
 
 const MessageModal = ({ showModal, setShowModal, data, setModalOpen }) => {
+  const { putFetchData } = useFetchData();
   const { setIsLoading } = useContext(AppContext);
   const [errorKey, setErrorKey] = useState('');
   const [errorMessage, setErrorMessage] = useState();

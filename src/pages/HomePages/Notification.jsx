@@ -7,10 +7,10 @@ import { Image, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { AppContext } from '../../components/AppContext';
 import { useNotificationsContext } from '../../context/NotificationContext';
 import UserIcon from '../../components/UserIcon';
-import { putFetchData } from '../../../utils/fetchAPI';
 import { useNavigation } from '@react-navigation/native';
 import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
 import ToastMessage from '../../components/ToastMessage';
+import useFetchData from '../../../utils/fetchAPI';
 
 const Notification = () => {
   const { vh } = useContext(AppContext);
@@ -213,6 +213,7 @@ const styles = StyleSheet.create({
 export default Notification;
 
 const Message = ({ notification }) => {
+  const { putFetchData } = useFetchData();
   const { setWalletRefresh } = useContext(AppContext);
   const [transactionTypeIcon, setTransactionTypeIcon] = useState(
     <Image

@@ -1,10 +1,12 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getFetchData } from '../../utils/fetchAPI';
+import useFetchData from '../../utils/fetchAPI';
 import { AppContext } from '../components/AppContext';
 
 export const NotificationsContext = createContext();
 
 const NotificationsContextComponent = ({ children }) => {
+  const { getFetchData } = useFetchData();
+
   const { walletRefresh } = useContext(AppContext);
   const [notifications, setNotifications] = useState([]);
   const [unread, setUnread] = useState([]);
@@ -17,6 +19,7 @@ const NotificationsContextComponent = ({ children }) => {
       }
     };
     getNotifications();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletRefresh]);
 
   useEffect(() => {

@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import RegularText from './fonts/RegularText';
 import {
   Image,
@@ -15,7 +9,6 @@ import {
   View,
 } from 'react-native';
 import { AppContext } from './AppContext';
-import { postFetchData } from '../../utils/fetchAPI';
 import ErrorMessage from './ErrorMessage';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as Haptics from 'expo-haptics';
@@ -28,6 +21,7 @@ import { getInvalidPinStatus, setInvalidPinStatus } from '../../utils/storage';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import BackArrow from '../../assets/images/backArrow.svg';
 import FaceIDIcon from '../../assets/images/face-id.svg';
+import useFetchData from '../../utils/fetchAPI';
 
 const InputPin = ({
   setIsValidPin,
@@ -35,6 +29,8 @@ const InputPin = ({
   handleCancel,
   disableBiometric,
 }) => {
+  const { postFetchData } = useFetchData();
+
   const {
     setIsLoading,
     vw,

@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { postFetchData } from '../../utils/fetchAPI';
 import RegularText from './fonts/RegularText';
 import { Keyboard, Pressable, StyleSheet, View } from 'react-native';
 import BoldText from './fonts/BoldText';
 import { PINInputFields } from './InputPinPage';
 import { TextInput } from 'react-native-gesture-handler';
+import useFetchData from '../../utils/fetchAPI';
 
 const NoPInSet = ({
   otpCode,
@@ -18,6 +18,7 @@ const NoPInSet = ({
   otpTimeout,
   setOtpTimeout,
 }) => {
+  const { postFetchData } = useFetchData();
   const inputRef = useRef();
   const codeLengths = [1, 2, 3, 4];
 

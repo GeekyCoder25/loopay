@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
 import BackIcon from '../../../../assets/images/backArrow.svg';
-import { getFetchData, postFetchData } from '../../../../utils/fetchAPI';
 import RegularText from '../../../components/fonts/RegularText';
 import Button from '../../../components/Button';
 import UserIcon from '../../../components/UserIcon';
@@ -20,8 +19,10 @@ import ErrorMessage from '../../../components/ErrorMessage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CalendarIcon from '../../../../assets/images/calendar.svg';
 import { AppContext } from '../../../components/AppContext';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const UserDetails = ({ navigation, route }) => {
+  const { getFetchData } = useFetchData();
   const { walletRefresh } = useContext(AppContext);
   const { email } = route.params;
   const [user, setUser] = useState(null);
@@ -42,6 +43,7 @@ const UserDetails = ({ navigation, route }) => {
       }
     };
     getUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email, walletRefresh]);
 
   const handleShowBlockModal = async blockType => {
@@ -309,6 +311,7 @@ const styles = StyleSheet.create({
 export default UserDetails;
 
 const MessageModal = ({ showModal, setShowModal, user, blockTitle }) => {
+  const { postFetchData } = useFetchData();
   const { setIsLoading, setWalletRefresh } = useContext(AppContext);
   const [errorKey, setErrorKey] = useState('');
   const [errorMessage, setErrorMessage] = useState();

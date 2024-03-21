@@ -22,7 +22,6 @@ import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
 import Button from '../../../components/Button';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { randomUUID } from 'expo-crypto';
-import { getFetchData } from '../../../../utils/fetchAPI';
 import ToastMessage from '../../../components/ToastMessage';
 import { useWalletContext } from '../../../context/WalletContext';
 import { AppContext } from '../../../components/AppContext';
@@ -33,8 +32,10 @@ import Back from '../../../components/Back';
 import { setShowBalance } from '../../../../utils/storage';
 import RecurringSwitch from '../../../components/RecurringSwitch';
 import SchedulePayment from '../SchedulePayments/SchedulePayment';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const BuyData = ({ route, navigation }) => {
+  const { getFetchData } = useFetchData();
   const { appData, setIsLoading, showAmount, setShowAmount, selectedCurrency } =
     useContext(AppContext);
   const { wallet } = useWalletContext();
@@ -108,6 +109,7 @@ const BuyData = ({ route, navigation }) => {
     if (!isNigeria) {
       getOperators();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countryCode, isNigeria]);
 
   const handleModal = () => {

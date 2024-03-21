@@ -2,11 +2,11 @@
 import { Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import ErrorMessage from './ErrorMessage';
 import Header from './Header';
-import { postFetchData } from '../../utils/fetchAPI';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from './AppContext';
 import Button from './Button';
 import BoldText from './fonts/BoldText';
+import useFetchData from '../../utils/fetchAPI';
 
 const InputPinPage = ({
   setCanContinue,
@@ -14,6 +14,7 @@ const InputPinPage = ({
   setInputOldPin,
   customPinFunc,
 }) => {
+  const { postFetchData } = useFetchData();
   const codeLengths = [1, 2, 3, 4];
   const [pinCode, setPinCode] = useState('');
   const [errorMessage, setErrorMessage] = useState();

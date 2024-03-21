@@ -19,13 +19,15 @@ import Button from '../../../components/Button';
 import UserIconSVG from '../../../../assets/images/userMenu.svg';
 import SwitchOn from '../../../../assets/images/switch.svg';
 import SwitchOff from '../../../../assets/images/switchOff.svg';
-import { postFetchData } from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
 import { useBeneficiaryContext } from '../../../context/BeneficiariesContext';
 import ErrorMessage from '../../../components/ErrorMessage';
 import IonIcon from '@expo/vector-icons/Ionicons';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const SendNew = ({ navigation, route }) => {
+  const { postFetchData } = useFetchData();
+
   const { appData } = useContext(AppContext);
   const { beneficiaryState } = useBeneficiaryContext();
   const [showPaste, setShowPaste] = useState(false);

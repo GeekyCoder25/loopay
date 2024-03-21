@@ -4,7 +4,6 @@ import {
   ActivityIndicator,
   Modal,
   Pressable,
-  SafeAreaView,
   StyleSheet,
   TextInput,
   View,
@@ -13,7 +12,6 @@ import UserIcon from '../../../components/UserIcon';
 import BoldText from '../../../components/fonts/BoldText';
 import { allCurrencies } from '../../../database/data';
 import { AppContext } from '../../../components/AppContext';
-import { getFetchData, postFetchData } from '../../../../utils/fetchAPI';
 import ToastMessage from '../../../components/ToastMessage';
 import { useFocusEffect } from '@react-navigation/native';
 import BackIcon from '../../../../assets/images/backArrow.svg';
@@ -28,8 +26,10 @@ import { billIcon } from '../../MenuPages/TransactionHistory';
 import FilterModal from '../../../components/FilterModal';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import { FlatList } from 'react-native-gesture-handler';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const Transactions = ({ navigation, route }) => {
+  const { getFetchData } = useFetchData();
   const { selectedCurrency, vh } = useContext(AppContext);
   const [status, setStatus] = useState('');
   const [transactionState, setTransactionState] = useState(transactions);
@@ -57,9 +57,7 @@ const Transactions = ({ navigation, route }) => {
         setIsLocalLoading(true);
         const selectedStatus = status || route.params.transactionStatus;
         const response = await getFetchData(
-          `admin/transactions?currency=${selectedCurrency.currency},${
-            selectedCurrency.acronym
-          }&status=${selectedStatus}&limit=${limit}&page=${1}`,
+          `admin/transactions?currency=${selectedCurrency.currency},${selectedCurrency.acronym}&status=${selectedStatus}&limit=${limit}&page=${1}`,
         );
 
         if (response.status === 200) {
@@ -78,6 +76,7 @@ const Transactions = ({ navigation, route }) => {
       }
     };
     getTransactions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limit, route.params.transactionStatus, selectedCurrency, status]);
 
   useFocusEffect(
@@ -654,8 +653,8 @@ const Transaction = memo(
       transactionType === 'credit'
         ? receiverAccount
         : transactionType === 'debit'
-        ? senderAccount
-        : debitAccount;
+          ? senderAccount
+          : debitAccount;
 
     return (
       <View style={styles.expanded}>
@@ -812,6 +811,7 @@ const ExpandedInput = ({
   transaction,
   setTransactions,
 }) => {
+  const { postFetchData } = useFetchData();
   const { setIsLoading, setWalletRefresh } = useContext(AppContext);
   const [otpCode, setOtpCode] = useState('');
   const handleVerify = async () => {

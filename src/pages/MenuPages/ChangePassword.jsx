@@ -8,13 +8,15 @@ import Eye from '../../../assets/images/eye.svg';
 import EyeClosed from '../../../assets/images/eye-slash.svg';
 import Button from '../../components/Button';
 import BoldText from '../../components/fonts/BoldText';
-import { postFetchData } from '../../../utils/fetchAPI';
 import LoggedInForgetPassword from '../../components/LoggedInForgetPassword';
 import ErrorMessage from '../../components/ErrorMessage';
 import SuccessMessage from '../../components/SuccessMessage';
 import CheckPassword from '../../components/CheckPassword';
+import useFetchData from '../../../utils/fetchAPI';
 
 const ChangePassword = ({ navigation, skipCheck }) => {
+  const { postFetchData } = useFetchData();
+
   const { vh, setIsLoading, isLoggedIn, setIsLoggedIn, setIsSessionTimedOut } =
     useContext(AppContext);
   const [remembersPassword, setRemembersPassword] = useState(true);

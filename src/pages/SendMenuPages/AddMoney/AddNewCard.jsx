@@ -7,9 +7,10 @@ import { AppContext } from '../../../components/AppContext';
 import RegularText from '../../../components/fonts/RegularText';
 import Button from '../../../components/Button';
 import ErrorMessage from '../../../components/ErrorMessage';
-import { postFetchData } from '../../../../utils/fetchAPI';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const AddNewCard = ({ navigation }) => {
+  const { postFetchData } = useFetchData();
   const { vw, vh, selectedCurrency, setIsLoading, setWalletRefresh } =
     useContext(AppContext);
   const [expiry, setExpiry] = useState('MM/YY');

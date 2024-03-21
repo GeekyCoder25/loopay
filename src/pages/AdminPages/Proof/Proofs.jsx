@@ -9,11 +9,6 @@ import {
   View,
 } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
-import {
-  deleteFetchData,
-  getFetchData,
-  postFetchData,
-} from '../../../../utils/fetchAPI';
 import { allCurrencies } from '../../../database/data';
 import { AppContext } from '../../../components/AppContext';
 import RegularText from '../../../components/fonts/RegularText';
@@ -23,8 +18,11 @@ import { addingDecimal } from '../../../../utils/AddingZero';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Back from '../../../components/Back';
 import UpRightArrow from '../../../../assets/images/arrow-up-right-from-square-outline.svg';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const Proofs = ({ navigation }) => {
+  const { getFetchData } = useFetchData();
+
   const { walletRefresh } = useContext(AppContext);
   const [proofs, setProofs] = useState([]);
   const [requestPin, setRequestPin] = useState(false);
@@ -152,6 +150,7 @@ const styles = StyleSheet.create({
 export default Proofs;
 
 const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
+  const { deleteFetchData, postFetchData } = useFetchData();
   const {
     accNo,
     amount,

@@ -5,11 +5,12 @@ import RegularText from './fonts/RegularText';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from './AppContext';
 import Button from './Button';
-import { postFetchData } from '../../utils/fetchAPI';
 import ErrorMessage from './ErrorMessage';
 import { PINInputFields } from './InputPinPage';
+import useFetchData from '../../utils/fetchAPI';
 
 const LoggedInForgetPassword = ({ setPasswordIsValid }) => {
+  const { postFetchData } = useFetchData();
   const { appData, setIsLoading } = useContext(AppContext);
   const { email } = appData;
   const [formData] = useState({

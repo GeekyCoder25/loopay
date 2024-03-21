@@ -4,14 +4,15 @@ import BoldText from '../../components/fonts/BoldText';
 import PageContainer from '../../components/PageContainer';
 import RegularText from '../../components/fonts/RegularText';
 import Button from '../../components/Button';
-import { deleteFetchData } from '../../../utils/fetchAPI';
 import { AppContext } from '../../components/AppContext';
 import { getSessionID, logoutUser } from '../../../utils/storage';
 import { allCurrencies } from '../../database/data';
 import ToastMessage from '../../components/ToastMessage';
 import InputPin from '../../components/InputPin';
+import useFetchData from '../../../utils/fetchAPI';
 
 const DeleteAccount = ({ navigation }) => {
+  const { deleteFetchData } = useFetchData();
   const {
     setIsLoading,
     setIsLoggedIn,

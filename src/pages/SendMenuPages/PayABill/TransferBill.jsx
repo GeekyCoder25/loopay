@@ -1,13 +1,15 @@
 import React, { useContext } from 'react';
 import { View, StyleSheet } from 'react-native';
 import InputPin from '../../../components/InputPin';
-import { postFetchData } from '../../../../utils/fetchAPI';
 import PageContainer from '../../../components/PageContainer';
 import { AppContext } from '../../../components/AppContext';
 import ToastMessage from '../../../components/ToastMessage';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const TransferBill = ({ navigation, route }) => {
   const formData = route.params;
+  const { postFetchData } = useFetchData();
+
   const { setIsLoading, setWalletRefresh } = useContext(AppContext);
 
   const handlePay = async () => {

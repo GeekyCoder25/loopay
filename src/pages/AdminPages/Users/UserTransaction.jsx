@@ -27,13 +27,14 @@ import FilterModal from '../../../components/FilterModal';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import { billIcon } from '../../MenuPages/TransactionHistory';
 import { AppContext } from '../../../components/AppContext';
-import { getFetchData } from '../../../../utils/fetchAPI';
 import Back from '../../../components/Back';
 import TransactionHistoryParams from '../../MenuPages/TransactionHistoryParams';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import BackIcon from '../../../../assets/images/backArrow.svg';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const UserTransaction = ({ route }) => {
+  const { getFetchData } = useFetchData();
   const { selectedCurrency, vh } = useContext(AppContext);
   const [histories, setHistories] = useState([]);
   const [searchHistory, setSearchHistory] = useState([]);
@@ -55,9 +56,7 @@ const UserTransaction = ({ route }) => {
       try {
         setIsLocalLoading(true);
         const response = await getFetchData(
-          `admin/transactions?currency=${
-            selectedCurrency.currency
-          }&limit=${limit}&page=${1}&userId=email:${route.params.email}`,
+          `admin/transactions?currency=${selectedCurrency.currency}&limit=${limit}&page=${1}&userId=email:${route.params.email}`,
         );
 
         if (response.status === 200) {
@@ -79,6 +78,7 @@ const UserTransaction = ({ route }) => {
       }
     };
     getTransactions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limit, route.params.email, selectedCurrency.currency]);
 
   const handleScrollMore = async () => {

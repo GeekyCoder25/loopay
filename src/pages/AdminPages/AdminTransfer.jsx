@@ -23,14 +23,15 @@ import { addingDecimal } from '../../../utils/AddingZero';
 import ErrorMessage from '../../components/ErrorMessage';
 import Button from '../../components/Button';
 import { allCurrencies } from '../../database/data';
-import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { randomUUID } from 'expo-crypto';
 import InputPin from '../../components/InputPin';
 import { setShowBalance } from '../../../utils/storage';
 import BackArrow from '../../../assets/images/backArrow.svg';
+import useFetchData from '../../../utils/fetchAPI';
 
 const AdminTransfer = ({ navigation }) => {
+  const { getFetchData, postFetchData } = useFetchData();
   const {
     selectedCurrency,
     vw,
@@ -70,6 +71,7 @@ const AdminTransfer = ({ navigation }) => {
       }
     };
     getRecent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletRefresh]);
 
   const handlePriceInput = text => {

@@ -17,7 +17,6 @@ import FaIcon from '@expo/vector-icons/FontAwesome';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { useWalletContext } from '../../../context/WalletContext';
-import { getFetchData, postFetchData } from '../../../../utils/fetchAPI';
 import { randomUUID } from 'expo-crypto';
 import { useFocusEffect } from '@react-navigation/native';
 import AccInfoCard from '../../../components/AccInfoCard';
@@ -27,8 +26,10 @@ import ChevronDown from '../../../../assets/images/chevron-down';
 import Back from '../../../components/Back';
 import RecurringSwitch from '../../../components/RecurringSwitch';
 import SchedulePayment from '../SchedulePayments/SchedulePayment';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const SendOthers = ({ navigation, route }) => {
+  const { getFetchData, postFetchData } = useFetchData();
   const { appData, vh, selectedCurrency, setWalletRefresh } =
     useContext(AppContext);
   const { wallet } = useWalletContext();
@@ -66,6 +67,7 @@ const SendOthers = ({ navigation, route }) => {
           setAddedBanks([]);
         }
       });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedCurrency]),
   );
 
@@ -79,6 +81,7 @@ const SendOthers = ({ navigation, route }) => {
         setNoBanks(response.data);
       },
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [banks.length, selectedCurrency.acronym, showBankModal]);
 
   useEffect(() => {
@@ -100,6 +103,7 @@ const SendOthers = ({ navigation, route }) => {
           )
         : setFee(0),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCurrency.currency]);
 
   const formFields = [

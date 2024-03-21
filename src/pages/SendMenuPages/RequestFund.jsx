@@ -13,12 +13,13 @@ import { useWalletContext } from '../../context/WalletContext';
 import Button from '../../components/Button';
 import { allCurrencies } from '../../database/data';
 import Back from '../../components/Back';
-import { postFetchData } from '../../../utils/fetchAPI';
 import ErrorMessage from '../../components/ErrorMessage';
 import SuccessMessage from '../../components/SuccessMessage';
 import { randomUUID } from 'expo-crypto';
+import useFetchData from '../../../utils/fetchAPI';
 
 const RequestFund = ({ navigation, route }) => {
+  const { postFetchData } = useFetchData();
   const { appData, selectedCurrency, setIsLoading } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [selected, setSelected] = useState(selectedCurrency);

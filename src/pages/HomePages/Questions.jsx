@@ -8,9 +8,10 @@ import Header from '../../components/Header';
 import Button from '../../components/Button';
 import BoldText from '../../components/fonts/BoldText';
 import ToastMessage from '../../components/ToastMessage';
-import { postFetchData } from '../../../utils/fetchAPI';
+import useFetchData from '../../../utils/fetchAPI';
 
 const Questions = ({ navigation }) => {
+  const { postFetchData } = useFetchData();
   const { vh, setIsLoading } = useContext(AppContext);
   const [formData, setFormData] = useState({
     sport: '',
@@ -125,8 +126,8 @@ const Question = ({
               (showRedBorder && formData[question.id] === '')
                 ? 'red'
                 : inputFocus
-                ? '#000'
-                : '#B1B1B1',
+                  ? '#000'
+                  : '#B1B1B1',
           }}
           onChangeText={text => {
             setErrorKey('');

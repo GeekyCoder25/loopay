@@ -1,9 +1,11 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getFetchData } from '../../utils/fetchAPI';
+import useFetchData from '../../utils/fetchAPI';
 
 export const BeneficiaryContext = createContext();
 
 const BeneficiaryContextComponent = ({ children }) => {
+  const { getFetchData } = useFetchData();
+
   const [beneficiaryState, setBeneficiaryState] = useState([]);
   const [refetchBeneficiary, setRefetchBeneficiary] = useState(false);
 
@@ -15,6 +17,7 @@ const BeneficiaryContextComponent = ({ children }) => {
       }
     };
     getBeneficiaries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetchBeneficiary]);
 
   return (

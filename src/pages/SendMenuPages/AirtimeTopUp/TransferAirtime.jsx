@@ -1,9 +1,10 @@
 import React, { useContext } from 'react';
 import { AppContext } from '../../../components/AppContext';
 import InputPin from '../../../components/InputPin';
-import { postFetchData } from '../../../../utils/fetchAPI';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const TransferAirtime = ({ navigation, route }) => {
+  const { postFetchData } = useFetchData();
   const { formData } = route.params;
   const { setWalletRefresh } = useContext(AppContext);
   const handlePay = async setErrorMessage => {

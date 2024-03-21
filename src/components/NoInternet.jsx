@@ -1,5 +1,11 @@
-import { useContext } from 'react';
-import { ActivityIndicator, Modal, View, StyleSheet } from 'react-native';
+import { useContext, useState } from 'react';
+import {
+  ActivityIndicator,
+  Modal,
+  View,
+  StyleSheet,
+  Pressable,
+} from 'react-native';
 import BoldText from './fonts/BoldText';
 import Button from './Button';
 import { AppContext } from './AppContext';
@@ -9,6 +15,7 @@ import { apiUrl } from '../../utils/fetchAPI';
 const NoInternet = ({ modalOpen }) => {
   const { setInternetStatus, isChecking, setIsChecking } =
     useContext(AppContext);
+  const [showURL, setShowURL] = useState(false);
 
   const getFetchData = async () => {
     const API_URL = `${apiUrl}/network`;
@@ -54,7 +61,7 @@ const NoInternet = ({ modalOpen }) => {
               color={globalStyles.themeColorSolo}
             /> */}
           </View>
-          {/* <BoldText style={styles.text}>{apiUrl}</BoldText> */}
+          {showURL && <BoldText style={styles.text}>{apiUrl}</BoldText>}
           <BoldText style={styles.text}>No Internet Connection</BoldText>
           {isChecking ? (
             <ActivityIndicator
@@ -66,6 +73,10 @@ const NoInternet = ({ modalOpen }) => {
             <Button text={'Try Again'} onPress={handlePress} />
           )}
         </View>
+        <Pressable
+          style={styles.show}
+          onLongPress={() => setShowURL(prev => !prev)}
+        />
       </View>
     </Modal>
   );
@@ -106,6 +117,12 @@ const styles = StyleSheet.create({
   },
   activity: {
     marginVertical: 20,
+  },
+  show: {
+    position: 'absolute',
+    right: 0,
+    width: 30,
+    height: 30,
   },
 });
 

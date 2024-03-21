@@ -26,11 +26,12 @@ import Button from '../../components/Button';
 import EmptyCheckbox from '../../../assets/images/emptyCheckbox.svg';
 import FilledCheckbox from '../../../assets/images/filledCheckbox.svg';
 import ErrorMessage from '../../components/ErrorMessage';
-import { getFetchData } from '../../../utils/fetchAPI';
 import { setShowBalance } from '../../../utils/storage';
 import * as Haptics from 'expo-haptics';
+import useFetchData from '../../../utils/fetchAPI';
 
 const AddMoney = ({ navigation, route }) => {
+  const { getFetchData } = useFetchData();
   const {
     selectedCurrency,
     setSelectedCurrency,
@@ -62,6 +63,7 @@ const AddMoney = ({ navigation, route }) => {
     getFetchData(`user/debit-card/${selectedCurrency.currency}`).then(
       response => response.status === 200 && setSavedCards(response.data),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCurrency.currency, walletRefresh]);
 
   const paymentMethods = [

@@ -16,12 +16,13 @@ import BackIcon from '../../../assets/images/backArrow.svg';
 import RegularText from '../../components/fonts/RegularText';
 import ChevronDown from '../../../assets/images/drop-down.svg';
 import UserIcon from '../../components/UserIcon';
-import { getFetchData } from '../../../utils/fetchAPI';
 import { AppContext } from '../../components/AppContext';
 import { useFocusEffect } from '@react-navigation/native';
 import IonIcon from '@expo/vector-icons/Ionicons';
+import useFetchData from '../../../utils/fetchAPI';
 
 const ActiveUsers = ({ navigation, route }) => {
+  const { getFetchData } = useFetchData();
   const { vh } = useContext(AppContext);
   const [defaultTab, setDefaultTab] = useState(route.params.defaultTab);
   const [activeUsers, setActiveUsers] = useState([]);
@@ -52,6 +53,7 @@ const ActiveUsers = ({ navigation, route }) => {
       }
     };
     getUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

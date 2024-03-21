@@ -6,12 +6,13 @@ import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import Button from '../../components/Button';
 import { AppContext } from '../../components/AppContext';
-import { postFetchData } from '../../../utils/fetchAPI';
 import ErrorMessage from '../../components/ErrorMessage';
 import { tagNameRules } from '../../database/data';
 import ToastMessage from '../../components/ToastMessage';
+import useFetchData from '../../../utils/fetchAPI';
 
 const LoopayTag = ({ navigation }) => {
+  const { postFetchData } = useFetchData();
   const { appData, setAppData, setIsLoading } = useContext(AppContext);
   const { userName } = appData.userProfile;
   const [inputValue, setInputValue] = useState(appData.tagName || '');

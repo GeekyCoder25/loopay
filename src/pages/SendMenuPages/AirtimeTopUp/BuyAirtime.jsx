@@ -24,7 +24,6 @@ import { useWalletContext } from '../../../context/WalletContext';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { randomUUID } from 'expo-crypto';
-import { getFetchData } from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
 import { allCurrencies } from '../../../database/data';
 import ToastMessage from '../../../components/ToastMessage';
@@ -33,8 +32,10 @@ import FlagSelect from '../../../components/FlagSelect';
 import Back from '../../../components/Back';
 import RecurringSwitch from '../../../components/RecurringSwitch';
 import SchedulePayment from '../SchedulePayments/SchedulePayment';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const BuyAirtime = ({ route, navigation }) => {
+  const { getFetchData } = useFetchData();
   const { appData, setIsLoading, showAmount, setShowAmount, selectedCurrency } =
     useContext(AppContext);
   const { wallet } = useWalletContext();
@@ -107,6 +108,7 @@ const BuyAirtime = ({ route, navigation }) => {
     if (!isNigeria) {
       getOperators();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countryCode, isNigeria]);
 
   const handleModal = () => {

@@ -21,15 +21,16 @@ import { allCurrencies } from '../../../database/data';
 import FlagSelect from '../../../components/FlagSelect';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import { setShowBalance } from '../../../../utils/storage';
-import { postFetchData } from '../../../../utils/fetchAPI';
 import BillElectricity from './BillElectricity';
 import { randomUUID } from 'expo-crypto';
 import BillTV from './BillTV';
 import BillSchool from './BillSchool';
 import RecurringSwitch from '../../../components/RecurringSwitch';
 import SchedulePayment from '../SchedulePayments/SchedulePayment';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const PayABillParams = ({ route, navigation }) => {
+  const { postFetchData } = useFetchData();
   const { selectedCurrency, showAmount, setShowAmount } =
     useContext(AppContext);
   const { wallet } = useWalletContext();
@@ -87,7 +88,7 @@ const PayABillParams = ({ route, navigation }) => {
       fieldIndex => fieldIndex.fetchStep === fetchStepState,
     );
     field && fetchData(field);
-  }, [fetchStepState, fields, apiBody]);
+  }, [fetchStepState, fields, apiBody, postFetchData]);
 
   const payElectricity = () => {
     if (Object.values(stateFields).includes('')) {

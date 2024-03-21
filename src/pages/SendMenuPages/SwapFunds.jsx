@@ -22,7 +22,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import Arrow from '../../../assets/images/swapArrow.svg';
 import Back from '../../components/Back';
 import Check from '../../../assets/images/check.svg';
-import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
+import useFetchData from '../../../utils/fetchAPI';
 import { randomUUID } from 'expo-crypto';
 import ToastMessage from '../../components/ToastMessage';
 import { Audio } from 'expo-av';
@@ -31,6 +31,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { setShowBalance } from '../../../utils/storage';
 
 const SwapFunds = ({ navigation }) => {
+  const { getFetchData, postFetchData } = useFetchData();
   const {
     selectedCurrency,
     setIsLoading,

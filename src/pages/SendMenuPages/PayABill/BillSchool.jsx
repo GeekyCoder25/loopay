@@ -1,10 +1,10 @@
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import SelectInputField from './PayABillFields';
-import { postFetchData } from '../../../../utils/fetchAPI';
 import BoldText from '../../../components/fonts/BoldText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { AppContext } from '../../../components/AppContext';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const BillSchool = ({
   fields,
@@ -18,6 +18,7 @@ const BillSchool = ({
   setIsButtonDisabled,
   selectedCurrency,
 }) => {
+  const { postFetchData } = useFetchData();
   const { appData } = useContext(AppContext);
   const [providers, setProviders] = useState([]);
   const [providerServices, setProviderServices] = useState([]);

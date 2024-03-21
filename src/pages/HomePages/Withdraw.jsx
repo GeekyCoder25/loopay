@@ -17,15 +17,16 @@ import FaIcon from '@expo/vector-icons/FontAwesome';
 import { addingDecimal } from '../../../utils/AddingZero';
 import ErrorMessage from '../../components/ErrorMessage';
 import { useWalletContext } from '../../context/WalletContext';
-import { getFetchData, postFetchData } from '../../../utils/fetchAPI';
 import { randomUUID } from 'expo-crypto';
 import { useFocusEffect } from '@react-navigation/native';
 import AccInfoCard from '../../components/AccInfoCard';
 import InputPin from '../../components/InputPin';
 import { AddBankFields, BanksModal } from './AddWithdraw';
 import ChevronDown from '../../../assets/images/chevron-down';
+import useFetchData from '../../../utils/fetchAPI';
 
 const Withdraw = ({ navigation }) => {
+  const { getFetchData, postFetchData } = useFetchData();
   const { appData, vh, selectedCurrency, setWalletRefresh } =
     useContext(AppContext);
   const { wallet } = useWalletContext();
@@ -52,9 +53,7 @@ const Withdraw = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       getFetchData(
-        `user/savedbanks?limit=${3}&currency=${selectedCurrency.currency},${
-          selectedCurrency.acronym
-        }`,
+        `user/savedbanks?limit=${3}&currency=${selectedCurrency.currency},${selectedCurrency.acronym}`,
       ).then(response => {
         if (response.status === 200) {
           return setAddedBanks(response.data);
@@ -62,6 +61,7 @@ const Withdraw = ({ navigation }) => {
           setAddedBanks([]);
         }
       });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedCurrency]),
   );
 
@@ -75,6 +75,7 @@ const Withdraw = ({ navigation }) => {
         setNoBanks(response.data);
       },
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [banks.length, selectedCurrency.acronym, showBankModal]);
 
   useEffect(() => {
@@ -96,6 +97,7 @@ const Withdraw = ({ navigation }) => {
           )
         : setFee(0),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCurrency.currency]);
 
   const formFields = [

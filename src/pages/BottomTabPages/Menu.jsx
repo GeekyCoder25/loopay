@@ -17,14 +17,15 @@ import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import { getSessionID, logoutUser } from '../../../utils/storage';
 import UserIcon from '../../components/UserIcon';
-import { deleteFetchData } from '../../../utils/fetchAPI';
 import { allCurrencies, menuRoutes } from '../../database/data';
 import { useFocusEffect } from '@react-navigation/native';
 import ToastMessage from '../../components/ToastMessage';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import MaIcon from '@expo/vector-icons/MaterialIcons';
+import useFetchData from '../../../utils/fetchAPI';
 
 const Menu = ({ navigation }) => {
+  const { deleteFetchData } = useFetchData();
   const {
     setIsLoading,
     setIsLoggedIn,
@@ -46,7 +47,7 @@ const Menu = ({ navigation }) => {
       setIsLoggedIn(false);
       setAppData({});
       setCanChangeRole(false);
-      allCurrencies.shift();
+      allCurrencies.length > 3 && allCurrencies.shift();
       ToastMessage('Logged Out successfully');
     } finally {
       setIsLoading(false);

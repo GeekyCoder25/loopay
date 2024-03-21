@@ -8,7 +8,6 @@ import {
   View,
 } from 'react-native';
 import RegularText from '../../components/fonts/RegularText';
-import { postFetchData } from '../../../utils/fetchAPI';
 import UserIcon from '../../components/UserIcon';
 import { AppContext } from '../../components/AppContext';
 import ForgotPassword from '../Auth/ForgotPassword';
@@ -19,7 +18,7 @@ import * as Haptics from 'expo-haptics';
 import * as LocalAuthentication from 'expo-local-authentication';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import { timeForInactivityInSecond } from '../../config/config';
-import { getBiometric, logoutUser } from '../../../utils/storage';
+import { getBiometric } from '../../../utils/storage';
 import FaceIDIcon from '../../../assets/images/face-id.svg';
 import Animated, {
   Easing,
@@ -27,10 +26,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { allCurrencies } from '../../database/data';
-import ToastMessage from '../../components/ToastMessage';
+import useFetchData from '../../../utils/fetchAPI';
 
 const LockScreen = () => {
+  const { postFetchData } = useFetchData();
   const {
     vw,
     vh,
@@ -43,11 +42,6 @@ const LockScreen = () => {
     enableBiometric,
     setEnableBiometric,
     timerId,
-    setIsLoading,
-    setIsLoggedIn,
-    setAppData,
-    setCanChangeRole,
-    setVerified,
     hasFaceID,
     setHasFaceID,
   } = useContext(AppContext);
@@ -134,21 +128,6 @@ const LockScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setIsSessionTimedOut]);
 
-  const handleLogout = async () => {
-    try {
-      setIsLoading(true);
-      setVerified(false);
-      logoutUser();
-      setIsLoggedIn(false);
-      setAppData({});
-      setCanChangeRole(false);
-      allCurrencies.shift();
-      ToastMessage('Your account has been logged in on another device');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleInput = async input => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setInputCode(prev => `${prev}${input}`);
@@ -167,9 +146,6 @@ const LockScreen = () => {
             setIsSessionTimedOut(true);
           }, timeForInactivityInSecond * 1000));
         } else {
-          if (response.status === 401 && isLoggedIn) {
-            return handleLogout();
-          }
           setErrorCode(true);
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
           setTimeout(() => {

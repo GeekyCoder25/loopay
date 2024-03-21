@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import BoldText from '../../components/fonts/BoldText';
@@ -8,13 +7,11 @@ import {
   ActivityIndicator,
   FlatList,
   Pressable,
-  RefreshControl,
   StyleSheet,
   TextInput,
   View,
 } from 'react-native';
 import { AppContext } from '../../components/AppContext';
-import { getFetchData } from '../../../utils/fetchAPI';
 import { allCurrencies } from '../../database/data';
 import UserIcon from '../../components/UserIcon';
 import { addingDecimal } from '../../../utils/AddingZero';
@@ -27,18 +24,12 @@ import { groupTransactionsByDate } from '../../../utils/groupTransactions';
 import SwapIcon from '../../../assets/images/swap.svg';
 import FlagSelect from '../../components/FlagSelect';
 import { setShowBalance } from '../../../utils/storage';
-import Refresh from '../../components/Refresh';
+import useFetchData from '../../../utils/fetchAPI';
 
 const TransactionHistory = memo(({ navigation }) => {
-  const {
-    setWalletRefresh,
-    noReload,
-    refreshing,
-    setRefreshing,
-    selectedCurrency,
-    vh,
-  } = useContext(AppContext);
-  const { transactions: walletTransactions, wallet } = useWalletContext();
+  const { getFetchData } = useFetchData();
+  const { selectedCurrency, vh } = useContext(AppContext);
+  const { transactions: walletTransactions } = useWalletContext();
   const [activeTransactions, setActiveTransactions] =
     useState(walletTransactions);
   const [transactionHistory, setTransactionHistory] = useState([]);
@@ -58,9 +49,7 @@ const TransactionHistory = memo(({ navigation }) => {
       try {
         setIsLocalLoading(true);
         const response = await getFetchData(
-          `user/transaction?currency=${selectedCurrency.currency},${
-            selectedCurrency.acronym
-          }&limit=${limit}&page=${1}`,
+          `user/transaction?currency=${selectedCurrency.currency},${selectedCurrency.acronym}&limit=${limit}&page=${1}`,
         );
 
         if (response.status === 200) {

@@ -13,13 +13,14 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Button from '../../components/Button';
 import * as Print from 'expo-print';
 import { shareAsync } from 'expo-sharing';
-import { getFetchData } from '../../../utils/fetchAPI';
 import { addingDecimal } from '../../../utils/AddingZero';
 import { useWalletContext } from '../../context/WalletContext';
 import * as FileSystem from 'expo-file-system';
 import ToastMessage from '../../components/ToastMessage';
+import useFetchData from '../../../utils/fetchAPI';
 
 const AccStatement = () => {
+  const { getFetchData } = useFetchData();
   const { selectedCurrency, appData, setIsLoading } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [modalOpen, setModalOpen] = useState(false);

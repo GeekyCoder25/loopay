@@ -14,11 +14,12 @@ import {
   logoutUser,
 } from '../../utils/storage';
 import { AppContext } from './AppContext';
-import { apiUrl, deleteFetchData } from '../../utils/fetchAPI';
+import useFetchData, { apiUrl } from '../../utils/fetchAPI';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { allCurrencies } from '../database/data';
 
 const Splash = ({ navigation }) => {
+  const { deleteFetchData } = useFetchData();
   const {
     internetStatus,
     setInternetStatus,

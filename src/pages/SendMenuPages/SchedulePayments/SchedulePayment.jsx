@@ -22,7 +22,7 @@ import FaIcon from '@expo/vector-icons/FontAwesome';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CalendarIcon from '../../../../assets/images/calendar.svg';
-import { putFetchData } from '../../../../utils/fetchAPI';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const SchedulePayment = ({
   isEditing,
@@ -33,6 +33,7 @@ const SchedulePayment = ({
   scheduleData,
   setScheduleData,
 }) => {
+  const { putFetchData } = useFetchData();
   const { selectedCurrency, isAndroid, setIsLoading } = useContext(AppContext);
   const [selected] = useState(selectedCurrency);
   const [stateFields, setStateFields] = useState({

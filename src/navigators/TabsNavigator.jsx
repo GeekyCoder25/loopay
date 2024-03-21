@@ -71,6 +71,7 @@ const TabsNavigator = () => {
     isSessionTimedOut,
     setIsShaking,
     setOpenShake,
+    isAdmin,
   } = useContext(AppContext);
   const Stack = createNativeStackNavigator();
 
@@ -86,7 +87,7 @@ const TabsNavigator = () => {
 
   const handleShake = () => {
     setIsShaking(false);
-    setOpenShake(true);
+    !isAdmin && setOpenShake(true);
   };
   useShakeEvent(handleShake);
 

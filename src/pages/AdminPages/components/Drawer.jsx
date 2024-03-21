@@ -14,15 +14,16 @@ import Button from '../../../components/Button';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { AppContext } from '../../../components/AppContext';
 import UserIcon from '../../../components/UserIcon';
-import { deleteFetchData } from '../../../../utils/fetchAPI';
 import { getSessionID, logoutUser } from '../../../../utils/storage';
 import RegularText from '../../../components/fonts/RegularText';
 import ToastMessage from '../../../components/ToastMessage';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import BoldText from '../../../components/fonts/BoldText';
 import { useAdminDataContext } from '../../../context/AdminContext';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const CustomDrawer = props => {
+  const { deleteFetchData } = useFetchData();
   const { navigation } = props;
   const {
     vh,

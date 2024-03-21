@@ -12,6 +12,7 @@ const StorageKeys = {
   BIOMETRIC: 'BIOMETRIC',
   LOCAL_CURRENCY: 'LOCAL_CURRENCY',
   INVALID_PIN: 'INVALID_PIN',
+  EMAIL: 'EMAIL',
 };
 
 export const loginUser = async (data, session) => {
@@ -23,6 +24,7 @@ export const loginUser = async (data, session) => {
   await AsyncStorage.setItem(StorageKeys.TOKEN, data.token + '...' + session);
   await AsyncStorage.setItem(StorageKeys.SESSION, session);
   await AsyncStorage.setItem(StorageKeys.ROLE, data.role);
+  await AsyncStorage.setItem(StorageKeys.EMAIL, data.email);
   await AsyncStorage.setItem(
     StorageKeys.LOCAL_CURRENCY,
     data.localCurrencyCode,
@@ -37,7 +39,7 @@ export const logoutUser = async () => {
   await AsyncStorage.removeItem(StorageKeys.LOCAL_CURRENCY);
   await AsyncStorage.removeItem(StorageKeys.DEFAULT_CURRENCY);
   await AsyncStorage.removeItem(StorageKeys.INVALID_PIN);
-  await AsyncStorage.removeItem(StorageKeys.BIOMETRIC);
+  // await AsyncStorage.removeItem(StorageKeys.BIOMETRIC);
   await AsyncStorage.setItem(StorageKeys.LOGGED_IN, 'false');
 };
 
@@ -60,6 +62,10 @@ export const getNotFirstTime = async () => {
 
 export const getToken = async () => {
   return await AsyncStorage.getItem(StorageKeys.TOKEN);
+};
+
+export const getEmail = async () => {
+  return await AsyncStorage.getItem(StorageKeys.EMAIL);
 };
 
 export const getSessionID = async () => {
@@ -129,4 +135,4 @@ const deleteStorage = async key => {
 // getAllKeys();
 // clearAllKeys();
 // deleteStorage('USER');
-// getStorage(StorageKeys.DEFAULT_CURRENCY);
+// getStorage(StorageKeys.EMAIL);
