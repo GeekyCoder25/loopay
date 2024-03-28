@@ -3,25 +3,20 @@ import useFetchData from '../../utils/fetchAPI';
 import { AppContext } from '../components/AppContext';
 import useInterval from '../../utils/hooks/useInterval';
 import NoInternet from '../components/NoInternet';
-import LoadingModal from '../components/LoadingModal';
-import { logoutUser } from '../../utils/storage';
-import { allCurrencies } from '../database/data';
-import ToastMessage from '../components/ToastMessage';
+import {
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 export const AdminContext = createContext();
 
 const AdminContextComponent = ({ children }) => {
   const { getFetchData } = useFetchData();
-  const {
-    isSessionTimedOut,
-    walletRefresh,
-    setIsLoading,
-    isLoggedIn,
-    setIsLoggedIn,
-    setAppData,
-    setCanChangeRole,
-    setVerified,
-  } = useContext(AppContext);
+  const { isSessionTimedOut, walletRefresh, setIsLoading } =
+    useContext(AppContext);
   const [adminData, setAdminData] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalFunc, setModalFunc] = useState();
@@ -72,3 +67,36 @@ const AdminContextComponent = ({ children }) => {
 
 export default AdminContextComponent;
 export const useAdminDataContext = () => useContext(AdminContext);
+
+const LoadingModal = () => {
+  return (
+    <Modal visible={true} animationType="fade" transparent>
+      <Pressable style={styles.overlay} />
+      <View style={styles.modalContainer}>
+        <ActivityIndicator
+          size={'large'}
+          color={'#1e1e1e'}
+          style={styles.modal}
+        />
+      </View>
+    </Modal>
+  );
+};
+
+const styles = StyleSheet.create({
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    opacity: 0.7,
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    zIndex: 99,
+  },
+  modalContainer: {
+    position: 'absolute',
+    height: 100 + '%',
+    width: 100 + '%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

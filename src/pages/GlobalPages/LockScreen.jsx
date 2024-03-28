@@ -94,15 +94,8 @@ const LockScreen = () => {
       }
     };
     checkFingerprint();
-  }, [
-    setIsSessionTimedOut,
-    setWalletRefresh,
-    biometricSwitch,
-    setIsBiometricSupported,
-    setEnableBiometric,
-    enableBiometric,
-    timerId,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [biometricSwitch, enableBiometric, timerId]);
 
   useEffect(() => {
     setTimeout(() => {

@@ -484,7 +484,7 @@ const TransactionHistoryParams = ({ route }) => {
                   <BoldText style={styles.cardAmount}>
                     {!showAmount
                       ? '***'
-                      : '+' +
+                      : '+ ' +
                         currencySymbol +
                         addingDecimal(Number(amount).toLocaleString())}
                   </BoldText>
@@ -590,7 +590,7 @@ const TransactionHistoryParams = ({ route }) => {
                   <BoldText style={styles.cardAmount}>
                     {!showAmount
                       ? '***'
-                      : '-' +
+                      : '- ' +
                         currencySymbol +
                         addingDecimal(Number(amount).toLocaleString())}
                   </BoldText>
@@ -704,7 +704,7 @@ const TransactionHistoryParams = ({ route }) => {
                   <BoldText style={styles.cardAmount}>
                     {!showAmount
                       ? '***'
-                      : '-' +
+                      : '- ' +
                         currencySymbol +
                         addingDecimal(Number(amount).toLocaleString())}
                   </BoldText>
@@ -797,7 +797,7 @@ const TransactionHistoryParams = ({ route }) => {
                   <BoldText style={styles.cardAmount}>
                     {!showAmount
                       ? '***'
-                      : '-' +
+                      : '- ' +
                         currencySymbol +
                         addingDecimal(Number(amount).toLocaleString())}
                   </BoldText>
@@ -896,7 +896,7 @@ const TransactionHistoryParams = ({ route }) => {
                   <BoldText style={styles.cardAmount}>
                     {!showAmount
                       ? '***'
-                      : '-' +
+                      : '- ' +
                         currencySymbol +
                         addingDecimal(Number(amount).toLocaleString())}
                   </BoldText>
@@ -936,7 +936,10 @@ const TransactionHistoryParams = ({ route }) => {
                   {token && (
                     <View style={styles.cardLine}>
                       <RegularText style={styles.cardKey}>Token</RegularText>
-                      <BoldText style={styles.cardValue}>{token}</BoldText>
+                      <BoldText
+                        style={{ ...styles.cardValue, color: '#38b34a' }}>
+                        {token}
+                      </BoldText>
                     </View>
                   )}
                   <View style={styles.cardLine}>

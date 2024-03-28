@@ -540,7 +540,9 @@ const styles = StyleSheet.create({
   historyTitle: {
     flex: 1,
   },
-  transactionAccount: {},
+  transactionAccount: {
+    textTransform: 'capitalize',
+  },
   transactionAmountTextRow: {
     flexDirection: 'row',
     gap: 5,

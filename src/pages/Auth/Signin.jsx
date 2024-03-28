@@ -21,7 +21,7 @@ import { EmailVerify } from './Signup.jsx';
 import { timeForInactivityInSecond } from '../../config/config.js';
 import useFetchData from '../../../utils/fetchAPI.js';
 
-const Signin = ({ navigation }) => {
+const SignIn = ({ navigation }) => {
   const { getFetchData, postFetchData } = useFetchData();
 
   useEffect(() => {
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     gap: 15,
   },
 });
-export default Signin;
+export default SignIn;
 
 const FormField = ({
   inputForm,

@@ -1,8 +1,8 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Splash from '../../src/components/Splash';
-import Signup from '../../src/pages/Auth/Signup';
-import Signin from '../../src/pages/Auth/Signin';
+import SignUp from '../pages/Auth/Signup';
+import SignIn from '../../src/pages/Auth/Signin';
 import AccountType from '../../src/pages/Auth/AccountType';
 import ForgotPassword from '../../src/pages/Auth/ForgotPassword';
 import { useContext, useState } from 'react';
@@ -42,15 +42,15 @@ const AppPagesNavigator = () => {
           <Stack.Group>
             {notFirstTime ? (
               <>
-                <Stack.Screen name="FirstPage" component={Signin} />
+                <Stack.Screen name="FirstPage" component={SignIn} />
               </>
             ) : (
               <>
                 <Stack.Screen name="FirstPage" component={Onboarding} />
               </>
             )}
-            <Stack.Screen name="Signup" component={Signup} />
-            <Stack.Screen name="Signin" component={Signin} />
+            <Stack.Screen name="Signup" component={SignUp} />
+            <Stack.Screen name="Signin" component={SignIn} />
             <Stack.Screen name="AccountType" component={AccountType} />
             <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
             <Stack.Screen name="ChangePassword" component={ChangePassword} />

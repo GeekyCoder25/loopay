@@ -455,7 +455,7 @@ export const History = memo(({ history, navigation }) => {
             <Pressable onPress={handleShow}>
               <BoldText style={styles.creditAmount}>
                 {showAmount
-                  ? `+${
+                  ? `+ ${
                       currencySymbol +
                       addingDecimal(Number(amount).toLocaleString())
                     }`
@@ -484,7 +484,7 @@ export const History = memo(({ history, navigation }) => {
             <Pressable onPress={handleShow}>
               <BoldText style={styles.debitAmount}>
                 {showAmount
-                  ? `-${
+                  ? `- ${
                       currencySymbol +
                       addingDecimal(Number(amount).toLocaleString())
                     }`
@@ -515,7 +515,7 @@ export const History = memo(({ history, navigation }) => {
             <Pressable onPress={handleShow}>
               <BoldText style={styles.debitAmount}>
                 {showAmount
-                  ? `-${
+                  ? `- ${
                       currencySymbol +
                       addingDecimal(Number(amount).toLocaleString())
                     }`
@@ -546,7 +546,7 @@ export const History = memo(({ history, navigation }) => {
             <Pressable onPress={handleShow}>
               <BoldText style={styles.debitAmount}>
                 {showAmount
-                  ? `-${
+                  ? `- ${
                       currencySymbol +
                       addingDecimal(Number(amount).toLocaleString())
                     }`
@@ -577,7 +577,7 @@ export const History = memo(({ history, navigation }) => {
             <Pressable onPress={handleShow}>
               <BoldText style={styles.debitAmount}>
                 {showAmount
-                  ? `-${
+                  ? `- ${
                       currencySymbol +
                       addingDecimal(Number(amount).toLocaleString())
                     }`
@@ -614,6 +614,7 @@ export const History = memo(({ history, navigation }) => {
                     style={{
                       ...styles.transactionAmountText,
                       ...styles.debitAmount,
+                      marginRight: 0,
                     }}>
                     {`${swapFromSymbol}${addingDecimal(
                       Number(swapFromAmount).toLocaleString(),

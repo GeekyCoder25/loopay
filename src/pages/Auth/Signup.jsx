@@ -17,17 +17,17 @@ import Eye from '../../../assets/images/eye.svg';
 import EyeClosed from '../../../assets/images/eye-slash.svg';
 import Refer from '../../../assets/images/referral.svg';
 import { signUpData } from '../../database/data.js';
-import Logo from '../../components/Logo';
-import Button from '../../components/Button';
-import Header from '../../components/Header';
-import PageContainer from '../../components/PageContainer';
-import BoldText from '../../components/fonts/BoldText';
-import RegularText from '../../components/fonts/RegularText';
-import { AppContext } from '../../components/AppContext';
-import { postFetchData, putFetchData } from '../../../utils/fetchAPI';
-import { loginUser } from '../../../utils/storage';
-import ErrorMessage from '../../components/ErrorMessage';
-import SuccessMessage from '../../components/SuccessMessage';
+import Logo from '../../components/Logo.jsx';
+import Button from '../../components/Button.jsx';
+import Header from '../../components/Header.jsx';
+import PageContainer from '../../components/PageContainer.jsx';
+import BoldText from '../../components/fonts/BoldText.jsx';
+import RegularText from '../../components/fonts/RegularText.jsx';
+import { AppContext } from '../../components/AppContext.js';
+import useFetchData from '../../../utils/fetchAPI.js';
+import { loginUser } from '../../../utils/storage.js';
+import ErrorMessage from '../../components/ErrorMessage.jsx';
+import SuccessMessage from '../../components/SuccessMessage.jsx';
 import saveSessionOptions from '../../services/saveSession.js';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { CountryPicker } from 'react-native-country-codes-picker';
@@ -35,29 +35,30 @@ import * as Haptics from 'expo-haptics';
 import ToastMessage from '../../components/ToastMessage.jsx';
 import { CurrencyFullDetails } from '../../../utils/allCountries.js';
 
-const Signup = ({ navigation }) => {
+const SignUp = ({ navigation }) => {
+  const { postFetchData } = useFetchData();
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    userName: '',
-    email: '',
-    phoneNumber: '',
-    password: '',
-    confirmPassword: '',
-    // firstName: 'John',
-    // lastName: 'Doe',
-    // userName: 'johndoes',
-    // email: 'john25@gmail.com',
-    // password: '251101',
-    // confirmPassword: '251101',
+    // firstName: '',
+    // lastName: '',
+    // userName: '',
+    // email: '',
     // phoneNumber: '',
-    // referralCode: 'zt2sxh',
-    // localCurrencyCode: 'NGN',
-    // country: {
-    //   name: 'Nigeria',
-    //   code: 'NG',
-    // },
-    // role: 'admin',
+    // password: '',
+    // confirmPassword: '',
+    firstName: 'John',
+    lastName: 'Doe',
+    userName: 'johndoe',
+    email: 'john255@gmail.com',
+    password: '251101',
+    confirmPassword: '251101',
+    phoneNumber: '',
+    referralCode: 'zt2sxh',
+    localCurrencyCode: 'NGN',
+    country: {
+      name: 'Nigeria',
+      code: 'NG',
+    },
+    role: 'admin',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -108,6 +109,12 @@ const Signup = ({ navigation }) => {
           phoneNumber: countryCode + phoneNumber,
           localCurrencyCode,
         });
+        setFormData({
+          ...formData,
+          phoneNumber,
+          countryCode,
+          localCurrencyCode,
+        });
         const result = response.data;
         if (
           response.status === 200 &&
@@ -149,6 +156,7 @@ const Signup = ({ navigation }) => {
         setSuccessMessage={setSuccessMessage}
         navigation={navigation}
         setVerifyEmail={setVerifyEmail}
+        formData={formData}
       />
     );
   }
@@ -385,8 +393,22 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
   },
+  footer: {
+    alignItems: 'center',
+    rowGap: 10,
+  },
+  didnt: {
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  now: {
+    color: 'orange',
+    textDecorationLine: 'underline',
+  },
 });
-export default Signup;
+export default SignUp;
 
 const FormField = ({
   inputForm,
@@ -522,12 +544,24 @@ export const EmailVerify = ({
   setSuccessMessage,
   setVerifyEmail,
   navigation,
+  formData,
 }) => {
+  const { postFetchData, putFetchData } = useFetchData();
+  const { vw, vh, setAppData, setIsLoading, setIsSessionTimedOut } =
+    useContext(AppContext);
   const [inputCode, setInputCode] = useState('');
   const [errorCode, setErrorCode] = useState(false);
   const [errorMessage2, setErrorMessage2] = useState('');
-  const { vw, vh, setAppData, setIsLoading, setIsSessionTimedOut } =
-    useContext(AppContext);
+  const [otpTimeout, setOtpTimeout] = useState(60);
+  const [otpResend, setOtpResend] = useState(otpTimeout);
+  const [codeSent, setCodeSent] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      otpResend > 1 ? setOtpResend(prev => prev - 1) : setOtpResend('now');
+      otpResend === 1 && setOtpTimeout(prev => prev * 2);
+    }, 1000);
+  }, [codeSent, otpResend]);
 
   const handleInput = async input => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -564,7 +598,6 @@ export const EmailVerify = ({
           setIsSessionTimedOut(false);
           navigation.replace('AccountType');
         } else {
-          console.log(response.data);
           setErrorMessage2(response.data?.error || response.data);
           setErrorCode(true);
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -579,6 +612,29 @@ export const EmailVerify = ({
       } finally {
         setIsLoading(false);
       }
+    }
+  };
+  const handleResend = async () => {
+    try {
+      setIsLoading(true);
+      setOtpResend(otpTimeout);
+      setErrorMessage('');
+      const response = await postFetchData('auth/register', {
+        ...formData,
+        phoneNumber: formData.countryCode + formData.phoneNumber,
+      });
+      const result = response.data;
+      if (result?.email === email) {
+        setCodeSent(true);
+      } else {
+        if (typeof response === 'string') {
+          setErrorMessage(response);
+        } else {
+          setErrorMessage(Object.values(result)[0]);
+        }
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -691,12 +747,31 @@ export const EmailVerify = ({
           </Pressable>
         </View>
       </View>
-      <Pressable
-        onPress={() => {
-          setVerifyEmail(false);
-        }}>
-        <BoldText>Go Back</BoldText>
-      </Pressable>
+
+      <View style={styles.footer}>
+        <View style={styles.didnt}>
+          <BoldText>Didn&apos;t receive the code? Resend </BoldText>
+          {typeof otpResend === 'number' ? (
+            <BoldText>
+              in{' '}
+              <BoldText style={styles.now}>
+                {otpResend > 59 && Math.floor(otpResend / 60) + 'm '}
+                {otpResend % 60}s
+              </BoldText>
+            </BoldText>
+          ) : (
+            <Pressable onPress={handleResend}>
+              <BoldText style={styles.now}>{otpResend}</BoldText>
+            </Pressable>
+          )}
+        </View>
+        <Pressable
+          onPress={() => {
+            setVerifyEmail(false);
+          }}>
+          <BoldText>Go Back</BoldText>
+        </Pressable>
+      </View>
     </ScrollView>
   );
 };
