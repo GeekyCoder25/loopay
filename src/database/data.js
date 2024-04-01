@@ -191,6 +191,12 @@ export const settingsRoutes = [
     routeDetails: 'Enable/Disable biometric authentication method',
   },
   {
+    routeName: 'Shake Functionality',
+    routeNavigate: 'Shake',
+    routeIcon: 'shake',
+    routeDetails: 'Enable/Disable shake to pop up functionality',
+  },
+  {
     routeName: 'Support',
     routeNavigate: 'Support',
     routeIcon: 'support',

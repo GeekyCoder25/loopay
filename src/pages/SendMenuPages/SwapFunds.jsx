@@ -104,12 +104,6 @@ const SwapFunds = ({ navigation }) => {
   }, []);
 
   const { minimumAmountToAdd } = swapFrom;
-  const firstLetterToCapital = input => {
-    return input?.charAt(0).toUpperCase() + input?.slice(1);
-  };
-  const currencyToCurrencyDetector = `${firstLetterToCapital(
-    swapFrom.currency,
-  )}To${firstLetterToCapital(swapTo.currency)}`;
 
   const handleSwitch = () => {
     setSwapFrom(swapTo);
@@ -118,6 +112,7 @@ const SwapFunds = ({ navigation }) => {
     setErrorMessage('');
     setValue('');
     setToReceive('');
+    setCurrencyRateAPI({});
   };
 
   const handleSwapFromSelect = currency => {
@@ -173,7 +168,7 @@ const SwapFunds = ({ navigation }) => {
 
   const currencyRate = () => {
     currencyRateAPI[[swapTo.acronym]] && setIsLoading(false);
-    return currencyRateAPI[swapTo.acronym]?.toFixed(3);
+    return currencyRateAPI[swapTo.acronym];
   };
 
   const currencyFee = () => {
@@ -185,7 +180,6 @@ const SwapFunds = ({ navigation }) => {
     setValue(text);
     const textInputValue = Number(text);
     text = Number(text);
-    const rate = currencyRateAPI[swapTo.acronym];
     const transactionFee = text / 100;
     setFee(transactionFee);
     const toReceiveCalculate = Number(
@@ -456,21 +450,27 @@ const SwapFunds = ({ navigation }) => {
           </View>
           <View style={styles.rate}>
             <BoldText>Current Rate:</BoldText>
-            <RegularText>
-              {currencyRate() < 1 ? (
-                <>
-                  {swapTo.symbol}1 = {swapFrom.symbol}
-                  {addingDecimal(
-                    Number(1 / currencyRate() || 0).toLocaleString(),
-                  )}
-                </>
-              ) : (
-                <>
-                  {swapFrom.symbol}1 = {swapTo.symbol}
-                  {addingDecimal(Number(currencyRate() || 0).toLocaleString())}
-                </>
-              )}
-            </RegularText>
+            {currencyRate() ? (
+              <RegularText>
+                {currencyRate() < 1 ? (
+                  <>
+                    {swapTo.symbol}1 = {swapFrom.symbol}
+                    {addingDecimal(
+                      Number(1 / currencyRate() || 0).toLocaleString(),
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {swapFrom.symbol}1 = {swapTo.symbol}
+                    {addingDecimal(
+                      Number(currencyRate() || 0).toLocaleString(),
+                    )}
+                  </>
+                )}
+              </RegularText>
+            ) : (
+              <RegularText>***</RegularText>
+            )}
           </View>
           <View style={styles.swapInputContainer}>
             <View>

@@ -3,13 +3,7 @@ import useFetchData from '../../utils/fetchAPI';
 import { AppContext } from '../components/AppContext';
 import useInterval from '../../utils/hooks/useInterval';
 import NoInternet from '../components/NoInternet';
-import {
-  ActivityIndicator,
-  Modal,
-  Pressable,
-  StyleSheet,
-  View,
-} from 'react-native';
+import DashboardLoader from '../pages/AdminPages/Dashboard/DashboardLoader';
 
 export const AdminContext = createContext();
 
@@ -23,7 +17,7 @@ const AdminContextComponent = ({ children }) => {
   const [verifications, setVerifications] = useState([]);
   const [failToFetch, setFailToFetch] = useState(false);
 
-  const fetchAdminDatas = async () => {
+  const fetchAdminData = async () => {
     try {
       !adminData && !isSessionTimedOut && setIsLoading(true);
       const response = await getFetchData('admin');
@@ -40,11 +34,11 @@ const AdminContextComponent = ({ children }) => {
   };
 
   useInterval(() => {
-    fetchAdminDatas();
+    fetchAdminData();
   }, 60000);
 
   useEffect(() => {
-    fetchAdminDatas();
+    fetchAdminData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletRefresh]);
 
@@ -60,43 +54,16 @@ const AdminContextComponent = ({ children }) => {
         verifications,
         setVerifications,
       }}>
-      {adminData ? children : failToFetch ? <NoInternet /> : <LoadingModal />}
+      {adminData ? (
+        children
+      ) : failToFetch ? (
+        <NoInternet />
+      ) : (
+        <DashboardLoader />
+      )}
     </AdminContext.Provider>
   );
 };
 
 export default AdminContextComponent;
 export const useAdminDataContext = () => useContext(AdminContext);
-
-const LoadingModal = () => {
-  return (
-    <Modal visible={true} animationType="fade" transparent>
-      <Pressable style={styles.overlay} />
-      <View style={styles.modalContainer}>
-        <ActivityIndicator
-          size={'large'}
-          color={'#1e1e1e'}
-          style={styles.modal}
-        />
-      </View>
-    </Modal>
-  );
-};
-
-const styles = StyleSheet.create({
-  overlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    opacity: 0.7,
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    zIndex: 99,
-  },
-  modalContainer: {
-    position: 'absolute',
-    height: 100 + '%',
-    width: 100 + '%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

@@ -62,6 +62,8 @@ import Referral from '../pages/MenuPages/Referral';
 import ChangePassword from '../pages/MenuPages/ChangePassword';
 import BottomTabs from './BottomTabs';
 import NotificationsContextComponent from '../context/NotificationContext';
+import ShakeSettings from '../pages/MenuPages/Settings/ShakeSettings';
+import Report from '../pages/HomePages/Report';
 
 const TabsNavigator = () => {
   const {
@@ -188,6 +190,7 @@ const TabsNavigator = () => {
                 options={{ headerShown: false }}
               />
               <Stack.Screen name="Biometric" component={Biometric} />
+              <Stack.Screen name="Shake" component={ShakeSettings} />
               <Stack.Screen name="SendLoopay" component={SendLoopay} />
               <Stack.Screen
                 name="SendOthers"
@@ -277,6 +280,7 @@ const TabsNavigator = () => {
               <Stack.Screen name="Support" component={Support} />
               <Stack.Screen name="Beneficiaries" component={Beneficiaries} />
               <Stack.Screen name="DeleteAccount" component={DeleteAccount} />
+              <Stack.Screen name="Report" component={Report} />
             </Stack.Navigator>
             {showPopUp && !isSessionTimedOut && <Popup />}
             {<ShakeModal />}

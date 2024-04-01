@@ -10,11 +10,12 @@ import BoldText from './fonts/BoldText';
 import { useNavigation } from '@react-navigation/native';
 
 const ShakeModal = () => {
-  const { openShake, setOpenShake } = useContext(AppContext);
+  const { openShake, setOpenShake, enableShake, isSessionTimedOut } =
+    useContext(AppContext);
   const { navigate } = useNavigation();
 
   const handleModal = () => {
-    setOpenShake(prev => !prev);
+    enableShake && setOpenShake(prev => !prev);
   };
 
   const shortcuts = [
@@ -58,7 +59,7 @@ const ShakeModal = () => {
   ];
   return (
     <Modal
-      visible={openShake}
+      visible={openShake && enableShake && !isSessionTimedOut}
       animationType="fade"
       transparent
       onRequestClose={handleModal}>

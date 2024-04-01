@@ -5,7 +5,7 @@ import { AppContext } from './AppContext';
 const THRESHOLD = 200;
 
 const useShakeEvent = handler => {
-  const { isShaking } = useContext(AppContext);
+  const { isShaking, enableShake } = useContext(AppContext);
 
   useEffect(() => {
     let last_x, last_y, last_z;
@@ -13,7 +13,7 @@ const useShakeEvent = handler => {
 
     const setupAccelerometer = async () => {
       const isAvailable = await Accelerometer.isAvailableAsync();
-      if (isAvailable) {
+      if (isAvailable && enableShake) {
         const listener = Accelerometer.addListener(accelerometerData => {
           if (!isShaking) {
             const { x, y, z } = accelerometerData;
@@ -40,8 +40,8 @@ const useShakeEvent = handler => {
         };
       }
     };
-    setupAccelerometer();
-  }, [handler, isShaking]);
+    enableShake && setupAccelerometer();
+  }, [enableShake, handler, isShaking]);
 };
 
 export default useShakeEvent;

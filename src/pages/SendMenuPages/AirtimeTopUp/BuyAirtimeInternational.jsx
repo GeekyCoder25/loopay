@@ -30,6 +30,7 @@ import { allCountries } from '../../../../utils/allCountries';
 import ToastMessage from '../../../components/ToastMessage';
 import { setShowBalance } from '../../../../utils/storage';
 import useFetchData from '../../../../utils/fetchAPI';
+import Back from '../../../components/Back';
 
 const BuyAirtimeInternational = ({ navigation }) => {
   const { getFetchData } = useFetchData();
@@ -265,6 +266,7 @@ const BuyAirtimeInternational = ({ navigation }) => {
           animationType="slide"
           transparent
           onRequestClose={() => setOpenCountryModal(false)}>
+          <Back onPress={() => setOpenCountryModal(false)} />
           <CountriesSelect
             modalData={allCountries}
             selected={countrySelected}

@@ -13,6 +13,7 @@ const StorageKeys = {
   LOCAL_CURRENCY: 'LOCAL_CURRENCY',
   INVALID_PIN: 'INVALID_PIN',
   EMAIL: 'EMAIL',
+  SHAKE: 'SHAKE',
 };
 
 export const loginUser = async (data, session) => {
@@ -100,6 +101,13 @@ export const getBiometric = async () => {
   const stringifiedState = await AsyncStorage.getItem(StorageKeys.BIOMETRIC);
   return JSON.parse(stringifiedState);
 };
+export const getShake = async () => {
+  const stringifiedState = await AsyncStorage.getItem(StorageKeys.SHAKE);
+  return JSON.parse(stringifiedState);
+};
+export const setShake = async state => {
+  return await AsyncStorage.setItem(StorageKeys.SHAKE, `${state}`);
+};
 export const getCurrencyCode = async () => {
   const stringifiedState = await AsyncStorage.getItem(
     StorageKeys.LOCAL_CURRENCY,
@@ -135,4 +143,4 @@ const deleteStorage = async key => {
 // getAllKeys();
 // clearAllKeys();
 // deleteStorage('USER');
-// getStorage(StorageKeys.EMAIL);
+// getStorage(StorageKeys.SHAKE);

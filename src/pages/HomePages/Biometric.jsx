@@ -80,8 +80,6 @@ const styles = StyleSheet.create({
     gap: 10,
     alignItems: 'center',
     paddingBottom: 10,
-    // borderBottomWidth: 1,
-    // borderBottomColor: '#c4c4c4',
     paddingRight: 10,
   },
   routeIcon: {

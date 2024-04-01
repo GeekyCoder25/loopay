@@ -94,6 +94,8 @@ const RouteLink = ({ route, navigation }) => {
         return <DualUserIcon />;
       case 'biometric':
         return hasFaceID ? <FaceIDIcon fill={'#868585'} /> : <BiometricIcon />;
+      case 'shake':
+        return <MaIcon name="screen-rotation" size={24} color={'#868585'} />;
       case 'support':
         return <MaIcon name="support-agent" size={24} color={'#868585'} />;
       case 'trash':

@@ -89,7 +89,7 @@ const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
                 ))}
             </View>
           </ScrollView>
-          {/* <Button text={'Add Account'} Icon={<Plus />} /> */}
+          <Button text={'Add Account'} Icon={<Plus />} />
         </View>
       </View>
     </Modal>

@@ -21,6 +21,7 @@ import LoadingModal from './src/components/LoadingModal';
 import {
   getCurrencyCode,
   getDefaultCurrency,
+  getShake,
   getShowBalance,
 } from './utils/storage';
 import { RootSiblingParent } from 'react-native-root-siblings';
@@ -52,6 +53,7 @@ export default function App() {
   const [refreshing, setRefreshing] = useState(false);
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [enableBiometric, setEnableBiometric] = useState(false);
+  const [enableShake, setEnableShake] = useState(true);
   const [showPopUp, setShowPopUp] = useState(false);
   const [popUpClosed, setPopUpClosed] = useState(0);
   const [showAmount, setShowAmount] = useState(false);
@@ -62,11 +64,13 @@ export default function App() {
   const vw = useWindowDimensions().width;
   const vh = useWindowDimensions().height;
   const timerId = useRef(false);
+  const timerIdTotal = useRef(false);
 
   const contextValue = {
     vw,
     vh,
     timerId,
+    timerIdTotal,
     selectedCurrency,
     setSelectedCurrency,
     verified,
@@ -103,6 +107,8 @@ export default function App() {
     setIsBiometricSupported,
     enableBiometric,
     setEnableBiometric,
+    enableShake,
+    setEnableShake,
     showPopUp,
     setShowPopUp,
     showAmount,
@@ -151,6 +157,7 @@ export default function App() {
         setSelectedCurrency(defaultCurrencyObject);
       });
       getShowBalance().then(result => setShowAmount(result));
+      getShake().then(result => setEnableShake(result));
     }
   }, [isLoggedIn]);
 
@@ -177,11 +184,13 @@ export default function App() {
   };
 
   useEffect(() => {
-    clearTimeout(timerId.current);
-    timerId.current = setTimeout(() => {
-      setIsSessionTimedOut(true);
-    }, 1200 * 1000);
-  }, [isSessionTimedOut]);
+    if (isLoggedIn) {
+      clearTimeout(timerIdTotal.current);
+      timerIdTotal.current = setTimeout(() => {
+        setIsSessionTimedOut(true);
+      }, 1200 * 1000);
+    }
+  }, [isLoggedIn, isSessionTimedOut]);
 
   return (
     <AppContext.Provider value={contextValue}>

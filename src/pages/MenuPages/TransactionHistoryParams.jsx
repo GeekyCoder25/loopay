@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Dimensions, Pressable, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
@@ -19,7 +19,7 @@ import { setShowBalance } from '../../../utils/storage';
 import ToastMessage from '../../components/ToastMessage';
 import useFetchData from '../../../utils/fetchAPI';
 
-const TransactionHistoryParams = ({ route }) => {
+const TransactionHistoryParams = ({ navigation, route }) => {
   const { postFetchData } = useFetchData();
 
   const { vh, showAmount, setShowAmount, setIsLoading, isAdmin } =
@@ -159,7 +159,7 @@ const TransactionHistoryParams = ({ route }) => {
   };
 
   const handleReverse = async () => {
-    const response = await postFetchData('./admin/transfer/reverse', {
+    const response = await postFetchData('/admin/transfer/reverse', {
       reference,
     });
 
@@ -168,6 +168,10 @@ const TransactionHistoryParams = ({ route }) => {
       return ToastMessage(response.data.message);
     }
     ToastMessage(response.data.message);
+  };
+
+  const handleReport = () => {
+    navigation.navigate('Report');
   };
 
   const handleShare = async () => {
@@ -1100,13 +1104,20 @@ const TransactionHistoryParams = ({ route }) => {
           )}
         </View>
       </PageContainer>
-      {isAdmin && (
-        <View>
-          <Button text={'Reverse Transaction'} onPress={handleReverse} />
+
+      <View style={styles.buttons}>
+        {isAdmin ? (
+          <View>
+            <Button text={'Reverse Transaction'} onPress={handleReverse} />
+          </View>
+        ) : (
+          <View style={styles.button}>
+            <Button text={'Report Transaction'} onPress={handleReport} />
+          </View>
+        )}
+        <View style={styles.button}>
+          <Button text={'Share Receipt'} onPress={handleShare} />
         </View>
-      )}
-      <View style={styles.button}>
-        <Button text={'Share Receipt'} onPress={handleShare} />
       </View>
     </>
   );
@@ -1114,7 +1125,6 @@ const TransactionHistoryParams = ({ route }) => {
 
 const styles = StyleSheet.create({
   body: {
-    // alignItems: 'center',
     gap: 15,
     flex: 1,
     marginVertical: 30,
@@ -1201,8 +1211,14 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     color: '#525252',
   },
-  button: {
+
+  buttons: {
     marginBottom: 30,
+    flexDirection:
+      Dimensions.get('screen').width < 450 ? 'column-reverse' : 'row',
+  },
+  button: {
+    flex: Dimensions.get('screen').width < 450 ? undefined : 1,
   },
   status: {
     flexDirection: 'row',
@@ -1218,4 +1234,5 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
 });
+
 export default TransactionHistoryParams;

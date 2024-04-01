@@ -38,27 +38,27 @@ import { CurrencyFullDetails } from '../../../utils/allCountries.js';
 const SignUp = ({ navigation }) => {
   const { postFetchData } = useFetchData();
   const [formData, setFormData] = useState({
-    // firstName: '',
-    // lastName: '',
-    // userName: '',
-    // email: '',
-    // phoneNumber: '',
-    // password: '',
-    // confirmPassword: '',
-    firstName: 'John',
-    lastName: 'Doe',
-    userName: 'johndoe',
-    email: 'john255@gmail.com',
-    password: '251101',
-    confirmPassword: '251101',
+    firstName: '',
+    lastName: '',
+    userName: '',
+    email: '',
     phoneNumber: '',
-    referralCode: 'zt2sxh',
-    localCurrencyCode: 'NGN',
-    country: {
-      name: 'Nigeria',
-      code: 'NG',
-    },
-    role: 'admin',
+    password: '',
+    confirmPassword: '',
+    // firstName: 'John',
+    // lastName: 'Doe',
+    // userName: 'johndoe',
+    // email: 'john255@gmail.com',
+    // password: '251101',
+    // confirmPassword: '251101',
+    // phoneNumber: '',
+    // referralCode: 'zt2sxh',
+    // localCurrencyCode: 'NGN',
+    // country: {
+    //   name: 'Nigeria',
+    //   code: 'NG',
+    // },
+    // role: 'admin',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -121,9 +121,6 @@ const SignUp = ({ navigation }) => {
           result.email.toLowerCase() === email.toLowerCase()
         ) {
           setIsLoading(false);
-          setTimeout(() => {
-            setVerifyEmail(false);
-          }, 300000);
           return setVerifyEmail(true);
         } else {
           if (typeof response === 'string') {

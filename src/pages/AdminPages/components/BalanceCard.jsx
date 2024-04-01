@@ -34,7 +34,7 @@ const BalanceCard = () => {
   };
 
   return (
-    <View style={{ ...styles.cardHeader }}>
+    <View style={styles.cardHeader}>
       <Pressable onPress={() => setModalOpen(true)} style={styles.plus}>
         <ChevronDown />
       </Pressable>

@@ -25,10 +25,11 @@ const AccountType = () => {
       setIsLoading(true);
       putFetchData('user', { accountType: accountTypeState })
         .then(updateResult => {
-          if (updateResult.data?.updateData?.accountType) {
+          const data = updateResult?.data?.updateData?.accountType;
+          if (data) {
             setIsLoggedIn(true);
             setAppData(prev => {
-              return { ...prev, accountType: accountTypeState };
+              return { ...prev, accountType: data };
             });
           }
         })

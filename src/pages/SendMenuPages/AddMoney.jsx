@@ -278,6 +278,18 @@ const AddMoney = ({ navigation, route }) => {
                     <BoldText style={styles.bankName}>{wallet.bank}</BoldText>
                   </View>
                 </View>
+                {wallet.accName && (
+                  <View style={styles.copyContainer}>
+                    <View>
+                      <RegularText style={styles.label}>
+                        Account Name
+                      </RegularText>
+                      <BoldText style={styles.accName}>
+                        {wallet.accName}
+                      </BoldText>
+                    </View>
+                  </View>
+                )}
                 <View style={styles.copyContainer}>
                   <View>
                     <RegularText style={styles.label}>
@@ -591,6 +603,10 @@ const styles = StyleSheet.create({
   },
   accNo: {
     fontSize: 28,
+    marginBottom: 10,
+  },
+  accName: {
+    fontSize: 20,
     marginBottom: 10,
   },
   paste: {

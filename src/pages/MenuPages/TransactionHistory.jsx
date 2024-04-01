@@ -439,14 +439,14 @@ export const History = memo(({ history, navigation }) => {
           <View style={styles.historyContent}>
             {method ? (
               <>
-                <BoldText>{receiverName}</BoldText>
+                <BoldText style={styles.historyTitle}>{receiverName}</BoldText>
                 <RegularText>
                   {method === 'card' ? 'Card self' : 'Transfer self'}
                 </RegularText>
               </>
             ) : (
               <>
-                <BoldText>{senderName}</BoldText>
+                <BoldText style={styles.historyTitle}>{senderName}</BoldText>
                 <RegularText>Transfer</RegularText>
               </>
             )}
@@ -477,7 +477,7 @@ export const History = memo(({ history, navigation }) => {
         <>
           <UserIcon uri={receiverPhoto} />
           <View style={styles.historyContent}>
-            <BoldText>{receiverName}</BoldText>
+            <BoldText style={styles.historyTitle}>{receiverName}</BoldText>
             <RegularText>Transfer</RegularText>
           </View>
           <View style={styles.amount}>
@@ -506,9 +506,7 @@ export const History = memo(({ history, navigation }) => {
         <>
           {networkProvidersIcon(networkProvider)}
           <View style={styles.historyContent}>
-            <BoldText style={styles.historyTitle}>
-              {networkProvider.toUpperCase()}
-            </BoldText>
+            <BoldText style={styles.historyTitle}>{networkProvider}</BoldText>
             <RegularText>Airtime</RegularText>
           </View>
           <View style={styles.amount}>
@@ -537,9 +535,7 @@ export const History = memo(({ history, navigation }) => {
         <>
           {networkProvidersIcon(networkProvider)}
           <View style={styles.historyContent}>
-            <BoldText style={styles.historyTitle}>
-              {networkProvider.toUpperCase()}
-            </BoldText>
+            <BoldText style={styles.historyTitle}>{networkProvider}</BoldText>
             <RegularText>Data</RegularText>
           </View>
           <View style={styles.amount}>

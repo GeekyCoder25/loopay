@@ -42,6 +42,7 @@ const LockScreen = () => {
     enableBiometric,
     setEnableBiometric,
     timerId,
+    timerIdTotal,
     hasFaceID,
     setHasFaceID,
   } = useContext(AppContext);
@@ -85,6 +86,7 @@ const LockScreen = () => {
               setWalletRefresh(prev => !prev);
               setInputCode('');
               clearTimeout(timerId.current);
+              clearTimeout(timerIdTotal.current);
               return (timerId.current = setTimeout(() => {
                 setIsSessionTimedOut(true);
               }, timeForInactivityInSecond * 1000));
@@ -135,6 +137,7 @@ const LockScreen = () => {
           setIsSessionTimedOut(false);
           setInputCode('');
           clearTimeout(timerId.current);
+          clearTimeout(timerIdTotal.current);
           return (timerId.current = setTimeout(() => {
             setIsSessionTimedOut(true);
           }, timeForInactivityInSecond * 1000));
