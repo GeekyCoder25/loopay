@@ -204,7 +204,6 @@ const TabsNavigator = () => {
                 component={TransactionPin}
                 options={{
                   animation: 'none',
-                  headerShown: false,
                 }}
               />
               <Stack.Screen name="PayABillParams" component={PayABillParams} />

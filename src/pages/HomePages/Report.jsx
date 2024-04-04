@@ -1,16 +1,43 @@
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import BoldText from '../../components/fonts/BoldText';
 import PageContainer from '../../components/PageContainer';
 import RegularText from '../../components/fonts/RegularText';
 import ErrorMessage from '../../components/ErrorMessage';
 import Button from '../../components/Button';
+import useFetchData from '../../../utils/fetchAPI';
+import ToastMessage from '../../components/ToastMessage';
+import { AppContext } from '../../components/AppContext';
 
-const Report = () => {
+const Report = ({ navigation, route }) => {
+  const { setIsLoading } = useContext(AppContext);
+  const { postFetchData } = useFetchData();
   const [formData, setFormData] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleReport = () => {};
+  const handleReport = async () => {
+    try {
+      if (!formData.title || !formData.title) {
+        return ToastMessage('Input all form fields first');
+      }
+      setIsLoading(true);
+      const response = await postFetchData('user/report', {
+        ...route.params,
+        ...formData,
+      });
+
+      if (response.status === 200) {
+        return ToastMessage(response.data.message);
+      }
+      ToastMessage(
+        'Submitted successfully, kindly wait while our team work on it',
+      );
+      navigation.goBack();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <PageContainer padding>
       <BoldText style={styles.headerText}>Report a Transaction</BoldText>

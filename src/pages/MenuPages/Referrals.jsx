@@ -16,13 +16,8 @@ import useFetchData from '../../../utils/fetchAPI';
 
 const Referrals = ({ navigation }) => {
   const { getFetchData } = useFetchData();
-  const {
-    selectedCurrency,
-    appData,
-    walletRefresh,
-    setWalletRefresh,
-    setIsLoading,
-  } = useContext(AppContext);
+  const { appData, walletRefresh, setWalletRefresh, setIsLoading } =
+    useContext(AppContext);
   const { referralCode } = appData;
   const [referralTeam, setReferralTeam] = useState([]);
   const [reward, setReward] = useState('');

@@ -159,7 +159,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
   };
 
   const handleReverse = async () => {
-    const response = await postFetchData('/admin/transfer/reverse', {
+    const response = await postFetchData('admin/transfer/reverse', {
       reference,
     });
 

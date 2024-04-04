@@ -28,7 +28,7 @@ import RecurringSwitch from '../../../components/RecurringSwitch';
 import SchedulePayment from '../SchedulePayments/SchedulePayment';
 import useFetchData from '../../../../utils/fetchAPI';
 
-const SendOthers = ({ navigation, route }) => {
+const SendOthers = ({ navigation }) => {
   const { getFetchData, postFetchData } = useFetchData();
   const { appData, vh, selectedCurrency, setWalletRefresh } =
     useContext(AppContext);

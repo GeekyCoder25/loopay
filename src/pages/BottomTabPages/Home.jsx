@@ -243,7 +243,7 @@ const Home = ({ navigation }) => {
               <Pressable onPress={handleCopy} style={styles.cardDetails}>
                 <FaIcon name="copy" color="#ccc" size={24} />
                 <RegularText style={styles.currencyType}>
-                  {wallet?.loopayAccNo}
+                  {wallet?.accNo}
                 </RegularText>
               </Pressable>
             </View>

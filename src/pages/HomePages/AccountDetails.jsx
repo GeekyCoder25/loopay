@@ -10,7 +10,8 @@ const AccountDetails = () => {
   const { setWalletRefresh, selectedCurrency } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const {
-    loopayAccNo: accNo,
+    accNo,
+    loopayAccNo,
     localBalance,
     dollarBalance,
     poundBalance,
@@ -29,7 +30,7 @@ const AccountDetails = () => {
       color: '#006E53',
     },
     {
-      accNo,
+      accNo: loopayAccNo,
       currency: 'dollar',
       fullName: 'United States Dollar',
       balance: dollarBalance,
@@ -38,7 +39,7 @@ const AccountDetails = () => {
       color: '#ED4C5C',
     },
     {
-      accNo,
+      accNo: loopayAccNo,
       currency: 'pound',
       fullName: 'Great British Pound',
       balance: poundBalance,
@@ -47,7 +48,7 @@ const AccountDetails = () => {
       color: '#569AFF',
     },
     {
-      accNo,
+      accNo: loopayAccNo,
       currency: 'euro',
       fullName: 'European Euro',
       balance: euroBalance,
