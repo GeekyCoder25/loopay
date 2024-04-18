@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
 import BoldText from '../../../components/fonts/BoldText';
@@ -34,7 +35,7 @@ const VerifyInputNumber = ({ route, navigation }) => {
           'Verification submitted successfully, awaiting confirmation',
         );
         navigation.popToTop();
-        return navigation.navigate('Home');
+        return navigation.replace('HomeNavigator');
       }
       throw new Error(response.data.message);
     } catch (err) {
@@ -45,7 +46,7 @@ const VerifyInputNumber = ({ route, navigation }) => {
   };
 
   return (
-    <PageContainer padding>
+    <PageContainer avoidKeyboardPushup padding>
       <BoldText style={styles.headerText}>
         Please provide your {idType.name}
       </BoldText>

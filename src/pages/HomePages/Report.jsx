@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import React, { useContext, useState } from 'react';
 import BoldText from '../../components/fonts/BoldText';
 import PageContainer from '../../components/PageContainer';
@@ -29,10 +29,8 @@ const Report = ({ navigation, route }) => {
       if (response.status === 200) {
         return ToastMessage(response.data.message);
       }
-      ToastMessage(
-        'Submitted successfully, kindly wait while our team work on it',
-      );
-      navigation.goBack();
+      ToastMessage(response.data);
+      // navigation.goBack();
     } finally {
       setIsLoading(false);
     }

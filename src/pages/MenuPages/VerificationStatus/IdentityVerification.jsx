@@ -18,6 +18,7 @@ import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
 import Button from '../../../components/Button';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { allCountries } from '../../../../utils/allCountries';
+import Back from '../../../components/Back';
 
 const IdentityVerification = ({ navigation }) => {
   const { vh } = useContext(AppContext);
@@ -356,11 +357,14 @@ const LocalModal = ({
           </View>
         </>
       ) : (
-        <CountriesSelect
-          modalData={modalData}
-          selected={selected}
-          handleModalSelect={handleModalSelect}
-        />
+        <>
+          <Back onPress={() => setModalOpen(false)} />
+          <CountriesSelect
+            modalData={modalData}
+            selected={selected}
+            handleModalSelect={handleModalSelect}
+          />
+        </>
       )}
     </Modal>
   );

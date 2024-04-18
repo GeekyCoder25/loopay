@@ -6,7 +6,7 @@ import ToastMessage from '../src/components/ToastMessage';
 
 // export const apiUrl = 'http://10.0.2.2:8000/api';
 // export const apiUrl = 'http://172.20.10.2:8000/api';
-// export const apiUrl = 'http://192.168.94.247:8000/api';
+// export const apiUrl = 'http://192.168.228.247:8000/api';
 export const apiUrl = 'https://loopay-api.cyclic.app/api';
 
 const timeoutSeconds = 30;
@@ -18,19 +18,23 @@ const useFetchData = () => {
     setAppData,
     setCanChangeRole,
     setVerified,
+    setIsLoading,
+    setIsAdmin,
   } = useContext(AppContext);
 
-  const handleLogout = async () => {
-    try {
-      setIsLoggedIn(false);
-      setVerified(false);
-      await logoutUser();
-      setAppData({});
-      setCanChangeRole(false);
-      allCurrencies.length > 3 && allCurrencies.shift();
-    } finally {
-      ToastMessage('Your account has been logged in on another device');
-    }
+  const handleLogout = async message => {
+    setIsLoggedIn(false);
+    setVerified(false);
+    setIsAdmin(false);
+    await logoutUser();
+    setAppData({});
+    setCanChangeRole(false);
+    allCurrencies.length > 3 && allCurrencies.shift();
+    ToastMessage(
+      message.includes('authorized')
+        ? 'Session timed out, login again to continue using the app'
+        : 'Your account has been logged in on another device',
+    );
   };
 
   const getFetchData = async apiEndpoint => {
@@ -52,12 +56,16 @@ const useFetchData = () => {
       clearTimeout(timeout);
       const data = await response.json();
       if (response.status === 401 && isLoggedIn) {
-        await handleLogout();
+        await handleLogout(response.data);
       }
       return { data, status: response.status };
     } catch (err) {
       clearTimeout(timeout);
       return "Couldn't connect to server";
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 30000);
     }
   };
 
@@ -107,6 +115,10 @@ const useFetchData = () => {
     } catch (err) {
       clearTimeout(timeout);
       return "Couldn't connect to server";
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 30000);
     }
   };
 
@@ -138,6 +150,10 @@ const useFetchData = () => {
     } catch (err) {
       clearTimeout(timeout);
       return "Couldn't connect to server";
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 30000);
     }
   };
 
@@ -169,6 +185,10 @@ const useFetchData = () => {
     } catch (err) {
       clearTimeout(timeout);
       return "Couldn't connect to server";
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 30000);
     }
   };
   return { getFetchData, postFetchData, putFetchData, deleteFetchData };

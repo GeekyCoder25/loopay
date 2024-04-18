@@ -44,6 +44,7 @@ const CustomDrawer = props => {
     'Verifications',
     'History',
     'Announcements',
+    'Reports',
     'Statement',
     'Server APIs',
   ];
@@ -76,6 +77,8 @@ const CustomDrawer = props => {
       case 'History':
         return <HistoryIcon />;
       case 'Statement':
+        return <StatementIcon />;
+      case 'Reports':
         return <StatementIcon />;
       case 'Server APIs':
         return <SettingsIcon fill={'#868585'} />;

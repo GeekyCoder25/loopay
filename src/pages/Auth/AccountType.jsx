@@ -14,7 +14,7 @@ import useFetchData from '../../../utils/fetchAPI';
 
 const AccountType = () => {
   const { putFetchData } = useFetchData();
-  const { setIsLoggedIn, setAppData, setIsLoading } = useContext(AppContext);
+  const { setAppData, setIsLoading } = useContext(AppContext);
   const [accountTypeState, setAccountTypeState] = useState('');
   const [isError, setIsError] = useState(false);
 
@@ -27,7 +27,6 @@ const AccountType = () => {
         .then(updateResult => {
           const data = updateResult?.data?.updateData?.accountType;
           if (data) {
-            setIsLoggedIn(true);
             setAppData(prev => {
               return { ...prev, accountType: data };
             });
@@ -36,6 +35,7 @@ const AccountType = () => {
         .finally(() => setIsLoading(false));
     }
   };
+
   return (
     <View
       style={{ ...styles.container, paddingTop: StatusBar.currentHeight + 10 }}>

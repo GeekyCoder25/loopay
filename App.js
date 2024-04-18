@@ -137,19 +137,21 @@ export default function App() {
             fullName: localCurrency.name,
             acronym: localCurrency.code,
             symbol: localCurrency.symbol_native,
-            minimumAmountToAdd: 100,
+            // minimumAmountToAdd: 100,
             isLocal: true,
           });
         }
       }
     });
-  }, [appData, isLoggedIn]);
+  }, [isLoggedIn]);
 
   useEffect(() => {
     if (isLoggedIn) {
       getDefaultCurrency().then(defaultCurrency => {
         if (!defaultCurrency) {
-          return;
+          return setSelectedCurrency(
+            allCurrencies.find(currency => currency.isLocal),
+          );
         }
         const defaultCurrencyObject = allCurrencies.find(
           currency => currency.currency === defaultCurrency,

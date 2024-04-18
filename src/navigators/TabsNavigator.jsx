@@ -202,9 +202,7 @@ const TabsNavigator = () => {
               <Stack.Screen
                 name="TransactionPin"
                 component={TransactionPin}
-                options={{
-                  animation: 'none',
-                }}
+                options={{ animation: 'none' }}
               />
               <Stack.Screen name="PayABillParams" component={PayABillParams} />
               <Stack.Screen
@@ -244,9 +242,7 @@ const TabsNavigator = () => {
               <Stack.Screen
                 name="SchedulePayment"
                 component={SchedulePayment}
-                options={{
-                  headerShown: false,
-                }}
+                options={{ headerShown: false }}
               />
               <Stack.Screen
                 name="SchedulePayments"

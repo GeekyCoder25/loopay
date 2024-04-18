@@ -128,7 +128,7 @@ const Success = ({ navigation, route }) => {
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-        <title>Loopay Statement</title>
+        <title>Loopay Receipt</title>
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
@@ -296,10 +296,16 @@ const Success = ({ navigation, route }) => {
   };
 
   const createPDF = async html => {
-    setIsLoading(true);
-    const { uri } = await printToFileAsync({ html });
-    setIsLoading(false);
-    await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+    try {
+      setIsLoading(true);
+      const { uri } = await printToFileAsync({ html, height: 892 });
+      setIsLoading(false);
+      await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+    } catch (error) {
+      ToastMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleHome = () => {

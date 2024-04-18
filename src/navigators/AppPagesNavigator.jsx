@@ -13,22 +13,18 @@ import AdminNavigator from './AdminNavigator';
 import ChangePassword from '../pages/MenuPages/ChangePassword';
 import Onboarding from '../pages/Auth/Onboarding';
 import TabsNavigator from './TabsNavigator';
+import VerificationNavigator from './VerificationNavigator';
 
 const AppPagesNavigator = () => {
-  const { isLoggedIn, isAdmin, appData } = useContext(AppContext);
+  const { isLoggedIn, isAdmin, appData, verified } = useContext(AppContext);
   const [notFirstTime, setNotFirstTime] = useState(false);
+
   const Stack = createNativeStackNavigator();
 
   getNotFirstTime().then(result => setNotFirstTime(result));
-  const hasSetPin = appData.accountType
-    ? appData.pin === 'true' ||
-      appData.pin === 'false' ||
-      typeof appData.pin === 'boolean'
-      ? JSON.parse(appData.pin)
-      : false
-    : true;
-  const notAllowed = !hasSetPin || !appData?.accountType;
+  const hasSetPin = appData.pin ? JSON.parse(appData.pin) : false;
 
+  const isVerified = verified === 'verified' || verified === 'pending';
   return (
     <NavigationContainer
       theme={{
@@ -38,6 +34,12 @@ const AppPagesNavigator = () => {
       }}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Splash" component={Splash} />
+        {!isVerified && (
+          <Stack.Screen
+            name="FirstTimeVerifications"
+            component={VerificationNavigator}
+          />
+        )}
         {!isLoggedIn ? (
           <Stack.Group>
             {notFirstTime ? (
@@ -51,18 +53,15 @@ const AppPagesNavigator = () => {
             )}
             <Stack.Screen name="Signup" component={SignUp} />
             <Stack.Screen name="Signin" component={SignIn} />
-            <Stack.Screen name="AccountType" component={AccountType} />
             <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
             <Stack.Screen name="ChangePassword" component={ChangePassword} />
           </Stack.Group>
         ) : (
           <Stack.Group>
-            {notAllowed ? (
-              !hasSetPin ? (
-                <Stack.Screen name="FirstPage" component={TransactionPin} />
-              ) : (
-                <Stack.Screen name="FirstPage" component={AccountType} />
-              )
+            {!appData.accountType ? (
+              <Stack.Screen name="FirstPage" component={AccountType} />
+            ) : !hasSetPin ? (
+              <Stack.Screen name="FirstPage" component={TransactionPin} />
             ) : isAdmin ? (
               <Stack.Screen name="FirstPage" component={AdminNavigator} />
             ) : (

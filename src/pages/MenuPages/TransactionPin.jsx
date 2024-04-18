@@ -24,6 +24,7 @@ const TransactionPin = ({ navigation, route }) => {
     JSON.parse(appData.pin) ?? !route.params?.forgotPin,
   );
   const [reload, setReload] = useState(false);
+  const [hasSetPin] = useState(JSON.parse(appData.pin));
 
   useEffect(() => {
     !remembersPassword && setCanEditPin(true);
@@ -47,9 +48,9 @@ const TransactionPin = ({ navigation, route }) => {
               setRemembersPassword={setRemembersPassword}
               header={
                 <Header
-                  title={`${appData.pin ? 'Change' : 'Create'} PIN`}
+                  title={`${hasSetPin ? 'Change' : 'Create'} PIN`}
                   text={`To ${
-                    appData.pin ? 'change' : 'create'
+                    hasSetPin ? 'change' : 'create'
                   } your PIN, kindly input your current password below to continue.`}
                 />
               }
@@ -190,10 +191,16 @@ const ChangePin = ({ navigation, setReload }) => {
               pin: true,
             };
           });
-          walletContext &&
-            setTimeout(() => {
-              navigation.goBack();
-            }, 1000);
+
+          const isVerified =
+            appData.verificationStatus === 'verified' ||
+            appData.verificationStatus === 'pending';
+
+          !isVerified
+            ? navigation.replace('FirstTimeVerifications')
+            : setTimeout(() => {
+                navigation.goBack();
+              }, 1000);
         } else {
           setErrorMessage(result.data);
         }
@@ -212,7 +219,7 @@ const ChangePin = ({ navigation, setReload }) => {
   return (
     <View style={styles.form}>
       <Header
-        title={`${appData.pin ? 'Change' : 'Create'} transaction PIN`}
+        title={`${JSON.parse(appData.pin) ? 'Change' : 'Create'} transaction PIN`}
         text={'Enter your new transaction PIN'}
       />
       <View style={styles.formBodyContainer}>

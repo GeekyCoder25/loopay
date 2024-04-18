@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import {
   BackHandler,
   Clipboard,
+  Dimensions,
   ImageBackground,
   Platform,
   Pressable,
@@ -124,7 +125,7 @@ const Home = ({ navigation }) => {
 
   const handleCopy = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    Clipboard.setString(wallet.loopayAccNo);
+    Clipboard.setString(wallet.accNo);
     ToastMessage('Copied to clipboard');
   };
 
@@ -132,9 +133,10 @@ const Home = ({ navigation }) => {
     setShowAmount(prev => !prev);
     setShowBalance(!showAmount);
   };
+
   return (
     <>
-      <PageContainer refreshFunc={refreshPage}>
+      <PageContainer refreshFunc={refreshPage} scroll={true}>
         <Pressable
           style={styles.headerContainer}
           onPress={() => setNoReload(false)}>
@@ -301,7 +303,7 @@ const Home = ({ navigation }) => {
             )}
           </View>
           {transactions.length > 0 ? (
-            <ScrollView
+            <View
               style={styles.histories}
               onScroll={() => {
                 setTimeout(() => {
@@ -316,7 +318,7 @@ const Home = ({ navigation }) => {
                   navigation={navigation}
                 />
               ))}
-            </ScrollView>
+            </View>
           ) : (
             <View style={styles.historyEmpty}>
               <BoldText style={styles.historyEmptyText}>
@@ -337,6 +339,7 @@ const styles = StyleSheet.create({
   },
   bgContainer: {
     flex: 1,
+    maxHeight: 0,
     transform: [
       { rotateZ: '-60deg' },
       { scale: 0.9 },
@@ -508,6 +511,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     paddingHorizontal: 15 + '%',
+    minHeight: Dimensions.get('screen').height - 630,
   },
   historyEmptyText: {
     textAlign: 'center',

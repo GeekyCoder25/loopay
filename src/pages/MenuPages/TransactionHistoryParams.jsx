@@ -159,19 +159,22 @@ const TransactionHistoryParams = ({ navigation, route }) => {
   };
 
   const handleReverse = async () => {
-    const response = await postFetchData('admin/transfer/reverse', {
-      reference,
-    });
+    try {
+      setIsLoading(true);
+      const response = await postFetchData('admin/transfer/reverse', {
+        reference,
+      });
 
-    if (response.status === 200) {
-      setStatusState('reversed');
-      return ToastMessage(response.data.message);
-    }
-    ToastMessage(response.data.message);
+      if (response.status === 200) {
+        setStatusState('reversed');
+        return ToastMessage(response.data.message);
+      }
+      ToastMessage(response.data.message);
+    } catch (error) {}
   };
 
   const handleReport = () => {
-    navigation.navigate('Report');
+    navigation.navigate('Report', history);
   };
 
   const handleShare = async () => {
@@ -251,7 +254,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-        <title>Loopay Statement</title>
+        <title>Loopay Receipt</title>
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
@@ -371,8 +374,8 @@ const TransactionHistoryParams = ({ navigation, route }) => {
           </header>
           <div class="amount">
             ${
-              showAmount ? (
-                String.raw`
+              showAmount
+                ? String.raw`
                 <h4>${currencySymbol}</h4>
                 <h1>
                   ${
@@ -385,9 +388,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
                   .${Number(amount).toLocaleString().split('.')[1] || '00'}
                 </h5>
              `
-              ) : (
-                <h1>***</h1>
-              )
+                : String.raw`<h1>***</h1>`
             }
           </div>
           <span class="statusHeader ${statusState}">${statusState}</span>
@@ -428,10 +429,16 @@ const TransactionHistoryParams = ({ navigation, route }) => {
   };
 
   const createPDF = async html => {
-    setIsLoading(true);
-    const { uri } = await printToFileAsync({ html });
-    setIsLoading(false);
-    await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+    try {
+      setIsLoading(true);
+      const { uri } = await printToFileAsync({ html, height: 892 });
+      setIsLoading(false);
+      await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+    } catch (error) {
+      ToastMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleShow = () => {

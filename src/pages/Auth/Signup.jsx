@@ -47,18 +47,16 @@ const SignUp = ({ navigation }) => {
     confirmPassword: '',
     // firstName: 'John',
     // lastName: 'Doe',
-    // userName: 'johndoe',
-    // email: 'john255@gmail.com',
+    // userName: 'johndoes',
+    // email: 'john257@gmail.com',
     // password: '251101',
     // confirmPassword: '251101',
     // phoneNumber: '',
-    // referralCode: 'zt2sxh',
     // localCurrencyCode: 'NGN',
     // country: {
     //   name: 'Nigeria',
     //   code: 'NG',
     // },
-    // role: 'admin',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -106,7 +104,7 @@ const SignUp = ({ navigation }) => {
         const { email, phoneNumber } = formData;
         const response = await postFetchData('auth/register', {
           ...formData,
-          phoneNumber: countryCode + phoneNumber,
+          phoneNumber: countryCode + phoneNumber.split(' ').join(''),
           localCurrencyCode,
         });
         setFormData({
@@ -121,6 +119,8 @@ const SignUp = ({ navigation }) => {
           result.email.toLowerCase() === email.toLowerCase()
         ) {
           setIsLoading(false);
+          setErrorMessage('');
+          setErrorKey('');
           return setVerifyEmail(true);
         } else {
           if (typeof response === 'string') {
@@ -158,7 +158,7 @@ const SignUp = ({ navigation }) => {
     );
   }
   return (
-    <PageContainer scroll avoidBounce>
+    <PageContainer scroll avoidBounce avoidKeyboardPushup>
       <View
         style={{
           ...styles.container,
@@ -540,12 +540,17 @@ export const EmailVerify = ({
   setErrorMessage,
   setSuccessMessage,
   setVerifyEmail,
-  navigation,
   formData,
 }) => {
   const { postFetchData, putFetchData } = useFetchData();
-  const { vw, vh, setAppData, setIsLoading, setIsSessionTimedOut } =
-    useContext(AppContext);
+  const {
+    vw,
+    vh,
+    setAppData,
+    setIsLoading,
+    setIsSessionTimedOut,
+    setIsLoggedIn,
+  } = useContext(AppContext);
   const [inputCode, setInputCode] = useState('');
   const [errorCode, setErrorCode] = useState(false);
   const [errorMessage2, setErrorMessage2] = useState('');
@@ -593,7 +598,7 @@ export const EmailVerify = ({
           setErrorMessage('');
           setSuccessMessage('');
           setIsSessionTimedOut(false);
-          navigation.replace('AccountType');
+          setIsLoggedIn(true);
         } else {
           setErrorMessage2(response.data?.error || response.data);
           setErrorCode(true);

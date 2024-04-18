@@ -283,7 +283,7 @@ const Bill = ({ bill, navigation }) => {
   return (
     <Pressable
       onPress={handleNavigate}
-      style={{ ...styles.bill, minWidth: vw < 450 ? vw / 2 : vw / 3 }}>
+      style={{ ...styles.bill, minWidth: vw < 500 ? vw / 2 : vw / 3 }}>
       <View>{svgIcon(40, 40)}</View>
       <RegularText>{bill.desc}</RegularText>
     </Pressable>

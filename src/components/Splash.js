@@ -69,6 +69,14 @@ const Splash = ({ navigation }) => {
               setIsAdmin(true);
               setCanChangeRole(true);
             }
+            const hasSetPin = data.pin ? JSON.parse(data.pin) : false;
+
+            const isVerified =
+              data.verificationStatus === 'verified' ||
+              data.verificationStatus === 'pending';
+            if (!isVerified && data.accountType && hasSetPin) {
+              return navigation.replace('FirstTimeVerifications');
+            }
           } else {
             setIsSessionTimedOut(false);
           }

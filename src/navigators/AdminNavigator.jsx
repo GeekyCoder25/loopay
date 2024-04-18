@@ -22,6 +22,7 @@ import DashboardNavigator from '../pages/AdminPages/Dashboard/DashboardNavigator
 import UsersNavigator from '../pages/AdminPages/Users/UsersNavigator';
 import ProofNavigator from '../pages/AdminPages/Proof/ProofNavigator';
 import ServerAPIs from '../pages/AdminPages/ServerAPIs';
+import ReportNavigator from '../pages/AdminPages/Reports/ReportNavigator';
 
 const AdminNavigator = () => {
   const Drawer = createDrawerNavigator();
@@ -111,6 +112,7 @@ const AdminNavigator = () => {
           component={ProofNavigator}
           options={{ headerShown: false }}
         />
+        <Drawer.Screen name="Reports" component={ReportNavigator} />
         <Drawer.Screen name="Server APIs" component={ServerAPIs} />
       </Drawer.Navigator>
       <AdminSelectCurrencyModal />

@@ -65,21 +65,23 @@ const SignIn = ({ navigation }) => {
         const sessionData = saveSessionOptions();
         const response = await postFetchData('auth/login', formData);
         const result = response.data;
+        const data = result.data;
 
         if (response.status === 403) {
           setErrorKey(Object.keys(result)[0]);
           setErrorMessage(Object.values(result)[0]);
           return setVerifyEmail(true);
         }
+
         if (
           result?.data?.email.toLowerCase() === formData.email.toLowerCase()
         ) {
-          await postFetchData('user/session', sessionData, result.data.token);
-          await loginUser(result.data, sessionData.deviceID);
+          await postFetchData('user/session', sessionData, data.token);
+          await loginUser(data, sessionData.deviceID);
           setErrorMessage('');
           setSuccessMessage('Login Successful');
           const response2 = await getFetchData('user?popup=true');
-          if (result.data.role === 'admin') {
+          if (data.role === 'admin') {
             setIsAdmin(true);
             setCanChangeRole(true);
           }
@@ -89,18 +91,26 @@ const SignIn = ({ navigation }) => {
           setIsLoading(false);
           setSuccessMessage('');
           setIsSessionTimedOut(false);
-          return (timerId.current = setTimeout(() => {
+          timerId.current = setTimeout(() => {
             setIsSessionTimedOut(true);
-          }, timeForInactivityInSecond * 1000));
+          }, timeForInactivityInSecond * 1000);
+
+          const isVerified =
+            data.verificationStatus === 'verified' ||
+            data.verificationStatus === 'pending';
+
+          if (!isVerified) {
+            return navigation.replace('FirstTimeVerifications');
+          }
         } else {
           if (typeof response === 'string') {
             setErrorMessage(response);
           } else if (typeof Object.keys(result)[0] === 'string') {
             setErrorKey(Object.keys(result)[0]);
             setErrorMessage(Object.values(result)[0]);
-          } else if (typeof Object.keys(result.data)[0] === 'string') {
-            setErrorKey(Object.keys(result.data)[0]);
-            setErrorMessage(Object.values(result.data)[0]);
+          } else if (typeof Object.keys(data)[0] === 'string') {
+            setErrorKey(Object.keys(data)[0]);
+            setErrorMessage(Object.values(data)[0]);
           } else {
             setErrorMessage('Unexpected error');
           }
