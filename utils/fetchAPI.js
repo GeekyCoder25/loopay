@@ -6,7 +6,7 @@ import ToastMessage from '../src/components/ToastMessage';
 
 // export const apiUrl = 'http://10.0.2.2:8000/api';
 // export const apiUrl = 'http://172.20.10.2:8000/api';
-// export const apiUrl = 'http://192.168.228.247:8000/api';
+// export const apiUrl = 'http://192.168.52.247:8000/api';
 export const apiUrl = 'https://loopay-api.cyclic.app/api';
 
 const timeoutSeconds = 30;
@@ -65,7 +65,7 @@ const useFetchData = () => {
     } finally {
       setTimeout(() => {
         setIsLoading(false);
-      }, 30000);
+      }, 40000);
     }
   };
 
@@ -118,7 +118,7 @@ const useFetchData = () => {
     } finally {
       setTimeout(() => {
         setIsLoading(false);
-      }, 30000);
+      }, 40000);
     }
   };
 
@@ -153,7 +153,7 @@ const useFetchData = () => {
     } finally {
       setTimeout(() => {
         setIsLoading(false);
-      }, 30000);
+      }, 40000);
     }
   };
 
@@ -188,7 +188,7 @@ const useFetchData = () => {
     } finally {
       setTimeout(() => {
         setIsLoading(false);
-      }, 30000);
+      }, 40000);
     }
   };
   return { getFetchData, postFetchData, putFetchData, deleteFetchData };

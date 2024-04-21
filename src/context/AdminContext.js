@@ -39,6 +39,7 @@ const AdminContextComponent = ({ children }) => {
 
   useEffect(() => {
     fetchAdminData();
+    setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletRefresh]);
 

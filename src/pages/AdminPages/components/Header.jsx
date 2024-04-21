@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import BarIcon from '../../../../assets/images/bar.svg';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { AppContext } from '../../../components/AppContext';

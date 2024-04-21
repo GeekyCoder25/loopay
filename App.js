@@ -137,7 +137,7 @@ export default function App() {
             fullName: localCurrency.name,
             acronym: localCurrency.code,
             symbol: localCurrency.symbol_native,
-            // minimumAmountToAdd: 100,
+            minimumAmountToAdd: 1,
             isLocal: true,
           });
         }

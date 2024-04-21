@@ -20,6 +20,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import CalendarIcon from '../../../../assets/images/calendar.svg';
 import { AppContext } from '../../../components/AppContext';
 import useFetchData from '../../../../utils/fetchAPI';
+import { addingDecimal } from '../../../../utils/AddingZero';
 
 const UserDetails = ({ navigation, route }) => {
   const { getFetchData } = useFetchData();
@@ -75,6 +76,44 @@ const UserDetails = ({ navigation, route }) => {
               <BoldText style={styles.rowKey}>Phone Number</BoldText>
               <RegularText style={styles.rowValue}>
                 {user.userProfile.phoneNumber}
+              </RegularText>
+            </View>
+            <View style={styles.row}>
+              <BoldText style={styles.rowKey}>Balance</BoldText>
+              <RegularText style={styles.rowValue}>
+                {(user.wallet.currencyDetails?.symbol || '₦') +
+                  ' ' +
+                  addingDecimal((user.wallet?.balance / 100)?.toLocaleString())}
+              </RegularText>
+            </View>
+            <View style={styles.row}>
+              <BoldText style={styles.rowKey}>Dollar Balance</BoldText>
+              <RegularText style={styles.rowValue}>
+                {(user.dollarWallet.currencyDetails?.symbol || '$') +
+                  ' ' +
+                  addingDecimal(
+                    (user.dollarWallet?.balance / 100)?.toLocaleString(),
+                  )}
+              </RegularText>
+            </View>
+            <View style={styles.row}>
+              <BoldText style={styles.rowKey}>Euro Balance</BoldText>
+              <RegularText style={styles.rowValue}>
+                {(user.euroWallet.currencyDetails?.symbol || '€') +
+                  ' ' +
+                  addingDecimal(
+                    (user.euroWallet?.balance / 100)?.toLocaleString(),
+                  )}
+              </RegularText>
+            </View>
+            <View style={styles.row}>
+              <BoldText style={styles.rowKey}>Pound Balance</BoldText>
+              <RegularText style={styles.rowValue}>
+                {(user.poundWallet.currencyDetails?.symbol || '£') +
+                  ' ' +
+                  addingDecimal(
+                    (user.poundWallet?.balance / 100)?.toLocaleString(),
+                  )}
               </RegularText>
             </View>
             <View style={styles.row}>

@@ -124,6 +124,7 @@ const InputPin = ({
       const result = await postFetchData('user/check-pin', {
         pin,
       });
+      setIsLoading(true);
       if (result === "Couldn't connect to server") {
         return setErrorMessage(result);
       }
@@ -131,6 +132,7 @@ const InputPin = ({
         setIsValidPin && setIsValidPin(true);
         !showBiometrics && setInvalidPinStatus(false);
         if (customFunc) {
+          setIsLoading(true);
           const customFuncStatus = await customFunc(setErrorMessage);
           return setTimeout(() => {
             customFuncStatus === 200

@@ -13,10 +13,24 @@ import Check from '../../../../assets/images/success.svg';
 import Pending from '../../../../assets/images/pending.svg';
 import Block from '../../../../assets/images/blocked.svg';
 import ChevronDown from '../../../../assets/images/chevron-down.svg';
+import BarIcon from '../../../../assets/images/bar.svg';
+import Bell from '../../../../assets/images/bell.svg';
+import UserIcon from '../../../components/UserIcon';
 
 const DashboardLoader = () => {
   return (
     <>
+      <View style={styles.headerContainer}>
+        <Pressable>
+          <BarIcon />
+        </Pressable>
+        <View style={styles.headerIcons}>
+          <Pressable style={styles.userImageContainer}>
+            <UserIcon />
+          </Pressable>
+          <Bell />
+        </View>
+      </View>
       <PageContainer style={styles.container} scroll>
         <View style={{ ...styles.cardHeader }}>
           <Pressable style={styles.plus}>
@@ -120,6 +134,21 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     zIndex: 99,
+  },
+  headerContainer: {
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  headerIcons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginRight: 10,
+    gap: 10,
   },
   cardHeader: {
     backgroundColor: '#1e1e1e',

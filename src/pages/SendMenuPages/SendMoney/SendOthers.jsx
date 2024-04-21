@@ -172,7 +172,7 @@ const SendOthers = ({ navigation }) => {
     } else if (!Number(amountInput)) {
       setErrorMessage('Please provide a valid amount');
       setErrorKey('amountInput');
-    } else if (amountInput < 100) {
+    } else if (amountInput < selectedCurrency.minimumAmountToAdd) {
       setErrorMessage(
         `Minimum transfer amount is ${selectedCurrency.symbol}${selectedCurrency.minimumAmountToAdd}`,
       );

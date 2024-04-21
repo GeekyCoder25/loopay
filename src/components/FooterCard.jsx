@@ -47,7 +47,8 @@ const FooterCard = ({
           </View>
           <View style={styles.cardLine}>
             <RegularText style={styles.cardKey}>Account Name</RegularText>
-            <BoldText style={styles.cardValue}>
+            <BoldText
+              style={{ ...styles.cardValue, ...styles.cardValueCapitalize }}>
               {userToSendTo.fullName || userToSendTo.name}
             </BoldText>
           </View>
@@ -64,7 +65,7 @@ const FooterCard = ({
               {currency?.acronym} Balance
             </BoldText>
           </View>
-          <View style={styles.cardLine}>
+          {/* <View style={styles.cardLine}>
             <RegularText style={styles.cardKey}>Transaction Fee</RegularText>
             <BoldText
               style={{ ...styles.cardValue, color: fee ? 'red' : '#006E53' }}>
@@ -72,7 +73,7 @@ const FooterCard = ({
                 ? selectedCurrency.symbol + addingDecimal(fee.toLocaleString())
                 : selectedCurrency.symbol + '0.00'}
             </BoldText>
-          </View>
+          </View> */}
         </View>
       ) : (
         <View style={styles.footerCardDetails}>
@@ -172,6 +173,9 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'right',
     color: '#525252',
+  },
+  cardValueCapitalize: {
+    textTransform: 'capitalize',
   },
 });
 export default FooterCard;

@@ -112,6 +112,7 @@ const SignUp = ({ navigation }) => {
           phoneNumber,
           countryCode,
           localCurrencyCode,
+          currencyDetails: CurrencyFullDetails[localCurrencyCode],
         });
         const result = response.data;
         if (

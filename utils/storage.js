@@ -26,6 +26,7 @@ export const loginUser = async (data, session) => {
   await AsyncStorage.setItem(StorageKeys.SESSION, session);
   await AsyncStorage.setItem(StorageKeys.ROLE, data.role);
   await AsyncStorage.setItem(StorageKeys.EMAIL, data.email);
+  await AsyncStorage.setItem(StorageKeys.SHAKE, 'true');
   await AsyncStorage.setItem(
     StorageKeys.LOCAL_CURRENCY,
     data.localCurrencyCode,
