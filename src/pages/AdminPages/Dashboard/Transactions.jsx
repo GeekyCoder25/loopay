@@ -196,27 +196,6 @@ const Transactions = ({ navigation, route }) => {
   };
   return (
     <>
-      <Modal
-        visible={modalOpen}
-        animationType="slide"
-        transparent
-        style={{ zIndex: 999 }}
-        onRequestClose={() => setModalOpen(prev => !prev)}>
-        <Pressable
-          style={styles.overlay}
-          onPress={() => setModalOpen(prev => !prev)}>
-          <View style={styles.modal}>
-            {selectOptions.map(option => (
-              <Pressable
-                key={option.status}
-                style={styles.select}
-                onPress={() => handleModal(option)}>
-                <RegularText>{option.label}</RegularText>
-              </Pressable>
-            ))}
-          </View>
-        </Pressable>
-      </Modal>
       <View key={reload} style={{ flex: 1 }}>
         <FilterModal
           showModal={showFilterModal}
@@ -406,6 +385,28 @@ const Transactions = ({ navigation, route }) => {
           />
           <TransactionHistoryParams route={{ params: modalData }} />
         </Modal>
+        <Modal
+          visible={modalOpen}
+          animationType="slide"
+          transparent
+          style={{ zIndex: 999 }}
+          onRequestClose={() => setModalOpen(prev => !prev)}>
+          <View style={styles.overlay} />
+          <Pressable
+            style={styles.modalContainer}
+            onPress={() => setModalOpen(prev => !prev)}>
+            <View style={styles.modal}>
+              {selectOptions.map(option => (
+                <Pressable
+                  key={option.status}
+                  style={styles.select}
+                  onPress={() => handleModal(option)}>
+                  <RegularText>{option.label}</RegularText>
+                </Pressable>
+              ))}
+            </View>
+          </Pressable>
+        </Modal>
       </View>
     </>
   );
@@ -435,6 +436,12 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: 100 + '%',
     width: 100 + '%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: 100 + '%',
+    height: 100 + '%',
     justifyContent: 'center',
     alignItems: 'center',
   },

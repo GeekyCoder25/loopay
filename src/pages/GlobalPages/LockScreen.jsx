@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
+  Dimensions,
   Image,
-  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -171,222 +171,231 @@ const LockScreen = () => {
 
   const digitDimension = { width: vw * 0.2, height: vh * 0.08 };
   const disabled = inputCode.length >= codeLength.length;
-
-  return (
-    <Modal visible={isSessionTimedOut && isLoggedIn} animationType="fade">
-      {hasForgot ? (
-        canChange ? (
-          <>
-            <Back onPress={() => setCanChange(false)} />
-            <ChangePassword skipCheck />
-          </>
+  if (isSessionTimedOut && isLoggedIn) {
+    return (
+      <View style={styles.lockScreen}>
+        {hasForgot ? (
+          canChange ? (
+            <>
+              <Back onPress={() => setCanChange(false)} />
+              <ChangePassword skipCheck />
+            </>
+          ) : (
+            <>
+              <Back onPress={() => setHasForgot(false)} />
+              <ForgotPassword setCanChange={setCanChange} />
+            </>
+          )
         ) : (
-          <>
-            <Back onPress={() => setHasForgot(false)} />
-            <ForgotPassword setCanChange={setCanChange} />
-          </>
-        )
-      ) : (
-        <ScrollView
-          contentContainerStyle={{ minHeight: vh, ...styles.container }}
-          bounces={false}>
-          <View
-            style={{
-              ...styles.container,
-              gap: vh * 0.043,
-            }}>
-            <View style={styles.logoContainer}>
-              <Animated.Image
-                style={{
-                  ...styles.logo,
-                  top: logoPosition,
-                  right: logoPosition,
-                }}
-                source={require('../../../assets/images/icon.png')}
-                resizeMode="contain"
-              />
-              <Animated.View
-                style={{
-                  ...styles.icon,
-                  top: iconPosition,
-                  right: iconPosition,
-                }}>
-                {switchIcon && <UserIcon style={{ ...styles.icon }} />}
-              </Animated.View>
-            </View>
-            <RegularText>Enter Password</RegularText>
-            <View style={styles.displayContainer}>
-              {codeLength.map(code =>
-                inputCode.length >= code ? (
-                  errorCode ? (
-                    <Animated.View
-                      key={code}
-                      style={{ ...styles.displayError, left: errorPosition }}
-                      onLayout={errorAnimation}
-                    />
-                  ) : (
-                    <View key={code} style={styles.displayFilled} />
-                  )
-                ) : (
-                  <View key={code} style={styles.display} />
-                ),
-              )}
-            </View>
-            <View style={styles.digits}>
-              <View style={styles.row}>
-                <Pressable
-                  disabled={disabled}
+          <ScrollView
+            contentContainerStyle={{ minHeight: vh, ...styles.container }}
+            bounces={false}>
+            <View
+              style={{
+                ...styles.container,
+                gap: vh * 0.043,
+              }}>
+              <View style={styles.logoContainer}>
+                <Animated.Image
                   style={{
-                    ...styles.digit,
-                    ...digitDimension,
+                    ...styles.logo,
+                    top: logoPosition,
+                    right: logoPosition,
                   }}
-                  onPress={() => handleInput('1')}>
-                  <BoldText style={styles.digitText}>1</BoldText>
-                </Pressable>
-                <Pressable
-                  disabled={disabled}
+                  source={require('../../../assets/images/icon.png')}
+                  resizeMode="contain"
+                />
+                <Animated.View
                   style={{
-                    ...styles.digit,
-                    ...digitDimension,
-                  }}
-                  onPress={() => handleInput('2')}>
-                  <BoldText style={styles.digitText}>2</BoldText>
-                </Pressable>
-                <Pressable
-                  disabled={disabled}
-                  style={{
-                    ...styles.digit,
-                    ...digitDimension,
-                  }}
-                  onPress={() => handleInput('3')}>
-                  <BoldText style={styles.digitText}>3</BoldText>
-                </Pressable>
+                    ...styles.icon,
+                    top: iconPosition,
+                    right: iconPosition,
+                  }}>
+                  {switchIcon && <UserIcon style={{ ...styles.icon }} />}
+                </Animated.View>
               </View>
-              <View style={styles.row}>
-                <Pressable
-                  disabled={disabled}
-                  style={{
-                    ...styles.digit,
-                    ...digitDimension,
-                  }}
-                  onPress={() => handleInput('4')}>
-                  <BoldText style={styles.digitText}>4</BoldText>
-                </Pressable>
-                <Pressable
-                  disabled={disabled}
-                  style={{
-                    ...styles.digit,
-                    ...digitDimension,
-                  }}
-                  onPress={() => handleInput('5')}>
-                  <BoldText style={styles.digitText}>5</BoldText>
-                </Pressable>
-                <Pressable
-                  disabled={disabled}
-                  style={{
-                    ...styles.digit,
-                    ...digitDimension,
-                  }}
-                  onPress={() => handleInput('6')}>
-                  <BoldText style={styles.digitText}>6</BoldText>
-                </Pressable>
-              </View>
-              <View style={styles.row}>
-                <Pressable
-                  disabled={disabled}
-                  style={{
-                    ...styles.digit,
-                    ...digitDimension,
-                  }}
-                  onPress={() => handleInput('7')}>
-                  <BoldText style={styles.digitText}>7</BoldText>
-                </Pressable>
-                <Pressable
-                  disabled={disabled}
-                  style={{
-                    ...styles.digit,
-                    ...digitDimension,
-                  }}
-                  onPress={() => handleInput('8')}>
-                  <BoldText style={styles.digitText}>8</BoldText>
-                </Pressable>
-                <Pressable
-                  disabled={disabled}
-                  style={{
-                    ...styles.digit,
-                    ...digitDimension,
-                  }}
-                  onPress={() => handleInput('9')}>
-                  <BoldText style={styles.digitText}>9</BoldText>
-                </Pressable>
-              </View>
-              <View style={styles.row}>
-                {enableBiometric && isBiometricSupported ? (
-                  <Pressable
-                    style={{
-                      ...styles.digit,
-                      ...digitDimension,
-                    }}
-                    onPress={() => setBiometricSwitch(prev => !prev)}>
-                    {hasFaceID ? (
-                      <FaceIDIcon width={50} height={50} />
+              <RegularText>Enter Password</RegularText>
+              <View style={styles.displayContainer}>
+                {codeLength.map(code =>
+                  inputCode.length >= code ? (
+                    errorCode ? (
+                      <Animated.View
+                        key={code}
+                        style={{ ...styles.displayError, left: errorPosition }}
+                        onLayout={errorAnimation}
+                      />
                     ) : (
-                      <IonIcon name="finger-print-sharp" size={50} />
-                    )}
-                  </Pressable>
-                ) : (
-                  <View
+                      <View key={code} style={styles.displayFilled} />
+                    )
+                  ) : (
+                    <View key={code} style={styles.display} />
+                  ),
+                )}
+              </View>
+              <View style={styles.digits}>
+                <View style={styles.row}>
+                  <Pressable
                     disabled={disabled}
                     style={{
                       ...styles.digit,
                       ...digitDimension,
                     }}
-                  />
-                )}
-                <Pressable
-                  disabled={disabled}
-                  style={{
-                    ...styles.digit,
-                    ...digitDimension,
-                  }}
-                  onPress={() => handleInput('0')}>
-                  <BoldText style={styles.digitText}>0</BoldText>
-                </Pressable>
+                    onPress={() => handleInput('1')}>
+                    <BoldText style={styles.digitText}>1</BoldText>
+                  </Pressable>
+                  <Pressable
+                    disabled={disabled}
+                    style={{
+                      ...styles.digit,
+                      ...digitDimension,
+                    }}
+                    onPress={() => handleInput('2')}>
+                    <BoldText style={styles.digitText}>2</BoldText>
+                  </Pressable>
+                  <Pressable
+                    disabled={disabled}
+                    style={{
+                      ...styles.digit,
+                      ...digitDimension,
+                    }}
+                    onPress={() => handleInput('3')}>
+                    <BoldText style={styles.digitText}>3</BoldText>
+                  </Pressable>
+                </View>
+                <View style={styles.row}>
+                  <Pressable
+                    disabled={disabled}
+                    style={{
+                      ...styles.digit,
+                      ...digitDimension,
+                    }}
+                    onPress={() => handleInput('4')}>
+                    <BoldText style={styles.digitText}>4</BoldText>
+                  </Pressable>
+                  <Pressable
+                    disabled={disabled}
+                    style={{
+                      ...styles.digit,
+                      ...digitDimension,
+                    }}
+                    onPress={() => handleInput('5')}>
+                    <BoldText style={styles.digitText}>5</BoldText>
+                  </Pressable>
+                  <Pressable
+                    disabled={disabled}
+                    style={{
+                      ...styles.digit,
+                      ...digitDimension,
+                    }}
+                    onPress={() => handleInput('6')}>
+                    <BoldText style={styles.digitText}>6</BoldText>
+                  </Pressable>
+                </View>
+                <View style={styles.row}>
+                  <Pressable
+                    disabled={disabled}
+                    style={{
+                      ...styles.digit,
+                      ...digitDimension,
+                    }}
+                    onPress={() => handleInput('7')}>
+                    <BoldText style={styles.digitText}>7</BoldText>
+                  </Pressable>
+                  <Pressable
+                    disabled={disabled}
+                    style={{
+                      ...styles.digit,
+                      ...digitDimension,
+                    }}
+                    onPress={() => handleInput('8')}>
+                    <BoldText style={styles.digitText}>8</BoldText>
+                  </Pressable>
+                  <Pressable
+                    disabled={disabled}
+                    style={{
+                      ...styles.digit,
+                      ...digitDimension,
+                    }}
+                    onPress={() => handleInput('9')}>
+                    <BoldText style={styles.digitText}>9</BoldText>
+                  </Pressable>
+                </View>
+                <View style={styles.row}>
+                  {enableBiometric && isBiometricSupported ? (
+                    <Pressable
+                      style={{
+                        ...styles.digit,
+                        ...digitDimension,
+                      }}
+                      onPress={() => setBiometricSwitch(prev => !prev)}>
+                      {hasFaceID ? (
+                        <FaceIDIcon width={50} height={50} />
+                      ) : (
+                        <IonIcon name="finger-print-sharp" size={50} />
+                      )}
+                    </Pressable>
+                  ) : (
+                    <View
+                      disabled={disabled}
+                      style={{
+                        ...styles.digit,
+                        ...digitDimension,
+                      }}
+                    />
+                  )}
+                  <Pressable
+                    disabled={disabled}
+                    style={{
+                      ...styles.digit,
+                      ...digitDimension,
+                    }}
+                    onPress={() => handleInput('0')}>
+                    <BoldText style={styles.digitText}>0</BoldText>
+                  </Pressable>
 
-                <Pressable
-                  style={{
-                    ...styles.digit,
-                    ...digitDimension,
-                  }}
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    setInputCode(prev => prev.slice(0, -1));
-                  }}>
-                  <Image
-                    source={require('../../../assets/images/delete.png')}
-                    style={styles.delete}
-                  />
-                </Pressable>
+                  <Pressable
+                    style={{
+                      ...styles.digit,
+                      ...digitDimension,
+                    }}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setInputCode(prev => prev.slice(0, -1));
+                    }}>
+                    <Image
+                      source={require('../../../assets/images/delete.png')}
+                      style={styles.delete}
+                    />
+                  </Pressable>
+                </View>
               </View>
+              <Pressable
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setHasForgot(true);
+                }}>
+                <BoldText>Forgot Password?</BoldText>
+              </Pressable>
             </View>
-            <Pressable
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                setHasForgot(true);
-              }}>
-              <BoldText>Forgot Password?</BoldText>
-            </Pressable>
-          </View>
-        </ScrollView>
-      )}
-    </Modal>
-  );
+          </ScrollView>
+        )}
+      </View>
+    );
+  }
 };
 
 const styles = StyleSheet.create({
+  lockScreen: {
+    zIndex: 99999,
+    position: 'absolute',
+    height: Dimensions.get('screen').height,
+    width: Dimensions.get('screen').width,
+    backgroundColor: '#fff',
+  },
   container: {
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 9999,
   },
   icon: {
     width: 100,

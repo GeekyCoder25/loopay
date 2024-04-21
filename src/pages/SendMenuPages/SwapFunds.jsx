@@ -29,6 +29,7 @@ import { Audio } from 'expo-av';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import { useFocusEffect } from '@react-navigation/native';
 import { setShowBalance } from '../../../utils/storage';
+import LoadingModal from '../../components/LoadingModal';
 
 const SwapFunds = ({ navigation }) => {
   const { getFetchData, postFetchData } = useFetchData();
@@ -63,29 +64,27 @@ const SwapFunds = ({ navigation }) => {
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [currencyRateAPI, setCurrencyRateAPI] = useState({});
   const [rateRefetch, setRateRefetch] = useState(false);
+  const [isLocalLoading, setIsLocalLoading] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
-      try {
-        const getRates = async () => {
-          setIsLoading(true);
-          const response = await getFetchData(`user/rate/${swapFrom.acronym}`);
-          response.status === 200 && setCurrencyRateAPI(response.data);
-        };
-        getRates();
-        setFee(0);
-      } catch {
-        setIsLoading(false);
-        setErrorMessage("Can't connect to server");
-      } finally {
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 15000);
-      }
+      const getRates = async () => {
+        const response = await getFetchData(`user/rate/${swapFrom.acronym}`);
+        response.status === 200 && setCurrencyRateAPI(response.data);
+      };
+      getRates()
+        .catch(() => {
+          setIsLocalLoading(false);
+          setErrorMessage("Can't connect to server");
+        })
+        .finally(() => {
+          setFee(0);
+          setIsLocalLoading(false);
+        });
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rateRefetch, setIsLoading, swapFrom.acronym]),
   );
-
   useEffect(() => {
     const selectedCurrencyFunc = index =>
       allCurrencies.find(currency => currency.currency === index);
@@ -665,6 +664,7 @@ const SwapFunds = ({ navigation }) => {
           </View>
         )}
       </Modal>
+      <LoadingModal isLoading={isLocalLoading} />
     </>
   );
 };

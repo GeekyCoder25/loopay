@@ -2,9 +2,9 @@ import React, { useContext } from 'react';
 import {
   ActivityIndicator,
   Pressable,
-  Modal,
   View,
   StyleSheet,
+  Dimensions,
 } from 'react-native';
 import { AppContext } from './AppContext';
 
@@ -13,7 +13,7 @@ const LoadingModal = ({ isLoading }) => {
 
   return (
     isLoading && (
-      <Modal visible={isLoading} animationType="fade" transparent>
+      <View animationType="fade" transparent style={styles.container}>
         <Pressable style={styles.overlay} />
         <View
           style={{ ...styles.modalContainer, backgroundColor: loadingModalBg }}>
@@ -23,11 +23,17 @@ const LoadingModal = ({ isLoading }) => {
             style={styles.modal}
           />
         </View>
-      </Modal>
+      </View>
     )
   );
 };
 const styles = StyleSheet.create({
+  container: {
+    zIndex: 9999,
+    position: 'absolute',
+    height: Dimensions.get('screen').height,
+    width: Dimensions.get('screen').width,
+  },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     opacity: 0.7,

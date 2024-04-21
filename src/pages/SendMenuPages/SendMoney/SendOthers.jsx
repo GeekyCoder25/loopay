@@ -30,8 +30,14 @@ import useFetchData from '../../../../utils/fetchAPI';
 
 const SendOthers = ({ navigation }) => {
   const { getFetchData, postFetchData } = useFetchData();
-  const { appData, vh, selectedCurrency, setWalletRefresh } =
-    useContext(AppContext);
+  const {
+    appData,
+    vh,
+    selectedCurrency,
+    setWalletRefresh,
+    isLoading,
+    setIsLoading,
+  } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [bankSelected, setBankSelected] = useState(null);
   const [banks, setBanks] = useState([]);
@@ -39,7 +45,6 @@ const SendOthers = ({ navigation }) => {
   const [selectedBank, setSelectedBank] = useState(null);
   const [showBankModal, setShowBankModal] = useState(false);
   const [fullName, setFullName] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [amountInput, setAmountInput] = useState(null);
   const [description, setDescription] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -191,6 +196,7 @@ const SendOthers = ({ navigation }) => {
 
   const initiateWithdrawal = async () => {
     try {
+      setIsLoading(true);
       const id = randomUUID();
       const response = await postFetchData('user/transfer', {
         ...bankSelected,
@@ -220,6 +226,8 @@ const SendOthers = ({ navigation }) => {
       return response.data;
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 

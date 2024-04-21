@@ -55,7 +55,11 @@ const InputPin = ({
     LocalAuthentication.supportedAuthenticationTypesAsync().then(result =>
       setHasFaceID(result[0] === 2),
     );
-  }, []);
+
+    return () => {
+      setIsLoading(false);
+    };
+  }, [setIsLoading]);
 
   const errorAnimation = () => {
     if (!errorAnimated) {
