@@ -27,10 +27,10 @@ const Report = ({ navigation, route }) => {
       });
 
       if (response.status === 200) {
-        return ToastMessage(response.data.message);
+        ToastMessage(response.data);
+        return navigation.goBack();
       }
       ToastMessage(response.data);
-      // navigation.goBack();
     } finally {
       setIsLoading(false);
     }

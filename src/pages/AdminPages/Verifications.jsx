@@ -87,24 +87,21 @@ const Verifications = ({ navigation, route }) => {
         animationType="slide"
         transparent
         onRequestClose={() => setModalOpen(prev => !prev)}>
+        <View style={styles.overlay} />
         <Pressable
-          style={styles.overlay}
+          style={styles.modalContainer}
           onPress={() => setModalOpen(prev => !prev)}>
           <View style={styles.modal}>
-            <View style={styles.modal}>
-              <View style={styles.modal}>
-                {verificationStatuses.map(option => (
-                  <Pressable
-                    key={option}
-                    style={styles.select}
-                    onPress={() => handleModal(option)}>
-                    <RegularText style={styles.modalSelect}>
-                      {option} Verifications
-                    </RegularText>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
+            {verificationStatuses.map(option => (
+              <Pressable
+                key={option}
+                style={styles.select}
+                onPress={() => handleModal(option)}>
+                <RegularText style={styles.modalSelect}>
+                  {option} Verifications
+                </RegularText>
+              </Pressable>
+            ))}
           </View>
         </Pressable>
       </Modal>
@@ -140,24 +137,21 @@ const Verifications = ({ navigation, route }) => {
             animationType="slide"
             transparent
             onRequestClose={() => setModalOpen(prev => !prev)}>
+            <View style={styles.overlay} />
             <Pressable
-              style={styles.overlay}
+              style={styles.modalContainer}
               onPress={() => setModalOpen(prev => !prev)}>
               <View style={styles.modal}>
-                <View style={styles.modal}>
-                  <View style={styles.modal}>
-                    {verificationStatuses.map(option => (
-                      <Pressable
-                        key={option}
-                        style={styles.select}
-                        onPress={() => handleModal(option)}>
-                        <RegularText style={styles.modalSelect}>
-                          {option} Verifications
-                        </RegularText>
-                      </Pressable>
-                    ))}
-                  </View>
-                </View>
+                {verificationStatuses.map(option => (
+                  <Pressable
+                    key={option}
+                    style={styles.select}
+                    onPress={() => handleModal(option)}>
+                    <RegularText style={styles.modalSelect}>
+                      {option} Verifications
+                    </RegularText>
+                  </Pressable>
+                ))}
               </View>
             </Pressable>
           </Modal>
@@ -185,6 +179,14 @@ const Verifications = ({ navigation, route }) => {
               <View style={styles.idRow}>
                 <RegularText>ID:</RegularText>
                 <BoldText>{item.idType}</BoldText>
+              </View>
+              <View style={styles.idRow}>
+                <RegularText>Submitted at:</RegularText>
+                <BoldText>
+                  {new Date(item.createdAt).toLocaleDateString() +
+                    ' ' +
+                    new Date(item.createdAt).toLocaleTimeString()}
+                </BoldText>
               </View>
             </View>
             <IonIcon name="arrow-forward" size={24} />
@@ -224,6 +226,12 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: 100 + '%',
     width: 100 + '%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: 100 + '%',
+    height: 100 + '%',
     justifyContent: 'center',
     alignItems: 'center',
   },

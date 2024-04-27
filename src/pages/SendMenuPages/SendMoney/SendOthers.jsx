@@ -27,6 +27,8 @@ import Back from '../../../components/Back';
 import RecurringSwitch from '../../../components/RecurringSwitch';
 import SchedulePayment from '../SchedulePayments/SchedulePayment';
 import useFetchData from '../../../../utils/fetchAPI';
+import ToastMessage from '../../../components/ToastMessage';
+import { allCurrencies } from '../../../database/data';
 
 const SendOthers = ({ navigation }) => {
   const { getFetchData, postFetchData } = useFetchData();
@@ -119,6 +121,30 @@ const SendOthers = ({ navigation }) => {
     },
   ];
 
+  const handleSelectRecent = async bank => {
+    try {
+      setIsLoading(true);
+      const response = await postFetchData('user/check-recipient', {
+        accNo: bank.accNo,
+        bank: bank.bankCode,
+        currency: selectedCurrency.currency,
+      });
+      if (response.status === 200) {
+        setFormData({
+          accNo: response.data.accNo,
+          bank: response.data.bankData,
+        });
+        setRecipientData(response.data);
+        return setBankSelected(response.data);
+      }
+      throw new Error(response.data);
+    } catch (error) {
+      ToastMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleConfirm = async () => {
     setFullName('');
     if (formData.accNo === '') {
@@ -186,9 +212,6 @@ const SendOthers = ({ navigation }) => {
       setErrorKey('amountInput');
       setErrorMessage('Insufficient funds');
     } else {
-      // navigation.navigate('SchedulePayment', {
-      //   type: route.params?.schedule?.id || 'others',
-      // });
       setHasAskedPin(true);
       setCanContinue(true);
     }
@@ -205,6 +228,7 @@ const SendOthers = ({ navigation }) => {
         fee,
         senderPhoto: appData.photoURL,
         id,
+        allCurrencies,
         scheduleData,
       });
       if (response.status === 200) {
@@ -218,7 +242,7 @@ const SendOthers = ({ navigation }) => {
           transaction,
         });
         setWalletRefresh(prev => !prev);
-        return response.status;
+        return 400;
       }
       typeof response === 'string'
         ? setErrorMessage(response)
@@ -314,7 +338,7 @@ const SendOthers = ({ navigation }) => {
                         <Pressable
                           key={bank.accNo + bank.bankName}
                           style={styles.bank}
-                          onPress={() => setBankSelected(bank)}>
+                          onPress={() => handleSelectRecent(bank)}>
                           <View style={styles.bankDetails}>
                             <RegularText style={styles.bankName}>
                               {bank.name}
@@ -392,7 +416,7 @@ const SendOthers = ({ navigation }) => {
                   </View>
                 </View>
                 <ErrorMessage errorMessage={errorMessage} />
-                <View style={styles.feeTextInputContainer}>
+                {/* <View style={styles.feeTextInputContainer}>
                   <View style={styles.feeTextInput}>
                     <RegularText>Send money to other banks</RegularText>
                   </View>
@@ -405,16 +429,18 @@ const SendOthers = ({ navigation }) => {
                       {addingDecimal(`${fee}`)}
                     </RegularText>
                   </View>
-                </View>
+                </View> */}
 
-                <RecurringSwitch
-                  isRecurring={isRecurring}
-                  setIsRecurring={setIsRecurring}
-                  scheduleData={scheduleData}
-                  setScheduleData={setScheduleData}
-                  setHasAskedPin={setHasAskedPin}
-                  type="others"
-                />
+                <View style={styles.recurring}>
+                  <RecurringSwitch
+                    isRecurring={isRecurring}
+                    setIsRecurring={setIsRecurring}
+                    scheduleData={scheduleData}
+                    setScheduleData={setScheduleData}
+                    setHasAskedPin={setHasAskedPin}
+                    type="others"
+                  />
+                </View>
                 <View style={styles.button}>
                   <Button text="Send" onPress={handleWithdraw} />
                 </View>
@@ -609,12 +635,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   noBank: { minHeight: 200, justifyContent: 'center', alignItems: 'center' },
-  pinContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  footer: {
-    marginTop: 50,
+  recurring: {
+    marginTop: 30,
   },
   button: {
     flex: 1,

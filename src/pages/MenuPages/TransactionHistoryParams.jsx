@@ -19,12 +19,13 @@ import { setShowBalance } from '../../../utils/storage';
 import ToastMessage from '../../components/ToastMessage';
 import useFetchData from '../../../utils/fetchAPI';
 import { printToFileAsync } from 'expo-print';
+import LoadingModal from '../../components/LoadingModal';
 
 const TransactionHistoryParams = ({ navigation, route }) => {
   const { postFetchData } = useFetchData();
 
-  const { vh, showAmount, setShowAmount, setIsLoading, isAdmin } =
-    useContext(AppContext);
+  const { vh, showAmount, setShowAmount, isAdmin } = useContext(AppContext);
+  const [isLocalLoading, setIsLocalLoading] = useState(false);
   const history = route.params;
   const {
     status,
@@ -161,7 +162,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
 
   const handleReverse = async () => {
     try {
-      setIsLoading(true);
+      setIsLocalLoading(true);
       const response = await postFetchData('admin/transfer/reverse', {
         reference,
       });
@@ -173,7 +174,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
       ToastMessage(response.data.message);
     } catch (error) {
     } finally {
-      setIsLoading(false);
+      setIsLocalLoading(false);
     }
   };
 
@@ -183,7 +184,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
 
   const handleShare = async () => {
     try {
-      setIsLoading(true);
+      setIsLocalLoading(true);
       const response = await postFetchData('user/receipt', {
         id: reference,
         type: transactionType,
@@ -193,7 +194,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
       if (response.status === 200) {
         const sharePDF = async uri => {
           try {
-            setIsLoading(true);
+            setIsLocalLoading(true);
             const directory = FileSystem.documentDirectory;
 
             const newUri = `${directory}Loopay_Receipt_${reference}.pdf`;
@@ -210,7 +211,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
           } catch (error) {
             ToastMessage(error.message);
           } finally {
-            setIsLoading(false);
+            setIsLocalLoading(false);
           }
         };
 
@@ -219,14 +220,13 @@ const TransactionHistoryParams = ({ navigation, route }) => {
           height: 892,
         });
 
-        console.log(uri);
         await sharePDF(uri);
       } else {
         throw new Error(response.data.error || 'Server Error');
       }
     } catch (error) {
       ToastMessage("Can't generate receipt");
-      setIsLoading(false);
+      setIsLocalLoading(false);
     }
   };
 
@@ -258,6 +258,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
 
   return (
     <>
+      <LoadingModal isLoading={isLocalLoading} />
       <PageContainer justify={true} scroll avoidBounce>
         <BoldText style={styles.historyHeader}>Transaction history</BoldText>
         <View style={{ ...styles.body, minHeight: vh * 0.5 }}>

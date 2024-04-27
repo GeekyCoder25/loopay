@@ -97,7 +97,8 @@ const PayABillParams = ({ route, navigation }) => {
       setErrorMessage('Insufficient balance');
       return setErrorKey('amount');
     } else if (
-      stateFields.amount < stateFields.provider.minLocalTransactionAmount &&
+      (stateFields.amount < stateFields.provider.minLocalTransactionAmount ||
+        stateFields.amount < 1000) &&
       selected.currency === 'NGN'
     ) {
       setErrorMessage(

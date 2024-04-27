@@ -106,6 +106,7 @@ const SignUp = ({ navigation }) => {
           ...formData,
           phoneNumber: countryCode + phoneNumber.split(' ').join(''),
           localCurrencyCode,
+          currencyDetails: CurrencyFullDetails[localCurrencyCode],
         });
         setFormData({
           ...formData,

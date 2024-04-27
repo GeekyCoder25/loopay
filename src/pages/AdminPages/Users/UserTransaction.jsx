@@ -87,7 +87,7 @@ const UserTransaction = ({ route }) => {
       const response = await getFetchData(
         `admin/transactions?currency=${
           selectedCurrency.currency
-        }&limit=${limit}&page=${page + 1}`,
+        }&limit=${limit}&page=${page + 1}&userId=email:${route.params.email}`,
       );
       if (response.status === 200 && response.data.pageSize) {
         const swapLength = response.data.data.filter(
@@ -492,9 +492,7 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
         <>
           {networkProvidersIcon(networkProvider)}
           <View style={styles.historyContent}>
-            <BoldText style={styles.historyTitle}>
-              {networkProvider} - {history.phoneNo}
-            </BoldText>
+            <BoldText style={styles.historyTitle}>{networkProvider}</BoldText>
             <RegularText>Airtime Recharge</RegularText>
           </View>
           <View style={styles.amount}>
@@ -509,9 +507,7 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
         <>
           {networkProvidersIcon(networkProvider)}
           <View style={styles.historyContent}>
-            <BoldText style={styles.historyTitle}>
-              {networkProvider} - {history.phoneNo}
-            </BoldText>
+            <BoldText style={styles.historyTitle}>{networkProvider}</BoldText>
             <RegularText>Data Recharge - {dataPlan.value}</RegularText>
           </View>
           <View style={styles.amount}>

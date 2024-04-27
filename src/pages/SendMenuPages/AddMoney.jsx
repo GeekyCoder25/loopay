@@ -2,6 +2,7 @@
 import {
   Clipboard,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -29,6 +30,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import { setShowBalance } from '../../../utils/storage';
 import * as Haptics from 'expo-haptics';
 import useFetchData from '../../../utils/fetchAPI';
+import FaIcon from '@expo/vector-icons/FontAwesome';
 
 const AddMoney = ({ navigation, route }) => {
   const { getFetchData } = useFetchData();
@@ -301,10 +303,21 @@ const AddMoney = ({ navigation, route }) => {
                     <BoldText style={styles.copyText}>Copy</BoldText>
                   </Pressable>
                 </View>
-                <Button
-                  text="I have sent the money"
-                  onPress={() => navigation.navigate('AddMoneyConfirm')}
-                />
+                {selectedCurrency.currency !== 'naira' && (
+                  <View>
+                    <View style={styles.info}>
+                      <FaIcon name="info-circle" color={'#868585'} size={14} />
+                      <RegularText style={styles.infoText}>
+                        Click on the button below after depositing to the
+                        account to upload transaction receipt or teller
+                      </RegularText>
+                    </View>
+                    <Button
+                      text="I have sent the money"
+                      onPress={() => navigation.navigate('AddMoneyConfirm')}
+                    />
+                  </View>
+                )}
               </>
             )}
 
@@ -468,7 +481,16 @@ const styles = StyleSheet.create({
   copyText: {
     color: '#fff',
   },
-
+  info: {
+    flexDirection: 'row',
+    columnGap: 6,
+    marginVertical: 20,
+  },
+  infoText: {
+    textAlign: 'center',
+    color: '#868585',
+    marginTop: -3,
+  },
   label: {
     color: '#868585',
     marginBottom: 5,
@@ -571,7 +593,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontSize: 28,
     zIndex: 9,
-    top: 5,
+    top: Platform.OS === 'android' ? 8 : 12,
     left: 15,
   },
   errorMessage: {

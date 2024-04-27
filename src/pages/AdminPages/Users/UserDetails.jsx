@@ -1,8 +1,9 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../../components/PageContainer';
 import {
   ActivityIndicator,
-  Modal,
+  Dimensions,
   Pressable,
   StyleSheet,
   Text,
@@ -280,8 +281,10 @@ const styles = StyleSheet.create({
     marginVertical: 50,
   },
   blockModal: {
-    padding: 3 + '%',
-    paddingTop: 20,
+    position: 'absolute',
+    height: Dimensions.get('screen').height,
+    width: Dimensions.get('screen').width,
+    backgroundColor: '#fff',
   },
   blockHeaderText: {
     fontSize: 20,
@@ -423,110 +426,109 @@ const MessageModal = ({ showModal, setShowModal, user, blockTitle }) => {
   };
 
   return (
-    <Modal
-      visible={showModal}
-      animationType="fade"
-      onRequestClose={handleCancel}>
-      <PageContainer padding paddingTop={20} scroll>
-        <Pressable style={styles.back} onPress={handleCancel}>
-          <BackIcon />
-          <BoldText style={styles.headerText}>Back</BoldText>
-        </Pressable>
-        <BoldText style={styles.blockHeaderText}>{blockTitle} User</BoldText>
-        <BoldText style={styles.headerText}>Message Draft</BoldText>
-        <View style={styles.form}>
-          <Text style={styles.label}>Email Subject</Text>
-          <View style={styles.textInputContainer}>
-            <TextInput
-              style={{
-                ...styles.textInput,
-                borderColor: errorKey === 'subject' ? 'red' : '#ccc',
-              }}
-              onChangeText={text =>
-                setMailData(prev => {
-                  return {
-                    ...prev,
-                    subject: text,
-                  };
-                })
-              }
-              maxLength={24}
-              placeholder={`Account ${
-                blockTitle.toLowerCase().startsWith('un')
-                  ? 'Activation'
-                  : 'Deactivation'
-              }`}
-            />
-          </View>
-          <Text style={styles.label}>Message</Text>
-          <View style={styles.textInputMessageContainer}>
+    showModal && (
+      <View style={styles.blockModal} onRequestClose={handleCancel}>
+        <PageContainer padding paddingTop={20} scroll>
+          <Pressable style={styles.back} onPress={handleCancel}>
+            <BackIcon />
+            <BoldText style={styles.headerText}>Back</BoldText>
+          </Pressable>
+          <BoldText style={styles.blockHeaderText}>{blockTitle} User</BoldText>
+          <BoldText style={styles.headerText}>Message Draft</BoldText>
+          <View style={styles.form}>
+            <Text style={styles.label}>Email Subject</Text>
             <View style={styles.textInputContainer}>
               <TextInput
                 style={{
                   ...styles.textInput,
-                  ...styles.textInputMessage,
-                  borderColor: errorKey === 'message' ? 'red' : '#ccc',
+                  borderColor: errorKey === 'subject' ? 'red' : '#ccc',
                 }}
-                onChangeText={text => {
+                onChangeText={text =>
                   setMailData(prev => {
                     return {
                       ...prev,
-                      message: text,
+                      subject: text,
                     };
-                  });
-                  setErrorMessage('');
-                  setErrorKey('');
-                }}
-                multiline
-                textAlignVertical="top"
+                  })
+                }
+                maxLength={24}
+                placeholder={`Account ${
+                  blockTitle.toLowerCase().startsWith('un')
+                    ? 'Activation'
+                    : 'Deactivation'
+                }`}
               />
             </View>
-          </View>
-          <ErrorMessage errorMessage={errorMessage} />
-          {blockTitle === 'Suspend' && (
-            <View style={styles.suspend}>
-              <BoldText style={styles.suspendHeaderText}>
-                Suspend End date
-              </BoldText>
-              {showPicker && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={endDate || new Date(Date.now())}
-                  onChange={handleDatePicker}
+            <Text style={styles.label}>Message</Text>
+            <View style={styles.textInputMessageContainer}>
+              <View style={styles.textInputContainer}>
+                <TextInput
+                  style={{
+                    ...styles.textInput,
+                    ...styles.textInputMessage,
+                    borderColor: errorKey === 'message' ? 'red' : '#ccc',
+                  }}
+                  onChangeText={text => {
+                    setMailData(prev => {
+                      return {
+                        ...prev,
+                        message: text,
+                      };
+                    });
+                    setErrorMessage('');
+                    setErrorKey('');
+                  }}
+                  multiline
+                  textAlignVertical="top"
                 />
-              )}
-              <Pressable
-                onPress={() => setShowPicker('start')}
-                style={styles.textInputContainer}>
-                <View
-                  style={{ ...styles.textInput, ...styles.textInputStyles }}>
-                  <View style={styles.dateTextContainer}>
-                    <View style={styles.calendarIcon}>
-                      <CalendarIcon width={30} height={30} />
-                      <RegularText style={styles.newDate}>
-                        {endDate ? endDate.getDate() : new Date().getDate()}
-                      </RegularText>
-                    </View>
-                    <RegularText>{endDateLabel}</RegularText>
-                  </View>
-                </View>
-              </Pressable>
+              </View>
             </View>
-          )}
+            <ErrorMessage errorMessage={errorMessage} />
+            {blockTitle === 'Suspend' && (
+              <View style={styles.suspend}>
+                <BoldText style={styles.suspendHeaderText}>
+                  Suspend End date
+                </BoldText>
+                {showPicker && (
+                  <DateTimePicker
+                    testID="dateTimePicker"
+                    value={endDate || new Date(Date.now())}
+                    onChange={handleDatePicker}
+                  />
+                )}
+                <Pressable
+                  onPress={() => setShowPicker('start')}
+                  style={styles.textInputContainer}>
+                  <View
+                    style={{ ...styles.textInput, ...styles.textInputStyles }}>
+                    <View style={styles.dateTextContainer}>
+                      <View style={styles.calendarIcon}>
+                        <CalendarIcon width={30} height={30} />
+                        <RegularText style={styles.newDate}>
+                          {endDate ? endDate.getDate() : new Date().getDate()}
+                        </RegularText>
+                      </View>
+                      <RegularText>{endDateLabel}</RegularText>
+                    </View>
+                  </View>
+                </Pressable>
+              </View>
+            )}
 
-          <View style={styles.modalButton}>
-            <Button
-              text={`${blockTitle} and Send`}
-              onPress={() => handleSendMessage('send')}
-            />
-            <Button
-              text={`${blockTitle}`}
-              onPress={() => handleSendMessage('block')}
-            />
-            <Button text={`Cancel ${blockTitle}`} onPress={handleCancel} />
+            <View style={styles.modalButton}>
+              <Button
+                text={`${blockTitle} and Send`}
+                onPress={() => handleSendMessage('send')}
+              />
+              <Button
+                text={`${blockTitle}`}
+                onPress={() => handleSendMessage('block')}
+              />
+              <Button text={`Cancel ${blockTitle}`} onPress={handleCancel} />
+            </View>
           </View>
-        </View>
-      </PageContainer>
-    </Modal>
+        </PageContainer>
+      </View>
+    )
   );
 };

@@ -139,6 +139,7 @@ const Success = ({ navigation, route }) => {
             isCredit={isCredit}
             type={type}
             token={token}
+            date={transaction.createdAt || Date.now()}
           />
         </View>
         <View style={styles.buttons}>

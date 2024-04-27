@@ -32,27 +32,28 @@ const Reports = ({ navigation }) => {
       </View>
 
       {reports.length ? (
-        <View style={styles.report}>
+        <View>
           {reports.map(report => (
             <Pressable
               key={report._id}
+              style={styles.report}
               onPress={() =>
                 navigation.navigate('ReportIndex', report.metadata)
               }>
               <View style={styles.row}>
-                <BoldText>Title:</BoldText>
+                <BoldText>Title: </BoldText>
                 <BoldText>{report.title}</BoldText>
               </View>
               <View style={styles.row}>
-                <BoldText>Message:</BoldText>
+                <BoldText>Message: </BoldText>
                 <BoldText>{report.message}</BoldText>
               </View>
               <View style={styles.row}>
-                <BoldText>Transaction ID:</BoldText>
+                <BoldText>Transaction ID: </BoldText>
                 <BoldText>{report.id}</BoldText>
               </View>
               <View style={styles.row}>
-                <BoldText>Date:</BoldText>
+                <BoldText>Date: </BoldText>
                 <BoldText>
                   {new Date(report.createdAt).toLocaleDateString() + ' '}
                   {new Date(report.createdAt).toLocaleTimeString()}
@@ -101,10 +102,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
     padding: 10,
     borderRadius: 5,
+    paddingRight: 50,
   },
   row: {
     flexDirection: 'row',
     marginBottom: 10,
+    width: 100 + '%',
   },
   empty: {
     alignItems: 'center',

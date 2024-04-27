@@ -7,6 +7,7 @@ import {
   View,
   Modal,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { AppContext } from '../../components/AppContext';
 import PageContainer from '../../components/PageContainer';
@@ -362,10 +363,7 @@ const SwapFunds = ({ navigation }) => {
                   style={styles.swapOverlay}
                   onPress={() => setShowSwapFromCurrencies(false)}
                 />
-                <View
-                  style={{
-                    ...styles.swapCurrencies,
-                  }}>
+                <View style={styles.swapCurrencies}>
                   {allCurrencies
                     .filter(i => i.currency !== swapFrom.currency)
                     .map(currency => (
@@ -473,28 +471,24 @@ const SwapFunds = ({ navigation }) => {
           </View>
           <View style={styles.swapInputContainer}>
             <View>
-              <View>
-                <RegularText style={styles.label}>Amount to swap</RegularText>
-              </View>
-              <View style={styles.textInputContainer}>
-                <BoldText style={styles.symbol}>{swapFrom.symbol}</BoldText>
-                <TextInput
-                  style={{
-                    ...styles.textInput,
-                    ...styles.toReceive,
-                    paddingLeft:
-                      swapFrom.symbol.length * 20 > 50
-                        ? swapFrom.symbol.length * 20
-                        : 50,
-                    borderColor: errorKey ? 'red' : '#ccc',
-                  }}
-                  inputMode="decimal"
-                  onChangeText={text => handlePriceInput(text)}
-                  onBlur={handleAutoFill}
-                  value={value}
-                  placeholder="Amount to swap"
-                  placeholderTextColor={'#525252'}
-                />
+              <RegularText style={styles.label}>Amount to swap</RegularText>
+              <View
+                style={{ ...styles.textInputContainer, ...styles.toReceive }}>
+                <View style={styles.symbolContainer}>
+                  <BoldText style={styles.symbol}>{swapFrom.symbol}</BoldText>
+                  <TextInput
+                    style={{
+                      ...styles.textInput,
+                      borderColor: errorKey ? 'red' : '#ccc',
+                    }}
+                    inputMode="decimal"
+                    onChangeText={text => handlePriceInput(text)}
+                    onBlur={handleAutoFill}
+                    value={value}
+                    placeholder="Amount to swap"
+                    placeholderTextColor={'#525252'}
+                  />
+                </View>
                 <View style={styles.fee}>
                   <RegularText style={styles.feeText}>
                     Service Charge
@@ -504,38 +498,40 @@ const SwapFunds = ({ navigation }) => {
                     {addingDecimal(fee.toLocaleString())}
                   </RegularText>
                 </View>
-                <TouchableOpacity
-                  style={styles.swapAll}
-                  onPress={() => {
-                    handlePriceInput(swapFrom.balance.toFixed(2));
-                    handleAutoFill({ params: swapFrom.balance.toFixed(2) });
-                  }}>
-                  <BoldText style={styles.swapAllText}>
-                    Swap all {swapFrom.acronym} balance to {swapTo.acronym}
-                  </BoldText>
-                </TouchableOpacity>
-                {errorMessage && (
-                  <ErrorMessage
-                    errorMessage={errorMessage}
-                    style={styles.errorMessage}
-                  />
-                )}
               </View>
-            </View>
-            <RegularText style={styles.label}>
-              Amount you will receive
-            </RegularText>
-            <View style={styles.textInputContainer}>
-              <BoldText style={styles.symbol}>{swapTo.symbol}</BoldText>
-              <View
-                style={{
-                  ...styles.textInput,
-                  paddingLeft:
-                    swapTo.symbol.length * 20 > 50
-                      ? swapTo.symbol.length * 20
-                      : 50,
+              <TouchableOpacity
+                style={styles.swapAll}
+                onPress={() => {
+                  handlePriceInput(swapFrom.balance.toFixed(2));
+                  handleAutoFill({ params: swapFrom.balance.toFixed(2) });
                 }}>
-                <RegularText>{toReceive || 'Amount to receive'}</RegularText>
+                <BoldText style={styles.swapAllText}>
+                  Swap all {swapFrom.acronym} balance to {swapTo.acronym}
+                </BoldText>
+              </TouchableOpacity>
+              {errorMessage && (
+                <ErrorMessage
+                  errorMessage={errorMessage}
+                  style={styles.errorMessage}
+                />
+              )}
+            </View>
+            <View>
+              <RegularText style={styles.label}>
+                Amount you will receive
+              </RegularText>
+              <View style={styles.textInputContainer}>
+                <View style={styles.symbolContainer}>
+                  <BoldText style={styles.symbol}>{swapTo.symbol}</BoldText>
+                  <View
+                    style={{
+                      ...styles.textInput,
+                    }}>
+                    <RegularText>
+                      {toReceive || 'Amount to receive'}
+                    </RegularText>
+                  </View>
+                </View>
               </View>
             </View>
           </View>
@@ -733,7 +729,7 @@ const styles = StyleSheet.create({
   },
   swapCurrencies: {
     position: 'absolute',
-    top: 245,
+    top: Platform.OS === 'android' ? 240 : 285,
     width: 50.5 + '%',
     paddingVertical: 10 + '%',
     paddingHorizontal: 10 + '%',
@@ -766,50 +762,50 @@ const styles = StyleSheet.create({
   swapAll: {
     backgroundColor: '#1e1e1e',
     marginTop: 20,
-    padding: 10,
     borderRadius: 15,
     alignSelf: 'flex-start',
+    height: 35,
+    justifyContent: 'center',
   },
   swapAllText: {
+    padding: 10,
     color: '#fff',
     textAlign: 'center',
   },
   swapInputContainer: {
     paddingHorizontal: 5 + '%',
-    marginTop: 30,
+    gap: 30,
   },
   textInputContainer: {
-    position: 'relative',
-    marginBottom: 40,
     marginTop: 10,
-  },
-  textInput: {
     borderRadius: 15,
     backgroundColor: '#eee',
-    height: 55,
-    padding: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 10,
     fontFamily: 'OpenSans-600',
-    paddingVertical: 10,
     borderWidth: 1,
     borderColor: '#ccc',
+  },
+  symbolContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  flexDirection: 'row',
+  textInput: {
+    flex: 1,
+    height: 55,
+    fontFamily: 'OpenSans-600',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    justifyContent: 'center',
   },
   errorMessage: {
     marginTop: 20,
   },
   toReceive: {
-    borderBottomRightRadius: 0,
-    borderBottomLeftRadius: 0,
+    borderBottomWidth: 0,
   },
   symbol: {
-    position: 'absolute',
+    paddingLeft: 15,
     fontSize: 18,
-    zIndex: 9,
-    top: 15,
-    left: 15,
     color: '#525252',
   },
   fee: {
@@ -928,7 +924,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     justifyContent: 'flex-end',
-    marginBottom: 30,
+    marginVertical: 30,
   },
   modalButton: {
     marginTop: 2 + '%',

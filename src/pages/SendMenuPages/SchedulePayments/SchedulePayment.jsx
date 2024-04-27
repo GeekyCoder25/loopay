@@ -13,7 +13,6 @@ import {
 import RegularText from '../../../components/fonts/RegularText';
 import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
 import { AppContext } from '../../../components/AppContext';
-import { useWalletContext } from '../../../context/WalletContext';
 import Button from '../../../components/Button';
 import Back from '../../../components/Back';
 import ErrorMessage from '../../../components/ErrorMessage';

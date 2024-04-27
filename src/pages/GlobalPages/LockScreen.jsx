@@ -386,7 +386,7 @@ const LockScreen = () => {
 
 const styles = StyleSheet.create({
   lockScreen: {
-    zIndex: 99999,
+    zIndex: 999999,
     position: 'absolute',
     height: Dimensions.get('screen').height,
     width: Dimensions.get('screen').width,

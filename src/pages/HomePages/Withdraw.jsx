@@ -370,7 +370,7 @@ const Withdraw = ({ navigation }) => {
                 </View>
               </View>
               <ErrorMessage errorMessage={errorMessage} />
-              <View style={styles.feeTextInputContainer}>
+              {/* <View style={styles.feeTextInputContainer}>
                 <View style={styles.feeTextInput}>
                   <RegularText>Send money to other banks</RegularText>
                 </View>
@@ -383,7 +383,7 @@ const Withdraw = ({ navigation }) => {
                     {addingDecimal(`${fee}`)}
                   </RegularText>
                 </View>
-              </View>
+              </View> */}
               <View style={styles.button}>
                 <Button text="Send" onPress={handleWithdraw} />
               </View>

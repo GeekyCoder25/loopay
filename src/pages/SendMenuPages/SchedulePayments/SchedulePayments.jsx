@@ -12,7 +12,6 @@ import PageContainer from '../../../components/PageContainer';
 import BoldText from '../../../components/fonts/BoldText';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import FaIcon from '@expo/vector-icons/FontAwesome';
-import { deleteFetchData, getFetchData } from '../../../../utils/fetchAPI';
 import RegularText from '../../../components/fonts/RegularText';
 import { allCurrencies } from '../../../database/data';
 import Phone from '../../../../assets/images/airtime.svg';
@@ -20,8 +19,10 @@ import BillIcon from '../../../../assets/images/bill.svg';
 import SchedulePayment from './SchedulePayment';
 import ToastMessage from '../../../components/ToastMessage';
 import { addingDecimal } from '../../../../utils/AddingZero';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const SchedulePayments = ({ navigation }) => {
+  const { getFetchData, deleteFetchData } = useFetchData();
   const [addNew, setAddNew] = useState(false);
   const [schedules, setSchedules] = useState([]);
   const [isLocalLoading, setIsLocalLoading] = useState(true);
@@ -44,6 +45,7 @@ const SchedulePayments = ({ navigation }) => {
         setIsLocalLoading(false);
       }, 1000);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const schedulesType = [

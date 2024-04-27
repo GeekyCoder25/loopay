@@ -3,13 +3,14 @@ import { useContext, useEffect, useState } from 'react';
 import BoldText from '../../../components/fonts/BoldText';
 import PageContainer from '../../../components/PageContainer';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { deleteFetchData, getFetchData } from '../../../../utils/fetchAPI';
 import ToastMessage from '../../../components/ToastMessage';
 import { AppContext } from '../../../components/AppContext';
 import MaIcon from '@expo/vector-icons/MaterialIcons';
 import RegularText from '../../../components/fonts/RegularText';
+import useFetchData from '../../../../utils/fetchAPI';
 
 const Beneficiaries = () => {
+  const { getFetchData } = useFetchData();
   const { selectedCurrency } = useContext(AppContext);
   const [selectedTab, setSelectedTab] = useState('loopay');
   const [loopayBeneficiaries, setLoopayBeneficiaries] = useState([]);
@@ -33,6 +34,7 @@ const Beneficiaries = () => {
             : ToastMessage(response.data),
         )
         .catch(err => ToastMessage(err.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCurrency, selectedTab]);
 
   return (
@@ -84,10 +86,10 @@ const Beneficiaries = () => {
             ))}
           {selectedTab === 'others' &&
             (otherBeneficiaries.length ? (
-              otherBeneficiaries.map(loopay => (
+              otherBeneficiaries.map(other => (
                 <OtherBeneficiary
-                  key={loopay.tagName}
-                  beneficiary={loopay}
+                  key={other.bankCode + other.accNo}
+                  beneficiary={other}
                   setBeneficiaries={setOtherBeneficiaries}
                 />
               ))
@@ -139,6 +141,7 @@ const styles = StyleSheet.create({
 export default Beneficiaries;
 
 const LoopayBeneficiary = ({ beneficiary, setBeneficiaries }) => {
+  const { deleteFetchData } = useFetchData();
   const { accNo, fullName, tagName } = beneficiary;
 
   const handleDelete = async () => {
@@ -168,6 +171,7 @@ const LoopayBeneficiary = ({ beneficiary, setBeneficiaries }) => {
   );
 };
 const OtherBeneficiary = ({ beneficiary, setBeneficiaries }) => {
+  const { deleteFetchData } = useFetchData();
   const { accNo, bankName, name } = beneficiary;
 
   const handleDelete = async () => {

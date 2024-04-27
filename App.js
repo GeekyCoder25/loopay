@@ -1,4 +1,3 @@
-// import 'expo-dev-client';
 import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import {
@@ -232,7 +231,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     padding: 8,
-    position: 'absolute',
+    position: Platform.OS === 'android' ? 'absolute' : 'relative',
     zIndex: 1,
     width: 100 + '%',
   },

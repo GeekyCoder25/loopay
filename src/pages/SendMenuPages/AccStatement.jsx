@@ -94,13 +94,19 @@ const AccStatement = () => {
     totalCredit = totalCredit.length ? totalCredit?.reduce((a, b) => a + b) : 0;
 
     let totalDebit = data
-      .filter(index => index.transactionType !== 'credit')
+      .filter(
+        index =>
+          index.transactionType === 'debit' ||
+          index.transactionType === 'airtime' ||
+          index.transactionType === 'data' ||
+          index.transactionType === 'bill',
+      )
       .map(index => Number(index.amount));
     totalDebit = totalDebit.length ? totalDebit?.reduce((a, b) => a + b) : 0;
 
     const asideItems = [
       { label: 'Name', value: appData.userProfile.fullName.toUpperCase() },
-      { label: 'Account Number', value: wallet.loopayAccNo },
+      { label: 'Account Number', value: wallet.accNo },
       { label: 'Tag Name', value: '#' + appData.tagName },
       {
         label: 'Currency',
@@ -148,7 +154,18 @@ const AccStatement = () => {
               margin-bottom: 30px;
               border-bottom: 0.5px solid grey;
               padding-bottom: 50px;
-              gap: 20px;
+              gap: 10px;
+            }
+            .logo .logoImage {
+              background-color: #000;
+              justify-content: center;
+              align-items: center;
+              display: flex;
+              min-width: 70px;
+              min-height: 70px;
+              width :70px;
+              height: 70px;
+              border-radius: 50%;
             }
             .logo span {
               margin-left: auto;
@@ -158,7 +175,7 @@ const AccStatement = () => {
               flex-direction: column;
               margin-left: auto;
               margin-bottom: 100px;
-              gap: 25px;
+              gap: 20px;
             }
 
             aside div {
@@ -198,10 +215,12 @@ const AccStatement = () => {
         </head>
         <body>
           <div class="logo">
-            <img
-              src="https://res.cloudinary.com/geekycoder/image/upload/v1688782340/loopay/logo.png"
-              style="width: 50px; height: 50px; border-radius: 50%"
-              alt="icon" />
+            <div class="logoImage">
+              <img
+                src="https://res.cloudinary.com/geekycoder/image/upload/v1688782340/loopay/logo.png"
+                style="width: 50px; height: 50px; border-radius: 50%;"
+                alt="icon" />
+            </div>
             <img
               src="https://res.cloudinary.com/geekycoder/image/upload/v1688782340/loopay/appIcon.png"
               style="width: 200px; margin: 50px 0"
@@ -268,33 +287,37 @@ const AccStatement = () => {
                           </td>
                         </tr>
                       `
-                    : String.raw`
-                        <tr>
-                          <td>
-                            <p style="margin: 0; padding-bottom: 2px">
-                              ${new Date(element.createdAt).toLocaleDateString(
-                                'en-US',
-                                dateOptions,
-                              )}
-                            </p>
-                            <p style="margin: 0; padding-bottom: 2px">
-                              ${new Date(
-                                element.createdAt,
-                              ).toLocaleTimeString()}
-                            </p>
-                          </td>
-                          <td>
-                            ${
-                              selectedCurrency.symbol +
-                              ' ' +
-                              addingDecimal(
-                                Number(element.amount).toLocaleString(),
-                              )
-                            }
-                          </td>
-                          <td></td>
-                        </tr>
-                      `;
+                    : element.transactionType === 'debit' ||
+                        element.transactionType === 'airtime' ||
+                        element.transactionType === 'data' ||
+                        element.transactionType === 'bill'
+                      ? String.raw`
+                          <tr>
+                            <td>
+                              <p style="margin: 0; padding-bottom: 2px">
+                                ${new Date(
+                                  element.createdAt,
+                                ).toLocaleDateString('en-US', dateOptions)}
+                              </p>
+                              <p style="margin: 0; padding-bottom: 2px">
+                                ${new Date(
+                                  element.createdAt,
+                                ).toLocaleTimeString()}
+                              </p>
+                            </td>
+                            <td>
+                              ${
+                                selectedCurrency.symbol +
+                                ' ' +
+                                addingDecimal(
+                                  Number(element.amount).toLocaleString(),
+                                )
+                              }
+                            </td>
+                            <td></td>
+                          </tr>
+                        `
+                      : '';
                 })
                 .join('')}
               <tr>
@@ -335,6 +358,7 @@ const AccStatement = () => {
         </body>
       </html>
     `;
+
     createPDF(html, saveType);
     // } else {
     createCSV();
@@ -518,6 +542,7 @@ const styles = StyleSheet.create({
   body: {
     gap: 15,
     paddingHorizontal: 5 + '%',
+    paddingBottom: 50,
   },
   headerText: {
     fontSize: 24,
@@ -528,12 +553,7 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-600',
   },
   selectCurrencyContainer: {
-    marginTop: 20,
-    marginBottom: 40,
-  },
-  textInputContainer: {
-    marginTop: 10,
-    marginBottom: 0,
+    marginBottom: 20,
   },
   textInput: {
     borderRadius: 5,
@@ -551,7 +571,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 15,
     height: 60,
-    marginBottom: 30,
+    marginBottom: 20,
   },
   dateTextContainer: {
     flexDirection: 'row',

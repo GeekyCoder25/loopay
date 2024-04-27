@@ -60,7 +60,6 @@ export default function SelectInputField({
     }
     onChange && onChange({ inputText });
   };
-
   const handleOpenModal = () => {
     const currentIndex = Object.keys(stateFields).indexOf(id);
     const previousIndex = currentIndex - 1 < 0 ? 0 : currentIndex - 1;
@@ -96,7 +95,7 @@ export default function SelectInputField({
       return ToastMessage(
         previousType === 'select'
           ? `Please select ${previousTitle.toLowerCase()} field first`
-          : '',
+          : `Please input ${previousTitle.toLowerCase()} field first`,
       );
     }
     !modalData.length &&
@@ -147,7 +146,7 @@ export default function SelectInputField({
             onChangeText={text => handleChangeText(text)}
             placeholder={placeholder}
             onBlur={handleBlur}
-            value={inputText}
+            value={inputText || ''}
           />
         </View>
       ) : (

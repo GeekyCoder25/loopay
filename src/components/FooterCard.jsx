@@ -18,6 +18,7 @@ const FooterCard = ({
   reference,
   isCredit,
   type,
+  date,
 }) => {
   const { selectedCurrency } = useContext(AppContext);
   amountInput = addingDecimal(
@@ -31,6 +32,9 @@ const FooterCard = ({
         currencyIndex => currencyIndex.currency === airtime.currency,
       )
     : selectedCurrency;
+
+  const transactionDate = `${new Date(date).toLocaleDateString()} ${new Date(date).toLocaleTimeString()}
+  `;
 
   return (
     <View style={styles.footerCard}>
@@ -64,6 +68,10 @@ const FooterCard = ({
             <BoldText style={{ ...styles.cardValue, color: '#006E53' }}>
               {currency?.acronym} Balance
             </BoldText>
+          </View>
+          <View style={styles.cardLine}>
+            <RegularText style={styles.cardKey}>Date</RegularText>
+            <BoldText style={styles.cardValue}>{transactionDate}</BoldText>
           </View>
           {/* <View style={styles.cardLine}>
             <RegularText style={styles.cardKey}>Transaction Fee</RegularText>
@@ -135,6 +143,10 @@ const FooterCard = ({
                 currency?.acronym + ' Balance'
               )}
             </BoldText>
+          </View>
+          <View style={styles.cardLine}>
+            <RegularText style={styles.cardKey}>Date</RegularText>
+            <BoldText style={styles.cardValue}>{transactionDate}</BoldText>
           </View>
         </View>
       )}
