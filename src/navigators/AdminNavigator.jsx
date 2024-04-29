@@ -23,6 +23,8 @@ import UsersNavigator from '../pages/AdminPages/Users/UsersNavigator';
 import ProofNavigator from '../pages/AdminPages/Proof/ProofNavigator';
 import ServerAPIs from '../pages/AdminPages/ServerAPIs';
 import ReportNavigator from '../pages/AdminPages/Reports/ReportNavigator';
+import UserDetails from '../pages/AdminPages/Users/UserDetails';
+import UserTransaction from '../pages/AdminPages/Users/UserTransaction';
 
 const AdminNavigator = () => {
   const Drawer = createDrawerNavigator();
@@ -69,6 +71,17 @@ const AdminNavigator = () => {
           component={UsersNavigator}
           options={{ headerShown: false }}
         />
+        <Drawer.Screen
+          name="UserDetails"
+          component={UserDetails}
+          options={{ headerShown: false }}
+        />
+        <Drawer.Screen
+          name="UserTransaction"
+          component={UserTransaction}
+          options={{ headerShown: false }}
+        />
+
         <Drawer.Screen name="History" component={History} />
         <Drawer.Screen name="Statement" component={Statement} />
         <Drawer.Screen name="Verifications" component={Verifications} />

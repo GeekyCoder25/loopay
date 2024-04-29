@@ -36,6 +36,7 @@ const UserDetails = ({ navigation, route }) => {
   useEffect(() => {
     const getUser = async () => {
       try {
+        setIsLoading(true);
         const response = await getFetchData(`admin/user/${email}`);
         if (response.status === 200) {
           setUser(response.data);
@@ -263,7 +264,7 @@ const styles = StyleSheet.create({
   loading: {
     flex: 1,
     justifyContent: 'center',
-    marginTop: -100,
+    alignItems: 'center',
   },
   row: {
     flexDirection: 'row',

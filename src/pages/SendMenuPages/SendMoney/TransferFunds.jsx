@@ -28,6 +28,7 @@ import { useBeneficiaryContext } from '../../../context/BeneficiariesContext';
 import RecurringSwitch from '../../../components/RecurringSwitch';
 import SchedulePayment from '../SchedulePayments/SchedulePayment';
 import useFetchData from '../../../../utils/fetchAPI';
+import { allCurrencies } from '../../../database/data';
 
 const TransferFunds = ({ navigation, route }) => {
   const { postFetchData } = useFetchData();
@@ -100,6 +101,7 @@ const TransferFunds = ({ navigation, route }) => {
         description,
         senderPhoto: appData.photoURL,
         id: randomUUID(),
+        allCurrencies,
         scheduleData,
       });
       if (response.status === 200) {

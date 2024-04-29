@@ -13,14 +13,12 @@ import BoldText from '../../../components/fonts/BoldText';
 import { allCurrencies } from '../../../database/data';
 import { AppContext } from '../../../components/AppContext';
 import ToastMessage from '../../../components/ToastMessage';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import BackIcon from '../../../../assets/images/backArrow.svg';
 import ChevronDown from '../../../../assets/images/chevron-down-fill.svg';
 import RegularText from '../../../components/fonts/RegularText';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import { groupTransactionsByDate } from '../../../../utils/groupTransactions';
-import TransactionHistoryParams from '../../MenuPages/TransactionHistoryParams';
-import Back from '../../../components/Back';
 import { networkProvidersIcon } from '../../SendMenuPages/AirtimeTopUp/BuyAirtime';
 import { billIcon } from '../../MenuPages/TransactionHistory';
 import FilterModal from '../../../components/FilterModal';
@@ -38,8 +36,8 @@ const Transactions = ({ navigation, route }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState('');
   const [label2, setLabel2] = useState('');
-  const [modalData, setModalData] = useState(null);
-  const [transactionsModal, setTransactionsModal] = useState(false);
+  // const [modalData, setModalData] = useState(null);
+  // const [transactionsModal, setTransactionsModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [isLocalLoading, setIsLocalLoading] = useState(false);
@@ -215,8 +213,6 @@ const Transactions = ({ navigation, route }) => {
                   transaction={item}
                   navigation={navigation}
                   setTransactions={setSelectedTransaction}
-                  setTransactionsModal={setTransactionsModal}
-                  setModalData={setModalData}
                 />
               )}
               keyExtractor={({ _id, transactionType }) => transactionType + _id}
@@ -274,8 +270,6 @@ const Transactions = ({ navigation, route }) => {
                           transaction={item}
                           navigation={navigation}
                           setTransactions={setSelectedTransaction}
-                          setTransactionsModal={setTransactionsModal}
-                          setModalData={setModalData}
                         />
                       )}
                       keyExtractor={({ _id, transactionType }) =>
@@ -370,7 +364,7 @@ const Transactions = ({ navigation, route }) => {
             </View>
           </>
         )}
-        <Modal
+        {/* <Modal
           visible={transactionsModal}
           animationType="fade"
           onRequestClose={() => {
@@ -383,8 +377,11 @@ const Transactions = ({ navigation, route }) => {
               setModalData(null);
             }}
           />
-          <TransactionHistoryParams route={{ params: modalData }} />
-        </Modal>
+          <TransactionHistoryParams
+            route={{ params: modalData }}
+            navigation={navigation}
+          />
+        </Modal> */}
         <Modal
           visible={modalOpen}
           animationType="slide"
@@ -629,188 +626,198 @@ const styles = StyleSheet.create({
 });
 export default Transactions;
 
-const Transaction = memo(
-  ({ transaction, setTransactions, setTransactionsModal, setModalData }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const {
-      amount,
-      currency,
-      transferCode,
-      reference,
-      senderName,
-      senderPhoto,
-      status,
-      transactionType,
-      receiverPhoto,
-      receiverName,
-      receiverAccount,
-      senderAccount,
-      networkProvider,
-      debitAccount,
-      dataPlan,
-      billType,
-      billName,
-    } = transaction;
+const Transaction = memo(({ transaction, setTransactions }) => {
+  const navigation = useNavigation();
+  const { isAdmin } = useContext(AppContext);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const {
+    amount,
+    currency,
+    email,
+    transferCode,
+    reference,
+    senderName,
+    senderPhoto,
+    status,
+    transactionType,
+    receiverPhoto,
+    receiverName,
+    receiverAccount,
+    senderAccount,
+    networkProvider,
+    debitAccount,
+    dataPlan,
+    billType,
+    billName,
+  } = transaction;
 
-    const currencySymbol = allCurrencies.find(
-      id => currency === id.currency || currency === id.acronym,
-    )?.symbol;
+  const currencySymbol = allCurrencies.find(
+    id => currency === id.currency || currency === id.acronym,
+  )?.symbol;
 
-    const accountDebited =
-      transactionType === 'credit'
-        ? receiverAccount
-        : transactionType === 'debit'
-          ? senderAccount
-          : debitAccount;
+  const accountDebited =
+    transactionType === 'credit'
+      ? receiverAccount
+      : transactionType === 'debit'
+        ? senderAccount
+        : debitAccount;
 
-    return (
-      <View style={styles.expanded}>
-        <Pressable
-          onPress={() => {
-            setModalData(transaction);
-            setTransactionsModal(true);
-          }}
-          style={styles.transaction}>
-          {transactionType?.toLowerCase() === 'credit' && (
-            <>
+  return (
+    <View style={styles.expanded}>
+      <Pressable
+        onPress={() => {
+          navigation.navigate('TransactionHistoryParams', transaction);
+        }}
+        style={styles.transaction}>
+        {transactionType?.toLowerCase() === 'credit' && (
+          <>
+            <Pressable
+              onPress={() =>
+                isAdmin && navigation.navigate('UserDetails', { email })
+              }>
               <UserIcon uri={senderPhoto} />
-              <View style={styles.historyContent}>
-                <BoldText>{senderName}</BoldText>
-                <RegularText>Transfer</RegularText>
-              </View>
-              <Pressable
-                onPress={() => setIsExpanded(prev => !prev)}
-                style={styles.pendingContainer}>
-                <View style={styles.amount}>
-                  <BoldText style={styles.creditAmount}>
-                    +
-                    {currencySymbol +
-                      addingDecimal(Number(amount).toLocaleString())}
-                  </BoldText>
-                  <RegularText>{accountDebited}</RegularText>
-                </View>
-                {status === 'pending' && (
-                  <Pressable
-                    onPress={() => setIsExpanded(prev => !prev)}
-                    style={{
-                      transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
-                    }}>
-                    <ChevronDown />
-                  </Pressable>
-                )}
-              </Pressable>
-            </>
-          )}
-          {transactionType?.toLowerCase() === 'debit' && (
-            <>
-              <UserIcon uri={receiverPhoto} />
-              <View style={styles.historyContent}>
-                <BoldText>{receiverName}</BoldText>
-                <RegularText>Transfer</RegularText>
-              </View>
-              <Pressable
-                onPress={() => setIsExpanded(prev => !prev)}
-                style={styles.pendingContainer}>
-                <View style={styles.amount}>
-                  <BoldText style={styles.debitAmount}>
-                    -
-                    {currencySymbol +
-                      addingDecimal(Number(amount).toLocaleString())}
-                  </BoldText>
-                  <RegularText>{accountDebited}</RegularText>
-                </View>
-                {status === 'pending' && (
-                  <Pressable
-                    onPress={() => setIsExpanded(prev => !prev)}
-                    style={{
-                      transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
-                    }}>
-                    <ChevronDown />
-                  </Pressable>
-                )}
-              </Pressable>
-            </>
-          )}
-          {transactionType?.toLowerCase() === 'airtime' && (
-            <>
-              {networkProvidersIcon(networkProvider)}
-              <View style={styles.historyContent}>
-                <BoldText style={styles.historyTitle}>
-                  {networkProvider} - {transaction.rechargePhoneNo}
-                </BoldText>
-                <RegularText>Airtime Recharge</RegularText>
-              </View>
+            </Pressable>
+            <View style={styles.historyContent}>
+              <BoldText>{senderName}</BoldText>
+              <RegularText>Transfer</RegularText>
+            </View>
+            <Pressable
+              onPress={() => setIsExpanded(prev => !prev)}
+              style={styles.pendingContainer}>
               <View style={styles.amount}>
-                <BoldText style={styles.debitAmount}>
-                  -
+                <BoldText style={styles.creditAmount}>
+                  +
                   {currencySymbol +
                     addingDecimal(Number(amount).toLocaleString())}
                 </BoldText>
-                <RegularText> {accountDebited}</RegularText>
-                {status === 'pending' && (
-                  <Pressable
-                    onPress={() => setIsExpanded(prev => !prev)}
-                    style={{
-                      transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
-                    }}>
-                    <ChevronDown />
-                  </Pressable>
-                )}
+                <RegularText>{accountDebited}</RegularText>
               </View>
-            </>
-          )}
-          {transactionType?.toLowerCase() === 'data' && (
-            <>
-              {networkProvidersIcon(networkProvider)}
-              <View style={styles.historyContent}>
-                <BoldText style={styles.historyTitle}>
-                  {networkProvider} - {transaction.rechargePhoneNo}
-                </BoldText>
-                <RegularText>Data Recharge - {dataPlan.value}</RegularText>
-              </View>
-              <View style={styles.amount}>
-                <BoldText style={styles.debitAmount}>
-                  -
-                  {currencySymbol +
-                    addingDecimal(Number(amount).toLocaleString())}
-                </BoldText>
-                <RegularText> {accountDebited}</RegularText>
-              </View>
-            </>
-          )}
-
-          {transactionType?.toLowerCase() === 'bill' && (
-            <>
-              <View style={styles.historyIconText}>{billIcon(billType)}</View>
-              <View style={styles.historyContent}>
-                <BoldText style={styles.historyTitle}>{billName} </BoldText>
-                <RegularText style={styles.historyTitle}>
-                  {billType} bill
-                </RegularText>
-              </View>
-              <View style={styles.amount}>
-                <BoldText style={styles.debitAmount}>
-                  -
-                  {currencySymbol +
-                    addingDecimal(Number(amount).toLocaleString())}
-                </BoldText>
-                <RegularText> {accountDebited}</RegularText>
-              </View>
-            </>
-          )}
-        </Pressable>
-        {isExpanded && status === 'pending' && (
-          <ExpandedInput
-            reference={reference}
-            transferCode={transferCode}
-            transaction={transaction}
-            setTransactions={setTransactions}
-          />
+              {status === 'pending' && (
+                <Pressable
+                  onPress={() => setIsExpanded(prev => !prev)}
+                  style={{
+                    transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
+                  }}>
+                  <ChevronDown />
+                </Pressable>
+              )}
+            </Pressable>
+          </>
         )}
-      </View>
-    );
-  },
-);
+        {transactionType?.toLowerCase() === 'debit' && (
+          <>
+            <Pressable
+              onPress={() =>
+                isAdmin && navigation.navigate('UserDetails', { email })
+              }>
+              <UserIcon uri={receiverPhoto} />
+            </Pressable>
+            <View style={styles.historyContent}>
+              <BoldText>{receiverName}</BoldText>
+              <RegularText>Transfer</RegularText>
+            </View>
+            <Pressable
+              onPress={() => setIsExpanded(prev => !prev)}
+              style={styles.pendingContainer}>
+              <View style={styles.amount}>
+                <BoldText style={styles.debitAmount}>
+                  -
+                  {currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())}
+                </BoldText>
+                <RegularText>{accountDebited}</RegularText>
+              </View>
+              {status === 'pending' && (
+                <Pressable
+                  onPress={() => setIsExpanded(prev => !prev)}
+                  style={{
+                    transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
+                  }}>
+                  <ChevronDown />
+                </Pressable>
+              )}
+            </Pressable>
+          </>
+        )}
+        {transactionType?.toLowerCase() === 'airtime' && (
+          <>
+            {networkProvidersIcon(networkProvider)}
+            <View style={styles.historyContent}>
+              <BoldText style={styles.historyTitle}>
+                {networkProvider} - {transaction.rechargePhoneNo}
+              </BoldText>
+              <RegularText>Airtime Recharge</RegularText>
+            </View>
+            <View style={styles.amount}>
+              <BoldText style={styles.debitAmount}>
+                -
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+              <RegularText> {accountDebited}</RegularText>
+              {status === 'pending' && (
+                <Pressable
+                  onPress={() => setIsExpanded(prev => !prev)}
+                  style={{
+                    transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
+                  }}>
+                  <ChevronDown />
+                </Pressable>
+              )}
+            </View>
+          </>
+        )}
+        {transactionType?.toLowerCase() === 'data' && (
+          <>
+            {networkProvidersIcon(networkProvider)}
+            <View style={styles.historyContent}>
+              <BoldText style={styles.historyTitle}>
+                {networkProvider} - {transaction.rechargePhoneNo}
+              </BoldText>
+              <RegularText>Data Recharge - {dataPlan.value}</RegularText>
+            </View>
+            <View style={styles.amount}>
+              <BoldText style={styles.debitAmount}>
+                -
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+              <RegularText> {accountDebited}</RegularText>
+            </View>
+          </>
+        )}
+
+        {transactionType?.toLowerCase() === 'bill' && (
+          <>
+            <View style={styles.historyIconText}>{billIcon(billType)}</View>
+            <View style={styles.historyContent}>
+              <BoldText style={styles.historyTitle}>{billName} </BoldText>
+              <RegularText style={styles.historyTitle}>
+                {billType} bill
+              </RegularText>
+            </View>
+            <View style={styles.amount}>
+              <BoldText style={styles.debitAmount}>
+                -
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+              <RegularText> {accountDebited}</RegularText>
+            </View>
+          </>
+        )}
+      </Pressable>
+      {isExpanded && status === 'pending' && (
+        <ExpandedInput
+          reference={reference}
+          transferCode={transferCode}
+          transaction={transaction}
+          setTransactions={setTransactions}
+        />
+      )}
+    </View>
+  );
+});
 
 const ExpandedInput = ({
   reference,

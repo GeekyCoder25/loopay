@@ -303,7 +303,6 @@ const SchedulePayment = ({
           setScheduleData(null);
         }
         setIsLoading(false);
-        console.log(response);
       } else {
         setScheduleData({ transactionType: type, ...stateFields });
         return setRecurringModal(false);

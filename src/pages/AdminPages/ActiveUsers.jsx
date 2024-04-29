@@ -17,7 +17,7 @@ import RegularText from '../../components/fonts/RegularText';
 import ChevronDown from '../../../assets/images/drop-down.svg';
 import UserIcon from '../../components/UserIcon';
 import { AppContext } from '../../components/AppContext';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import useFetchData from '../../../utils/fetchAPI';
 
@@ -401,6 +401,7 @@ const styles = StyleSheet.create({
 export default ActiveUsers;
 
 const User = ({ status, userSession, users, isSearching }) => {
+  const navigation = useNavigation();
   const user = users.find(i => i.email === userSession.email);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -477,7 +478,12 @@ const User = ({ status, userSession, users, isSearching }) => {
           <View style={styles.row}>
             <BoldText style={styles.rowKey}>User Photo</BoldText>
             <View style={styles.rowValue}>
-              <UserIcon uri={user.photoURL} />
+              <Pressable
+                onPress={() =>
+                  navigation.navigate('UserDetails', { email: user.email })
+                }>
+                <UserIcon uri={user.photoURL} />
+              </Pressable>
             </View>
           </View>
         </View>

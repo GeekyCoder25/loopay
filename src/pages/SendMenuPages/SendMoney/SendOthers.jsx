@@ -62,18 +62,21 @@ const SendOthers = ({ navigation }) => {
   });
   const [scheduleData, setScheduleData] = useState(null);
   const [hasAskedPin, setHasAskedPin] = useState(false);
+  const [isLocalLoading, setIsLocalLoading] = useState(true);
 
   useFocusEffect(
     React.useCallback(() => {
       getFetchData(
         `user/savedbanks?limit=${3}&currency=${selectedCurrency.currency},${selectedCurrency.acronym}`,
-      ).then(response => {
-        if (response.status === 200) {
-          return setAddedBanks(response.data);
-        } else {
-          setAddedBanks([]);
-        }
-      });
+      )
+        .then(response => {
+          if (response.status === 200) {
+            return setAddedBanks(response.data);
+          } else {
+            setAddedBanks([]);
+          }
+        })
+        .finally(() => setIsLocalLoading(false));
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedCurrency]),
   );
@@ -137,9 +140,11 @@ const SendOthers = ({ navigation }) => {
         setRecipientData(response.data);
         return setBankSelected(response.data);
       }
-      throw new Error(response.data);
+      throw new Error(typeof response === 'string' ? response : response.data);
     } catch (error) {
-      ToastMessage(error.message);
+      ToastMessage(
+        error.message.includes('paystack') ? 'Server error' : error.message,
+      );
     } finally {
       setIsLoading(false);
     }
@@ -242,7 +247,7 @@ const SendOthers = ({ navigation }) => {
           transaction,
         });
         setWalletRefresh(prev => !prev);
-        return 400;
+        return response.status;
       }
       typeof response === 'string'
         ? setErrorMessage(response)
@@ -251,7 +256,9 @@ const SendOthers = ({ navigation }) => {
     } catch (error) {
       console.log(error.message);
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
     }
   };
 
@@ -333,7 +340,9 @@ const SendOthers = ({ navigation }) => {
                 <View style={styles.recent}>
                   <BoldText style={styles.headerText}>Recent</BoldText>
                   <View>
-                    {addedBanks.length ? (
+                    {isLocalLoading ? (
+                      <ActivityIndicator color={'#1e1e1e'} />
+                    ) : addedBanks.length ? (
                       addedBanks.map(bank => (
                         <Pressable
                           key={bank.accNo + bank.bankName}

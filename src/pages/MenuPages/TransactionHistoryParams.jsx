@@ -23,7 +23,6 @@ import LoadingModal from '../../components/LoadingModal';
 
 const TransactionHistoryParams = ({ navigation, route }) => {
   const { postFetchData } = useFetchData();
-
   const { vh, showAmount, setShowAmount, isAdmin } = useContext(AppContext);
   const [isLocalLoading, setIsLocalLoading] = useState(false);
   const history = route.params;
@@ -34,6 +33,8 @@ const TransactionHistoryParams = ({ navigation, route }) => {
     senderPhoto,
     receiverPhoto,
     amount,
+    fromBalance,
+    toBalance,
     transactionType,
     method,
     createdAt,
@@ -256,6 +257,17 @@ const TransactionHistoryParams = ({ navigation, route }) => {
       </View>
     );
 
+  const emailFieldRow = isAdmin && (
+    <View style={styles.cardLine}>
+      <RegularText style={styles.cardKey}>Email</RegularText>
+      <Pressable
+        style={styles.cardValue}
+        onPress={() => navigation.navigate('UserDetails', { email })}>
+        <BoldText style={styles.cardValue}>{email}</BoldText>
+      </Pressable>
+    </View>
+  );
+
   return (
     <>
       <LoadingModal isLoading={isLocalLoading} />
@@ -265,7 +277,10 @@ const TransactionHistoryParams = ({ navigation, route }) => {
           {transactionType?.toLowerCase() === 'credit' && (
             <>
               <View style={styles.headerContainer}>
-                <UserIcon uri={senderPhoto} />
+                <Pressable
+                  onPress={() => navigation.navigate('UserDetails', { email })}>
+                  <UserIcon uri={senderPhoto} />
+                </Pressable>
                 <View>
                   {method ? (
                     <BoldText>{receiverName}</BoldText>
@@ -291,12 +306,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
                   </BoldText>
                 </Pressable>
                 <View style={styles.footerCardDetails}>
-                  {isAdmin && (
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>Email</RegularText>
-                      <BoldText style={styles.cardValue}>{email}</BoldText>
-                    </View>
-                  )}
+                  {emailFieldRow}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Status</RegularText>
                     {statusColor()}
@@ -318,6 +328,32 @@ const TransactionHistoryParams = ({ navigation, route }) => {
                         : '***'}
                     </BoldText>
                   </View>
+                  {isAdmin && (
+                    <View style={styles.cardLine}>
+                      <RegularText style={styles.cardKey}>
+                        From Balance
+                      </RegularText>
+                      <BoldText style={styles.cardValue}>
+                        {currencySymbol +
+                          addingDecimal(
+                            Number(fromBalance / 100).toLocaleString(),
+                          )}
+                      </BoldText>
+                    </View>
+                  )}
+                  {isAdmin && (
+                    <View style={styles.cardLine}>
+                      <RegularText style={styles.cardKey}>
+                        To Balance
+                      </RegularText>
+                      <BoldText style={styles.cardValue}>
+                        {currencySymbol +
+                          addingDecimal(
+                            Number(toBalance / 100).toLocaleString(),
+                          )}
+                      </BoldText>
+                    </View>
+                  )}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
                       Sender Name
@@ -375,7 +411,10 @@ const TransactionHistoryParams = ({ navigation, route }) => {
           {transactionType?.toLowerCase() === 'debit' && (
             <>
               <View style={styles.headerContainer}>
-                <UserIcon uri={receiverPhoto} />
+                <Pressable
+                  onPress={() => navigation.navigate('UserDetails', { email })}>
+                  <UserIcon uri={receiverPhoto} />
+                </Pressable>
                 <View>
                   <BoldText style={styles.name}>{receiverName}</BoldText>
                   <RegularText style={styles.accNo}>
@@ -397,12 +436,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
                   </BoldText>
                 </Pressable>
                 <View style={styles.footerCardDetails}>
-                  {isAdmin && (
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>Email</RegularText>
-                      <BoldText style={styles.cardValue}>{email}</BoldText>
-                    </View>
-                  )}
+                  {emailFieldRow}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Status</RegularText>
                     {statusColor()}
@@ -424,6 +458,32 @@ const TransactionHistoryParams = ({ navigation, route }) => {
                         : '***'}
                     </BoldText>
                   </View>
+                  {isAdmin && (
+                    <View style={styles.cardLine}>
+                      <RegularText style={styles.cardKey}>
+                        From Balance
+                      </RegularText>
+                      <BoldText style={styles.cardValue}>
+                        {currencySymbol +
+                          addingDecimal(
+                            Number(fromBalance / 100).toLocaleString(),
+                          )}
+                      </BoldText>
+                    </View>
+                  )}
+                  {isAdmin && (
+                    <View style={styles.cardLine}>
+                      <RegularText style={styles.cardKey}>
+                        To Balance
+                      </RegularText>
+                      <BoldText style={styles.cardValue}>
+                        {currencySymbol +
+                          addingDecimal(
+                            Number(toBalance / 100).toLocaleString(),
+                          )}
+                      </BoldText>
+                    </View>
+                  )}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
                       Receiver Name
@@ -511,12 +571,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
                   </BoldText>
                 </Pressable>
                 <View style={styles.footerCardDetails}>
-                  {isAdmin && (
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>Email</RegularText>
-                      <BoldText style={styles.cardValue}>{email}</BoldText>
-                    </View>
-                  )}
+                  {emailFieldRow}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Status</RegularText>
                     {statusColor()}
@@ -604,12 +659,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
                   </BoldText>
                 </Pressable>
                 <View style={styles.footerCardDetails}>
-                  {isAdmin && (
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>Email</RegularText>
-                      <BoldText style={styles.cardValue}>{email}</BoldText>
-                    </View>
-                  )}
+                  {emailFieldRow}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Status</RegularText>
                     {statusColor()}
@@ -703,12 +753,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
                   </BoldText>
                 </Pressable>
                 <View style={styles.footerCardDetails}>
-                  {isAdmin && (
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>Email</RegularText>
-                      <BoldText style={styles.cardValue}>{email}</BoldText>
-                    </View>
-                  )}
+                  {emailFieldRow}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Status</RegularText>
                     {statusColor()}
@@ -811,12 +856,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
                 </View>
 
                 <View style={styles.footerCardDetails}>
-                  {isAdmin && (
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>Email</RegularText>
-                      <BoldText style={styles.cardValue}>{email}</BoldText>
-                    </View>
-                  )}
+                  {emailFieldRow}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>Status</RegularText>
                     {statusColor()}
