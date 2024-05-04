@@ -467,6 +467,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5 + '%',
     paddingBottom: 20,
     gap: 15,
+    overflow: 'hidden',
   },
 
   route: {

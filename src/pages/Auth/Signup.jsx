@@ -201,14 +201,6 @@ const SignUp = ({ navigation }) => {
               <BoldText style={styles.signIn}>Sign in</BoldText>
             </Pressable>
           </View>
-          {/* <View style={styles.signInIcons}>
-            <Pressable onPress={() => console.log('apple was clicked')}>
-              <Apple />
-            </Pressable>
-            <Pressable onPress={() => console.log('google was clicked')}>
-              <Google />
-            </Pressable>
-          </View> */}
           <Button text={'Register'} onPress={handleSignUp} />
         </View>
       </View>

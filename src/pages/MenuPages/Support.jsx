@@ -11,12 +11,12 @@ const Support = () => {
     {
       support: 'mail',
       placeholder: 'Email Loopay Support',
-      contact: 'support@loopay.app',
+      contact: 'admin@loopay.app',
     },
     {
       support: 'whatsapp',
       placeholder: 'Chat Loopay Support on Whatsapp',
-      contact: '+234 ',
+      contact: '+2347025008586',
     },
   ];
   return (

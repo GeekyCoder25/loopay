@@ -10,6 +10,7 @@ import { useAdminDataContext } from '../../../context/AdminContext';
 import { addingDecimal } from '../../../../utils/AddingZero';
 import BalanceCard from '../components/BalanceCard';
 import { AppContext } from '../../../components/AppContext';
+import FaIcon from '@expo/vector-icons/FontAwesome';
 
 const Dashboard = ({ navigation }) => {
   const { selectedCurrency, showAmount } = useContext(AppContext);
@@ -19,6 +20,8 @@ const Dashboard = ({ navigation }) => {
   const [successBalance, setSuccessBalance] = useState(0);
   const [pending, setPending] = useState([]);
   const [pendingBalance, setPendingBalance] = useState(0);
+  const [reversed, setReversed] = useState([]);
+  const [reversedBalance, setReversedBalance] = useState(0);
   const [blocked, setBlocked] = useState([]);
   const [blockedBalance, setBlockedBalance] = useState(0);
   const [totalUsers, setTotalUsers] = useState([]);
@@ -28,6 +31,7 @@ const Dashboard = ({ navigation }) => {
     if (adminData) {
       setSuccess(statusTransactionsLength.success[selectedCurrency.currency]);
       setPending(statusTransactionsLength.pending[selectedCurrency.currency]);
+      setReversed(statusTransactionsLength.reversed[selectedCurrency.currency]);
       setBlocked(statusTransactionsLength.blocked[selectedCurrency.currency]);
       setTotalUsers(adminData.users.total);
       setActiveUsers([]);
@@ -62,6 +66,9 @@ const Dashboard = ({ navigation }) => {
     );
     setPendingBalance(
       statusTransactionsAmount.pending[selectedCurrency.currency],
+    );
+    setReversedBalance(
+      statusTransactionsAmount.reversed[selectedCurrency.currency],
     );
     setBlockedBalance(
       statusTransactionsAmount.blocked[selectedCurrency.currency],
@@ -114,6 +121,36 @@ const Dashboard = ({ navigation }) => {
               {showAmount
                 ? selectedCurrency.symbol +
                   addingDecimal(pendingBalance.toLocaleString())
+                : '***'}
+            </BoldText>
+          </View>
+        </Pressable>
+        <Pressable
+          style={styles.transaction}
+          onPress={() => {
+            navigation.navigate('Transactions', {
+              transactionStatus: 'reversed',
+            });
+          }}>
+          <View style={styles.icon}>
+            <FaIcon
+              name="undo"
+              color="orange"
+              width={50}
+              height={50}
+              size={40}
+              style={styles.reverseIcon}
+            />
+          </View>
+          <View style={styles.transactionDetails}>
+            <BoldText style={styles.transactionTitle}>
+              Reversed Transactions
+            </BoldText>
+            <BoldText style={styles.transactionLength}>{reversed}</BoldText>
+            <BoldText style={styles.reversed}>
+              {showAmount
+                ? selectedCurrency.symbol +
+                  addingDecimal(reversedBalance.toLocaleString())
                 : '***'}
             </BoldText>
           </View>
@@ -214,8 +251,10 @@ const styles = StyleSheet.create({
     borderRadius: 7,
   },
   icon: {
+    width: 65,
     paddingRight: 15,
   },
+  reverseIcon: { textAlign: 'center' },
   transactionDetails: {
     borderLeftWidth: 0.5,
     flex: 1,

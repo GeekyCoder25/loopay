@@ -162,14 +162,6 @@ const SignIn = ({ navigation }) => {
             </View>
           </View>
           <View style={styles.actionButtons}>
-            {/* <View style={styles.signInIcons}>
-            <Pressable onPress={() => console.log('apple was clicked')}>
-              <Apple />
-            </Pressable>
-            <Pressable onPress={() => console.log('google was clicked')}>
-              <Google />
-            </Pressable>
-          </View> */}
             <View style={styles.already}>
               <RegularText style={styles.alreadyText}>
                 Don&apos;t have an account?

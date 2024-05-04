@@ -36,6 +36,12 @@ const SendMoney = ({ navigation }) => {
       routeIcon: 'bank',
       routeNavigate: 'SendOthers',
     },
+    {
+      routeName: 'Send International',
+      routeDetails: `Send ${selectedCurrency.acronym} to any currency word wide`,
+      routeIcon: 'globe',
+      routeNavigate: 'SendInternational',
+    },
   ];
   return (
     <PageContainer padding paddingTop={0} scroll>

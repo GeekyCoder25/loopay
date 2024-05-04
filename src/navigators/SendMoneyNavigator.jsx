@@ -10,6 +10,7 @@ import Profile from '../pages/HomePages/Profile';
 import LoopayTag from '../pages/HomePages/LoopayTag';
 import SendOthers from '../pages/SendMenuPages/SendMoney/SendOthers';
 import TransactionPin from '../pages/MenuPages/TransactionPin';
+import SendInternational from '../pages/SendMenuPages/SendMoney/SendInternational';
 
 const SendMoneyNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -27,6 +28,11 @@ const SendMoneyNavigator = () => {
       <Stack.Screen
         name="SendOthers"
         component={SendOthers}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SendInternational"
+        component={SendInternational}
         options={{ headerShown: false }}
       />
       <Stack.Screen name="SendProfile" component={Profile} />

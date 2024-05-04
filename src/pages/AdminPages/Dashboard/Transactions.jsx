@@ -28,9 +28,9 @@ import useFetchData from '../../../../utils/fetchAPI';
 
 const Transactions = ({ navigation, route }) => {
   const { getFetchData } = useFetchData();
-  const { selectedCurrency, vh } = useContext(AppContext);
+  const { refetchTransactions, selectedCurrency, vh } = useContext(AppContext);
   const [status, setStatus] = useState('');
-  const [transactionState, setTransactionState] = useState(transactions);
+  const [transactionState, setTransactionState] = useState([]);
   const [selectedTransaction, setSelectedTransaction] = useState([]);
   const [searchHistory, setSearchHistory] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -53,21 +53,15 @@ const Transactions = ({ navigation, route }) => {
     const getTransactions = async () => {
       try {
         setIsLocalLoading(true);
+        setPage(1);
         const selectedStatus = status || route.params.transactionStatus;
         const response = await getFetchData(
-          `admin/transactions?currency=${selectedCurrency.currency},${selectedCurrency.acronym}&status=${selectedStatus}&limit=${limit}&page=${1}`,
+          `admin/transactions?currency=${selectedCurrency.currency},${selectedCurrency.acronym}&status=${selectedStatus}&limit=${limit}&page=${1}&swap=${false}`,
         );
 
         if (response.status === 200) {
-          const swapLength = response.data.data.filter(
-            transaction => transaction.transactionType === 'swap',
-          ).length;
-          setTotalTransactionsLength(response.data.total - swapLength);
-          setTransactions(
-            response.data.data.filter(
-              transaction => transaction.transactionType !== 'swap',
-            ),
-          );
+          setTotalTransactionsLength(response.data.total);
+          setTransactions(response.data.data);
         }
       } finally {
         setIsLocalLoading(false);
@@ -75,34 +69,19 @@ const Transactions = ({ navigation, route }) => {
     };
     getTransactions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [limit, route.params.transactionStatus, selectedCurrency, status]);
+  }, [
+    limit,
+    route.params.transactionStatus,
+    selectedCurrency,
+    status,
+    refetchTransactions,
+  ]);
 
   useFocusEffect(
     useCallback(() => {
-      let histories;
-      const selectedStatus = status || route.params.transactionStatus;
-      if (selectedStatus === 'success') {
-        histories = transactions.filter(
-          transaction => transaction.status === 'success',
-        );
-        setSelectedTransaction(groupTransactionsByDate(histories));
-        setTransactionState(histories);
-      }
-      if (selectedStatus === 'pending') {
-        histories = transactions.filter(
-          transaction => transaction.status === 'pending',
-        );
-        setSelectedTransaction(groupTransactionsByDate(histories));
-        setTransactionState(histories);
-      }
-      if (selectedStatus === 'blocked') {
-        histories = transactions.filter(
-          transaction => transaction.status === 'blocked',
-        );
-        setSelectedTransaction(groupTransactionsByDate(histories));
-        setTransactionState(histories);
-      }
-    }, [route.params.transactionStatus, status, transactions]),
+      setSelectedTransaction(groupTransactionsByDate(transactions));
+      setTransactionState(transactions);
+    }, [transactions]),
   );
 
   const selectOptions = [
@@ -122,6 +101,11 @@ const Transactions = ({ navigation, route }) => {
       status: 'pending',
     },
     {
+      label: 'Reversed Transactions',
+      label2: 'reversed',
+      status: 'reversed',
+    },
+    {
       label: 'Blocked Transactions',
       label2: 'blocked',
       status: 'blocked',
@@ -139,17 +123,7 @@ const Transactions = ({ navigation, route }) => {
     setLabel2(selected.label2);
     setPage(1);
     setIsSearching(false);
-    if (selected.status) {
-      setStatus(selected.status);
-      const histories = transactions.filter(
-        transaction => transaction.status === selected.status,
-      );
-      setSelectedTransaction(groupTransactionsByDate(histories));
-      setTransactionState(histories);
-    } else {
-      setSelectedTransaction(groupTransactionsByDate(transactions));
-      setTransactionState(transactions);
-    }
+    setStatus(selected.status || 'success,pending,reversed,blocked');
   };
 
   const handleScrollMore = async () => {
@@ -159,34 +133,13 @@ const Transactions = ({ navigation, route }) => {
       const response = await getFetchData(
         `admin/transactions?currency=${selectedCurrency.currency},${
           selectedCurrency.acronym
-        }&status=${selectedStatus}&limit=${limit}&page=${page + 1}`,
+        }&${selectedStatus && `status=${selectedStatus}`}&limit=${limit}&page=${page + 1}&swap=${false}`,
       );
 
       if (response.status === 200) {
-        const swapLength = response.data.data.filter(
-          transaction => transaction.transactionType === 'swap',
-        ).length;
-        setTotalTransactionsLength(totalTransactionsLength - swapLength);
-        const result = response.data.data.filter(
-          transaction => transaction.transactionType !== 'swap',
-        );
+        const result = response.data.data;
         setPage(page + 1);
-        const uniqueIds = new Set();
-
-        setTransactions(
-          [...transactions, ...result].filter(obj => {
-            if (!uniqueIds.has(obj.id)) {
-              uniqueIds.add(obj.id);
-              return true;
-            }
-            return false;
-          }),
-        );
-        setSelectedTransaction(
-          isSearching
-            ? transactionState
-            : groupTransactionsByDate(transactionState),
-        );
+        setTransactions([...transactions, ...result]);
       }
     } finally {
       setReloading(false);
@@ -906,6 +859,7 @@ const Header = memo(
     label,
     selectedLabel,
   }) => {
+    const { setRefetchTransactions } = useContext(AppContext);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [searchText, setSearchText] = useState('');
 
@@ -927,7 +881,12 @@ const Header = memo(
             .toLowerCase()
             .includes(text.toLowerCase());
         });
-        text ? setIsSearching(true) : setIsSearching(false);
+        if (text) {
+          setIsSearching(true);
+        } else {
+          setIsSearching(false);
+          setRefetchTransactions(prev => !prev);
+        }
 
         setSearchHistory(foundHistories);
       } finally {

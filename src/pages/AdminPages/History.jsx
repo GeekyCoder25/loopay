@@ -35,7 +35,7 @@ import useFetchData from '../../../utils/fetchAPI';
 
 const History = () => {
   const { getFetchData } = useFetchData();
-  const { selectedCurrency, vh } = useContext(AppContext);
+  const { refetchTransactions, selectedCurrency, vh } = useContext(AppContext);
   const [histories, setHistories] = useState([]);
   const [searchHistory, setSearchHistory] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -78,7 +78,7 @@ const History = () => {
       };
       getTransactions();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [limit, selectedCurrency]),
+    }, [limit, selectedCurrency, refetchTransactions]),
   );
 
   const handleScrollMore = async () => {

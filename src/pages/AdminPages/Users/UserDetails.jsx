@@ -169,6 +169,12 @@ const UserDetails = ({ navigation, route }) => {
               </RegularText>
             </View>
             <View style={styles.row}>
+              <BoldText style={styles.rowKey}>Verification Status</BoldText>
+              <RegularText style={styles.rowValue}>
+                {user.verificationStatus || 'unverified'}
+              </RegularText>
+            </View>
+            <View style={styles.row}>
               <BoldText style={styles.rowKey}>Limit level</BoldText>
               <RegularText style={styles.rowValue}>{user.level}</RegularText>
             </View>

@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
 import { Dimensions, Pressable, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
@@ -23,7 +23,8 @@ import LoadingModal from '../../components/LoadingModal';
 
 const TransactionHistoryParams = ({ navigation, route }) => {
   const { postFetchData } = useFetchData();
-  const { vh, showAmount, setShowAmount, isAdmin } = useContext(AppContext);
+  const { vh, setRefetchTransactions, showAmount, setShowAmount, isAdmin } =
+    useContext(AppContext);
   const [isLocalLoading, setIsLocalLoading] = useState(false);
   const history = route.params;
   const {
@@ -161,6 +162,13 @@ const TransactionHistoryParams = ({ navigation, route }) => {
     }
   };
 
+  useEffect(() => {
+    if (statusState === 'reversed') {
+      if (transactionType === 'credit') setStatusState('reversed');
+      else if (transactionType === 'debit') setStatusState('refunded');
+    }
+  }, [statusState, transactionType]);
+
   const handleReverse = async () => {
     try {
       setIsLocalLoading(true);
@@ -169,8 +177,15 @@ const TransactionHistoryParams = ({ navigation, route }) => {
       });
 
       if (response.status === 200) {
-        setStatusState('reversed');
-        return ToastMessage(response.data.message);
+        setRefetchTransactions(prev => !prev);
+        if (response.data.message === 'Transaction reversed') {
+          if (transactionType === 'credit') setStatusState('reversed');
+          else if (transactionType === 'debit') setStatusState('refunded');
+          return ToastMessage(response.data.message);
+        } else if (response.data.message === 'Transaction unreversed') {
+          setStatusState('success');
+          return ToastMessage(response.data.message);
+        }
       }
       ToastMessage(response.data.message);
     } catch (error) {
@@ -946,7 +961,7 @@ const TransactionHistoryParams = ({ navigation, route }) => {
         {isAdmin ? (
           <View style={styles.button}>
             <Button
-              text={`${status === 'reversed' ? 'Undo Reverse' : 'Reverse'} Transaction`}
+              text={`${statusState === 'reversed' || statusState === 'refunded' ? 'Undo Reverse' : 'Reverse'} Transaction`}
               onPress={handleReverse}
             />
           </View>
