@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
   creditAmount: {
     color: '#006E53',
     fontSize: 16,
-    marginRight: 5,
+    // marginRight: 5,
   },
   amount: {
     alignItems: 'flex-end',
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
   debitAmount: {
     color: 'red',
     fontSize: 16,
-    marginRight: 5,
+    // marginRight: 5,
   },
   loading: {
     marginTop: 15 + '%',
@@ -441,7 +441,7 @@ export const History = memo(({ history, navigation }) => {
               <>
                 <BoldText style={styles.historyTitle}>{receiverName}</BoldText>
                 <RegularText>
-                  {method === 'card' ? 'Card self' : 'Transfer self'}
+                  {method === 'card' ? 'Card' : 'Transfer'}
                 </RegularText>
               </>
             ) : (

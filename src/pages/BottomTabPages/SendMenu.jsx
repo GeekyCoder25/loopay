@@ -268,6 +268,8 @@ export const RouteLink = ({ route, navigation }) => {
         return <WalletIcon />;
       case 'schedule':
         return <FaIcon name="clock-o" size={30} color={'#5c5c5c'} />;
+      case 'sendGlobe':
+        return <FaIcon name="globe" size={30} color={'#868585'} />;
       case 'globe':
         return <FaIcon name="globe" size={24} color={'#5c5c5c'} />;
       case 'bank':

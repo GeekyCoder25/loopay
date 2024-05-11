@@ -274,7 +274,11 @@ const TabsNavigator = () => {
               <Stack.Screen name="Referrals" component={Referrals} />
               <Stack.Screen name="Support" component={Support} />
               <Stack.Screen name="Beneficiaries" component={Beneficiaries} />
-              <Stack.Screen name="DeleteAccount" component={DeleteAccount} />
+              <Stack.Screen
+                name="DeleteAccount"
+                component={DeleteAccount}
+                options={{ headerShown: false }}
+              />
               <Stack.Screen name="Report" component={Report} />
             </Stack.Navigator>
             {showPopUp && !isSessionTimedOut && <Popup />}

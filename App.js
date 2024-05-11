@@ -60,6 +60,7 @@ export default function App() {
   const [openShake, setOpenShake] = useState(false);
   const [hasFaceID, setHasFaceID] = useState(false);
   const [refetchTransactions, setRefetchTransactions] = useState(false);
+  const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
   const isAndroid = Platform.OS === 'android';
   const vw = useWindowDimensions().width;
   const vh = useWindowDimensions().height;
@@ -123,6 +124,8 @@ export default function App() {
     setHasFaceID,
     refetchTransactions,
     setRefetchTransactions,
+    isUpdateAvailable,
+    setIsUpdateAvailable,
     isAndroid,
   };
 

@@ -6,7 +6,13 @@ const Button = ({ text, onPress, Icon, disabled, flex, color, style }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={{ ...styles.activeButton, ...style }}
+      style={{
+        ...styles.activeButton,
+        backgroundColor: disabled
+          ? styles.inActiveButton.backgroundColor
+          : styles.activeButton.backgroundColor,
+        ...style,
+      }}
       disabled={disabled || false}>
       <BoldText
         style={{
@@ -34,6 +40,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 15,
+  },
+  inActiveButton: {
+    backgroundColor: 'rgba(28, 28, 28, 0.5)',
   },
   activeButtonText: {
     color: '#fff',

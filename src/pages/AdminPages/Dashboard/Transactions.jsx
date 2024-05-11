@@ -331,7 +331,7 @@ const Transactions = ({ navigation, route }) => {
             }}
           />
           <TransactionHistoryParams
-            route={{ params: modalData }}
+            route={{ params: modalData }}C
             navigation={navigation}
           />
         </Modal> */}

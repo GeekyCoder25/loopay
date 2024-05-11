@@ -12,7 +12,6 @@ import {
 import PageContainer from './PageContainer';
 import BoldText from './fonts/BoldText';
 import IonIcon from '@expo/vector-icons/Ionicons';
-
 import RegularText from './fonts/RegularText';
 import { allCurrencies } from '../database/data';
 import { AppContext } from './AppContext';

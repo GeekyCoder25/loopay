@@ -31,6 +31,9 @@ import IonIcon from '@expo/vector-icons/Ionicons';
 import { useFocusEffect } from '@react-navigation/native';
 import { setShowBalance } from '../../../utils/storage';
 import LoadingModal from '../../components/LoadingModal';
+import { printToFileAsync } from 'expo-print';
+import { shareAsync } from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 
 const SwapFunds = ({ navigation }) => {
   const { getFetchData, postFetchData } = useFetchData();
@@ -66,6 +69,7 @@ const SwapFunds = ({ navigation }) => {
   const [currencyRateAPI, setCurrencyRateAPI] = useState({});
   const [rateRefetch, setRateRefetch] = useState(false);
   const [isLocalLoading, setIsLocalLoading] = useState(true);
+  const [transaction, setTransaction] = useState(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -279,10 +283,11 @@ const SwapFunds = ({ navigation }) => {
 
   const handleSwap = async () => {
     try {
-      setIsLoading(true);
+      setIsLocalLoading(true);
       const response = await postFetchData('user/swap', swapData);
       if (response.status === 200) {
         setWalletRefresh(prev => !prev);
+        setTransaction(response.data.data);
         setIsSuccessful(true);
         const playSound = async () => {
           const { sound } = await Audio.Sound.createAsync(
@@ -296,7 +301,7 @@ const SwapFunds = ({ navigation }) => {
     } catch (err) {
       ToastMessage(err.message);
     } finally {
-      setIsLoading(false);
+      setIsLocalLoading(false);
     }
   };
 
@@ -308,6 +313,56 @@ const SwapFunds = ({ navigation }) => {
   const handleShow = () => {
     setShowAmount(prev => !prev);
     setShowBalance(!showAmount);
+  };
+
+  const handleShare = async () => {
+    try {
+      const { reference, transactionType } = transaction;
+      setIsLocalLoading(true);
+
+      const response = await postFetchData('user/receipt', {
+        id: reference,
+        type: transactionType,
+        allCurrencies,
+      });
+
+      if (response.status === 200) {
+        const { uri } = await printToFileAsync({
+          html: response.data.html,
+          height: 892,
+        });
+
+        const sharePDF = async () => {
+          try {
+            setIsLocalLoading(true);
+            const directory = FileSystem.documentDirectory;
+
+            const newUri = `${directory}Loopay_Receipt_${reference}.pdf`;
+
+            await FileSystem.moveAsync({
+              from: uri,
+              to: newUri,
+            });
+            await shareAsync(newUri, {
+              UTI: '.pdf',
+              mimeType: 'application/pdf',
+              dialogTitle: 'Share Receipt',
+            });
+          } catch (error) {
+            ToastMessage(error.message);
+          } finally {
+            setIsLocalLoading(false);
+          }
+        };
+
+        await sharePDF();
+      } else {
+        throw new Error(response.data.error || 'Server Error');
+      }
+    } catch (error) {
+      ToastMessage("Can't generate receipt");
+      setIsLoading(false);
+    }
   };
   return (
     <>
@@ -651,14 +706,25 @@ const SwapFunds = ({ navigation }) => {
                   </View>
                 ))}
               </View>
-              <Button
-                text="Back Home"
-                style={styles.modalButtonSuccess}
-                onPress={handleGoBack}
-              />
+
+              <View style={styles.buttons}>
+                {transaction && (
+                  <Button
+                    text={'Share Receipt'}
+                    onPress={handleShare}
+                    style={styles.modalButtonSuccess}
+                  />
+                )}
+                <Button
+                  text="Back Home"
+                  style={styles.modalButtonSuccess}
+                  onPress={handleGoBack}
+                />
+              </View>
             </View>
           </View>
         )}
+        <LoadingModal isLoading={isLocalLoading} />
       </Modal>
       <LoadingModal isLoading={isLocalLoading} />
     </>
@@ -921,6 +987,12 @@ const styles = StyleSheet.create({
     color: '#525252',
     fontSize: 16,
   },
+  buttons: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+  },
   button: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -931,6 +1003,7 @@ const styles = StyleSheet.create({
   },
   modalButtonSuccess: {
     marginTop: 10 + '%',
+    flex: 1,
   },
 });
 

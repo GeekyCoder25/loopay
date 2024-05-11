@@ -129,7 +129,7 @@ const FooterCard = ({
             </View>
           )}
           <View style={styles.cardLine}>
-            <RegularText style={styles.cardKey}>Payment Method</RegularText>
+            <RegularText style={styles.cardKey}>Payment Account</RegularText>
             <BoldText
               style={{
                 ...styles.cardValue,

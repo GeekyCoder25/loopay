@@ -382,7 +382,7 @@ const BuyData = ({ route, navigation }) => {
                       ) : (
                         dataPlans.map(plan => (
                           <Pressable
-                            key={plan.value}
+                            key={plan.value + plan.operatorId}
                             style={{
                               ...styles.modalList,
                               backgroundColor:

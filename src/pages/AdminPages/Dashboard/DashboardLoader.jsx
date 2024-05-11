@@ -16,6 +16,7 @@ import ChevronDown from '../../../../assets/images/chevron-down.svg';
 import BarIcon from '../../../../assets/images/bar.svg';
 import Bell from '../../../../assets/images/bell.svg';
 import UserIcon from '../../../components/UserIcon';
+import FaIcon from '@expo/vector-icons/FontAwesome';
 
 const DashboardLoader = () => {
   return (
@@ -61,6 +62,25 @@ const DashboardLoader = () => {
             <View style={styles.transactionDetails}>
               <BoldText style={styles.transactionTitle}>
                 Pending Transactions
+              </BoldText>
+              <BoldText style={styles.transactionLength}>{0}</BoldText>
+              <BoldText>{'***'}</BoldText>
+            </View>
+          </Pressable>
+          <Pressable style={styles.transaction}>
+            <View style={styles.icon}>
+              <FaIcon
+                name="undo"
+                color="orange"
+                width={50}
+                height={50}
+                size={40}
+                style={styles.reverseIcon}
+              />
+            </View>
+            <View style={styles.transactionDetails}>
+              <BoldText style={styles.transactionTitle}>
+                Reversed Transactions
               </BoldText>
               <BoldText style={styles.transactionLength}>{0}</BoldText>
               <BoldText>{'***'}</BoldText>
@@ -198,8 +218,10 @@ const styles = StyleSheet.create({
     borderRadius: 7,
   },
   icon: {
+    width: 65,
     paddingRight: 15,
   },
+  reverseIcon: { textAlign: 'center' },
   transactionDetails: {
     borderLeftWidth: 0.5,
     flex: 1,

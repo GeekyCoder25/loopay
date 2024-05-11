@@ -51,7 +51,7 @@ const FlagSelect = ({ country, style }) => {
           width={30}
           height={30}
           resizeMode="contain"
-          style={{ borderRadius: 15 }}
+          style={{ borderRadius: 15, ...style }}
         />
       );
   }

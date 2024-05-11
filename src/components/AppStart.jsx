@@ -1,18 +1,27 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { apiUrl } from '../../utils/fetchAPI';
+import useFetchData, { apiUrl } from '../../utils/fetchAPI';
 import AppPagesNavigator from '../navigators/AppPagesNavigator';
 import NoInternet from './NoInternet';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import * as Updates from 'expo-updates'; // Updates*
 import { AppContext } from './AppContext';
 import { View } from 'react-native';
 import LockScreen from '../pages/GlobalPages/LockScreen';
+import AppUpdateModal from './AppUpdateModal';
+import ToastMessage from './ToastMessage';
 
 const AppStart = () => {
-  const { internetStatus, setInternetStatus, isLoggedIn, isSessionTimedOut } =
-    useContext(AppContext);
+  const {
+    internetStatus,
+    setInternetStatus,
+    isLoggedIn,
+    isSessionTimedOut,
+    isUpdateAvailable,
+    setIsUpdateAvailable,
+  } = useContext(AppContext);
   const [showLockScreen, setShowLockScreen] = useState(false);
-
+  const { postFetchData } = useFetchData();
   useEffect(() => {
     const getFetchData = async () => {
       const API_URL = `${apiUrl}/network`;
@@ -45,6 +54,22 @@ const AppStart = () => {
     }
   }, [isLoggedIn, isSessionTimedOut]);
 
+  useEffect(() => {
+    const checkUpdate = async () => {
+      try {
+        const update = await Updates.checkForUpdateAsync();
+        postFetchData('test-update', update);
+        if (update.isAvailable) {
+          await Updates.fetchUpdateAsync();
+          setIsUpdateAvailable(true);
+        }
+      } catch (e) {
+        ToastMessage(e.message);
+      }
+    };
+    checkUpdate();
+  }, [setIsUpdateAvailable]);
+
   const [fontsLoaded] = useFonts({
     'OpenSans-300': require('../../assets/fonts/OpenSans-Light.ttf'),
     'OpenSans-400': require('../../assets/fonts/OpenSans-Regular.ttf'),
@@ -75,7 +100,8 @@ const AppStart = () => {
     <>
       <View onLayout={onLayoutRootView} />
       <AppPagesNavigator />
-      {/* {showLockScreen && <LockScreen />} */}
+      {showLockScreen && <LockScreen />}
+      {isUpdateAvailable && <AppUpdateModal visible={isUpdateAvailable} />}
       <NoInternet modalOpen={!internetStatus} />
     </>
   );
