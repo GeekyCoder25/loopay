@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   ActivityIndicator,
+  Dimensions,
   Modal,
   Pressable,
   StyleSheet,
@@ -132,7 +133,7 @@ const DashboardLoader = () => {
         </View>
       </PageContainer>
 
-      <Modal visible={true} animationType="fade" transparent>
+      <View style={styles.loaderContainer}>
         <Pressable style={styles.overlay} />
         <View style={styles.modalContainer}>
           <ActivityIndicator
@@ -141,12 +142,18 @@ const DashboardLoader = () => {
             style={styles.modal}
           />
         </View>
-      </Modal>
+      </View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  loaderContainer: {
+    zIndex: 9999,
+    position: 'absolute',
+    height: Dimensions.get('screen').height,
+    width: Dimensions.get('screen').width,
+  },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     opacity: 0.7,

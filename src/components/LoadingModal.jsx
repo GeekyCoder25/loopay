@@ -13,7 +13,7 @@ const LoadingModal = ({ isLoading }) => {
 
   return (
     isLoading && (
-      <View animationType="fade" transparent style={styles.container}>
+      <View style={styles.container}>
         <Pressable style={styles.overlay} />
         <View
           style={{ ...styles.modalContainer, backgroundColor: loadingModalBg }}>

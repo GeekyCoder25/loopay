@@ -8,7 +8,7 @@ import RegularText from '../../components/fonts/RegularText';
 import SwitchOn from '../../../assets/images/switch.svg';
 import SwitchOff from '../../../assets/images/switchOff.svg';
 import { AppContext } from '../../components/AppContext';
-import { setBiometric } from '../../../utils/storage';
+import { setBiometric, setBiometricPin } from '../../../utils/storage';
 import * as LocalAuthentication from 'expo-local-authentication';
 import ToastMessage from '../../components/ToastMessage';
 
@@ -17,7 +17,7 @@ const Biometric = () => {
     useContext(AppContext);
 
   const handleSwitchBiometric = async () => {
-    if (!enableBiometric) {
+    if (!enableBiometric.forLock) {
       const options = {
         promptMessage: 'Setup login with Biometrics',
         cancelLabel: 'Cancel',
@@ -25,15 +25,42 @@ const Biometric = () => {
       };
       const { success } = await LocalAuthentication.authenticateAsync(options);
       if (success) {
-        setEnableBiometric(prev => !prev);
-        return await setBiometric(!enableBiometric);
+        setEnableBiometric(prev => {
+          return { ...prev, forLock: !prev.forLock };
+        });
+        return await setBiometric(!enableBiometric.forLock);
       } else {
         await LocalAuthentication.cancelAuthenticate();
         return ToastMessage("Couldn't authenticate user");
       }
     }
     await setBiometric(!enableBiometric);
-    setEnableBiometric(prev => !prev);
+    setEnableBiometric(prev => {
+      return { ...prev, forLock: !prev.forLock };
+    });
+  };
+  const handleSwitchBiometricForPin = async () => {
+    if (!enableBiometric.forPin) {
+      const options = {
+        promptMessage: 'Setup Transaction Pin with Biometrics',
+        cancelLabel: 'Cancel',
+        disableDeviceFallback: true,
+      };
+      const { success } = await LocalAuthentication.authenticateAsync(options);
+      if (success) {
+        setEnableBiometric(prev => {
+          return { ...prev, forPin: !prev.forPin };
+        });
+        return await setBiometricPin(!enableBiometric.forPin);
+      } else {
+        await LocalAuthentication.cancelAuthenticate();
+        return ToastMessage("Couldn't authenticate user");
+      }
+    }
+    await setBiometricPin(!enableBiometric.forPin);
+    setEnableBiometric(prev => {
+      return { ...prev, forPin: !prev.forPin };
+    });
   };
 
   return (
@@ -41,13 +68,6 @@ const Biometric = () => {
       <BoldText style={styles.headerText}>Biometric Authentication</BoldText>
       <View style={styles.body}>
         <View style={styles.route}>
-          <View style={styles.routeIcon}>
-            {hasFaceID ? (
-              <FaceIDIcon width={40} height={40} />
-            ) : (
-              <BiometricIcon />
-            )}
-          </View>
           <View style={styles.routeTexts}>
             <BoldText style={styles.routeName}>Use biometric</BoldText>
             <RegularText style={styles.routeDetails}>
@@ -55,14 +75,53 @@ const Biometric = () => {
               and complete transactions
             </RegularText>
           </View>
-          <Pressable onPress={handleSwitchBiometric}>
-            {enableBiometric ? (
-              <SwitchOn width={40} height={40} />
-            ) : (
-              <SwitchOff width={40} height={40} />
-            )}
-          </Pressable>
         </View>
+      </View>
+      <View style={styles.route}>
+        <View style={styles.routeIcon}>
+          {hasFaceID ? (
+            <FaceIDIcon width={40} height={40} />
+          ) : (
+            <BiometricIcon />
+          )}
+        </View>
+        <View style={styles.routeTexts}>
+          <BoldText style={styles.routeName}>
+            Use {hasFaceID ? 'Face ID' : 'Biometric'}
+          </BoldText>
+          <RegularText style={styles.routeDetails}>For password</RegularText>
+        </View>
+        <Pressable onPress={handleSwitchBiometric}>
+          {enableBiometric?.forLock ? (
+            <SwitchOn width={40} height={40} />
+          ) : (
+            <SwitchOff width={40} height={40} />
+          )}
+        </Pressable>
+      </View>
+      <View style={styles.route}>
+        <View style={styles.routeIcon}>
+          {hasFaceID ? (
+            <FaceIDIcon width={40} height={40} />
+          ) : (
+            <BiometricIcon />
+          )}
+        </View>
+        <View style={styles.routeTexts}>
+          <BoldText style={styles.routeName}>
+            Use {hasFaceID ? 'Face ID' : 'Biometric'}
+          </BoldText>
+          <RegularText style={styles.routeDetails}>
+            For transaction pin
+          </RegularText>
+        </View>
+        <Pressable onPress={handleSwitchBiometricForPin}>
+          {enableBiometric?.forPin ? (
+            <SwitchOn width={40} height={40} />
+          ) : (
+            <SwitchOff width={40} height={40} />
+          )}
+        </Pressable>
       </View>
     </PageContainer>
   );
@@ -73,7 +132,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   body: {
-    marginVertical: 50,
+    marginVertical: 20,
   },
   route: {
     flexDirection: 'row',

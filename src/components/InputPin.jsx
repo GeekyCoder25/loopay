@@ -82,7 +82,9 @@ const InputPin = ({
           setShowBiometrics(false);
         } else {
           setShowBiometrics(
-            enableBiometric && isBiometricSupported && !disableBiometric,
+            enableBiometric?.forPin &&
+              isBiometricSupported &&
+              !disableBiometric,
           );
           checkFingerprint();
         }
@@ -99,7 +101,11 @@ const InputPin = ({
         cancelLabel: 'Use payment pin instead',
         disableDeviceFallback: true,
       };
-      if (isBiometricSupported && enableBiometric && !disableBiometric) {
+      if (
+        isBiometricSupported &&
+        enableBiometric?.forPin &&
+        !disableBiometric
+      ) {
         const { success } =
           await LocalAuthentication.authenticateAsync(options);
         if (success) {
@@ -226,7 +232,7 @@ const InputPin = ({
                 {!hideDigits && (
                   <RegularText style={styles.text}>
                     Enter transaction 4-digit PIN-Code{' '}
-                    {enableBiometric &&
+                    {enableBiometric?.forPin &&
                       isBiometricSupported &&
                       'or use your biometric to perform action.'}
                   </RegularText>

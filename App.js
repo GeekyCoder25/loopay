@@ -51,7 +51,10 @@ export default function App() {
   const [showConnected, setShowConnected] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
-  const [enableBiometric, setEnableBiometric] = useState(false);
+  const [enableBiometric, setEnableBiometric] = useState({
+    forLock: false,
+    forPin: false,
+  });
   const [enableShake, setEnableShake] = useState(true);
   const [showPopUp, setShowPopUp] = useState(false);
   const [popUpClosed, setPopUpClosed] = useState(0);

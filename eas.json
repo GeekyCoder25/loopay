@@ -17,7 +17,7 @@
     "production": {
       "channel": "production",
       "env": {
-        "EXPO_PUBLIC_SERVER_URL": "https://loopay-api.cyclic.app/api"
+        "EXPO_PUBLIC_SERVER_URL": "https://loopay-api.up.railway.app/api"
       }
     }
   },

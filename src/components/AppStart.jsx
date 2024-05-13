@@ -1,15 +1,14 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import useFetchData, { apiUrl } from '../../utils/fetchAPI';
+import { apiUrl } from '../../utils/fetchAPI';
 import AppPagesNavigator from '../navigators/AppPagesNavigator';
 import NoInternet from './NoInternet';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import * as Updates from 'expo-updates'; // Updates*
+import * as Updates from 'expo-updates';
 import { AppContext } from './AppContext';
 import { View } from 'react-native';
 import LockScreen from '../pages/GlobalPages/LockScreen';
 import AppUpdateModal from './AppUpdateModal';
-import ToastMessage from './ToastMessage';
 
 const AppStart = () => {
   const {
@@ -21,7 +20,6 @@ const AppStart = () => {
     setIsUpdateAvailable,
   } = useContext(AppContext);
   const [showLockScreen, setShowLockScreen] = useState(false);
-  const { postFetchData } = useFetchData();
   useEffect(() => {
     const getFetchData = async () => {
       const API_URL = `${apiUrl}/network`;
@@ -58,13 +56,12 @@ const AppStart = () => {
     const checkUpdate = async () => {
       try {
         const update = await Updates.checkForUpdateAsync();
-        postFetchData('test-update', update);
         if (update.isAvailable) {
           await Updates.fetchUpdateAsync();
           setIsUpdateAvailable(true);
         }
       } catch (e) {
-        ToastMessage(e.message);
+        // ToastMessage(e.message);
       }
     };
     checkUpdate();

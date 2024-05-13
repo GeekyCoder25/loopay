@@ -10,6 +10,7 @@ const StorageKeys = {
   DEFAULT_CURRENCY: 'DEFAULT_CURRENCY',
   ROLE: 'ROLE',
   BIOMETRIC: 'BIOMETRIC',
+  BIOMETRIC_PIN: 'BIOMETRIC_PIN',
   LOCAL_CURRENCY: 'LOCAL_CURRENCY',
   INVALID_PIN: 'INVALID_PIN',
   EMAIL: 'EMAIL',
@@ -100,6 +101,15 @@ export const setBiometric = async state => {
 };
 export const getBiometric = async () => {
   const stringifiedState = await AsyncStorage.getItem(StorageKeys.BIOMETRIC);
+  return JSON.parse(stringifiedState);
+};
+export const setBiometricPin = async state => {
+  return await AsyncStorage.setItem(StorageKeys.BIOMETRIC_PIN, `${state}`);
+};
+export const getBiometricPin = async () => {
+  const stringifiedState = await AsyncStorage.getItem(
+    StorageKeys.BIOMETRIC_PIN,
+  );
   return JSON.parse(stringifiedState);
 };
 export const getShake = async () => {

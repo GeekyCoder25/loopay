@@ -19,7 +19,7 @@ import * as Haptics from 'expo-haptics';
 import * as LocalAuthentication from 'expo-local-authentication';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import { timeForInactivityInSecond } from '../../config/config';
-import { getBiometric } from '../../../utils/storage';
+import { getBiometric, getBiometricPin } from '../../../utils/storage';
 import FaceIDIcon from '../../../assets/images/face-id.svg';
 import Animated, {
   Easing,
@@ -68,7 +68,8 @@ const LockScreen = () => {
   useEffect(() => {
     const checkFingerprint = async () => {
       const biometric = (await getBiometric()) || false;
-      setEnableBiometric(biometric);
+      const biometricPin = (await getBiometricPin()) || false;
+      setEnableBiometric({ forLock: biometric, forPin: biometricPin });
       const compatible = await LocalAuthentication.hasHardwareAsync();
       if (compatible) {
         const savedBiometrics = await LocalAuthentication.isEnrolledAsync();
@@ -79,7 +80,7 @@ const LockScreen = () => {
             cancelLabel: 'Use Loopay password instead',
             disableDeviceFallback: true,
           };
-          if (enableBiometric) {
+          if (enableBiometric?.forLock) {
             const { success } =
               await LocalAuthentication.authenticateAsync(options);
             if (success) {
@@ -98,7 +99,7 @@ const LockScreen = () => {
     };
     checkFingerprint();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [biometricSwitch, enableBiometric, timerId]);
+  }, [biometricSwitch, enableBiometric?.forLock, timerId]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -326,7 +327,7 @@ const LockScreen = () => {
                 </Pressable>
               </View>
               <View style={styles.row}>
-                {enableBiometric && isBiometricSupported ? (
+                {enableBiometric?.forLock && isBiometricSupported ? (
                   <Pressable
                     style={{
                       ...styles.digit,

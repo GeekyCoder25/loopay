@@ -1,1 +1,1 @@
-export const timeForInactivityInSecond = 120;
+export const timeForInactivityInSecond = 300;
