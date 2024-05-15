@@ -25,7 +25,7 @@ const AccInfoCard = ({ disableSwitchCurrency }) => {
   const { wallet } = useWalletContext();
 
   const pendingBalance = addingDecimal(
-    (wallet.bookBalance || wallet.balance).toLocaleString(),
+    (wallet.bookBalance || wallet.balance)?.toLocaleString(),
   );
 
   const handleShow = () => {
@@ -93,7 +93,9 @@ const AccInfoCard = ({ disableSwitchCurrency }) => {
             <RegularText style={styles.currencyType}>
               Book Balance:{' '}
               <BoldText>
-                {showAmount ? selectedCurrency.symbol + pendingBalance : '***'}
+                {showAmount && pendingBalance
+                  ? selectedCurrency.symbol + pendingBalance
+                  : '***'}
               </BoldText>
             </RegularText>
           </View>

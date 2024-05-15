@@ -166,7 +166,7 @@ const AddMoney = ({ navigation, route }) => {
     value && setValue(addingDecimal(value));
   };
 
-  function addSpaceEvery4Characters(inputString) {
+  const addSpaceEvery4Characters = inputString => {
     let result = '';
     for (let i = 0; i < inputString.length; i++) {
       if (i > 0 && i % 4 === 0) {
@@ -175,7 +175,7 @@ const AddMoney = ({ navigation, route }) => {
       result += inputString[i];
     }
     return result;
-  }
+  };
 
   const handleContinue = () => {
     if (!value) {

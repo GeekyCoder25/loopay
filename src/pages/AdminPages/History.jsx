@@ -29,7 +29,7 @@ import { billIcon } from '../MenuPages/TransactionHistory';
 import { AppContext } from '../../components/AppContext';
 import Back from '../../components/Back';
 import TransactionHistoryParams from '../MenuPages/TransactionHistoryParams';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import BalanceCard from './components/BalanceCard';
 import useFetchData from '../../../utils/fetchAPI';
 
@@ -419,6 +419,7 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
     method,
   } = history;
   const [currencySymbol, setCurrencySymbol] = useState('');
+  const navigation = useNavigation();
 
   const accountDebited =
     transactionType === 'credit'
@@ -437,7 +438,12 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
 
   return (
     <Pressable
-      onPress={() => setTransactionModal(history)}
+      onPress={() =>
+        navigation.navigate('TransactionHistoryDetails', {
+          ...history,
+          previousScreen: 'History',
+        })
+      }
       style={styles.history}>
       {transactionType?.toLowerCase() === 'credit' && (
         <>

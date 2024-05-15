@@ -17,7 +17,11 @@ import RegularText from '../../components/fonts/RegularText';
 import ChevronDown from '../../../assets/images/drop-down.svg';
 import UserIcon from '../../components/UserIcon';
 import { AppContext } from '../../components/AppContext';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import useFetchData from '../../../utils/fetchAPI';
 
@@ -404,6 +408,7 @@ const User = ({ status, userSession, users, isSearching }) => {
   const navigation = useNavigation();
   const user = users.find(i => i.email === userSession.email);
   const [isExpanded, setIsExpanded] = useState(false);
+  const route = useRoute();
 
   const lastSeen = new Date(userSession.updatedAt);
   return (
@@ -480,7 +485,11 @@ const User = ({ status, userSession, users, isSearching }) => {
             <View style={styles.rowValue}>
               <Pressable
                 onPress={() =>
-                  navigation.navigate('UserDetails', { email: user.email })
+                  navigation.navigate('UserDetails', {
+                    email: user.email,
+                    previousScreen: 'ActiveUsers',
+                    ...route.params,
+                  })
                 }>
                 <UserIcon uri={user.photoURL} />
               </Pressable>

@@ -54,8 +54,8 @@ const Home = ({ navigation }) => {
     setShowAmount,
     vw,
   } = useContext(AppContext);
-  const { transactions, wallet } = useWalletContext();
-  const { requestFunds: requests } = useRequestFundsContext();
+  const { transactions = [], wallet } = useWalletContext();
+  const { requestFunds: requests = [] } = useRequestFundsContext();
   const [modalOpen, setModalOpen] = useState(false);
   const firstName = appData.userProfile.firstName;
   const [isExiting, setIsExiting] = useState(false);

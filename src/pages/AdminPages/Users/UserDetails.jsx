@@ -58,7 +58,13 @@ const UserDetails = ({ navigation, route }) => {
   return (
     <>
       <View style={styles.header}>
-        <Pressable style={styles.back} onPress={() => navigation.goBack()}>
+        <Pressable
+          style={styles.back}
+          onPress={() =>
+            route?.params?.previousScreen
+              ? navigation.navigate(route.params.previousScreen, route.params)
+              : navigation.goBack()
+          }>
           <BackIcon />
           <BoldText style={styles.headerText}>User Details</BoldText>
         </Pressable>

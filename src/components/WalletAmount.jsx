@@ -18,7 +18,7 @@ const WalletAmount = () => {
       setShowAmount(status);
     };
     getShowAmount();
-    wallet
+    wallet.balance
       ? setWalletAmount(`${addingDecimal(wallet.balance?.toLocaleString())}`)
       : setWalletAmount('****');
   }, [setShowAmount, wallet]);

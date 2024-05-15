@@ -55,7 +55,7 @@ const SwapFunds = ({ navigation }) => {
   const [fee, setFee] = useState(0);
   const [swapFrom, setSwapFrom] = useState({
     ...selectedCurrency,
-    balance: wallet?.balance,
+    balance: wallet.balance || 0,
   });
   const [swapTo, setSwapTo] = useState(swapToObject);
   const [swapToCurrency] = useState(
@@ -102,7 +102,7 @@ const SwapFunds = ({ navigation }) => {
               ? swapToCurrency
               : 'local'
           }Balance`
-        ],
+        ] || 0,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

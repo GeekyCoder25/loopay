@@ -22,7 +22,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import AccInfoCard from '../../../components/AccInfoCard';
 import InputPin from '../../../components/InputPin';
 import { AddBankFields, BanksModal } from './AddBank';
-import ChevronDown from '../../../../assets/images/chevron-down';
+import ChevronDown from '../../../../assets/images/chevron-down.svg';
 import Back from '../../../components/Back';
 import RecurringSwitch from '../../../components/RecurringSwitch';
 import SchedulePayment from '../SchedulePayments/SchedulePayment';

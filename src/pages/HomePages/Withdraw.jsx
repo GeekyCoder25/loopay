@@ -22,7 +22,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import AccInfoCard from '../../components/AccInfoCard';
 import InputPin from '../../components/InputPin';
 import { AddBankFields, BanksModal } from './AddWithdraw';
-import ChevronDown from '../../../assets/images/chevron-down';
+import ChevronDown from '../../../assets/images/chevron-down.svg';
 import useFetchData from '../../../utils/fetchAPI';
 
 const Withdraw = ({ navigation }) => {

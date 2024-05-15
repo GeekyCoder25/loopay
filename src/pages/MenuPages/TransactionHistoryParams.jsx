@@ -20,8 +20,10 @@ import ToastMessage from '../../components/ToastMessage';
 import useFetchData from '../../../utils/fetchAPI';
 import { printToFileAsync } from 'expo-print';
 import LoadingModal from '../../components/LoadingModal';
+import { useNavigation } from '@react-navigation/native';
 
-const TransactionHistoryParams = ({ navigation, route }) => {
+const TransactionHistoryParams = ({ route }) => {
+  const navigation = useNavigation();
   const { postFetchData } = useFetchData();
   const { vh, setRefetchTransactions, showAmount, setShowAmount, isAdmin } =
     useContext(AppContext);
@@ -293,7 +295,12 @@ const TransactionHistoryParams = ({ navigation, route }) => {
             <>
               <View style={styles.headerContainer}>
                 <Pressable
-                  onPress={() => navigation.navigate('UserDetails', { email })}>
+                  onPress={() =>
+                    navigation.navigate('UserDetails', {
+                      email,
+                      previousScreen: 'History',
+                    })
+                  }>
                   <UserIcon uri={senderPhoto} />
                 </Pressable>
                 <View>

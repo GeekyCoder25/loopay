@@ -27,11 +27,14 @@ import Button from '../../../components/Button';
 import ErrorMessage from '../../../components/ErrorMessage';
 import InputPin from '../../../components/InputPin';
 import ToastMessage from '../../../components/ToastMessage';
+import { useWalletContext } from '../../../context/WalletContext';
+import { randomUUID } from 'expo-crypto';
 
 const SendInternational = ({ navigation }) => {
   const { getFetchData, postFetchData } = useFetchData();
   const { selectedCurrency, setWalletRefresh, setIsLoading } =
     useContext(AppContext);
+  const { wallet } = useWalletContext();
   const [errorKey, setErrorKey] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
@@ -80,13 +83,17 @@ const SendInternational = ({ navigation }) => {
   }, [formData.sendTo, selectedCurrency.acronym, setIsLoading]);
 
   const handleStep1 = () => {
-    if (!rate) {
+    if (formData.amount > wallet.balance) {
+      setErrorKey('amount');
+      setErrorMessage('Insufficient funds');
+    } else if (!rate) {
       setErrorMessage('Network error');
     } else if (!formData.amount) {
       setErrorKey('amount');
-      setErrorMessage('Amount');
+      setErrorMessage('Please input amount to send');
     } else {
       setStep(2);
+      setErrorMessage('');
     }
   };
 
@@ -99,6 +106,7 @@ const SendInternational = ({ navigation }) => {
       setErrorKey('receiverBank');
     } else {
       setStep(3);
+      setErrorKey('');
     }
   };
 
@@ -134,6 +142,12 @@ const SendInternational = ({ navigation }) => {
     const handleSend = async () => {
       try {
         setIsLoading(true);
+        formData.sendFrom = CurrencyFullDetails[selectedCurrency.acronym];
+        formData.sendFromCurrency = selectedCurrency.currency;
+        formData.id = randomUUID();
+        if (!formData.sendFrom) {
+          setErrorMessage('Currency not currently supported');
+        }
         const response = await postFetchData(
           'user/transfer/international',
           formData,
@@ -208,8 +222,12 @@ const SendInternational = ({ navigation }) => {
                   inputMode="decimal"
                   value={formData.amount}
                   onChangeText={text => {
-                    setErrorKey('');
-                    setErrorMessage('');
+                    text > wallet.balance
+                      ? setErrorMessage('Insufficient funds')
+                      : setErrorMessage('');
+                    text > wallet.balance
+                      ? setErrorKey('amount')
+                      : setErrorKey('');
                     setFormData(prev => {
                       return {
                         ...prev,

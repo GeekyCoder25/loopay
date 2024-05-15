@@ -27,7 +27,7 @@ const WalletContextComponent = memo(({ children }) => {
       })
       .catch(err => {
         console.log(err.message);
-        setWallet(null);
+        setWallet({});
       });
 
     getFetchData(
