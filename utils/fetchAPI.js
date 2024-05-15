@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { getToken, logoutUser } from './storage';
+import { getToken } from './storage';
 import { AppContext } from '../src/components/AppContext';
 import { allCurrencies } from '../src/database/data';
 import ToastMessage from '../src/components/ToastMessage';
