@@ -44,6 +44,8 @@ const SignIn = ({ navigation }) => {
     setCanChangeRole,
     setVerified,
     setIsSessionTimedOut,
+    timerId,
+    timerIdTotal,
   } = useContext(AppContext);
   const [formData, setFormData] = useState({
     email: '',
@@ -53,7 +55,6 @@ const SignIn = ({ navigation }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorKey, setErrorKey] = useState('');
   const [verifyEmail, setVerifyEmail] = useState(false);
-  const timerId = useRef(false);
 
   const handleLogin = async () => {
     setErrorMessage('');
@@ -92,6 +93,8 @@ const SignIn = ({ navigation }) => {
           setIsLoading(false);
           setSuccessMessage('');
           setIsSessionTimedOut(false);
+          clearTimeout(timerId.current);
+          clearTimeout(timerIdTotal.current);
           timerId.current = setTimeout(() => {
             setIsSessionTimedOut(true);
           }, timeForInactivityInSecond * 1000);
