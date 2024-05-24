@@ -50,6 +50,26 @@
           "photosPermission": "Loopay access your photos to set your profile picture",
           "cameraPermission": "Loopay will use your camera to set your profile picture"
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "newArchEnabled": true
+          },
+          "android": {
+            "newArchEnabled": true
+          }
+        }
+      ],
+      "expo-font",
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your camera to complete your facial verification",
+          "enableMicrophonePermission": true,
+          "microphonePermissionText": "$(PRODUCT_NAME) needs access to your Microphone."
+        }
       ]
     ],
     "extra": {
@@ -57,9 +77,7 @@
         "projectId": "055518e9-09c1-4eb9-99b2-42d79d874996"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/055518e9-09c1-4eb9-99b2-42d79d874996"
     },

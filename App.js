@@ -206,7 +206,11 @@ export default function App() {
     <AppContext.Provider value={contextValue}>
       <StatusBar style="auto" translucent={false} backgroundColor="#f5f5f5" />
       <RootSiblingParent>
-        <SafeAreaView style={styles.appContainer} {...panResponder.panHandlers}>
+        <SafeAreaView
+          style={
+            Platform.OS === 'web' ? styles.webContainer : styles.appContainer
+          }
+          {...panResponder.panHandlers}>
           <TouchableWithoutFeedback
             onPress={() => {
               Keyboard.dismiss();
@@ -232,6 +236,11 @@ export default function App() {
 const styles = StyleSheet.create({
   appContainer: {
     flex: 1,
+  },
+  webContainer: {
+    flex: 1,
+    maxWidth: 800,
+    marginHorizontal: 'auto',
   },
   connected: {
     backgroundColor: 'green',

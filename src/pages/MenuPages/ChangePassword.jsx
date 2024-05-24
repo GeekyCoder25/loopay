@@ -13,11 +13,12 @@ import ErrorMessage from '../../components/ErrorMessage';
 import SuccessMessage from '../../components/SuccessMessage';
 import CheckPassword from '../../components/CheckPassword';
 import useFetchData from '../../../utils/fetchAPI';
+import { getSessionID } from '../../../utils/storage';
 
 const ChangePassword = ({ navigation, skipCheck }) => {
-  const { postFetchData } = useFetchData();
+  const { postFetchData, deleteFetchData } = useFetchData();
 
-  const { vh, setIsLoading, isLoggedIn, setIsLoggedIn, setIsSessionTimedOut } =
+  const { vh, setIsLoading, isLoggedIn, setIsSessionTimedOut } =
     useContext(AppContext);
   const [remembersPassword, setRemembersPassword] = useState(true);
 
@@ -66,7 +67,12 @@ const ChangePassword = ({ navigation, skipCheck }) => {
       const { data: result } = fetchResult;
 
       if (result?.password?.includes('successfully')) {
-        if (!isLoggedIn) return setIsLoggedIn(true);
+        if (!isLoggedIn) {
+          setSuccessMessage(result.password);
+          const sessionID = await getSessionID();
+          await deleteFetchData(`user/session/${sessionID}`);
+          return navigation.popToTop();
+        }
         setTimeout(() => {
           skipCheck ? setIsSessionTimedOut(false) : navigation.goBack();
         }, 1500);

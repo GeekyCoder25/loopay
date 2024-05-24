@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, TextInput, Pressable, Keyboard } from 'react-native';
 import Email from '../../../assets/images/mail.svg';
 import Lock from '../../../assets/images/lock.svg';
@@ -20,21 +20,9 @@ import saveSessionOptions from '../../services/saveSession.js';
 import { EmailVerify } from './Signup.jsx';
 import { timeForInactivityInSecond } from '../../config/config.js';
 import useFetchData from '../../../utils/fetchAPI.js';
-import ToastMessage from '../../components/ToastMessage.jsx';
 
 const SignIn = ({ navigation }) => {
   const { getFetchData, postFetchData } = useFetchData();
-
-  useEffect(() => {
-    getEmail().then(email => {
-      if (email) {
-        setFormData(prev => {
-          return { ...prev, email };
-        });
-      }
-    });
-  }, []);
-
   const {
     vh,
     setIsLoggedIn,
@@ -56,13 +44,22 @@ const SignIn = ({ navigation }) => {
   const [errorKey, setErrorKey] = useState('');
   const [verifyEmail, setVerifyEmail] = useState(false);
 
+  useEffect(() => {
+    getEmail().then(email => {
+      if (email) {
+        setFormData(prev => {
+          return { ...prev, email };
+        });
+      }
+    });
+  }, []);
+
   const handleLogin = async () => {
     setErrorMessage('');
-    setIsLoading(true);
     if (Object.values(formData).includes('')) {
       setErrorMessage('Please input all fields');
-      setIsLoading(false);
     } else {
+      setIsLoading(true);
       try {
         const sessionData = saveSessionOptions();
         const response = await postFetchData('auth/login', formData);

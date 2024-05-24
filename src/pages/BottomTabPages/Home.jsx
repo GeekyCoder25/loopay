@@ -2,7 +2,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
   BackHandler,
-  Clipboard,
   Dimensions,
   ImageBackground,
   Platform,
@@ -12,6 +11,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import Bell from '../../../assets/images/bell.svg';
 import BellActive from '../../../assets/images/bellActive.svg';
 import ChevronDown from '../../../assets/images/chevron-down.svg';
@@ -57,7 +57,7 @@ const Home = ({ navigation }) => {
   const { transactions = [], wallet } = useWalletContext();
   const { requestFunds: requests = [] } = useRequestFundsContext();
   const [modalOpen, setModalOpen] = useState(false);
-  const firstName = appData.userProfile.firstName;
+  const firstName = appData.userProfile?.firstName;
   const [isExiting, setIsExiting] = useState(false);
   const [requestsLength, setRequestsLength] = useState(0);
   const [closeRequest, setCloseRequest] = useState(false);
@@ -125,7 +125,7 @@ const Home = ({ navigation }) => {
 
   const handleCopy = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    Clipboard.setString(wallet.accNo);
+    Clipboard.setStringAsync(wallet.accNo);
     ToastMessage('Copied to clipboard');
   };
 
@@ -146,6 +146,7 @@ const Home = ({ navigation }) => {
           <View style={styles.header}>
             <Pressable
               onPress={() => navigation.navigate('ProfileNavigator')}
+              onLongPress={() => navigation.navigate('FaceDetection')}
               style={styles.userImageContainer}>
               <UserIcon />
               <RegularText>Hello, {firstName}</RegularText>

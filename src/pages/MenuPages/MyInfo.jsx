@@ -1,11 +1,6 @@
 import React, { useContext, useState } from 'react';
-import {
-  Clipboard,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
@@ -133,7 +128,7 @@ const MyInfo = () => {
         <Pressable
           style={styles.copy}
           onPress={() => {
-            Clipboard.setString(`#${appData.tagName}`);
+            Clipboard.setStringAsync(`#${appData.tagName}`);
             ToastMessage('Copied to clipboard');
           }}>
           <BoldText style={styles.copyText}>Copy</BoldText>
@@ -147,7 +142,7 @@ const MyInfo = () => {
         <Pressable
           style={styles.copy}
           onPress={() => {
-            Clipboard.setString(fullName);
+            Clipboard.setStringAsync(fullName);
             ToastMessage('Copied to clipboard');
           }}>
           <BoldText style={styles.copyText}>Copy</BoldText>
@@ -161,7 +156,7 @@ const MyInfo = () => {
         <Pressable
           style={styles.copy}
           onPress={() => {
-            Clipboard.setString(phoneNumber.slice(4));
+            Clipboard.setStringAsync(phoneNumber.slice(4));
             ToastMessage('Copied to clipboard');
           }}>
           <BoldText style={styles.copyText}>Copy</BoldText>
@@ -175,7 +170,7 @@ const MyInfo = () => {
         <Pressable
           style={styles.copy}
           onPress={() => {
-            Clipboard.setString(phoneNumber);
+            Clipboard.setStringAsync(phoneNumber);
             ToastMessage('Copied to clipboard');
           }}>
           <BoldText style={styles.copyText}>Copy</BoldText>

@@ -10,7 +10,7 @@ import PageContainer from '../../components/PageContainer';
 import RegularText from '../../components/fonts/RegularText';
 import BoldText from '../../components/fonts/BoldText';
 import { AppContext } from '../../components/AppContext';
-import { loginUser } from '../../../utils/storage';
+import { getEmail, loginUser } from '../../../utils/storage';
 import ErrorMessage from '../../components/ErrorMessage';
 import saveSessionOptions from '../../services/saveSession';
 import { PINInputFields } from '../../components/InputPinPage';
@@ -43,6 +43,16 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
   const inputRef = useRef();
 
   const codeLengths = [1, 2, 3, 4];
+
+  useEffect(() => {
+    getEmail().then(email => {
+      if (email) {
+        setFormData(prev => {
+          return { ...prev, email };
+        });
+      }
+    });
+  }, []);
 
   useEffect(() => {
     setIsPinOkay(otpCode.length === codeLengths.length);
@@ -102,12 +112,6 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
       const sessionData = saveSessionOptions();
       await postFetchData('user/session', sessionData, result.data.token);
       await loginUser(result.data, sessionData.deviceID);
-      const response = await getFetchData('user?popup=true');
-      setAppData(response.data);
-      setVerified(response.data.verificationStatus || false);
-      if (result.data.role === 'admin') {
-        setCanChangeRole(true);
-      }
       setCanChange ? setCanChange(true) : navigation.replace('ChangePassword');
     } catch (err) {
       setErrorMessage(err.message);

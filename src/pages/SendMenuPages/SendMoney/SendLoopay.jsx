@@ -4,7 +4,6 @@ import AccInfoCard from '../../../components/AccInfoCard';
 import PageContainer from '../../../components/PageContainer';
 import {
   ActivityIndicator,
-  Clipboard,
   Image,
   Pressable,
   ScrollView,
@@ -12,6 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import RegularText from '../../../components/fonts/RegularText';
 import BoldText from '../../../components/fonts/BoldText';
 import Paste from '../../../../assets/images/paste.svg';
@@ -43,7 +43,7 @@ const SendLoopay = ({ navigation, route }) => {
 
   useEffect(() => {
     const getClipboard = async () => {
-      const copiedText = await Clipboard.getString();
+      const copiedText = await Clipboard.getStringAsync();
       // copiedText.includes('#') &&
       setShowPaste(copiedText);
     };

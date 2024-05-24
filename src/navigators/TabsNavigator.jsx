@@ -64,6 +64,7 @@ import BottomTabs from './BottomTabs';
 import NotificationsContextComponent from '../context/NotificationContext';
 import ShakeSettings from '../pages/MenuPages/Settings/ShakeSettings';
 import Report from '../pages/HomePages/Report';
+import FaceDetection from '../pages/MenuPages/VerificationStatus/FaceDetection';
 
 const TabsNavigator = () => {
   const {
@@ -115,6 +116,8 @@ const TabsNavigator = () => {
                 component={BottomTabs}
                 options={{ headerShown: false }}
               />
+              <Stack.Screen name="FaceDetection" component={FaceDetection} />
+
               <Stack.Screen name="Notification" component={Notification} />
               <Stack.Screen name="LoopayTag" component={LoopayTag} />
               <Stack.Screen name="AccountDetails" component={AccountDetails} />

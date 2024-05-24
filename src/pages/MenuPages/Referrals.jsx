@@ -1,12 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import {
-  Clipboard,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import { AppContext } from '../../components/AppContext';
@@ -34,7 +29,7 @@ const Referrals = ({ navigation }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletRefresh]);
   const handleShare = () => {
-    Clipboard.setString(referralLink);
+    Clipboard.setStringAsync(referralLink);
     ToastMessage('Copied to clipboard');
   };
 

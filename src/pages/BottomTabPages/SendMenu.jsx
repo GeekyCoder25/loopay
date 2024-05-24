@@ -131,9 +131,9 @@ const SendMenu = ({ navigation }) => {
           ))}
         </ScrollView>
       ) : (
-        <RegularText style={styles.beneficiaryEmpty}>
-          Your recent beneficiaries will appear here
-        </RegularText>
+        <View style={styles.beneficiaryEmpty}>
+          <RegularText>Your recent beneficiaries will appear here</RegularText>
+        </View>
       )}
       <View style={styles.modalBorder} />
       <ImageBackground
@@ -197,8 +197,8 @@ const styles = StyleSheet.create({
   },
   beneficiaryEmpty: {
     width: 100 + '%',
-    textAlign: 'center',
-    textAlignVertical: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
     minHeight: 50,
     maxHeight: 50,
   },

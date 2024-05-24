@@ -854,7 +854,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  flexDirection: 'row',
   textInput: {
     flex: 1,
     height: 55,

@@ -1,6 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
 import {
-  Clipboard,
   Modal,
   Platform,
   Pressable,
@@ -9,6 +8,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
@@ -106,7 +106,7 @@ const AddMoney = ({ navigation, route }) => {
 
   const handleCopy = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    Clipboard.setString(wallet.accNo);
+    Clipboard.setStringAsync(wallet.accNo);
     ToastMessage('Account number copied');
   };
 

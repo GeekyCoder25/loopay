@@ -34,8 +34,7 @@ const VerifyInputNumber = ({ route, navigation }) => {
         ToastMessage(
           'Verification submitted successfully, awaiting confirmation',
         );
-        navigation.popToTop();
-        return navigation.replace('HomeNavigator');
+        return navigation.popToTop();
       }
       throw new Error(response.data.message);
     } catch (err) {

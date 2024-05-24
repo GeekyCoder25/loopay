@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
 import BoldText from '../../components/fonts/BoldText';
-import { Clipboard, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import RegularText from '../../components/fonts/RegularText';
 import ShareIcon from '../../../assets/images/share.svg';
 import AddIcon from '../../../assets/images/add.svg';
@@ -59,7 +60,7 @@ const Referral = ({ navigation }) => {
   };
 
   const handleShare = () => {
-    Clipboard.setString(referralLink);
+    Clipboard.setStringAsync(referralLink);
     ToastMessage('Copied to clipboard');
   };
 
