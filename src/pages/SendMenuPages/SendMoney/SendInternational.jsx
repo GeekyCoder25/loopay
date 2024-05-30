@@ -40,7 +40,7 @@ const SendInternational = ({ navigation }) => {
   const [formData, setFormData] = useState({
     amount: '',
     sendTo: '',
-    toReceive: '',
+    toReceiveAmount: '',
     receiverName: '',
     receiverAccountNo: '',
     receiverBank: '',
@@ -63,7 +63,7 @@ const SendInternational = ({ navigation }) => {
             setFormData(prev => {
               return {
                 ...prev,
-                toReceive: Number(
+                toReceiveAmount: Number(
                   (
                     formData.amount * response.data[formData.sendTo.code]
                   ).toFixed(2),
@@ -86,12 +86,27 @@ const SendInternational = ({ navigation }) => {
     if (formData.amount > wallet.balance) {
       setErrorKey('amount');
       setErrorMessage('Insufficient funds');
+      setFormData(prev => {
+        return {
+          ...prev,
+          toReceiveAmount: '',
+        };
+      });
     } else if (!rate) {
       setErrorMessage('Network error');
     } else if (!formData.amount) {
       setErrorKey('amount');
       setErrorMessage('Please input amount to send');
+    } else if (formData.toReceiveAmount < 1) {
+      setErrorKey('amount');
+      setErrorMessage('Amount too low');
     } else {
+      setFormData(prev => {
+        return {
+          ...prev,
+          fee: 0.035 * formData.amount,
+        };
+      });
       setStep(2);
       setErrorMessage('');
     }
@@ -113,7 +128,7 @@ const SendInternational = ({ navigation }) => {
   const transactionDetails = [
     {
       title: 'Transaction Fee',
-      value: '0.00',
+      value: selectedCurrency.symbol + (formData.fee || '0.00'),
     },
     {
       title: 'Pay From',
@@ -146,26 +161,34 @@ const SendInternational = ({ navigation }) => {
         formData.sendFromCurrency = selectedCurrency.currency;
         formData.id = randomUUID();
         if (!formData.sendFrom) {
-          setErrorMessage('Currency not currently supported');
+          return setErrorMessage('Currency not currently supported');
         }
+        formData.rate = {
+          from: selectedCurrency.acronym,
+          to: formData.sendTo.code,
+          rate,
+        };
         const response = await postFetchData(
           'user/transfer/international',
           formData,
         );
         if (response.status === 200) {
           navigation.replace('Success', {
-            // userToSendTo: bankSelected,
             amountInput: formData.amount,
-            // fee,
-            // id,
-            // transaction,
+            rate: {
+              from: selectedCurrency.acronym,
+              to: formData.sendTo.code,
+              rate,
+            },
+            fee: formData.fee,
+            id: formData.id,
+            transaction: response.data.transaction,
           });
           return setWalletRefresh(prev => !prev);
         }
         throw new Error(response.data);
       } catch (error) {
         ToastMessage(error.message);
-        // console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -222,17 +245,25 @@ const SendInternational = ({ navigation }) => {
                   inputMode="decimal"
                   value={formData.amount}
                   onChangeText={text => {
-                    text > wallet.balance
-                      ? setErrorMessage('Insufficient funds')
-                      : setErrorMessage('');
-                    text > wallet.balance
-                      ? setErrorKey('amount')
-                      : setErrorKey('');
+                    if (text > wallet.balance) {
+                      setErrorMessage('Insufficient funds');
+                      setErrorKey('amount');
+                      return setFormData(prev => {
+                        return {
+                          ...prev,
+                          amount: text,
+                          toReceiveAmount: '',
+                        };
+                      });
+                    } else {
+                      setErrorMessage('');
+                      setErrorKey('');
+                    }
                     setFormData(prev => {
                       return {
                         ...prev,
                         amount: text,
-                        toReceive: Number((formData.amount * rate).toFixed(2)),
+                        toReceiveAmount: Number((text * rate).toFixed(2)),
                       };
                     });
                   }}
@@ -328,7 +359,7 @@ const SendInternational = ({ navigation }) => {
                   }}
                 />
                 <View>
-                  <BoldText>Free</BoldText>
+                  <BoldText>{formData.fee}</BoldText>
                 </View>
                 <View
                   style={{
@@ -370,7 +401,7 @@ const SendInternational = ({ navigation }) => {
                     <BoldText>
                       {formData.sendTo.symbol}
                       {'  '}
-                      {formData.toReceive}
+                      {formData.toReceiveAmount}
                     </BoldText>
                     <Pressable
                       style={styles.textInputRow}
@@ -542,7 +573,7 @@ const SendInternational = ({ navigation }) => {
                     />
                     <RegularText>Receive</RegularText>
                     <BoldText>
-                      {`${formData.toReceive?.toLocaleString()} ${formData.sendTo.code}`}
+                      {`${formData.toReceiveAmount?.toLocaleString()} ${formData.sendTo.code}`}
                     </BoldText>
                   </View>
                 </View>

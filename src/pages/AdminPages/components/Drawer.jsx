@@ -21,6 +21,7 @@ import IonIcon from '@expo/vector-icons/Ionicons';
 import BoldText from '../../../components/fonts/BoldText';
 import { useAdminDataContext } from '../../../context/AdminContext';
 import useFetchData from '../../../../utils/fetchAPI';
+import { FontAwesome } from '@expo/vector-icons';
 
 const CustomDrawer = props => {
   const { deleteFetchData } = useFetchData();
@@ -38,6 +39,7 @@ const CustomDrawer = props => {
     'Dashboard',
     'Accounts',
     'Proofs',
+    'Internationals',
     'Transfer',
     'Rate & Charges',
     'Users',
@@ -56,6 +58,8 @@ const CustomDrawer = props => {
         return <AccountsIcon />;
       case 'Proofs':
         return <IonIcon name="cash-outline" color={'#868585'} size={24} />;
+      case 'Internationals':
+        return <FontAwesome name="globe" color={'#868585'} size={24} />;
       case 'Transfer':
         return <TransferIcon />;
       case 'Rate & Charges':

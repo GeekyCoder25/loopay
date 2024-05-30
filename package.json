@@ -9,7 +9,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "update": "npx eas-cli update"
+    "update": "npx eas-cli update",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@expo/metro-runtime": "~3.2.1",
@@ -29,6 +30,7 @@
     "expo-auth-session": "~5.5.2",
     "expo-av": "~14.0.5",
     "expo-build-properties": "~0.12.1",
+    "expo-camera": "^15.0.10",
     "expo-clipboard": "~6.0.3",
     "expo-crypto": "~13.0.2",
     "expo-device": "~6.0.2",
@@ -44,6 +46,7 @@
     "expo-status-bar": "~1.12.1",
     "expo-updates": "~0.25.13",
     "expo-web-browser": "~13.0.3",
+    "patch-package": "^8.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "^0.74.1",
@@ -58,7 +61,7 @@
     "react-native-screens": "3.31.1",
     "react-native-svg": "15.2.0",
     "react-native-svg-transformer": "^1.0.0",
-    "react-native-vision-camera": "^4.0.4",
+    "react-native-vision-camera": "^4.0.5",
     "react-native-web": "~0.19.10"
   },
   "devDependencies": {

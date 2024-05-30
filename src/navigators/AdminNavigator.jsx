@@ -25,6 +25,7 @@ import ServerAPIs from '../pages/AdminPages/ServerAPIs';
 import ReportNavigator from '../pages/AdminPages/Reports/ReportNavigator';
 import UserDetails from '../pages/AdminPages/Users/UserDetails';
 import UserTransaction from '../pages/AdminPages/Users/UserTransaction';
+import Internationals from '../pages/AdminPages/Internationals';
 
 const AdminNavigator = () => {
   const Drawer = createDrawerNavigator();
@@ -125,6 +126,7 @@ const AdminNavigator = () => {
           component={ProofNavigator}
           options={{ headerShown: false }}
         />
+        <Drawer.Screen name="Internationals" component={Internationals} />
         <Drawer.Screen name="Reports" component={ReportNavigator} />
         <Drawer.Screen name="Server APIs" component={ServerAPIs} />
       </Drawer.Navigator>

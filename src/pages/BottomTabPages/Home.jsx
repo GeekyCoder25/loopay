@@ -146,7 +146,7 @@ const Home = ({ navigation }) => {
           <View style={styles.header}>
             <Pressable
               onPress={() => navigation.navigate('ProfileNavigator')}
-              onLongPress={() => navigation.navigate('FaceDetection')}
+              // onLongPress={() => navigation.navigate('FaceDetection')}
               style={styles.userImageContainer}>
               <UserIcon />
               <RegularText>Hello, {firstName}</RegularText>

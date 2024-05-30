@@ -31,6 +31,7 @@ const Success = ({ navigation, route }) => {
     isCredit,
     message,
     type,
+    rate,
     token,
   } = route.params;
 
@@ -139,6 +140,7 @@ const Success = ({ navigation, route }) => {
             isCredit={isCredit}
             type={type}
             token={token}
+            rate={rate}
             date={transaction?.createdAt || Date.now()}
           />
         </View>

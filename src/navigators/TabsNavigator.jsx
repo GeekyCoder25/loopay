@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { AppContext } from '../components/AppContext';
 import LoopayTag from '../pages/HomePages/LoopayTag';
 import SendMoneyNavigator from './SendMoneyNavigator';
@@ -64,7 +64,6 @@ import BottomTabs from './BottomTabs';
 import NotificationsContextComponent from '../context/NotificationContext';
 import ShakeSettings from '../pages/MenuPages/Settings/ShakeSettings';
 import Report from '../pages/HomePages/Report';
-import FaceDetection from '../pages/MenuPages/VerificationStatus/FaceDetection';
 
 const TabsNavigator = () => {
   const {
@@ -116,8 +115,6 @@ const TabsNavigator = () => {
                 component={BottomTabs}
                 options={{ headerShown: false }}
               />
-              <Stack.Screen name="FaceDetection" component={FaceDetection} />
-
               <Stack.Screen name="Notification" component={Notification} />
               <Stack.Screen name="LoopayTag" component={LoopayTag} />
               <Stack.Screen name="AccountDetails" component={AccountDetails} />

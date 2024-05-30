@@ -78,8 +78,7 @@ const VerifyImage = ({ route, navigation }) => {
       if (response.status === 200) {
         setVerified('pending');
         ToastMessage('Submitted successfully, verification is pending');
-        navigation.popToTop();
-        navigation.navigate('Home');
+        return navigation.navigate('FaceDetection');
       } else {
         const errormessage = result.message.includes(
           'Please upload an image less than',

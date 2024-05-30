@@ -18,6 +18,7 @@ const FooterCard = ({
   reference,
   isCredit,
   type,
+  rate,
   date,
 }) => {
   const { selectedCurrency } = useContext(AppContext);
@@ -144,6 +145,14 @@ const FooterCard = ({
               )}
             </BoldText>
           </View>
+          {rate && (
+            <View style={styles.cardLine}>
+              <RegularText style={styles.cardKey}>Rate</RegularText>
+              <BoldText style={styles.cardValue}>
+                1 {rate.from} = {rate.rate} {rate.to}
+              </BoldText>
+            </View>
+          )}
           <View style={styles.cardLine}>
             <RegularText style={styles.cardKey}>Date</RegularText>
             <BoldText style={styles.cardValue}>{transactionDate}</BoldText>

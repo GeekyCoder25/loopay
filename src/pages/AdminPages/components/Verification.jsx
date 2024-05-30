@@ -23,7 +23,17 @@ import Back from '../../../components/Back';
 
 const Verification = ({ route, modalOpen, setModalOpen }) => {
   const { getFetchData, putFetchData } = useFetchData();
-  const { country, email, idType, idValue, front, back, status, _id } = route;
+  const {
+    country,
+    email,
+    idType,
+    idValue,
+    front,
+    back,
+    status,
+    _id,
+    faceVideo,
+  } = route;
   const { setIsLoading, vw } = useContext(AppContext);
   const [userData, setUserData] = useState(null);
   const [openMessageModal, setOpenMessageModal] = useState(false);
@@ -135,6 +145,18 @@ const Verification = ({ route, modalOpen, setModalOpen }) => {
             <RegularText>Status:</RegularText>
             <BoldText style={styles.status}>{status}</BoldText>
           </View>
+          {faceVideo && (
+            <View style={styles.detailsRow}>
+              <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
+              <RegularText>Face Data:</RegularText>
+              <Pressable onPress={() => Linking.openURL(faceVideo)}>
+                <BoldText style={{ ...styles.status, ...styles.link }}>
+                  Click here
+                </BoldText>
+              </Pressable>
+            </View>
+          )}
+
           {front && (
             <View style={styles.detailsColumn}>
               <View style={styles.detailsRow}>
@@ -201,6 +223,10 @@ const styles = StyleSheet.create({
   },
   status: {
     textTransform: 'capitalize',
+  },
+  link: {
+    color: 'blue',
+    textDecorationLine: 'underline',
   },
   containerText: { fontSize: 18 },
   containerSub: { padding: 10, gap: 10 },

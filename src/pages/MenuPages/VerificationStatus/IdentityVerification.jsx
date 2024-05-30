@@ -43,9 +43,9 @@ const IdentityVerification = ({ navigation }) => {
       apiUrl: 'https://jsonplaceholder.typicode.com/users',
       apiData: [
         { name: 'Bank Verification Number (BVN)' },
-        { name: 'National ID', type: 'photo' },
-        { name: 'Passport ID', type: 'photo' },
-        { name: 'Driver License ID', type: 'photo' },
+        // { name: 'National ID', type: 'photo' },
+        // { name: 'Passport ID', type: 'photo' },
+        // { name: 'Driver License ID', type: 'photo' },
       ],
     },
   ];

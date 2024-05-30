@@ -1,10 +1,6 @@
-import { Image, Platform, Pressable, StyleSheet, View } from 'react-native';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import {
-  Camera,
-  useCameraDevice,
-  useCameraPermission,
-} from 'react-native-vision-camera';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
+import React, { useContext, useRef, useState } from 'react';
+
 import Button from '../../../components/Button';
 import { AppContext } from '../../../components/AppContext';
 import Capture from '../../../../assets/images/capture-record.svg';
@@ -15,42 +11,42 @@ import RegularText from '../../../components/fonts/RegularText';
 import BoldText from '../../../components/fonts/BoldText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import VideoPreview from './VideoPreview';
-import ToastMessage from '../../../components/ToastMessage';
+import { CameraView, useMicrophonePermissions } from 'expo-camera';
+import { useCameraPermissions } from 'expo-image-picker';
 
 const FaceDetection = () => {
   const camera = useRef(null);
-  const frontCamera = useCameraDevice('front');
-  const backCamera = useCameraDevice('back');
   const { vw } = useContext(AppContext);
   const [isRecording, setIsRecording] = useState(false);
-
-  const device = frontCamera || backCamera;
-  const { hasPermission, requestPermission } = useCameraPermission();
   const [showPreview, setShowPreview] = useState(false);
   const [video, setVideo] = useState(null);
   const [isVideoRecorded, setIsVideoRecorded] = useState(false);
 
-  useEffect(() => {
-    isRecording && camera.current;
-  }, [isRecording]);
+  const [permission, requestPermission] = useCameraPermissions();
+  const [micPermission, requestMicPermission] = useMicrophonePermissions();
 
-  if (!hasPermission) {
+  if (!permission) {
     requestPermission();
     return <View />;
   }
+  if (!micPermission) {
+    requestMicPermission();
+    return <View />;
+  }
 
-  if (device == null) return <Button text={'No device'} />;
+  if (!permission.granted) {
+    return (
+      <View style={styles.container}>
+        <BoldText>We need your permission to show the camera</BoldText>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
+  }
 
-  const handleRecord = () => {
+  const handleCameraInitialized = () => {
     setIsRecording(true);
     setShowPreview(false);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-  };
-
-  const handleStopRecord = async () => {
-    setIsRecording(false);
-    setIsVideoRecorded(true);
-    await camera.current.stopRecording();
   };
 
   if (showPreview) {
@@ -76,16 +72,11 @@ const FaceDetection = () => {
               maxWidth: vw * 0.9,
               maxHeight: vw * 0.9,
             }}>
-            <Camera
-              style={StyleSheet.absoluteFill}
-              device={device}
-              isActive={true}
-              photo={true}
-            />
+            <CameraView style={StyleSheet.absoluteFill} facing="front" />
           </View>
         </View>
         <View style={{ ...styles.button, marginBottom: vw * 0.2 }}>
-          <Pressable onPress={handleRecord}>
+          <Pressable onPress={handleCameraInitialized}>
             <CaptureActive />
           </Pressable>
         </View>
@@ -142,14 +133,27 @@ const FaceDetection = () => {
     );
   }
 
-  const handleCameraInitialized = () => {
-    camera.current?.startRecording({
-      onRecordingFinished: videoData => {
+  const handleRecord = async () => {
+    try {
+      if (camera.current) {
+        setTimeout(() => {
+          setVideo(true);
+        }, 20000);
+        const videoData = await camera.current.recordAsync();
+        console.log(videoData);
         setVideo(videoData);
-      },
-      onRecordingError: error => ToastMessage(error),
-    });
+      }
+    } catch (error) {
+      console.warn('Failed to start recording:', error);
+    }
   };
+
+  const handleStopRecord = () => {
+    setIsRecording(false);
+    setIsVideoRecorded(true);
+    camera.current.stopRecording();
+  };
+
   return (
     <View style={styles.page}>
       <View style={styles.guide} />
@@ -167,16 +171,14 @@ const FaceDetection = () => {
             tintColor="#5bb85d"
             onAnimationComplete={handleStopRecord}
             backgroundColor="#fff"
-            duration={30000}
+            duration={15000}
             style={styles.progress}>
             {() => (
-              <Camera
+              <CameraView
                 style={{ ...StyleSheet.absoluteFill, ...styles.rotateZ }}
-                device={device}
-                isActive={true}
-                video={true}
+                facing="front"
                 ref={camera}
-                onInitialized={handleCameraInitialized}
+                onCameraReady={handleRecord}
               />
             )}
           </AnimatedCircularProgress>
@@ -234,13 +236,13 @@ const styles = StyleSheet.create({
     transform: [{ rotateZ: '-90deg' }],
   },
   rotateZ: {
-    transform: Platform.OS === 'android' ? [{ rotateZ: '90deg' }] : undefined,
+    transform: [{ rotateZ: '90deg' }],
   },
   camera: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: '3%',
+    paddingHorizontal: '5%',
   },
   button: {
     justifyContent: 'center',

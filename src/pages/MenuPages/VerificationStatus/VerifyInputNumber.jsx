@@ -30,11 +30,7 @@ const VerifyInputNumber = ({ route, navigation }) => {
       const body = { ...route.params, idType };
       const response = await postFetchData('user/verify', body);
       if (response.status === 200) {
-        setVerified('pending');
-        ToastMessage(
-          'Verification submitted successfully, awaiting confirmation',
-        );
-        return navigation.popToTop();
+        return navigation.navigate('FaceDetection');
       }
       throw new Error(response.data.message);
     } catch (err) {

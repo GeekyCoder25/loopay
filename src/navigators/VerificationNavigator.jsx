@@ -1,4 +1,3 @@
-import { StyleSheet } from 'react-native';
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -8,6 +7,13 @@ import VerificationInformation from '../pages/MenuPages/VerificationStatus/Verif
 import VerifyImage from '../pages/MenuPages/VerificationStatus/VerifyImage';
 import VerifyInputNumber from '../pages/MenuPages/VerificationStatus/VerifyInputNumber';
 import Back from '../components/Back';
+import Constants from 'expo-constants';
+
+const FaceDetection = React.lazy(() => {
+  return Constants.appOwnership === 'expo'
+    ? import('../pages/MenuPages/VerificationStatus/FaceDetectionExpo')
+    : import('../pages/MenuPages/VerificationStatus/FaceDetection');
+});
 
 export default function VerificationNavigator() {
   const Stack = createNativeStackNavigator();
@@ -37,8 +43,7 @@ export default function VerificationNavigator() {
       />
       <Stack.Screen name="VerifyInput" component={VerifyInputNumber} />
       <Stack.Screen name="VerifyImage" component={VerifyImage} />
+      <Stack.Screen name="FaceDetection" component={FaceDetection} />
     </Stack.Navigator>
   );
 }
-
-const styles = StyleSheet.create({});
