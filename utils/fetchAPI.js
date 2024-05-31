@@ -9,7 +9,7 @@ import ToastMessage from '../src/components/ToastMessage';
 // export const apiUrl = 'http://192.168.82.247:8000/api';
 // export const apiUrl = 'http://192.168.188.101:8000/api';
 export const apiUrl = 'https://loopay-api.up.railway.app/api';
-//
+
 const timeoutSeconds = 30;
 
 const useFetchData = () => {

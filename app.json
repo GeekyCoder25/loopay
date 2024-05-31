@@ -2,7 +2,7 @@
   "expo": {
     "name": "Loopay",
     "slug": "Loopay",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,12 +19,12 @@
         "NSCameraUsageDescription": "Loopay uses the camera to set yor profile picture"
       },
       "bundleIdentifier": "com.loopay",
-      "buildNumber": "9",
+      "buildNumber": "10",
       "icon": "./assets/ios-icon.png"
     },
     "android": {
       "package": "com.loopay",
-      "versionCode": 9,
+      "versionCode": 10,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"

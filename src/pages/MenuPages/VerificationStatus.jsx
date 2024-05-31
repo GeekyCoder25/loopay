@@ -4,6 +4,8 @@ import { View, StyleSheet } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import Button from '../../components/Button';
 import RegularText from '../../components/fonts/RegularText';
+import Tier1Icon from '../../../assets/images/tier1-icon.svg';
+import Tier1 from '../../../assets/images/tier1.svg';
 
 const VerificationStatus = ({ navigation }) => {
   return (
@@ -11,20 +13,27 @@ const VerificationStatus = ({ navigation }) => {
       <View style={styles.container}>
         <View>
           <BoldText style={styles.headerText}>Identity Verification</BoldText>
+          <View style={styles.tier1}>
+            <Tier1Icon />
+          </View>
           <View style={styles.card}>
+            <View style={styles.icon}>
+              <BoldText style={styles.iconText}>Tier 1</BoldText>
+              <Tier1 />
+            </View>
             <View style={styles.rowContainer}>
-              <BoldText style={styles.cardHeaderText}>Benefits</BoldText>
+              <BoldText style={styles.cardHeaderText}>Benefit</BoldText>
+              <View style={styles.row}>
+                <RegularText>Withdrawal Limit</RegularText>
+                <RegularText>50,000</RegularText>
+              </View>
               <View style={styles.row}>
                 <RegularText>Deposit</RegularText>
                 <RegularText>Unlimited</RegularText>
               </View>
-              <View style={styles.row}>
-                <RegularText>Withdrawal</RegularText>
-                <RegularText>Unlimited</RegularText>
-              </View>
             </View>
             <View style={{ ...styles.rowContainer, ...styles.border }}>
-              <BoldText style={styles.cardHeaderText}>Requirements</BoldText>
+              <BoldText style={styles.cardHeaderText}>Requirement</BoldText>
               <View style={styles.row}>
                 <RegularText>Personal Info</RegularText>
               </View>
@@ -50,7 +59,12 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 20,
+    marginTop: 20,
     color: '#525252',
+  },
+  tier1: {
+    marginVertical: 40,
+    alignItems: 'center',
   },
   card: {
     backgroundColor: '#eee',
@@ -58,6 +72,21 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     borderRadius: 30,
     marginHorizontal: 2 + '%',
+  },
+  icon: {
+    backgroundColor: '#1e1e1e',
+    marginTop: 20,
+    marginLeft: 20,
+    width: 100,
+    padding: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 18,
+    flexDirection: 'row',
+    columnGap: 10,
+  },
+  iconText: {
+    color: '#fff',
   },
   border: {
     borderTopWidth: 1,

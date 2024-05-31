@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Easing, Image, Pressable, StyleSheet, View } from 'react-native';
 import React, { useContext, useRef, useState } from 'react';
 
 import Button from '../../../components/Button';
@@ -13,6 +13,7 @@ import FaIcon from '@expo/vector-icons/FontAwesome';
 import VideoPreview from './VideoPreview';
 import { CameraView, useMicrophonePermissions } from 'expo-camera';
 import { useCameraPermissions } from 'expo-image-picker';
+import ToastMessage from '../../../components/ToastMessage';
 
 const FaceDetection = () => {
   const camera = useRef(null);
@@ -24,6 +25,7 @@ const FaceDetection = () => {
 
   const [permission, requestPermission] = useCameraPermissions();
   const [micPermission, requestMicPermission] = useMicrophonePermissions();
+  const [recordTime, setRecordTime] = useState(15);
 
   if (!permission) {
     requestPermission();
@@ -136,11 +138,15 @@ const FaceDetection = () => {
   const handleRecord = async () => {
     try {
       if (camera.current) {
+        const interval = setInterval(() => {
+          setRecordTime(prev => prev - 1);
+        }, 1000);
         setTimeout(() => {
           setVideo(true);
-        }, 20000);
+          clearTimeout(interval);
+        }, recordTime * 1000);
         const videoData = await camera.current.recordAsync();
-        console.log(videoData);
+        ToastMessage(videoData.uri);
         setVideo(videoData);
       }
     } catch (error) {
@@ -151,6 +157,7 @@ const FaceDetection = () => {
   const handleStopRecord = () => {
     setIsRecording(false);
     setIsVideoRecorded(true);
+    setRecordTime(15);
     camera.current.stopRecording();
   };
 
@@ -165,17 +172,19 @@ const FaceDetection = () => {
             maxHeight: vw * 0.9,
           }}>
           <AnimatedCircularProgress
-            size={vw * 0.9}
-            width={5}
+            size={vw * 0.89}
+            width={10}
             fill={100}
             tintColor="#5bb85d"
             onAnimationComplete={handleStopRecord}
             backgroundColor="#fff"
-            duration={15000}
+            duration={recordTime * 1000}
+            easing={Easing.linear}
+            rotation={0}
             style={styles.progress}>
             {() => (
               <CameraView
-                style={{ ...StyleSheet.absoluteFill, ...styles.rotateZ }}
+                style={StyleSheet.absoluteFill}
                 facing="front"
                 ref={camera}
                 onCameraReady={handleRecord}
@@ -185,7 +194,9 @@ const FaceDetection = () => {
         </View>
       </View>
       <View style={{ ...styles.button, marginBottom: vw * 0.2 }}>
-        <CaptureActive />
+        <BoldText style={styles.time}>
+          {!isVideoRecorded && recordTime}
+        </BoldText>
       </View>
     </View>
   );
@@ -232,12 +243,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  progress: {
-    transform: [{ rotateZ: '-90deg' }],
-  },
-  rotateZ: {
-    transform: [{ rotateZ: '90deg' }],
-  },
+
   camera: {
     flex: 1,
     justifyContent: 'center',
@@ -247,5 +253,8 @@ const styles = StyleSheet.create({
   button: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  time: {
+    fontSize: 38,
   },
 });

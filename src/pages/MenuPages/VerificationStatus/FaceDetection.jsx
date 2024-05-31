@@ -1,11 +1,10 @@
-import { Image, Platform, Pressable, StyleSheet, View } from 'react-native';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Easing, Image, Pressable, StyleSheet, View } from 'react-native';
+import React, { useContext, useRef, useState } from 'react';
 import {
   Camera,
   useCameraDevice,
   useCameraPermission,
 } from 'react-native-vision-camera';
-import Button from '../../../components/Button';
 import { AppContext } from '../../../components/AppContext';
 import Capture from '../../../../assets/images/capture-record.svg';
 import CaptureActive from '../../../../assets/images/capture-record-active.svg';
@@ -16,6 +15,7 @@ import BoldText from '../../../components/fonts/BoldText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import VideoPreview from './VideoPreview';
 import ToastMessage from '../../../components/ToastMessage';
+import Button from '../../../components/Button';
 
 const FaceDetection = () => {
   const camera = useRef(null);
@@ -29,10 +29,7 @@ const FaceDetection = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [video, setVideo] = useState(null);
   const [isVideoRecorded, setIsVideoRecorded] = useState(false);
-
-  useEffect(() => {
-    isRecording && camera.current;
-  }, [isRecording]);
+  const [recordTime, setRecordTime] = useState(15);
 
   if (!hasPermission) {
     requestPermission();
@@ -50,6 +47,7 @@ const FaceDetection = () => {
   const handleStopRecord = async () => {
     setIsRecording(false);
     setIsVideoRecorded(true);
+    setRecordTime(15);
     await camera.current.stopRecording();
   };
 
@@ -57,6 +55,9 @@ const FaceDetection = () => {
     return (
       <View style={styles.page}>
         <View style={styles.guide}>
+          <BoldText style={styles.guideText}>
+            Keep your face steady in the circle for 15 seconds
+          </BoldText>
           <View style={styles.info}>
             <FaIcon name="info-circle" color={'#868585'} size={14} />
             <RegularText style={styles.infoText}>
@@ -103,7 +104,8 @@ const FaceDetection = () => {
       <View style={styles.page}>
         <View style={styles.guide}>
           <BoldText style={styles.guideText}>
-            Click on the button below to start a facial recognition of your face
+            One more step! Click on the button below to start a facial
+            recognition of your face
           </BoldText>
           <View style={styles.info}>
             <FaIcon name="info-circle" color={'#868585'} size={14} />
@@ -149,11 +151,30 @@ const FaceDetection = () => {
       },
       onRecordingError: error => ToastMessage(error),
     });
+
+    const interval = setInterval(() => {
+      setRecordTime(prev => prev - 1);
+    }, 1000);
+    setTimeout(() => {
+      clearTimeout(interval);
+    }, recordTime * 1000);
   };
+
   return (
     <View style={styles.page}>
-      <View style={styles.guide} />
-      <View style={styles.camera}>
+      <View style={styles.guide}>
+        <BoldText style={styles.guideText}>
+          Keep your face steady in the circle for 15 seconds
+        </BoldText>
+        <View style={styles.info}>
+          <FaIcon name="info-circle" color={'#868585'} size={14} />
+          <RegularText style={styles.infoText}>
+            Make sure you&apos;re in a well-lighted surrounding and your face
+            can show clearly
+          </RegularText>
+        </View>
+      </View>
+      <View style={{ ...styles.camera, alignItems: undefined }}>
         <View
           style={{
             ...styles.container,
@@ -161,17 +182,19 @@ const FaceDetection = () => {
             maxHeight: vw * 0.9,
           }}>
           <AnimatedCircularProgress
-            size={vw * 0.9}
-            width={5}
+            size={vw * 0.89}
+            width={10}
             fill={100}
             tintColor="#5bb85d"
             onAnimationComplete={handleStopRecord}
             backgroundColor="#fff"
-            duration={30000}
+            duration={recordTime * 1000}
+            easing={Easing.linear}
+            rotation={0}
             style={styles.progress}>
             {() => (
               <Camera
-                style={{ ...StyleSheet.absoluteFill, ...styles.rotateZ }}
+                style={StyleSheet.absoluteFill}
                 device={device}
                 isActive={true}
                 video={true}
@@ -183,7 +206,9 @@ const FaceDetection = () => {
         </View>
       </View>
       <View style={{ ...styles.button, marginBottom: vw * 0.2 }}>
-        <CaptureActive />
+        <BoldText style={styles.time}>
+          {!isVideoRecorded && recordTime}
+        </BoldText>
       </View>
     </View>
   );
@@ -231,10 +256,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progress: {
-    transform: [{ rotateZ: '-90deg' }],
-  },
-  rotateZ: {
-    transform: Platform.OS === 'android' ? [{ rotateZ: '90deg' }] : undefined,
+    overflow: 'hidden',
   },
   camera: {
     flex: 1,
@@ -245,5 +267,8 @@ const styles = StyleSheet.create({
   button: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  time: {
+    fontSize: 38,
   },
 });

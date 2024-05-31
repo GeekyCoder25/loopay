@@ -20,8 +20,9 @@ import ToastMessage from '../../../components/ToastMessage';
 import ErrorMessage from '../../../components/ErrorMessage';
 import * as Linking from 'expo-linking';
 import Back from '../../../components/Back';
+import LoadingModal from '../../../components/LoadingModal';
 
-const Verification = ({ route, modalOpen, setModalOpen }) => {
+const Verification = ({ route, setModalOpen }) => {
   const { getFetchData, putFetchData } = useFetchData();
   const {
     country,
@@ -34,7 +35,7 @@ const Verification = ({ route, modalOpen, setModalOpen }) => {
     _id,
     faceVideo,
   } = route;
-  const { setIsLoading, vw } = useContext(AppContext);
+  const { isLoading, setIsLoading, vw } = useContext(AppContext);
   const [userData, setUserData] = useState(null);
   const [openMessageModal, setOpenMessageModal] = useState(false);
 
@@ -76,142 +77,147 @@ const Verification = ({ route, modalOpen, setModalOpen }) => {
   };
 
   return (
-    <PageContainer padding scroll>
-      <View>
-        <BoldText style={styles.containerText}>User Details</BoldText>
-        <View style={styles.containerSub}>
-          <View style={styles.detailsRow}>
-            <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-            <RegularText>Email:</RegularText>
-            <BoldText>{email}</BoldText>
-          </View>
-          <View style={styles.detailsRow}>
-            <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-            <RegularText>First Name:</RegularText>
-            <BoldText>{userData?.userProfile.firstName}</BoldText>
-          </View>
-          <View style={styles.detailsRow}>
-            <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-            <RegularText>Last Name:</RegularText>
-            <BoldText>{userData?.userProfile.lastName}</BoldText>
-          </View>
-          <View style={styles.detailsRow}>
-            <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-            <RegularText>Phone Number:</RegularText>
-            <BoldText>{userData?.userProfile.phoneNumber}</BoldText>
-          </View>
-          <View style={styles.detailsRow}>
-            <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-            <RegularText>Country:</RegularText>
-            <BoldText>{userData?.country.name}</BoldText>
-          </View>
-          <View style={styles.detailsRow}>
-            <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-            <RegularText>Currency Code:</RegularText>
-            <BoldText>{userData?.localCurrencyCode}</BoldText>
-          </View>
-          <View style={styles.detailsRow}>
-            <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-            <RegularText>Registered on:</RegularText>
-            <BoldText>{new Date(userData?.createdAt).toDateString()}</BoldText>
-          </View>
-        </View>
-      </View>
-      <View style={styles.gap} />
-      <View style={styles.container}>
-        <BoldText style={styles.containerText}>
-          Submitted Verification ID
-        </BoldText>
-        <View style={styles.containerSub}>
-          <View style={styles.detailsRow}>
-            <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-            <RegularText>Type:</RegularText>
-            <BoldText>{idType}</BoldText>
-          </View>
-          <View style={styles.detailsRow}>
-            <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-            <RegularText>Country:</RegularText>
-            <BoldText>{country}</BoldText>
-          </View>
-          {idValue && (
+    <>
+      <PageContainer padding scroll>
+        <View>
+          <BoldText style={styles.containerText}>User Details</BoldText>
+          <View style={styles.containerSub}>
             <View style={styles.detailsRow}>
               <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-              <RegularText>ID Number:</RegularText>
-              <BoldText>{idValue}</BoldText>
+              <RegularText>Email:</RegularText>
+              <BoldText>{email}</BoldText>
             </View>
-          )}
-          <View style={styles.detailsRow}>
-            <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-            <RegularText>Status:</RegularText>
-            <BoldText style={styles.status}>{status}</BoldText>
-          </View>
-          {faceVideo && (
             <View style={styles.detailsRow}>
               <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-              <RegularText>Face Data:</RegularText>
-              <Pressable onPress={() => Linking.openURL(faceVideo)}>
-                <BoldText style={{ ...styles.status, ...styles.link }}>
-                  Click here
-                </BoldText>
-              </Pressable>
+              <RegularText>First Name:</RegularText>
+              <BoldText>{userData?.userProfile.firstName}</BoldText>
             </View>
-          )}
-
-          {front && (
-            <View style={styles.detailsColumn}>
-              <View style={styles.detailsRow}>
-                <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-                <RegularText>Front Image:</RegularText>
-              </View>
-              <View style={styles.gap} />
-              <Pressable onPress={() => handleImageClick(front)}>
-                <Image
-                  source={{ uri: front }}
-                  style={{ width: vw * 0.91, height: vw * 0.91 }}
-                />
-              </Pressable>
-              <View style={styles.gap} />
+            <View style={styles.detailsRow}>
+              <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
+              <RegularText>Last Name:</RegularText>
+              <BoldText>{userData?.userProfile.lastName}</BoldText>
             </View>
-          )}
-          {back && (
-            <View style={styles.detailsColumn}>
-              <View style={styles.detailsRow}>
-                <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
-                <RegularText>Back Image:</RegularText>
-              </View>
-              <View style={styles.gap} />
-              <Pressable onPress={() => handleImageClick(back)}>
-                <Image
-                  source={{ uri: back }}
-                  style={{ width: vw * 0.91, height: vw * 0.91 }}
-                />
-              </Pressable>
-              <View style={styles.gap} />
+            <View style={styles.detailsRow}>
+              <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
+              <RegularText>Phone Number:</RegularText>
+              <BoldText>{userData?.userProfile.phoneNumber}</BoldText>
             </View>
-          )}
+            <View style={styles.detailsRow}>
+              <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
+              <RegularText>Country:</RegularText>
+              <BoldText>{userData?.country.name}</BoldText>
+            </View>
+            <View style={styles.detailsRow}>
+              <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
+              <RegularText>Currency Code:</RegularText>
+              <BoldText>{userData?.localCurrencyCode}</BoldText>
+            </View>
+            <View style={styles.detailsRow}>
+              <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
+              <RegularText>Registered on:</RegularText>
+              <BoldText>
+                {new Date(userData?.createdAt).toDateString()}
+              </BoldText>
+            </View>
+          </View>
         </View>
-      </View>
-      <View style={styles.gap} />
-      <View>
-        <Button text={'Approve'} onPress={() => handleVerify('approve')} />
-        <Button
-          text={'Decline with email'}
-          onPress={() => handleVerify('email')}
-        />
-        <Button text={'Decline'} onPress={() => handleVerify('decline')} />
-        <Button
-          text={'Decline and Delete'}
-          onPress={() => handleVerify('delete')}
-        />
         <View style={styles.gap} />
-      </View>
-      <MessageModal
-        showModal={openMessageModal}
-        setShowModal={setOpenMessageModal}
-        data={{ email, _id }}
-        setModalOpen={setModalOpen}
-      />
-    </PageContainer>
+        <View style={styles.container}>
+          <BoldText style={styles.containerText}>
+            Submitted Verification ID
+          </BoldText>
+          <View style={styles.containerSub}>
+            <View style={styles.detailsRow}>
+              <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
+              <RegularText>Type:</RegularText>
+              <BoldText>{idType}</BoldText>
+            </View>
+            <View style={styles.detailsRow}>
+              <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
+              <RegularText>Country:</RegularText>
+              <BoldText>{country}</BoldText>
+            </View>
+            {idValue && (
+              <View style={styles.detailsRow}>
+                <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
+                <RegularText>ID Number:</RegularText>
+                <BoldText>{idValue}</BoldText>
+              </View>
+            )}
+            <View style={styles.detailsRow}>
+              <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
+              <RegularText>Status:</RegularText>
+              <BoldText style={styles.status}>{status}</BoldText>
+            </View>
+            {faceVideo && (
+              <View style={styles.detailsRow}>
+                <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
+                <RegularText>Face Data:</RegularText>
+                <Pressable onPress={() => Linking.openURL(faceVideo)}>
+                  <BoldText style={{ ...styles.status, ...styles.link }}>
+                    Click here
+                  </BoldText>
+                </Pressable>
+              </View>
+            )}
+
+            {front && (
+              <View style={styles.detailsColumn}>
+                <View style={styles.detailsRow}>
+                  <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
+                  <RegularText>Front Image:</RegularText>
+                </View>
+                <View style={styles.gap} />
+                <Pressable onPress={() => handleImageClick(front)}>
+                  <Image
+                    source={{ uri: front }}
+                    style={{ width: vw * 0.91, height: vw * 0.91 }}
+                  />
+                </Pressable>
+                <View style={styles.gap} />
+              </View>
+            )}
+            {back && (
+              <View style={styles.detailsColumn}>
+                <View style={styles.detailsRow}>
+                  <FaIcon name="circle" color={'#1e1e1e'} style={styles.fas} />
+                  <RegularText>Back Image:</RegularText>
+                </View>
+                <View style={styles.gap} />
+                <Pressable onPress={() => handleImageClick(back)}>
+                  <Image
+                    source={{ uri: back }}
+                    style={{ width: vw * 0.91, height: vw * 0.91 }}
+                  />
+                </Pressable>
+                <View style={styles.gap} />
+              </View>
+            )}
+          </View>
+        </View>
+        <View style={styles.gap} />
+        <View>
+          <Button text={'Approve'} onPress={() => handleVerify('approve')} />
+          <Button
+            text={'Decline with email'}
+            onPress={() => handleVerify('email')}
+          />
+          <Button text={'Decline'} onPress={() => handleVerify('decline')} />
+          <Button
+            text={'Decline and Delete'}
+            onPress={() => handleVerify('delete')}
+          />
+          <View style={styles.gap} />
+        </View>
+        <MessageModal
+          showModal={openMessageModal}
+          setShowModal={setOpenMessageModal}
+          data={{ email, _id }}
+          setModalOpen={setModalOpen}
+        />
+      </PageContainer>
+      <LoadingModal isLoading={isLoading} />
+    </>
   );
 };
 

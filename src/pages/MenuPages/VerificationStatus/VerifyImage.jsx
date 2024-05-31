@@ -13,7 +13,7 @@ import { apiUrl } from '../../../../utils/fetchAPI';
 import { getToken } from '../../../../utils/storage';
 
 const VerifyImage = ({ route, navigation }) => {
-  const { vw, vh, setIsLoading, setVerified } = useContext(AppContext);
+  const { vw, vh, setIsLoading } = useContext(AppContext);
   const params = route.params;
   const [side, setSide] = useState('front');
   const [errorMessage, setErrorMessage] = useState('');
@@ -76,8 +76,6 @@ const VerifyImage = ({ route, navigation }) => {
       const data = await response.text();
       const result = JSON.parse(data);
       if (response.status === 200) {
-        setVerified('pending');
-        ToastMessage('Submitted successfully, verification is pending');
         return navigation.navigate('FaceDetection');
       } else {
         const errormessage = result.message.includes(

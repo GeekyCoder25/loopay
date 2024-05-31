@@ -12,7 +12,7 @@ import useFetchData from '../../../../utils/fetchAPI';
 
 const VerifyInputNumber = ({ route, navigation }) => {
   const { postFetchData } = useFetchData();
-  const { setIsLoading, setVerified } = useContext(AppContext);
+  const { setIsLoading } = useContext(AppContext);
   const [errorKey, setErrorKey] = useState();
   const params = route.params;
   const [idType, setIdType] = useState({

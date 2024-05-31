@@ -18,7 +18,7 @@ import Verification from './components/Verification';
 import Back from '../../components/Back';
 import useFetchData from '../../../utils/fetchAPI';
 
-const Verifications = ({ navigation, route }) => {
+const Verifications = ({ navigation }) => {
   const { getFetchData } = useFetchData();
   const { verifications, setVerifications } = useAdminDataContext();
   const [modalOpen, setModalOpen] = useState(false);

@@ -57,6 +57,7 @@ const VideoPreview = ({ video, reloadState }) => {
 
   const handleSubmit = async () => {
     try {
+      if (!video.path) return ToastMessage('No video file found');
       setIsLoading(true);
       const token = await getToken();
       const videoFile = video.path;
