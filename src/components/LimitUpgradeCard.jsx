@@ -5,11 +5,6 @@ import BoldText from './fonts/BoldText';
 import PageContainer from './PageContainer';
 import { useNavigation } from '@react-navigation/native';
 import Button from './Button';
-import TierIcon from '../../assets/images/tier1.svg';
-import Tier2Icon from '../../assets/images/tier2-icon.svg';
-import Tier3Icon from '../../assets/images/tier3-icon.svg';
-import Tier4Icon from '../../assets/images/tier4-icon.svg';
-import Tier5Icon from '../../assets/images/tier5-icon.svg';
 import Tier2Camera from '../../assets/images/tier2-camera.svg';
 import Tier2Utility from '../../assets/images/tier2-utility.svg';
 import Tier3Identify from '../../assets/images/tier3-identify.svg';
@@ -22,16 +17,10 @@ const LimitUpgradeCard = ({ buttonText, limit }) => {
     <PageContainer padding justify={true}>
       <View style={styles.container}>
         <View>
-          <View style={styles.tier}>
-            {limit.level === 2 && <Tier2Icon />}
-            {limit.level === 3 && <Tier3Icon />}
-            {limit.level === 4 && <Tier4Icon />}
-            {limit.level === 5 && <Tier5Icon />}
-          </View>
+          <View style={styles.tier} />
           <View style={styles.card}>
             <View style={styles.icon}>
               <BoldText style={styles.iconText}>Tier {limit.level}</BoldText>
-              <TierIcon />
             </View>
             <View style={styles.rowContainer}>
               <BoldText style={styles.cardHeaderText}>Benefit</BoldText>
