@@ -9,6 +9,7 @@ import MyInfo from '../pages/MenuPages/MyInfo';
 import Questions from '../pages/HomePages/Questions';
 import Limit from '../pages/HomePages/Limit';
 import SendOthers from '../pages/SendMenuPages/SendMoney/SendOthers';
+import LimitUpgrade from '../pages/HomePages/LimitUpgrade';
 
 const ProfileNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -29,6 +30,7 @@ const ProfileNavigator = () => {
       <Stack.Screen name="Password" component={ChangePassword} />
       <Stack.Screen name="Pin" component={TransactionPin} />
       <Stack.Screen name="Limit" component={Limit} />
+      <Stack.Screen name="LimitUpgrade" component={LimitUpgrade} />
       <Stack.Screen name="Questions" component={Questions} />
       {/* <Stack.Screen name="Biometric" component={MyInfo} /> */}
       {/* <Stack.Screen name="AddWithdraw" component={AddWithdraw} /> */}

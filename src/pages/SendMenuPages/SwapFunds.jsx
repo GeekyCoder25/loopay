@@ -34,17 +34,12 @@ import LoadingModal from '../../components/LoadingModal';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
+import InputPin from '../../components/InputPin';
 
 const SwapFunds = ({ navigation }) => {
   const { getFetchData, postFetchData } = useFetchData();
-  const {
-    selectedCurrency,
-    setIsLoading,
-    setWalletRefresh,
-    vh,
-    showAmount,
-    setShowAmount,
-  } = useContext(AppContext);
+  const { selectedCurrency, setWalletRefresh, vh, showAmount, setShowAmount } =
+    useContext(AppContext);
   const { wallet } = useWalletContext();
   const [errorKey, setErrorKey] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
@@ -66,6 +61,7 @@ const SwapFunds = ({ navigation }) => {
   const [showSwapFromCurrencies, setShowSwapFromCurrencies] = useState(false);
   const [showSwapToCurrencies, setShowSwapToCurrencies] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
+  const [askPin, setAskPin] = useState(false);
   const [currencyRateAPI, setCurrencyRateAPI] = useState({});
   const [rateRefetch, setRateRefetch] = useState(false);
   const [isLocalLoading, setIsLocalLoading] = useState(true);
@@ -74,6 +70,7 @@ const SwapFunds = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       const getRates = async () => {
+        setIsLocalLoading(true);
         const response = await getFetchData(`user/rate/${swapFrom.acronym}`);
         response.status === 200 && setCurrencyRateAPI(response.data);
       };
@@ -88,7 +85,7 @@ const SwapFunds = ({ navigation }) => {
         });
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [rateRefetch, setIsLoading, swapFrom.acronym]),
+    }, [rateRefetch, swapFrom.acronym]),
   );
   useEffect(() => {
     const selectedCurrencyFunc = index =>
@@ -171,7 +168,6 @@ const SwapFunds = ({ navigation }) => {
   };
 
   const currencyRate = () => {
-    currencyRateAPI[[swapTo.acronym]] && setIsLoading(false);
     return currencyRateAPI[swapTo.acronym];
   };
 
@@ -289,6 +285,7 @@ const SwapFunds = ({ navigation }) => {
         setWalletRefresh(prev => !prev);
         setTransaction(response.data.data);
         setIsSuccessful(true);
+        setAskPin(false);
         const playSound = async () => {
           const { sound } = await Audio.Sound.createAsync(
             require('../../../assets/success.mp3'),
@@ -306,7 +303,6 @@ const SwapFunds = ({ navigation }) => {
   };
 
   const handleGoBack = () => {
-    navigation.popToTop();
     navigation.navigate('Home');
   };
 
@@ -361,9 +357,15 @@ const SwapFunds = ({ navigation }) => {
       }
     } catch (error) {
       ToastMessage("Can't generate receipt");
-      setIsLoading(false);
+      setIsLocalLoading(false);
     }
   };
+
+  if (askPin) {
+    return (
+      <InputPin customFunc={handleSwap} handleCancel={() => setAskPin(false)} />
+    );
+  }
   return (
     <>
       <Back onPress={() => navigation.goBack()} />
@@ -649,7 +651,7 @@ const SwapFunds = ({ navigation }) => {
               </View>
               <Button
                 text="Swap"
-                onPress={handleSwap}
+                onPress={() => setAskPin(true)}
                 style={styles.modalButton}
               />
 
@@ -925,6 +927,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalSuccess: {
+    paddingTop: '25%',
     backgroundColor: '#fff',
     width: 100 + '%',
     height: 100 + '%',

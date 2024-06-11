@@ -269,6 +269,11 @@ const RequestFund = ({ navigation, route }) => {
           text="Request Funds"
           onPress={() => handleContinue(selectedCurrency)}
         />
+        <Pressable onPress={() => navigation.navigate('PendingRequest')}>
+          <RegularText style={styles.pending}>
+            View Pending requests
+          </RegularText>
+        </Pressable>
       </View>
       <Modal
         visible={modalOpen}
@@ -445,6 +450,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     marginBottom: 30,
+  },
+  pending: {
+    textAlign: 'center',
+    marginTop: 15,
+    textDecorationLine: 'underline',
   },
 });
 

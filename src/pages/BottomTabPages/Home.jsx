@@ -53,6 +53,7 @@ const Home = ({ navigation }) => {
     showAmount,
     setShowAmount,
     vw,
+    vh,
   } = useContext(AppContext);
   const { transactions = [], wallet } = useWalletContext();
   const { requestFunds: requests = [] } = useRequestFundsContext();
@@ -312,13 +313,15 @@ const Home = ({ navigation }) => {
                 }, 2000);
                 return setNoReload(true);
               }}>
-              {transactions.slice(0, 3).map(history => (
-                <History
-                  key={history._id}
-                  history={history}
-                  navigation={navigation}
-                />
-              ))}
+              {transactions
+                .slice(0, Math.round((vh - 800) / 30))
+                .map(history => (
+                  <History
+                    key={history._id}
+                    history={history}
+                    navigation={navigation}
+                  />
+                ))}
             </View>
           ) : (
             <View style={styles.historyEmpty}>

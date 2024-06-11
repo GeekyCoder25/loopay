@@ -66,7 +66,7 @@ const Referral = ({ navigation }) => {
 
   const photosLength = Math.round(vw / 100);
 
-  const referralLink = 'https://loopay.app';
+  const referralLink = `https://play.google.com/store/apps/details?id=com.loopay&referrer=${referralCode}`;
 
   return (
     <PageContainer padding scroll style={styles.container}>

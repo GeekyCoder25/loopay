@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import BoldText from '../../components/fonts/BoldText';
 import {
   ActivityIndicator,
+  Dimensions,
   FlatList,
   Modal,
   Pressable,
@@ -114,91 +115,97 @@ const Verifications = ({ navigation }) => {
       </View>
     </>
   ) : (
-    <FlatList
-      data={verifications}
-      ListHeaderComponent={
-        <>
-          <View style={styles.header}>
-            <Pressable style={styles.back} onPress={() => navigation.goBack()}>
-              <BackIcon />
-              <BoldText style={styles.headerText}>Verifications</BoldText>
-            </Pressable>
-          </View>
-          <Pressable onPress={() => setModalOpen(true)} style={styles.input}>
-            <BoldText style={styles.inputText}>
-              {!selectedLabel
-                ? 'Select verifications'
-                : selectedLabel + ' Verifications'}
-            </BoldText>
-            <ChevronDown />
-          </Pressable>
-          <Modal
-            visible={modalOpen}
-            animationType="slide"
-            transparent
-            onRequestClose={() => setModalOpen(prev => !prev)}>
-            <View style={styles.overlay} />
-            <Pressable
-              style={styles.modalContainer}
-              onPress={() => setModalOpen(prev => !prev)}>
-              <View style={styles.modal}>
-                {verificationStatuses.map(option => (
-                  <Pressable
-                    key={option}
-                    style={styles.select}
-                    onPress={() => handleModal(option)}>
-                    <RegularText style={styles.modalSelect}>
-                      {option} Verifications
-                    </RegularText>
-                  </Pressable>
-                ))}
-              </View>
-            </Pressable>
-          </Modal>
-          <Modal
-            visible={openVerification}
-            onRequestClose={() => setOpenVerification(false)}>
-            <Back onPress={() => setOpenVerification(false)} />
-            <Verification
-              modalOpen={openVerification}
-              setModalOpen={setOpenVerification}
-              route={verificationData}
-            />
-          </Modal>
-        </>
-      }
-      keyExtractor={({ _id }) => _id}
-      renderItem={({ item }) => (
-        <Pressable style={styles.id} onPress={() => handleNavigate(item)}>
-          <View style={styles.idRowContainer}>
-            <View>
-              <View style={styles.idRow}>
-                <RegularText>Email:</RegularText>
-                <BoldText>{item.email}</BoldText>
-              </View>
-              <View style={styles.idRow}>
-                <RegularText>ID:</RegularText>
-                <BoldText>{item.idType}</BoldText>
-              </View>
-              <View style={styles.idRow}>
-                <RegularText>Submitted at:</RegularText>
-                <BoldText>
-                  {new Date(item.createdAt).toLocaleDateString() +
-                    ' ' +
-                    new Date(item.createdAt).toLocaleTimeString()}
-                </BoldText>
-              </View>
+    <>
+      <FlatList
+        data={verifications}
+        ListHeaderComponent={
+          <>
+            <View style={styles.header}>
+              <Pressable
+                style={styles.back}
+                onPress={() => navigation.goBack()}>
+                <BackIcon />
+                <BoldText style={styles.headerText}>Verifications</BoldText>
+              </Pressable>
             </View>
-            <IonIcon name="arrow-forward" size={24} />
-          </View>
-        </Pressable>
+            <Pressable onPress={() => setModalOpen(true)} style={styles.input}>
+              <BoldText style={styles.inputText}>
+                {!selectedLabel
+                  ? 'Select verifications'
+                  : selectedLabel + ' Verifications'}
+              </BoldText>
+              <ChevronDown />
+            </Pressable>
+            <Modal
+              visible={modalOpen}
+              animationType="slide"
+              transparent
+              onRequestClose={() => setModalOpen(prev => !prev)}>
+              <View style={styles.overlay} />
+              <Pressable
+                style={styles.modalContainer}
+                onPress={() => setModalOpen(prev => !prev)}>
+                <View style={styles.modal}>
+                  {verificationStatuses.map(option => (
+                    <Pressable
+                      key={option}
+                      style={styles.select}
+                      onPress={() => handleModal(option)}>
+                      <RegularText style={styles.modalSelect}>
+                        {option} Verifications
+                      </RegularText>
+                    </Pressable>
+                  ))}
+                </View>
+              </Pressable>
+            </Modal>
+          </>
+        }
+        keyExtractor={({ _id }) => _id}
+        renderItem={({ item }) => (
+          <Pressable style={styles.id} onPress={() => handleNavigate(item)}>
+            <View style={styles.idRowContainer}>
+              <View>
+                <View style={styles.idRow}>
+                  <RegularText>Email:</RegularText>
+                  <BoldText>{item.email}</BoldText>
+                </View>
+                <View style={styles.idRow}>
+                  <RegularText>ID:</RegularText>
+                  <BoldText>{item.idType}</BoldText>
+                </View>
+                <View style={styles.idRow}>
+                  <RegularText>Submitted at:</RegularText>
+                  <BoldText>
+                    {new Date(item.createdAt).toLocaleDateString() +
+                      ' ' +
+                      new Date(item.createdAt).toLocaleTimeString()}
+                  </BoldText>
+                </View>
+              </View>
+              <IonIcon name="arrow-forward" size={24} />
+            </View>
+          </Pressable>
+        )}
+        ListEmptyComponent={
+          <BoldText style={styles.header}>
+            No available {selectedLabel} verifications
+          </BoldText>
+        }
+      />
+      {openVerification && (
+        <View
+          style={styles.container}
+          onRequestClose={() => setOpenVerification(false)}>
+          <Back onPress={() => setOpenVerification(false)} />
+          <Verification
+            modalOpen={openVerification}
+            setModalOpen={setOpenVerification}
+            route={verificationData}
+          />
+        </View>
       )}
-      ListEmptyComponent={
-        <BoldText style={styles.header}>
-          No available {selectedLabel} verifications
-        </BoldText>
-      }
-    />
+    </>
   );
 };
 
@@ -311,6 +318,13 @@ const styles = StyleSheet.create({
     gap: 5,
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  container: {
+    zIndex: 99999,
+    position: 'absolute',
+    height: Dimensions.get('screen').height,
+    width: Dimensions.get('screen').width,
+    backgroundColor: '#fff',
   },
 });
 export default Verifications;

@@ -85,7 +85,11 @@ const AdminNavigator = () => {
 
         <Drawer.Screen name="History" component={History} />
         <Drawer.Screen name="Statement" component={Statement} />
-        <Drawer.Screen name="Verifications" component={Verifications} />
+        <Drawer.Screen
+          name="Verifications"
+          component={Verifications}
+          options={{ headerShown: false }}
+        />
         <Drawer.Screen
           name="Announcements"
           component={Announcements}

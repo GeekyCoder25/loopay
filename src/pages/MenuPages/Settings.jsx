@@ -110,11 +110,11 @@ const RouteLink = ({ route, navigation }) => {
   const handleNavigate = () => {
     route.routeNavigate !== 'Rate'
       ? navigation.navigate(route.routeNavigate)
-      : Platform.OS === 'android'
-        ? Linking.openURL(
+      : Platform.OS === 'ios'
+        ? Linking.openURL('https://apps.apple.com/ng/app/loopay/id6479015391')
+        : Linking.openURL(
             'https://play.google.com/store/apps/loopay/details?id=com.loopay.hmghomes',
-          )
-        : Linking.openURL('https://apps.apple.com/us/app/loopay/id');
+          );
   };
 
   return (

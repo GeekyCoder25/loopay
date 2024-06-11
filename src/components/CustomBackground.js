@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
     justifyContent: 'space-around',
+    zIndex: 99,
   },
   top: {
     top: -80,

@@ -8,7 +8,7 @@ const WalletContext = createContext();
 
 const WalletContextComponent = memo(({ children }) => {
   const { getFetchData } = useFetchData();
-  const { walletRefresh, selectedCurrency, setShowConnected, refreshing } =
+  const { walletRefresh, selectedCurrency, setShowConnected, refreshing, vh } =
     useContext(AppContext);
   const [wallet, setWallet] = useState({ balance: 0 });
   const [transactions, setTransactions] = useState([]);
@@ -31,7 +31,7 @@ const WalletContextComponent = memo(({ children }) => {
       });
 
     getFetchData(
-      `user/transaction?currency=${selectedCurrency.currency},${selectedCurrency.acronym}&limit=4`,
+      `user/transaction?currency=${selectedCurrency.currency},${selectedCurrency.acronym}&limit=${Math.round((vh - 800) / 30) + 1}`,
     )
       .then(response => {
         if (response.status === 400) throw new Error(response.data);

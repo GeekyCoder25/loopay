@@ -41,6 +41,7 @@ const SendInternational = ({ navigation }) => {
     amount: '',
     sendTo: '',
     toReceiveAmount: '',
+    fee: '',
     receiverName: '',
     receiverAccountNo: '',
     receiverBank: '',
@@ -82,6 +83,46 @@ const SendInternational = ({ navigation }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.sendTo, selectedCurrency.acronym, setIsLoading]);
 
+  const handleAmountInput = text => {
+    if (!formData.amount && text === '.') {
+      return setFormData(prev => {
+        return {
+          ...prev,
+          amount: '',
+          toReceiveAmount: '',
+        };
+      });
+    } else if (
+      formData.amount.includes('.') &&
+      text.endsWith('.') &&
+      text.slice(0, text.length - 1).includes('.')
+    ) {
+      return;
+    }
+    if (text > wallet.balance) {
+      setErrorMessage('Insufficient funds');
+      setErrorKey('amount');
+      return setFormData(prev => {
+        return {
+          ...prev,
+          amount: text,
+          toReceiveAmount: '',
+        };
+      });
+    } else {
+      setErrorMessage('');
+      setErrorKey('');
+    }
+    setFormData(prev => {
+      return {
+        ...prev,
+        amount: text,
+        toReceiveAmount: Number((text * rate).toFixed(2)),
+        fee: Number((0.035 * text).toFixed(2)),
+      };
+    });
+  };
+
   const handleStep1 = () => {
     if (formData.amount > wallet.balance) {
       setErrorKey('amount');
@@ -99,14 +140,10 @@ const SendInternational = ({ navigation }) => {
       setErrorMessage('Please input amount to send');
     } else if (formData.toReceiveAmount < 1) {
       setErrorKey('amount');
-      setErrorMessage('Amount too low');
+      setErrorMessage(
+        `Amount too low, minimum amount is ${selectedCurrency.symbol}${(1 / rate).toFixed(2)}`,
+      );
     } else {
-      setFormData(prev => {
-        return {
-          ...prev,
-          fee: 0.035 * formData.amount,
-        };
-      });
       setStep(2);
       setErrorMessage('');
     }
@@ -244,29 +281,7 @@ const SendInternational = ({ navigation }) => {
                   }}
                   inputMode="decimal"
                   value={formData.amount}
-                  onChangeText={text => {
-                    if (text > wallet.balance) {
-                      setErrorMessage('Insufficient funds');
-                      setErrorKey('amount');
-                      return setFormData(prev => {
-                        return {
-                          ...prev,
-                          amount: text,
-                          toReceiveAmount: '',
-                        };
-                      });
-                    } else {
-                      setErrorMessage('');
-                      setErrorKey('');
-                    }
-                    setFormData(prev => {
-                      return {
-                        ...prev,
-                        amount: text,
-                        toReceiveAmount: Number((text * rate).toFixed(2)),
-                      };
-                    });
-                  }}
+                  onChangeText={text => handleAmountInput(text)}
                   onBlur={() =>
                     formData.amount &&
                     setFormData(prev => {
@@ -359,7 +374,9 @@ const SendInternational = ({ navigation }) => {
                   }}
                 />
                 <View>
-                  <BoldText>{formData.fee}</BoldText>
+                  <BoldText>
+                    {`${addingDecimal(Number(formData.fee).toLocaleString())} ${selectedCurrency.acronym}`}
+                  </BoldText>
                 </View>
                 <View
                   style={{
@@ -369,7 +386,8 @@ const SendInternational = ({ navigation }) => {
                 />
                 <View>
                   <BoldText>
-                    {formData.amount} {selectedCurrency.acronym}
+                    {addingDecimal(Number(formData.amount).toLocaleString())}{' '}
+                    {selectedCurrency.acronym}
                   </BoldText>
                 </View>
                 <View
@@ -401,7 +419,9 @@ const SendInternational = ({ navigation }) => {
                     <BoldText>
                       {formData.sendTo.symbol}
                       {'  '}
-                      {formData.toReceiveAmount}
+                      {addingDecimal(
+                        Number(formData.toReceiveAmount).toLocaleString(),
+                      )}
                     </BoldText>
                     <Pressable
                       style={styles.textInputRow}
@@ -546,7 +566,7 @@ const SendInternational = ({ navigation }) => {
                     />
                     <RegularText>From</RegularText>
                     <BoldText>
-                      {`${formData.amount.toLocaleString()} ${selectedCurrency.acronym}`}
+                      {`${addingDecimal(Number(formData.amount).toLocaleString())} ${selectedCurrency.acronym}`}
                     </BoldText>
                   </View>
                   <View style={styles.modalIcon}>

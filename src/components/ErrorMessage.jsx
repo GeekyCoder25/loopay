@@ -1,20 +1,25 @@
-import BoldText from './fonts/BoldText';
-import FaIcon from '@expo/vector-icons/FontAwesome';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import RegularText from './fonts/RegularText';
+import { Ionicons } from '@expo/vector-icons';
 
 const ErrorMessage = ({ errorMessage, style }) => {
   return (
     errorMessage && (
-      <BoldText style={{ ...styles.errorMessageText, ...style }}>
-        <FaIcon name="warning" size={15} color={'red'} />
-        {'  '}
-        {errorMessage}
-      </BoldText>
+      <View style={{ ...styles.errorMessage, ...style }}>
+        <Ionicons name="warning-sharp" size={15} color={'red'} />
+        <RegularText style={styles.errorMessageText}>
+          {errorMessage}
+        </RegularText>
+      </View>
     )
   );
 };
 
 const styles = StyleSheet.create({
+  errorMessage: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
   errorMessageText: {
     fontSize: 14,
     marginBottom: 5,

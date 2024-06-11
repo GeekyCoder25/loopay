@@ -45,7 +45,7 @@ const IdentityVerification = ({ navigation }) => {
         // { name: 'Bank Verification Number (BVN)' },
         { name: 'National ID', type: 'photo' },
         // { name: 'Passport ID', type: 'photo' },
-        { name: 'Driver License ID', type: 'photo' },
+        { name: "Driver's License ID", type: 'photo' },
       ],
     },
   ];

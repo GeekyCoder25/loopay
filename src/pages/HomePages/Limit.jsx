@@ -1,12 +1,14 @@
 import React, { useContext } from 'react';
-import { Image, FlatList, StyleSheet, View } from 'react-native';
+import { Image, FlatList, StyleSheet, View, Pressable } from 'react-native';
 import { AppContext } from '../../components/AppContext';
 import Header from '../../components/Header';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import { addingDecimal } from '../../../utils/AddingZero';
+import ToastMessage from '../../components/ToastMessage';
+import { FontAwesome } from '@expo/vector-icons';
 
-const Limit = () => {
+const Limit = ({ navigation }) => {
   const { appData, selectedCurrency } = useContext(AppContext);
   const { level = 1 } = appData;
 
@@ -14,34 +16,34 @@ const Limit = () => {
     {
       level: 1,
       type: 'transfer',
-      singleCredit: 100000,
-      dailyCredit: 500000,
+      singleCredit: 'Unlimited',
+      dailyCredit: 'Unlimited',
       singleDebit: 50000,
-      dailyDebit: 200000,
+      dailyDebit: 50000,
     },
     {
       level: 2,
       type: 'transfer',
-      singleCredit: 5000000,
-      dailyCredit: 5000000,
-      singleDebit: 900000,
-      dailyDebit: 900000,
+      singleCredit: 'Unlimited',
+      dailyCredit: 'Unlimited',
+      singleDebit: 300000,
+      dailyDebit: 300000,
     },
     {
       level: 3,
       type: 'transfer',
       singleCredit: 'Unlimited',
       dailyCredit: 'Unlimited',
-      singleDebit: 5000000,
-      dailyDebit: 25000000,
+      singleDebit: 500000,
+      dailyDebit: 500000,
     },
     {
       level: 4,
       type: 'transfer',
       singleCredit: 'Unlimited',
       dailyCredit: 'Unlimited',
-      singleDebit: 5000000,
-      dailyDebit: 25000000,
+      singleDebit: 1000000,
+      dailyDebit: 1000000,
     },
     {
       level: 5,
@@ -53,6 +55,11 @@ const Limit = () => {
     },
   ];
 
+  const handleNavigate = limit => {
+    level < limit.level
+      ? navigation.navigate('LimitUpgrade', limit)
+      : ToastMessage('Tier level has already been upgrade');
+  };
   return (
     <View style={styles.container}>
       <FlatList
@@ -76,7 +83,16 @@ const Limit = () => {
                 <BoldText style={styles.currentText}>Current</BoldText>
               </View>
             )}
-            <BoldText style={styles.limitHeader}>Lvl {limit.level}</BoldText>
+            <View style={styles.limitHeaderRow}>
+              <BoldText style={styles.limitHeader}>Lvl {limit.level}</BoldText>
+              {limit.level - 1 === level && (
+                <Pressable onPress={() => handleNavigate(limit)}>
+                  <BoldText style={styles.upgradeLink}>
+                    Upgrade <FontAwesome name="chevron-right" />
+                  </BoldText>
+                </Pressable>
+              )}
+            </View>
             <View style={styles.limitContent}>
               <View style={styles.row}>
                 <RegularText>Single Credit:</RegularText>
@@ -166,11 +182,17 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
   },
+  limitHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
   limitHeader: {
     textTransform: 'capitalize',
-    marginBottom: 20,
     fontSize: 18,
   },
+  upgradeLink: {},
   limitContent: {
     gap: 15,
     paddingHorizontal: 5,

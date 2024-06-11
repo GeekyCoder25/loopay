@@ -5,8 +5,8 @@ import BoldText from '../../../components/fonts/BoldText';
 import useFetchData from '../../../../utils/fetchAPI';
 import { AppContext } from '../../../components/AppContext';
 import {
+  Dimensions,
   Image,
-  Modal,
   Pressable,
   StyleSheet,
   Text,
@@ -209,13 +209,15 @@ const Verification = ({ route, setModalOpen }) => {
           />
           <View style={styles.gap} />
         </View>
+      </PageContainer>
+      {openMessageModal && (
         <MessageModal
           showModal={openMessageModal}
           setShowModal={setOpenMessageModal}
           data={{ email, _id }}
           setModalOpen={setModalOpen}
         />
-      </PageContainer>
+      )}
       <LoadingModal isLoading={isLoading} />
     </>
   );
@@ -269,13 +271,20 @@ const styles = StyleSheet.create({
     minHeight: 200,
   },
   form: {
-    flex: 1,
     marginVertical: 30,
+    minHeight: 500,
   },
   modalButton: {
     marginVertical: 40,
   },
   headerText: { marginVertical: 10, fontSize: 20 },
+  messageContainer: {
+    zIndex: 9999,
+    top: 0,
+    position: 'absolute',
+    height: Dimensions.get('screen').height,
+    width: Dimensions.get('screen').width,
+  },
 });
 
 export default Verification;
@@ -316,9 +325,11 @@ const MessageModal = ({ showModal, setShowModal, data, setModalOpen }) => {
     }
   };
   return (
-    <Modal visible={showModal} onRequestClose={() => setShowModal(false)}>
+    <View
+      onRequestClose={() => setShowModal(false)}
+      style={styles.messageContainer}>
       <Back onPress={() => setShowModal(false)} />
-      <PageContainer padding paddingTop={30}>
+      <PageContainer padding paddingTop={30} avoidBounce>
         <BoldText style={styles.headerText}>Message Draft</BoldText>
         <View style={styles.form}>
           <Text style={styles.label}>Email Subject</Text>
@@ -376,6 +387,6 @@ const MessageModal = ({ showModal, setShowModal, data, setModalOpen }) => {
           />
         )}
       </PageContainer>
-    </Modal>
+    </View>
   );
 };

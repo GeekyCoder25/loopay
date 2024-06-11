@@ -57,7 +57,7 @@ const Referrals = ({ navigation }) => {
   const referralLink = `https://play.google.com/store/apps/details?id=com.loopay&referrer=${referralCode}`;
 
   return (
-    <PageContainer padding justify={true}>
+    <PageContainer padding justify={true} scroll>
       <View style={styles.container}>
         <View style={styles.header}>
           <BoldText style={styles.boldHeader}>
@@ -96,25 +96,23 @@ const Referrals = ({ navigation }) => {
                 </Pressable>
               </View>
             ) : (
-              <ScrollView>
-                {referralTeam.map(referral => (
-                  <View key={referral.tagName} style={styles.referral}>
-                    <UserIcon uri={referral.photo} />
-                    <View style={styles.referralContent}>
-                      <BoldText style={styles.referralName}>
-                        {referral.fullName}
+              referralTeam.map(referral => (
+                <View key={referral.tagName} style={styles.referral}>
+                  <UserIcon uri={referral.photo} />
+                  <View style={styles.referralContent}>
+                    <BoldText style={styles.referralName}>
+                      {referral.fullName}
+                    </BoldText>
+                    {referral.verified ? (
+                      <BoldText style={styles.verified}>Verified</BoldText>
+                    ) : (
+                      <BoldText style={styles.notVerified}>
+                        Not Verified
                       </BoldText>
-                      {referral.verified ? (
-                        <BoldText style={styles.verified}>Verified</BoldText>
-                      ) : (
-                        <BoldText style={styles.notVerified}>
-                          Not Verified
-                        </BoldText>
-                      )}
-                    </View>
+                    )}
                   </View>
-                ))}
-              </ScrollView>
+                </View>
+              ))
             )}
           </View>
         </View>

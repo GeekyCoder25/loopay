@@ -21,7 +21,7 @@ const Reports = ({ navigation }) => {
   }, []);
 
   return (
-    <PageContainer paddingTop={30} padding>
+    <PageContainer paddingTop={30} padding scroll>
       <View style={styles.header}>
         <BoldText style={styles.headerText}>Reports and Issues</BoldText>
         <View style={styles.headerCount}>

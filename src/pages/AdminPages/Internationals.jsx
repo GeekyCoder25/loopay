@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import React, { useCallback, useContext, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import useFetchData from '../../../utils/fetchAPI';
@@ -13,15 +13,23 @@ const Internationals = () => {
   const { getFetchData, putFetchData, deleteFetchData } = useFetchData();
   const { setIsLoading } = useContext(AppContext);
   const [internationalData, setInternationalData] = useState([]);
+  const [isFetching, setIsFetching] = useState(true);
   useFocusEffect(
     useCallback(() => {
       const getInternational = async () => {
-        const response = await getFetchData('admin/international');
-        if (response.status === 200) {
-          setInternationalData(response.data.data);
+        try {
+          setIsFetching(true);
+          const response = await getFetchData('admin/international');
+          if (response.status === 200) {
+            setInternationalData(response.data.data);
+          }
+        } finally {
+          setIsFetching(false);
         }
       };
       getInternational();
+
+      return () => setIsFetching(true);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []),
   );
@@ -60,6 +68,26 @@ const Internationals = () => {
     }
   };
 
+  if (isFetching) {
+    return (
+      <PageContainer style={styles.loader}>
+        <ActivityIndicator size={'large'} />
+      </PageContainer>
+    );
+  }
+
+  if (!internationalData.length) {
+    return (
+      <PageContainer padding paddingTop={30}>
+        <View>
+          <BoldText>International Transfers</BoldText>
+        </View>
+        <View style={styles.loader}>
+          <BoldText>No new transfers</BoldText>
+        </View>
+      </PageContainer>
+    );
+  }
   return (
     <PageContainer padding paddingTop={30} scroll>
       <View>
@@ -141,6 +169,11 @@ const Internationals = () => {
 export default Internationals;
 
 const styles = StyleSheet.create({
+  loader: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
   lists: {
     marginVertical: 30,
     rowGap: 30,
