@@ -16,7 +16,7 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSFaceIDUsageDescription": "Loopay uses Face ID to validate your identity",
-        "NSCameraUsageDescription": "Loopay uses the camera to set yor profile picture"
+        "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your camera to complete your facial verification"
       },
       "bundleIdentifier": "com.loopay",
       "buildNumber": "10",
@@ -31,7 +31,9 @@
       },
       "permissions": [
         "android.permission.USE_BIOMETRIC",
-        "android.permission.USE_FINGERPRINT"
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA"
       ]
     },
     "web": {
@@ -89,6 +91,6 @@
     "updates": {
       "url": "https://u.expo.dev/055518e9-09c1-4eb9-99b2-42d79d874996"
     },
-    "useCLassicUpdates": true
+    "owner": "jraph_14"
   }
 }
