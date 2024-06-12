@@ -86,7 +86,9 @@ const Limit = ({ navigation }) => {
             <View style={styles.limitHeaderRow}>
               <BoldText style={styles.limitHeader}>Lvl {limit.level}</BoldText>
               {limit.level - 1 === level && (
-                <Pressable onPress={() => handleNavigate(limit)}>
+                <Pressable
+                  onPress={() => handleNavigate(limit)}
+                  style={styles.upgrade}>
                   <BoldText style={styles.upgradeLink}>
                     Upgrade <FontAwesome name="chevron-right" />
                   </BoldText>
@@ -179,8 +181,8 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   crown: {
-    width: 25,
-    height: 25,
+    width: 15,
+    height: 15,
   },
   limitHeaderRow: {
     flexDirection: 'row',
@@ -192,7 +194,16 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     fontSize: 18,
   },
-  upgradeLink: {},
+  upgrade: {
+    backgroundColor: '#1e1e1e',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    elevation: 2,
+  },
+  upgradeLink: {
+    color: '#fff',
+  },
   limitContent: {
     gap: 15,
     paddingHorizontal: 5,

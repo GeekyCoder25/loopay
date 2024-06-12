@@ -176,7 +176,7 @@ const MyInfo = () => {
           <BoldText style={styles.copyText}>Copy</BoldText>
         </Pressable>
       </View>
-      <View style={styles.tagContainer}>
+      {/* <View style={styles.tagContainer}>
         <View style={styles.field}>
           <RegularText style={styles.label}>Last name</RegularText>
           <TextInput
@@ -301,7 +301,7 @@ const MyInfo = () => {
             </RegularText>
           </Pressable>
         </View>
-      </View>
+      </View> */}
       {isEditable ? (
         <Button
           onPress={handleSave}
