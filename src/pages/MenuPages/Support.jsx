@@ -1,17 +1,18 @@
 import React from 'react';
 import PageContainer from '../../components/PageContainer';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import Mail from '../../../assets/images/supportMail.svg';
 import Whatsapp from '../../../assets/images/supportWhatsapp.svg';
+import { FontAwesome } from '@expo/vector-icons';
 
 const Support = () => {
   const supportContacts = [
     {
       support: 'mail',
       placeholder: 'Email Loopay Support',
-      contact: 'admin@loopay.app',
+      contact: 'support@loopay.app',
     },
     {
       support: 'whatsapp',
@@ -19,6 +20,26 @@ const Support = () => {
       contact: '+2347025008586',
     },
   ];
+
+  const supportLinks = [
+    {
+      icon: <FontAwesome name="twitter" size={32} color={'#fff'} />,
+      link: 'https://x.com/loopayapp',
+    },
+    {
+      icon: <FontAwesome name="instagram" size={32} color={'#fff'} />,
+      link: 'https://instagram.con',
+    },
+    {
+      icon: <FontAwesome name="linkedin" size={32} color={'#fff'} />,
+      link: 'https://linkedin.com/in/loopayapp',
+    },
+    {
+      icon: <FontAwesome name="facebook" size={32} color={'#fff'} />,
+      link: 'https://facebook.com/loopayapp',
+    },
+  ];
+
   return (
     <PageContainer justify={true}>
       <View style={styles.container}>
@@ -29,6 +50,20 @@ const Support = () => {
         <View>
           {supportContacts.map(contact => (
             <Contact key={contact.support} contact={contact} />
+          ))}
+        </View>
+
+        <BoldText style={styles.supportLinksHeader}>
+          Contact us on our social handles
+        </BoldText>
+        <View style={styles.supportLinks}>
+          {supportLinks.map(support => (
+            <Pressable
+              key={support.link}
+              onPress={() => Linking.openURL(support.link)}
+              style={styles.supportLink}>
+              {support.icon}
+            </Pressable>
           ))}
         </View>
       </View>
@@ -60,6 +95,25 @@ const styles = StyleSheet.create({
   },
   contact: {
     color: '#006E53',
+  },
+  supportLinksHeader: {
+    marginTop: 30,
+    marginHorizontal: '5%',
+  },
+  supportLinks: {
+    flexDirection: 'row',
+    columnGap: 25,
+    alignItems: 'center',
+    marginVertical: 30,
+    marginHorizontal: '5%',
+  },
+  supportLink: {
+    backgroundColor: '#1e1e1e',
+    width: 70,
+    height: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 35,
   },
 });
 export default Support;

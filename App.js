@@ -1,6 +1,7 @@
 import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import {
+  Dimensions,
   Keyboard,
   PanResponder,
   Platform,
@@ -8,7 +9,6 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   View,
-  useWindowDimensions,
 } from 'react-native';
 
 import { AppContext } from './src/components/AppContext';
@@ -65,8 +65,8 @@ export default function App() {
   const [refetchTransactions, setRefetchTransactions] = useState(false);
   const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
   const isAndroid = Platform.OS === 'android';
-  const vw = useWindowDimensions().width;
-  const vh = useWindowDimensions().height;
+  const vw = Dimensions.get('screen').width;
+  const vh = Dimensions.get('screen').height;
   const timerId = useRef(false);
   const timerIdTotal = useRef(false);
 

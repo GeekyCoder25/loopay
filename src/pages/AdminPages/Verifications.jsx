@@ -7,6 +7,7 @@ import {
   Modal,
   Pressable,
   StyleSheet,
+  TextInput,
   View,
 } from 'react-native';
 import BackIcon from '../../../assets/images/backArrow.svg';
@@ -27,6 +28,9 @@ const Verifications = ({ navigation }) => {
   const [selectedLabel, setSelectedLabel] = useState('pending');
   const [isLoading, setIsLoading] = useState(false);
   const [verificationData, setVerificationData] = useState({});
+  const [searchText, setSearchText] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchData, setSearchData] = useState([]);
 
   const verificationStatuses = ['pending', 'verified', 'declined'];
 
@@ -67,6 +71,20 @@ const Verifications = ({ navigation }) => {
     setVerificationData(data);
   };
 
+  const handleSearch = async text => {
+    try {
+      setSearchText(text);
+      const foundHistories = verifications.filter(user => {
+        return Object.values(user)
+          .toString()
+          .toLowerCase()
+          .includes(text.toLowerCase());
+      });
+      text ? setIsSearching(true) : setIsSearching(false);
+      setSearchData(foundHistories);
+    } finally {
+    }
+  };
   return isLoading ? (
     <>
       <View style={styles.header}>
@@ -117,7 +135,7 @@ const Verifications = ({ navigation }) => {
   ) : (
     <>
       <FlatList
-        data={verifications}
+        data={isSearching ? searchData : verifications}
         ListHeaderComponent={
           <>
             <View style={styles.header}>
@@ -159,6 +177,17 @@ const Verifications = ({ navigation }) => {
                 </View>
               </Pressable>
             </Modal>
+            <View style={styles.textInputContainer}>
+              <TextInput
+                style={{
+                  ...styles.textInput,
+                  paddingLeft: 10,
+                }}
+                placeholder={'Search'}
+                onChangeText={text => handleSearch(text)}
+                value={searchText}
+              />
+            </View>
           </>
         }
         keyExtractor={({ _id }) => _id}
@@ -283,7 +312,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 5 + '%',
-    marginBottom: 30,
   },
   inputText: {
     fontSize: 16,
@@ -300,6 +328,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 50 + '%',
+  },
+  textInputContainer: {
+    paddingHorizontal: 3 + '%',
+    paddingBottom: 10,
+    marginBottom: 30,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: '#bbb',
+    marginTop: 20,
+    borderRadius: 5,
+    height: 35,
+    fontFamily: 'OpenSans-400',
   },
   id: {
     paddingHorizontal: 3 + '%',

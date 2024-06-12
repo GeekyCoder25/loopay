@@ -291,59 +291,58 @@ const Users = ({ navigation }) => {
           </View>
         </Pressable>
       </Modal>
-      <Modal
-        visible={searchModal}
-        animationType="none"
-        onRequestClose={handleCloseSearchModal}>
-        <View style={styles.backModal}>
-          <BackIcon onPress={handleCloseSearchModal} />
-          <BoldText>Cancel</BoldText>
-        </View>
-        <FlatList
-          data={searchData}
-          renderItem={({ item }) => (
-            <User user={item} setSearchModal={setSearchModal} />
-          )}
-          keyExtractor={({ _id }) => _id}
-          ListHeaderComponent={
-            <View style={styles.textInputContainer}>
-              <TextInput
-                style={{
-                  ...styles.textInput,
-                  paddingLeft: 10,
-                }}
-                placeholder={'Search'}
-                onChangeText={text => handleSearch(text)}
-                autoFocus={!searchText}
-                value={searchText}
-              />
-            </View>
-          }
-          ListFooterComponent={
-            searchData.length &&
-            (searchData.length >= searchData ? (
-              <View style={styles.complete}>
-                <BoldText>That&apos;s all for now</BoldText>
+      {searchModal && (
+        <View style={styles.searchModal}>
+          <Pressable style={styles.backModal} onPress={handleCloseSearchModal}>
+            <BackIcon />
+            <BoldText>Cancel</BoldText>
+          </Pressable>
+          <FlatList
+            data={searchData}
+            renderItem={({ item }) => (
+              <User user={item} setSearchModal={setSearchModal} />
+            )}
+            keyExtractor={({ _id }) => _id}
+            ListHeaderComponent={
+              <View style={styles.textInputContainer}>
+                <TextInput
+                  style={{
+                    ...styles.textInput,
+                    paddingLeft: 10,
+                  }}
+                  placeholder={'Search'}
+                  onChangeText={text => handleSearch(text)}
+                  autoFocus={!searchText}
+                  value={searchText}
+                />
               </View>
-            ) : (
-              reloading && <ActivityIndicator color={'#1e1e1e'} />
-            ))
-          }
-          ListEmptyComponent={
-            <View style={styles.empty}>
-              {searchText && <BoldText>No Result found</BoldText>}
-            </View>
-          }
-          onEndReachedThreshold={0.5}
-          onEndReached={
-            !reloading && searchData.length && users.length < totalUsers
-              ? handleScrollMore
-              : undefined
-          }
-          bounces={false}
-          removeClippedSubviews
-        />
-      </Modal>
+            }
+            ListFooterComponent={
+              searchData.length &&
+              (searchData.length >= searchData ? (
+                <View style={styles.complete}>
+                  <BoldText>That&apos;s all for now</BoldText>
+                </View>
+              ) : (
+                reloading && <ActivityIndicator color={'#1e1e1e'} />
+              ))
+            }
+            ListEmptyComponent={
+              <View style={styles.empty}>
+                {searchText && <BoldText>No Result found</BoldText>}
+              </View>
+            }
+            onEndReachedThreshold={0.5}
+            onEndReached={
+              !reloading && searchData.length && users.length < totalUsers
+                ? handleScrollMore
+                : undefined
+            }
+            bounces={false}
+            removeClippedSubviews
+          />
+        </View>
+      )}
     </PageContainer>
   );
 };
@@ -360,6 +359,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 20,
+  },
+  searchModal: {
+    zIndex: 9999,
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    flex: 1,
   },
   backModal: {
     flexDirection: 'row',

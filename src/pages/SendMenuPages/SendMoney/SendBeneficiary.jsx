@@ -9,7 +9,6 @@ import {
   View,
 } from 'react-native';
 import BoldText from '../../../components/fonts/BoldText';
-import UserIconSVG from '../../../../assets/images/userMenu.svg';
 import { useBeneficiaryContext } from '../../../context/BeneficiariesContext';
 import RegularText from '../../../components/fonts/RegularText';
 import { useState } from 'react';
