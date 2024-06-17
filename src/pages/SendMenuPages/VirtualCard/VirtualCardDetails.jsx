@@ -6,23 +6,35 @@ import {
   Text,
   View,
 } from 'react-native';
-import PageContainer from '../../components/PageContainer';
-import BoldText from '../../components/fonts/BoldText';
+import PageContainer from '../../../components/PageContainer';
+import BoldText from '../../../components/fonts/BoldText';
 import { useContext, useState } from 'react';
-import { AppContext } from '../../components/AppContext';
-import WalletAmount from '../../components/WalletAmount';
-import RegularText from '../../components/fonts/RegularText';
-import FlagSelect from '../../components/FlagSelect';
-import ChevronDown from '../../../assets/images/chevron-down.svg';
-import AtmScratch from '../../../assets/images/atmScratch.svg';
-import AtmChevron from '../../../assets/images/atmChevronRight.svg';
-import SelectCurrencyModal from '../../components/SelectCurrencyModal';
+import { AppContext } from '../../../components/AppContext';
+import WalletAmount from '../../../components/WalletAmount';
+import RegularText from '../../../components/fonts/RegularText';
+import FlagSelect from '../../../components/FlagSelect';
+import ChevronDown from '../../../../assets/images/chevron-down.svg';
+import AtmScratch from '../../../../assets/images/atmScratch.svg';
+import AtmChevron from '../../../../assets/images/atmChevronRight.svg';
+import SelectCurrencyModal from '../../../components/SelectCurrencyModal';
 
 const VirtualCardDetails = ({ route }) => {
-  const { fullName, exp_month, exp_year, cvc } = route.params;
+  const { card_no, exp_month, exp_year, cvc } = route.params;
   const { selectedCurrency, vh } = useContext(AppContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [showAmount, setShowAmount] = useState(false);
+
+  const addSpaceEvery4Characters = inputString => {
+    inputString = inputString.toString();
+    let result = '';
+    for (let i = 0; i < inputString.length; i++) {
+      if (i > 0 && i % 4 === 0) {
+        result += ' ';
+      }
+      result += inputString[i];
+    }
+    return result;
+  };
 
   return (
     <PageContainer paddingTop={10} padding>
@@ -30,7 +42,7 @@ const VirtualCardDetails = ({ route }) => {
       <View style={styles.body}>
         <View style={styles.pageBottom}>
           <ImageBackground
-            source={require('../../../assets/images/cardBg.png')}
+            source={require('../../../../assets/images/cardBg.png')}
             resizeMode="cover"
             style={styles.card}>
             <View style={styles.cardHeader}>
@@ -65,20 +77,20 @@ const VirtualCardDetails = ({ route }) => {
         </View>
         <View style={styles.atm}>
           <ImageBackground
-            source={require('../../../assets/images/atmBg.png')}
+            source={require('../../../../assets/images/atmBg.png')}
             style={{ ...styles.atmBg, height: vh * 0.305 }}>
             <Image
-              source={require('../../../assets/images/atmBgLeft.png')}
+              source={require('../../../../assets/images/atmBgLeft.png')}
               style={styles.bg}
             />
             <Image
-              source={require('../../../assets/images/atmBgLeft.png')}
+              source={require('../../../../assets/images/atmBgLeft.png')}
               style={styles.bgRight}
             />
             <View style={styles.atmInner}>
               <View style={styles.atmTop}>
                 <Image
-                  source={require('../../../assets/icon2.png')}
+                  source={require('../../../../assets/icon2.png')}
                   style={styles.logo}
                   resizeMode="contain"
                 />
@@ -86,11 +98,13 @@ const VirtualCardDetails = ({ route }) => {
               </View>
               <View style={styles.atmBottom}>
                 <View style={styles.atmDetails}>
-                  <BoldText style={styles.fullName}>{fullName}</BoldText>
+                  <BoldText style={styles.fullName}>
+                    {addSpaceEvery4Characters(card_no)}
+                  </BoldText>
                   <View>
                     <RegularText style={styles.expiry}>Expiry Date</RegularText>
                     <BoldText style={styles.expiryDate}>
-                      {exp_month}/{exp_year}
+                      {exp_month < 10 ? `0${exp_month}` : exp_month}/{exp_year}
                     </BoldText>
                   </View>
                   <View>

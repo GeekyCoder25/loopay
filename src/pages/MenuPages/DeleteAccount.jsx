@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   row: {
     marginVertical: 10,
   },
-  buttons: { marginVertical: 10 },
+  buttons: { marginVertical: 30 },
   confirm: {
     backgroundColor: '#fff',
     borderWidth: 1,

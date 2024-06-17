@@ -376,26 +376,52 @@ const TransactionHistoryParams = ({ route }) => {
                       </BoldText>
                     </View>
                   )}
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Sender Name
-                    </RegularText>
-                    <BoldText style={styles.cardValue}>{senderName}</BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Sender Bank
-                    </RegularText>
-                    <BoldText style={styles.cardValue}>{sourceBank}</BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Sender Account
-                    </RegularText>
-                    <BoldText style={styles.cardValue}>
-                      {senderAccount}
-                    </BoldText>
-                  </View>
+                  {method === 'card' ? (
+                    <>
+                      <View style={styles.cardLine}>
+                        <RegularText style={styles.cardKey}>Card</RegularText>
+                        <BoldText style={styles.cardValue}>
+                          {senderName}
+                        </BoldText>
+                      </View>
+                      <View style={styles.cardLine}>
+                        <RegularText style={styles.cardKey}>
+                          Source Bank
+                        </RegularText>
+                        <BoldText style={styles.cardValue}>
+                          {sourceBank}
+                        </BoldText>
+                      </View>
+                    </>
+                  ) : (
+                    <>
+                      <View style={styles.cardLine}>
+                        <RegularText style={styles.cardKey}>
+                          Sender Name
+                        </RegularText>
+                        <BoldText style={styles.cardValue}>
+                          {senderName}
+                        </BoldText>
+                      </View>
+                      <View style={styles.cardLine}>
+                        <RegularText style={styles.cardKey}>
+                          Sender Bank
+                        </RegularText>
+                        <BoldText style={styles.cardValue}>
+                          {sourceBank}
+                        </BoldText>
+                      </View>
+                      <View style={styles.cardLine}>
+                        <RegularText style={styles.cardKey}>
+                          Sender Account
+                        </RegularText>
+                        <BoldText style={styles.cardValue}>
+                          {senderAccount}
+                        </BoldText>
+                      </View>
+                    </>
+                  )}
+
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
                       Description

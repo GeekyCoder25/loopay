@@ -105,37 +105,35 @@ const SendMenu = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <RegularText>Beneficiaries</RegularText>
-        {beneficiaryState.length > 3 && <RegularText>View all</RegularText>}
-      </View>
-      {beneficiaryState.length ? (
-        <ScrollView horizontal={true} style={styles.beneficiaries}>
-          {beneficiaryState.map(beneficiary => (
-            <Pressable
-              key={beneficiary.tagName}
-              style={styles.beneficiary}
-              onPress={() => handleBeneficiaryPress(beneficiary)}>
-              <UserIcon uri={beneficiary.photo} />
-              <RegularText>
-                {beneficiary.fullName}{' '}
-                {beneficiary.verificationStatus === 'verified' && (
-                  <Image
-                    source={require('../../../assets/images/verify.png')}
-                    style={styles.verify}
-                    resizeMode="contain"
-                  />
-                )}
-              </RegularText>
-            </Pressable>
-          ))}
-        </ScrollView>
-      ) : (
-        <View style={styles.beneficiaryEmpty}>
-          <RegularText>Your recent beneficiaries will appear here</RegularText>
-        </View>
+      {beneficiaryState.length > 0 && (
+        <>
+          <View style={styles.header}>
+            <RegularText>Beneficiaries</RegularText>
+            {beneficiaryState.length > 3 && <RegularText>View all</RegularText>}
+          </View>
+          <ScrollView horizontal={true} style={styles.beneficiaries}>
+            {beneficiaryState.map(beneficiary => (
+              <Pressable
+                key={beneficiary.tagName}
+                style={styles.beneficiary}
+                onPress={() => handleBeneficiaryPress(beneficiary)}>
+                <UserIcon uri={beneficiary.photo} />
+                <RegularText>
+                  {beneficiary.fullName}{' '}
+                  {beneficiary.verificationStatus === 'verified' && (
+                    <Image
+                      source={require('../../../assets/images/verify.png')}
+                      style={styles.verify}
+                      resizeMode="contain"
+                    />
+                  )}
+                </RegularText>
+              </Pressable>
+            ))}
+          </ScrollView>
+          <View style={styles.modalBorder} />
+        </>
       )}
-      <View style={styles.modalBorder} />
       <ImageBackground
         source={require('../../../assets/images/pageBg.png')}
         style={styles.bg}>

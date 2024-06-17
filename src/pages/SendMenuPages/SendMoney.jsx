@@ -26,7 +26,7 @@ const SendMoney = ({ navigation }) => {
     {
       routeName: 'Send to a new recipient',
       routeDetails:
-        'Enter details of an account you haven’t previously saved to make a withdrawal',
+        'Enter details of a loopay account not saved in your beneficiaries',
       routeIcon: 'recipient',
       routeNavigate: 'SendNew',
     },

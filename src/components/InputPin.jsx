@@ -152,6 +152,7 @@ const InputPin = ({
               : setErrorMessage(`${customFuncStatus || ''}`);
           }, 200);
         }
+        return;
       }
 
       if (result.status === 400) {

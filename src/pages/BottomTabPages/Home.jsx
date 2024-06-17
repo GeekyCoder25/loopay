@@ -68,6 +68,7 @@ const Home = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       setShowTabBar(true);
+      setWalletRefresh(prev => !prev);
       const onBackPress = () => {
         if (isExiting) {
           return false;
@@ -87,7 +88,7 @@ const Home = ({ navigation }) => {
           setIsExiting(false);
         }, 3000);
       };
-    }, [isExiting, setShowTabBar]),
+    }, [isExiting, setShowTabBar, setWalletRefresh]),
   );
 
   useEffect(() => {
@@ -137,7 +138,7 @@ const Home = ({ navigation }) => {
 
   return (
     <>
-      <PageContainer refreshFunc={refreshPage} scroll={true}>
+      <PageContainer refreshFunc={refreshPage} scroll>
         <Pressable
           style={styles.headerContainer}
           onPress={() => setNoReload(false)}>
@@ -613,7 +614,7 @@ const History = ({ history, navigation }) => {
             case 'transfer':
               return 'Transfer self';
             default:
-              return 'Credit Transfer';
+              return 'Credit';
           }
         });
         setTransactionAccount(

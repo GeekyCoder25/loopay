@@ -11,7 +11,7 @@ import LockIcon from '../../../assets/images/lockMenu.svg';
 import DevicesIcon from '../../../assets/images/devices.svg';
 import KeyIcon from '../../../assets/images/key.svg';
 import DualUserIcon from '../../../assets/images/dualUser.svg';
-import FaceIDIcon from '../../../assets/images/face-id.svg';
+import FaceIDIcon from '../../../assets/images/face-id-grey.svg';
 import BiometricIcon from '../../../assets/images/biometric.svg';
 import BoldText from '../../components/fonts/BoldText';
 import MaIcon from '@expo/vector-icons/MaterialIcons';
@@ -93,7 +93,7 @@ const RouteLink = ({ route, navigation }) => {
       case 'dualUser':
         return <DualUserIcon />;
       case 'biometric':
-        return hasFaceID ? <FaceIDIcon fill={'#868585'} /> : <BiometricIcon />;
+        return hasFaceID ? <FaceIDIcon /> : <BiometricIcon />;
       case 'shake':
         return <MaIcon name="screen-rotation" size={24} color={'#868585'} />;
       case 'support':

@@ -21,7 +21,7 @@ import { useWalletContext } from '../context/WalletContext';
 import Button from './Button';
 import Plus from '../../assets/images/plus.svg';
 
-const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
+const SelectCurrencyModal = ({ modalOpen, setModalOpen, setState }) => {
   const { selectedCurrency } = useContext(AppContext);
   const [showSearchBox, setShowSearchBox] = useState(false);
   const handleModal = () => {
@@ -85,6 +85,7 @@ const SelectCurrencyModal = ({ modalOpen, setModalOpen }) => {
                     selected={selected}
                     setModalOpen={setModalOpen}
                     setShowSearchBox={setShowSearchBox}
+                    setState={setState}
                   />
                 ))}
             </View>
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
 });
 export default SelectCurrencyModal;
 
-const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
+const Currency = ({ selected, setModalOpen, setShowSearchBox, setState }) => {
   const { wallet } = useWalletContext();
   const { selectedCurrency, setSelectedCurrency, showAmount, setShowAmount } =
     useContext(AppContext);
@@ -191,6 +192,7 @@ const Currency = ({ selected, setModalOpen, setShowSearchBox }) => {
     setShowSearchBox(false);
     setModalOpen(false);
     setSelectedCurrency(newSelect);
+    setState && setState(newSelect);
     await setDefaultCurrency(`${newSelect.currency}`);
   };
 

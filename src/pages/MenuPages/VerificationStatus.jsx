@@ -4,8 +4,6 @@ import { View, StyleSheet } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import Button from '../../components/Button';
 import RegularText from '../../components/fonts/RegularText';
-import TierIcon from '../../../assets/images/tier1-icon.svg';
-import Tier1 from '../../../assets/images/tier1.svg';
 import Person from '../../../assets/images/tier1-person.svg';
 import Address from '../../../assets/images/tier1-address.svg';
 
@@ -15,11 +13,10 @@ const VerificationStatus = ({ navigation }) => {
       <View style={styles.container}>
         <View>
           <BoldText style={styles.headerText}>Identity Verification</BoldText>
-          <View style={styles.tier1}>{/* <TierIcon /> */}</View>
+          <View style={styles.tier1} />
           <View style={styles.card}>
             <View style={styles.icon}>
               <BoldText style={styles.iconText}>Tier 1</BoldText>
-              {/* <Tier1 /> */}
             </View>
             <View style={styles.rowContainer}>
               <BoldText style={styles.cardHeaderText}>Benefit</BoldText>

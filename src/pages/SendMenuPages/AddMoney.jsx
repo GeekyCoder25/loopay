@@ -32,14 +32,15 @@ import * as Haptics from 'expo-haptics';
 import useFetchData from '../../../utils/fetchAPI';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 
-const AddMoney = ({ navigation, route }) => {
-  const { getFetchData } = useFetchData();
+const AddMoney = ({ navigation }) => {
+  const { getFetchData, postFetchData } = useFetchData();
   const {
     selectedCurrency,
     setSelectedCurrency,
     walletRefresh,
     showAmount,
     setShowAmount,
+    setIsLoading,
   } = useContext(AppContext);
   const { wallet } = useWalletContext();
   const [modalOpen, setModalOpen] = useState(false);
@@ -193,6 +194,28 @@ const AddMoney = ({ navigation, route }) => {
   const handleShow = () => {
     setShowAmount(prev => !prev);
     setShowBalance(!showAmount);
+  };
+
+  const handleAdd = async () => {
+    try {
+      if (!addBalanceData.toReceive) {
+        setErrorMessage('Please input amount');
+        return setErrorKey('amount');
+      }
+      setIsLoading(true);
+      const response = await postFetchData('user/add-money/card', {
+        amount: addBalanceData.toReceive,
+      });
+      if (response.status === 200) {
+        return navigation.navigate('AddMoneyPaystack', response.data?.data);
+      }
+      throw new Error(response.data?.data || response.data);
+    } catch (error) {
+      console.log('error', error.message);
+      ToastMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -414,7 +437,8 @@ const AddMoney = ({ navigation, route }) => {
                 ) : (
                   <Button
                     text={'Add new card'}
-                    onPress={() => navigation.navigate('AddNewCard')}
+                    onPress={handleAdd}
+                    // onPress={() => navigation.navigate('AddNewCard')}
                   />
                 )}
               </>
@@ -427,11 +451,10 @@ const AddMoney = ({ navigation, route }) => {
         animationType="slide"
         transparent
         onRequestClose={() => setPaymentModal(prev => !prev)}>
+        <Pressable style={styles.overlay} />
         <Pressable
-          style={styles.overlay}
-          onPress={() => setPaymentModal(prev => !prev)}
-        />
-        <View style={styles.paymentModalContainer}>
+          style={styles.paymentModalContainer}
+          onPress={() => setPaymentModal(false)}>
           <View style={styles.paymentModal}>
             <View style={styles.paymentModal}>
               <View style={styles.paymentModal}>
@@ -447,7 +470,7 @@ const AddMoney = ({ navigation, route }) => {
               </View>
             </View>
           </View>
-        </View>
+        </Pressable>
       </Modal>
     </>
   );

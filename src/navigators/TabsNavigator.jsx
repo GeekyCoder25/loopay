@@ -36,7 +36,7 @@ import SendOthers from '../pages/SendMenuPages/SendMoney/SendOthers';
 import VirtualCard from '../pages/SendMenuPages/VirtualCard';
 import AccStatement from '../pages/SendMenuPages/AccStatement';
 import Back from '../components/Back';
-import VirtualCardDetails from '../pages/SendMenuPages/VirtualCardDetails';
+import VirtualCardDetails from '../pages/SendMenuPages/VirtualCard/VirtualCardDetails';
 import SchedulePayment from '../pages/SendMenuPages/SchedulePayments/SchedulePayment';
 import SchedulePayments from '../pages/SendMenuPages/SchedulePayments/SchedulePayments';
 import WalletContextComponent from '../context/WalletContext';
@@ -64,6 +64,9 @@ import BottomTabs from './BottomTabs';
 import NotificationsContextComponent from '../context/NotificationContext';
 import ShakeSettings from '../pages/MenuPages/Settings/ShakeSettings';
 import Report from '../pages/HomePages/Report';
+import CreateCard from '../pages/SendMenuPages/VirtualCard/CreateCard';
+import CardCreateSuccess from '../pages/SendMenuPages/VirtualCard/CardCreateSuccess';
+import AddMoneyPaystack from '../pages/SendMenuPages/AddMoney/AddMoneyPaystack';
 
 const TabsNavigator = () => {
   const {
@@ -238,6 +241,15 @@ const TabsNavigator = () => {
                 name="VirtualCardDetails"
                 component={VirtualCardDetails}
               />
+              <Stack.Screen name="CreateCard" component={CreateCard} />
+              <Stack.Screen
+                name="CardCreateSuccess"
+                component={CardCreateSuccess}
+              />
+              <Stack.Screen
+                name="AddMoneyPaystack"
+                component={AddMoneyPaystack}
+              />
               <Stack.Screen name="AccStatement" component={AccStatement} />
               <Stack.Screen
                 name="SchedulePayment"
@@ -273,7 +285,11 @@ const TabsNavigator = () => {
               <Stack.Screen name="Referral" component={Referral} />
               <Stack.Screen name="Referrals" component={Referrals} />
               <Stack.Screen name="Support" component={Support} />
-              <Stack.Screen name="Beneficiaries" component={Beneficiaries} />
+              <Stack.Screen
+                name="Beneficiaries"
+                component={Beneficiaries}
+                options={{ headerShown: false }}
+              />
               <Stack.Screen
                 name="DeleteAccount"
                 component={DeleteAccount}
