@@ -104,7 +104,12 @@ const SendMenu = ({ navigation }) => {
   ];
 
   return (
-    <View style={styles.container}>
+    <View
+      style={
+        beneficiaryState.length > 0
+          ? styles.containerBeneficiary
+          : styles.container
+      }>
       {beneficiaryState.length > 0 && (
         <>
           <View style={styles.header}>
@@ -152,6 +157,11 @@ const SendMenu = ({ navigation }) => {
 };
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    paddingTop: 30,
+    backgroundColor: '#fff',
+  },
+  containerBeneficiary: {
     flex: 1,
     paddingTop: 10,
     backgroundColor: '#fff',

@@ -114,11 +114,16 @@ const InputPin = ({
           if (customFunc) {
             const customFuncStatus = await customFunc(setErrorMessage);
             return setTimeout(() => {
-              customFuncStatus === 200
-                ? setTimeout(() => {
-                    setModalOpen(false);
-                  }, 1000)
-                : setErrorMessage(customFuncStatus);
+              if (customFuncStatus === 200) {
+                setTimeout(() => {
+                  setModalOpen(false);
+                }, 1000);
+              } else {
+                setErrorMessage(customFuncStatus);
+                setTimeout(() => {
+                  setPinCode('');
+                }, 1500);
+              }
             }, 200);
           }
         }
@@ -145,11 +150,16 @@ const InputPin = ({
           setIsLoading(true);
           const customFuncStatus = await customFunc(setErrorMessage);
           return setTimeout(() => {
-            customFuncStatus === 200
-              ? setTimeout(() => {
-                  setModalOpen(false);
-                }, 1000)
-              : setErrorMessage(`${customFuncStatus || ''}`);
+            if (customFuncStatus === 200) {
+              setTimeout(() => {
+                setModalOpen(false);
+              }, 1000);
+            } else {
+              setErrorMessage(customFuncStatus);
+              setTimeout(() => {
+                setPinCode('');
+              }, 1500);
+            }
           }, 200);
         }
         return;

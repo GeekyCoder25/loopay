@@ -190,7 +190,7 @@ const LockScreen = () => {
         )
       ) : (
         <ScrollView
-          contentContainerStyle={{ minHeight: vh, ...styles.container }}
+          contentContainerStyle={{ minHeight: vh * 0.93, ...styles.container }}
           bounces={false}>
           <View
             style={{

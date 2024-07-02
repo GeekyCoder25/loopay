@@ -62,6 +62,10 @@ const AppStart = () => {
           await postFetchData('test-update', { message: update });
           await Updates.fetchUpdateAsync();
           setIsUpdateAvailable(true);
+          setTimeout(() => {
+            Updates.reloadAsync();
+            setIsUpdateAvailable(false);
+          }, 2000);
         }
       } catch (e) {
         await postFetchData('test-update', { message: e.message });
@@ -101,7 +105,7 @@ const AppStart = () => {
     <>
       <View onLayout={onLayoutRootView} />
       <AppPagesNavigator />
-      {/* {showLockScreen && <LockScreen />} */}
+      {showLockScreen && <LockScreen />}
       {isUpdateAvailable && <AppUpdateModal visible={isUpdateAvailable} />}
       <NoInternet modalOpen={!internetStatus} />
     </>

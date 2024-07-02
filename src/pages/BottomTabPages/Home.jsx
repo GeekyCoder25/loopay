@@ -138,7 +138,7 @@ const Home = ({ navigation }) => {
 
   return (
     <>
-      <PageContainer refreshFunc={refreshPage} scroll>
+      <PageContainer refreshFunc={refreshPage}>
         <Pressable
           style={styles.headerContainer}
           onPress={() => setNoReload(false)}>
@@ -306,7 +306,7 @@ const Home = ({ navigation }) => {
             )}
           </View>
           {transactions.length > 0 ? (
-            <View
+            <ScrollView
               style={styles.histories}
               onScroll={() => {
                 setTimeout(() => {
@@ -323,7 +323,7 @@ const Home = ({ navigation }) => {
                     navigation={navigation}
                   />
                 ))}
-            </View>
+            </ScrollView>
           ) : (
             <View style={styles.historyEmpty}>
               <BoldText style={styles.historyEmptyText}>

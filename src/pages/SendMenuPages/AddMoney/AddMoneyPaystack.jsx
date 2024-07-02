@@ -1,11 +1,28 @@
 import { StyleSheet } from 'react-native';
 import React from 'react';
 import WebView from 'react-native-webview';
+import { apiUrl } from '../../../../utils/fetchAPI';
 
-const AddMoneyPaystack = ({ route }) => {
+const AddMoneyPaystack = ({ navigation, route }) => {
   const { authorization_url: uri } = route.params;
+  const callback_url = `${apiUrl.split('/api')[0]}/webview-cancel.html`;
 
-  return <WebView source={{ uri }} style={styles.paystackUI} />;
+  const onNavigationStateChange = state => {
+    const { url } = state;
+
+    if (!url) return;
+    if (url === callback_url) {
+      navigation.goBack();
+    }
+  };
+
+  return (
+    <WebView
+      source={{ uri }}
+      style={styles.paystackUI}
+      onNavigationStateChange={onNavigationStateChange}
+    />
+  );
 };
 
 export default AddMoneyPaystack;

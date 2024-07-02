@@ -259,10 +259,9 @@ const Message = ({ notification }) => {
       navigate('PendingRequest');
     } else if (type === 'request_confirm') {
       navigate('Home');
-    } else if (type === 'transfer' || type === 'airtime') {
+    } else if (type === 'transfer' || type === 'airtime' || type === 'bill') {
       navigate('TransactionHistoryDetails', notification.metadata);
     } else {
-      await putFetchData(`user/notification/${_id}`);
       ToastMessage('Read');
     }
     const response = await putFetchData(`user/notification/${_id}`);
