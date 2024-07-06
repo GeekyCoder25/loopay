@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import useFetchData, { apiUrl } from '../../utils/fetchAPI';
+import { apiUrl } from '../../utils/fetchAPI';
 import AppPagesNavigator from '../navigators/AppPagesNavigator';
 import NoInternet from './NoInternet';
 import { useFonts } from 'expo-font';
@@ -20,7 +20,6 @@ const AppStart = () => {
     setIsUpdateAvailable,
   } = useContext(AppContext);
   const [showLockScreen, setShowLockScreen] = useState(false);
-  const { postFetchData } = useFetchData();
 
   useEffect(() => {
     const getFetchData = async () => {
@@ -59,7 +58,6 @@ const AppStart = () => {
       try {
         const update = await Updates.checkForUpdateAsync();
         if (update.isAvailable) {
-          await postFetchData('test-update', { message: update });
           await Updates.fetchUpdateAsync();
           setIsUpdateAvailable(true);
           setTimeout(() => {
@@ -67,13 +65,10 @@ const AppStart = () => {
             setIsUpdateAvailable(false);
           }, 2000);
         }
-      } catch (e) {
-        await postFetchData('test-update', { message: e.message });
-      }
+      } catch (e) {}
     };
     checkUpdate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setIsUpdateAvailable]);
 
   const [fontsLoaded] = useFonts({
     'OpenSans-300': require('../../assets/fonts/OpenSans-Light.ttf'),

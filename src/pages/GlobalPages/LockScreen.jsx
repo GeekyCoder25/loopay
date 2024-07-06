@@ -3,6 +3,7 @@ import {
   Dimensions,
   Image,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -190,7 +191,10 @@ const LockScreen = () => {
         )
       ) : (
         <ScrollView
-          contentContainerStyle={{ minHeight: vh * 0.93, ...styles.container }}
+          contentContainerStyle={{
+            minHeight: Platform.OS === 'ios' ? vh : vh * 0.94,
+            ...styles.container,
+          }}
           bounces={false}>
           <View
             style={{

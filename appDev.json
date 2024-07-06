@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Loopay",
-    "slug": "Loopay",
+    "name": "LoopayDev",
+    "slug": "LoopayDev",
     "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,15 +15,15 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSFaceIDUsageDescription": "Loopay uses Face ID to validate your identity",
+        "NSFaceIDUsageDescription": "LoopayDev uses Face ID to validate your identity",
         "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your camera to complete your facial verification"
       },
-      "bundleIdentifier": "com.loopay",
+      "bundleIdentifier": "com.loopaydev",
       "buildNumber": "11",
       "icon": "./assets/ios-icon.png"
     },
     "android": {
-      "package": "com.loopay",
+      "package": "com.loopaydev",
       "versionCode": 11,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -65,6 +65,14 @@
         }
       ],
       "expo-font",
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your camera to complete your facial verification",
+          "enableMicrophonePermission": true,
+          "microphonePermissionText": "$(PRODUCT_NAME) needs access to your Microphone."
+        }
+      ],
       [
         "expo-camera",
         {

@@ -197,21 +197,23 @@ const Notifications = () => {
           </BoldText>
         </View>
       )}
-      <Modal
-        visible={showModal}
-        animationType="slide"
-        onRequestClose={() => {
-          setShowModal(false);
-          setModalData(null);
-        }}>
-        <Back
-          onPress={() => {
+      {showModal && (
+        <Modal
+          visible={showModal}
+          animationType="slide"
+          onRequestClose={() => {
             setShowModal(false);
             setModalData(null);
-          }}
-        />
-        <TransactionHistoryParams route={{ params: modalData }} />
-      </Modal>
+          }}>
+          <Back
+            onPress={() => {
+              setShowModal(false);
+              setModalData(null);
+            }}
+          />
+          <TransactionHistoryParams route={{ params: modalData }} />
+        </Modal>
+      )}
     </>
   );
 };

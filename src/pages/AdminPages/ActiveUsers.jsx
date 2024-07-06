@@ -4,7 +4,6 @@ import PageContainer from '../../components/PageContainer';
 import {
   ActivityIndicator,
   FlatList,
-  Modal,
   Pressable,
   StyleSheet,
   TextInput,
@@ -150,6 +149,7 @@ const ActiveUsers = ({ navigation, route }) => {
   };
 
   const handleCloseSearchModal = () => {
+    console.log('jf');
     setSearchModal(prev => !prev);
     setSearchData([]);
     setIsSearching(false);
@@ -157,136 +157,137 @@ const ActiveUsers = ({ navigation, route }) => {
   };
 
   return (
-    <PageContainer scroll>
-      <View>
-        <View style={styles.header}>
-          <Pressable style={styles.back} onPress={() => navigation.goBack()}>
-            <BackIcon />
-            <BoldText style={styles.headerText}>All Users</BoldText>
-            <BoldText style={styles.headerText}>{users.length}</BoldText>
-          </Pressable>
-          <Pressable
-            onPress={() => {
-              setIsSearching(true);
-              setSearchModal(true);
-            }}>
-            <IonIcon name="search" size={20} />
-          </Pressable>
-        </View>
-        <View style={styles.bodySelectors}>
-          <Pressable
-            style={{
-              ...styles.bodySelector,
-              backgroundColor: defaultTab ? '#525252' : '#d0d1d2',
-            }}
-            onPress={() => setDefaultTab(1)}>
-            <BoldText
-              style={{
-                color: defaultTab ? '#fff' : '#1E1E1E',
+    <>
+      <PageContainer scroll>
+        <View>
+          <View style={styles.header}>
+            <Pressable style={styles.back} onPress={() => navigation.goBack()}>
+              <BackIcon />
+              <BoldText style={styles.headerText}>All Users</BoldText>
+              <BoldText style={styles.headerText}>{users.length}</BoldText>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                setIsSearching(true);
+                setSearchModal(true);
               }}>
-              Online User{activeUsers.length > 1 && 's'} {activeUsers.length}
-            </BoldText>
-          </Pressable>
-          <Pressable
-            style={{
-              ...styles.bodySelector,
-              backgroundColor: !defaultTab ? '#525252' : '#d0d1d2',
-            }}
-            onPress={() => setDefaultTab(0)}>
-            <BoldText
+              <IonIcon name="search" size={20} />
+            </Pressable>
+          </View>
+          <View style={styles.bodySelectors}>
+            <Pressable
               style={{
-                color: !defaultTab ? '#fff' : '#1E1E1E',
-              }}>
-              Offline User{inactiveUsers.length > 1 && 's'}{' '}
-              {inactiveUsers.length}
-            </BoldText>
-          </Pressable>
-        </View>
-      </View>
-      {users.length > 0 &&
-        (defaultTab ? (
-          <View style={styles.users}>
-            {activeUsers.sort(sortFunc).map(user => (
-              <User
-                key={user.email}
-                userSession={user}
-                status={defaultTab}
-                users={users}
-              />
-            ))}
-          </View>
-        ) : (
-          <View style={styles.users}>
-            {inactiveUsers.sort(sortFunc).map(user => (
-              <User
-                key={user.email}
-                userSession={user}
-                status={defaultTab}
-                users={users}
-              />
-            ))}
-          </View>
-        ))}
-      <Modal
-        visible={searchModal}
-        animationType="none"
-        onRequestClose={handleCloseSearchModal}>
-        <View style={styles.backModal}>
-          <BackIcon onPress={handleCloseSearchModal} />
-          <BoldText>Cancel</BoldText>
-        </View>
-        <FlatList
-          data={searchData}
-          renderItem={({ item }) => (
-            <User
-              user={item}
-              setSearchModal={setSearchModal}
-              userSession={{ email: item.email }}
-              users={users}
-              isSearching={true}
-            />
-          )}
-          keyExtractor={({ _id }) => _id}
-          ListHeaderComponent={
-            <View style={styles.textInputContainer}>
-              <TextInput
+                ...styles.bodySelector,
+                backgroundColor: defaultTab ? '#525252' : '#d0d1d2',
+              }}
+              onPress={() => setDefaultTab(1)}>
+              <BoldText
                 style={{
-                  ...styles.textInput,
-                  paddingLeft: 10,
-                }}
-                placeholder={'Search'}
-                onChangeText={text => handleSearch(text)}
-                autoFocus={!searchText}
-                value={searchText}
+                  color: defaultTab ? '#fff' : '#1E1E1E',
+                }}>
+                Online User{activeUsers.length > 1 && 's'} {activeUsers.length}
+              </BoldText>
+            </Pressable>
+            <Pressable
+              style={{
+                ...styles.bodySelector,
+                backgroundColor: !defaultTab ? '#525252' : '#d0d1d2',
+              }}
+              onPress={() => setDefaultTab(0)}>
+              <BoldText
+                style={{
+                  color: !defaultTab ? '#fff' : '#1E1E1E',
+                }}>
+                Offline User{inactiveUsers.length > 1 && 's'}{' '}
+                {inactiveUsers.length}
+              </BoldText>
+            </Pressable>
+          </View>
+        </View>
+        {users.length > 0 &&
+          (defaultTab ? (
+            <View style={styles.users}>
+              {activeUsers.sort(sortFunc).map(user => (
+                <User
+                  key={user.email}
+                  userSession={user}
+                  status={defaultTab}
+                  users={users}
+                />
+              ))}
+            </View>
+          ) : (
+            <View style={styles.users}>
+              {inactiveUsers.sort(sortFunc).map(user => (
+                <User
+                  key={user.email}
+                  userSession={user}
+                  status={defaultTab}
+                  users={users}
+                />
+              ))}
+            </View>
+          ))}
+      </PageContainer>
+      {searchModal && (
+        <View style={styles.searchModal}>
+          <Pressable style={styles.backModal} onPress={handleCloseSearchModal}>
+            <BackIcon onPress={handleCloseSearchModal} />
+            <BoldText>Cancel</BoldText>
+          </Pressable>
+          <FlatList
+            data={searchData}
+            renderItem={({ item }) => (
+              <User
+                user={item}
+                setSearchModal={setSearchModal}
+                userSession={{ email: item.email }}
+                users={users}
+                isSearching={true}
               />
-            </View>
-          }
-          ListFooterComponent={
-            searchData.length &&
-            (searchData.length >= searchData ? (
-              <View style={styles.complete}>
-                <BoldText>That&apos;s all for now</BoldText>
+            )}
+            keyExtractor={({ _id }) => _id}
+            ListHeaderComponent={
+              <View style={styles.textInputContainer}>
+                <TextInput
+                  style={{
+                    ...styles.textInput,
+                    paddingLeft: 10,
+                  }}
+                  placeholder={'Search'}
+                  onChangeText={text => handleSearch(text)}
+                  autoFocus={!searchText}
+                  value={searchText}
+                />
               </View>
-            ) : (
-              reloading && <ActivityIndicator color={'#1e1e1e'} />
-            ))
-          }
-          ListEmptyComponent={
-            <View style={styles.empty}>
-              {searchText && <BoldText>No Result found</BoldText>}
-            </View>
-          }
-          onEndReachedThreshold={0.5}
-          onEndReached={
-            !reloading && searchData.length && users.length < totalUsers
-              ? handleScrollMore
-              : undefined
-          }
-          bounces={false}
-          removeClippedSubviews
-        />
-      </Modal>
-    </PageContainer>
+            }
+            ListFooterComponent={
+              searchData.length &&
+              (searchData.length >= searchData ? (
+                <View style={styles.complete}>
+                  <BoldText>That&apos;s all for now</BoldText>
+                </View>
+              ) : (
+                reloading && <ActivityIndicator color={'#1e1e1e'} />
+              ))
+            }
+            ListEmptyComponent={
+              <View style={styles.empty}>
+                {searchText && <BoldText>No Result found</BoldText>}
+              </View>
+            }
+            onEndReachedThreshold={0.5}
+            onEndReached={
+              !reloading && searchData.length && users.length < totalUsers
+                ? handleScrollMore
+                : undefined
+            }
+            bounces={false}
+            removeClippedSubviews
+          />
+        </View>
+      )}
+    </>
   );
 };
 
@@ -305,12 +306,19 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
   },
+  searchModal: {
+    position: 'absolute',
+    backgroundColor: '#fff',
+    width: '100%',
+    height: '100%',
+  },
   backModal: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 20,
+    gap: 10,
     marginTop: 20,
     paddingLeft: 4 + '%',
+    width: 100,
   },
 
   search: {

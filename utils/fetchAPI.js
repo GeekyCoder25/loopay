@@ -6,9 +6,9 @@ import ToastMessage from '../src/components/ToastMessage';
 
 // export const apiUrl = 'http://10.0.2.2:8000/api';
 // export const apiUrl = 'http://172.20.10.2:8000/api';
-// export const apiUrl = 'http://192.168.115.247:8000/api';
+// export const apiUrl = 'http://192.168.50.247:8000/api';
 // export const apiUrl = 'http://192.168.188.101:8000/api';
-export const apiUrl = 'https://loopay-api.up.railway.app/api';
+export const apiUrl = 'https://loopay-api.koyeb.app/api';
 
 const timeoutSeconds = 30;
 
@@ -19,7 +19,6 @@ const useFetchData = () => {
     setAppData,
     setCanChangeRole,
     setVerified,
-    setIsLoading,
     setIsAdmin,
   } = useContext(AppContext);
 
@@ -62,10 +61,6 @@ const useFetchData = () => {
     } catch (err) {
       clearTimeout(timeout);
       return "Couldn't connect to server";
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 40000);
     }
   };
 
@@ -115,10 +110,6 @@ const useFetchData = () => {
     } catch (err) {
       clearTimeout(timeout);
       return "Couldn't connect to server";
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 40000);
     }
   };
 
@@ -150,10 +141,6 @@ const useFetchData = () => {
     } catch (err) {
       clearTimeout(timeout);
       return "Couldn't connect to server";
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 40000);
     }
   };
 
@@ -185,10 +172,6 @@ const useFetchData = () => {
     } catch (err) {
       clearTimeout(timeout);
       return "Couldn't connect to server";
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 40000);
     }
   };
   return { getFetchData, postFetchData, putFetchData, deleteFetchData };

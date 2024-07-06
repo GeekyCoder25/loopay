@@ -8,6 +8,7 @@ import {
   Image,
   ScrollView,
   Dimensions,
+  SafeAreaView,
 } from 'react-native';
 import User from '../../../assets/images/user.svg';
 import Email from '../../../assets/images/mail.svg';
@@ -220,9 +221,11 @@ const SignUp = ({ navigation }) => {
         }}
         searchMessage={'Search here'}
         onRequestClose={() => setShowPicker(false)}
+        onBackdropPress={() => setShowPicker(false)}
         style={{
           modal: {
-            height: vh * 0.975,
+            marginTop: SafeAreaView.length ? SafeAreaView.length * 8 : 100,
+            flex: 1,
           },
         }}
       />
@@ -331,7 +334,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 50,
-    minHeight: Dimensions.get('screen').height * 0.9,
+    minHeight: Dimensions.get('screen').height * 0.98,
   },
   logo: {
     width: 100,

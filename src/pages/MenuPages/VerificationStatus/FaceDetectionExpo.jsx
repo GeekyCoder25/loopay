@@ -1,4 +1,11 @@
-import { Easing, Image, Pressable, StyleSheet, View } from 'react-native';
+import {
+  Easing,
+  Image,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 import React, { useContext, useRef, useState } from 'react';
 
 import Button from '../../../components/Button';
@@ -11,9 +18,11 @@ import RegularText from '../../../components/fonts/RegularText';
 import BoldText from '../../../components/fonts/BoldText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import VideoPreview from './VideoPreview';
-import { CameraView, useMicrophonePermissions } from 'expo-camera';
-import { useCameraPermissions } from 'expo-image-picker';
-import ToastMessage from '../../../components/ToastMessage';
+import {
+  CameraView,
+  useCameraPermissions,
+  useMicrophonePermissions,
+} from 'expo-camera';
 
 const FaceDetection = () => {
   const camera = useRef(null);
@@ -22,16 +31,15 @@ const FaceDetection = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [video, setVideo] = useState(null);
   const [isVideoRecorded, setIsVideoRecorded] = useState(false);
-
   const [permission, requestPermission] = useCameraPermissions();
   const [micPermission, requestMicPermission] = useMicrophonePermissions();
-  const [recordTime, setRecordTime] = useState(15);
+  const [recordTime, setRecordTime] = useState(10);
 
-  if (!permission) {
+  if (!permission?.granted) {
     requestPermission();
     return <View />;
   }
-  if (!micPermission) {
+  if (!micPermission?.granted) {
     requestMicPermission();
     return <View />;
   }
@@ -74,7 +82,24 @@ const FaceDetection = () => {
               maxWidth: vw * 0.9,
               maxHeight: vw * 0.9,
             }}>
-            <CameraView style={StyleSheet.absoluteFill} facing="front" />
+            {Platform.OS === 'android' ? (
+              <View style={styles.sample}>
+                <Image
+                  source={require('../../../../assets/images/face-verification.png')}
+                  resizeMode="stretch"
+                  style={{
+                    width: vw * 0.9,
+                    height: vw * 0.9,
+                  }}
+                />
+              </View>
+            ) : (
+              <CameraView
+                style={StyleSheet.absoluteFill}
+                facing="front"
+                mode="picture"
+              />
+            )}
           </View>
         </View>
         <View style={{ ...styles.button, marginBottom: vw * 0.2 }}>
@@ -142,12 +167,10 @@ const FaceDetection = () => {
           setRecordTime(prev => prev - 1);
         }, 1000);
         setTimeout(() => {
-          setVideo(true);
           clearTimeout(interval);
         }, recordTime * 1000);
         const videoData = await camera.current.recordAsync();
-        ToastMessage(videoData.uri);
-        setVideo(videoData);
+        setVideo(videoData.uri);
       }
     } catch (error) {
       console.warn('Failed to start recording:', error);
@@ -157,7 +180,7 @@ const FaceDetection = () => {
   const handleStopRecord = () => {
     setIsRecording(false);
     setIsVideoRecorded(true);
-    setRecordTime(15);
+    setRecordTime(10);
     camera.current.stopRecording();
   };
 
@@ -184,10 +207,11 @@ const FaceDetection = () => {
             style={styles.progress}>
             {() => (
               <CameraView
-                style={StyleSheet.absoluteFill}
+                style={{ ...StyleSheet.absoluteFill, width: vw * 0.89 }}
                 facing="front"
                 ref={camera}
                 onCameraReady={handleRecord}
+                mode="video"
               />
             )}
           </AnimatedCircularProgress>

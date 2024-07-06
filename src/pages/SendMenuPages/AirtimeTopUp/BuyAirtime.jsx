@@ -33,6 +33,7 @@ import Back from '../../../components/Back';
 import RecurringSwitch from '../../../components/RecurringSwitch';
 import SchedulePayment from '../SchedulePayments/SchedulePayment';
 import useFetchData from '../../../../utils/fetchAPI';
+import { Ionicons } from '@expo/vector-icons';
 
 const BuyAirtime = ({ navigation }) => {
   const { getFetchData } = useFetchData();
@@ -69,29 +70,22 @@ const BuyAirtime = ({ navigation }) => {
     phoneNo: '',
   });
   const balance = wallet[`${selected.currency}Balance`];
-  const airtimeBeneficiaries = [
-    // {
-    //   phoneNo: '09073002599',
-    //   network: 'airtel',
-    // },
-    // {
-    //   phoneNo: '+2349054343663',
-    //   network: '9mobile',
-    // },
-    // {
-    //   phoneNo: '09066487855',
-    //   network: 'mtn',
-    // },
-    // {
-    //   phoneNo: '09063555855',
-    //   network: 'glo',
-    // },
-  ];
+  const [beneficiaries, setBeneficiaries] = useState([]);
 
   useEffect(() => {
     setErrorMessage2('');
   }, [formData]);
 
+  useEffect(() => {
+    const getBeneficiaries = async () => {
+      const response = await getFetchData('user/beneficiary/airtime');
+      if (response.status === 200) {
+        setBeneficiaries(response.data);
+      }
+    };
+    getBeneficiaries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   useEffect(() => {
     const getOperators = async () => {
       const response = await getFetchData(
@@ -115,6 +109,27 @@ const BuyAirtime = ({ navigation }) => {
     setNetworkModal(prev => !prev);
   };
 
+  const handleAutoFill = async phoneNo => {
+    setFormData(prev => {
+      return { ...prev, phoneNo };
+    });
+    setErrorMessage('');
+    setErrorKey('');
+    if (isNigeria && phoneNo.length === 11) {
+      setIsLoading(true);
+      const response = await getFetchData(
+        `user/get-network?phone=${phoneNo}&country=${countryCode}`,
+      );
+      setIsLoading(false);
+      if (response.status === 200) {
+        const network = response.data.name.toLowerCase();
+        return handleNetworkSelect(
+          networkProviders.find(index => network.startsWith(index.network)),
+        );
+      }
+      ToastMessage(`${response.data || response}`);
+    }
+  };
   const handleCurrencyChange = newSelect => {
     setErrorKey('');
     setErrorMessage('');
@@ -231,24 +246,28 @@ const BuyAirtime = ({ navigation }) => {
   return (
     <>
       <PageContainer scroll style={styles.body}>
-        <View style={styles.header}>
-          <RegularText>Beneficiaries</RegularText>
-          {airtimeBeneficiaries.length > 3 && (
-            <RegularText>View all</RegularText>
-          )}
-        </View>
-        <ScrollView
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          style={styles.beneficiaries}>
-          {airtimeBeneficiaries.map(beneficiary => (
-            <Beneficiary
-              beneficiary={beneficiary}
-              key={beneficiary.phoneNo}
-              networkProvidersIcon={networkProvidersIcon}
-            />
-          ))}
-        </ScrollView>
+        {beneficiaries.length > 0 && (
+          <View style={styles.beneficiaryContainer}>
+            <View style={styles.header}>
+              <RegularText>Beneficiaries</RegularText>
+              {/* {beneficiaries.length > 3 && <RegularText>View all</RegularText>} */}
+            </View>
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              style={styles.beneficiaries}>
+              {beneficiaries.map(beneficiary => (
+                <Beneficiary
+                  key={beneficiary.phoneNo}
+                  beneficiary={beneficiary}
+                  networkProvidersIcon={networkProvidersIcon}
+                  onPress={() => handleAutoFill(beneficiary.phoneNo)}
+                  setBeneficiaries={setBeneficiaries}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        )}
         <BoldText style={styles.headerText}>Buy Airtime</BoldText>
         <View style={styles.label}>
           <Text style={styles.label}>Pay With</Text>
@@ -467,6 +486,10 @@ const BuyAirtime = ({ navigation }) => {
 const styles = StyleSheet.create({
   body: {
     paddingHorizontal: 5 + '%',
+    marginBottom: 30,
+  },
+  beneficiaryContainer: {
+    marginBottom: 30,
   },
   header: {
     flexDirection: 'row',
@@ -479,14 +502,15 @@ const styles = StyleSheet.create({
   },
   beneficiary: {
     alignItems: 'center',
-    gap: 15,
-    marginRight: 15,
+    gap: 10,
+    marginRight: 30,
+    position: 'relative',
   },
   phoneNo: {
     fontSize: 10,
   },
   headerText: {
-    marginVertical: 30,
+    marginBottom: 30,
     fontSize: 20,
   },
   headerSubText: { color: '#868585' },
@@ -629,14 +653,42 @@ const styles = StyleSheet.create({
   button: {
     paddingBottom: 50,
   },
+  deleteButton: {
+    position: 'absolute',
+    left: '90%',
+    backgroundColor: '#ddd',
+    borderRadius: 30,
+    padding: 2,
+  },
 });
 export default BuyAirtime;
 
-const Beneficiary = ({ beneficiary, networkProvidersIcon }) => {
+const Beneficiary = ({
+  beneficiary,
+  networkProvidersIcon,
+  onPress,
+  setBeneficiaries,
+}) => {
+  const { deleteFetchData } = useFetchData();
+  const handleDelete = async () => {
+    setBeneficiaries(prev =>
+      prev.filter(index => index._id !== beneficiary._id),
+    );
+    await deleteFetchData('user/beneficiary/airtime', beneficiary);
+  };
+
   return (
-    <Pressable style={styles.beneficiary}>
+    <Pressable style={styles.beneficiary} onPress={onPress}>
       {networkProvidersIcon(beneficiary.network)}
       <RegularText style={styles.phoneNo}>{beneficiary.phoneNo}</RegularText>
+      <Pressable style={styles.deleteButton} onPress={handleDelete}>
+        <Ionicons
+          name="close"
+          onPress={handleDelete}
+          size={18}
+          color={'#fff'}
+        />
+      </Pressable>
     </Pressable>
   );
 };
