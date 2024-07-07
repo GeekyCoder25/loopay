@@ -12,8 +12,9 @@ const AppUpdateModal = ({ visible }) => {
     Updates.reloadAsync();
     setIsUpdateAvailable(false);
   };
+
   return (
-    <Modal visible={visible} transparent>
+    <View style={styles.modalBg}>
       <View style={styles.overlay} />
       <View style={styles.modalContainer}>
         <View style={styles.modal}>
@@ -24,13 +25,22 @@ const AppUpdateModal = ({ visible }) => {
           <Button text={'Restart App'} onPress={handlePress} />
         </View>
       </View>
-    </Modal>
+    </View>
   );
 };
 
 export default AppUpdateModal;
 
 const styles = StyleSheet.create({
+  modalBg: {
+    position: 'absolute',
+    flex: 1,
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 90,
+  },
   overlay: {
     backgroundColor: '#000',
     opacity: 0.7,

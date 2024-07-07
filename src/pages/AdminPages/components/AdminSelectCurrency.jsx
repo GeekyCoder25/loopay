@@ -29,68 +29,75 @@ const AdminSelectCurrencyModal = () => {
   };
 
   return (
-    <Modal
-      visible={modalOpen}
-      animationType="slide"
-      transparent
-      onRequestClose={handleModal}>
-      <Pressable style={styles.overlay} onPress={handleModal} />
-      <View style={styles.modalContainer}>
-        <View style={styles.modal}>
-          <Image
-            style={styles.bg}
-            source={require('../../../../assets/images/pageBg.png')}
-          />
-          <View style={styles.modalBorder} />
-          <View style={styles.modalHeader}>
-            <RegularText style={styles.textHeader}>Accounts</RegularText>
-            <Pressable onPress={() => setShowSearchBox(true)}>
-              <Search />
-            </Pressable>
+    modalOpen && (
+      <View onRequestClose={handleModal} style={styles.modalBg}>
+        <Pressable style={styles.overlay} onPress={handleModal} />
+        <View style={styles.modalContainer}>
+          <View style={styles.modal}>
+            <Image
+              style={styles.bg}
+              source={require('../../../../assets/images/pageBg.png')}
+            />
+            <View style={styles.modalBorder} />
+            <View style={styles.modalHeader}>
+              <RegularText style={styles.textHeader}>Accounts</RegularText>
+              <Pressable onPress={() => setShowSearchBox(true)}>
+                <Search />
+              </Pressable>
+            </View>
+            {showSearchBox && (
+              <View style={styles.textInputContainer}>
+                <TextInput
+                  placeholder="Search Currency"
+                  style={styles.textInput}
+                />
+              </View>
+            )}
+            <ScrollView style={{ width: 100 + '%' }}>
+              <View style={styles.currencies}>
+                {allCurrencies
+                  .filter(
+                    currency => currency.currency === selectedCurrency.currency,
+                  )
+                  .map(selected => (
+                    <Currency
+                      key={selected.currency}
+                      selected={selected}
+                      setModalOpen={setModalOpen}
+                      setShowSearchBox={setShowSearchBox}
+                    />
+                  ))}
+                {allCurrencies
+                  .filter(
+                    currency => currency.currency !== selectedCurrency.currency,
+                  )
+                  .map(selected => (
+                    <Currency
+                      key={selected.currency}
+                      selected={selected}
+                      setModalOpen={setModalOpen}
+                      setShowSearchBox={setShowSearchBox}
+                    />
+                  ))}
+              </View>
+            </ScrollView>
+            {/* <Button text={'Add Account'} Icon={<Plus />} /> */}
           </View>
-          {showSearchBox && (
-            <View style={styles.textInputContainer}>
-              <TextInput
-                placeholder="Search Currency"
-                style={styles.textInput}
-              />
-            </View>
-          )}
-          <ScrollView style={{ width: 100 + '%' }}>
-            <View style={styles.currencies}>
-              {allCurrencies
-                .filter(
-                  currency => currency.currency === selectedCurrency.currency,
-                )
-                .map(selected => (
-                  <Currency
-                    key={selected.currency}
-                    selected={selected}
-                    setModalOpen={setModalOpen}
-                    setShowSearchBox={setShowSearchBox}
-                  />
-                ))}
-              {allCurrencies
-                .filter(
-                  currency => currency.currency !== selectedCurrency.currency,
-                )
-                .map(selected => (
-                  <Currency
-                    key={selected.currency}
-                    selected={selected}
-                    setModalOpen={setModalOpen}
-                    setShowSearchBox={setShowSearchBox}
-                  />
-                ))}
-            </View>
-          </ScrollView>
-          {/* <Button text={'Add Account'} Icon={<Plus />} /> */}
         </View>
       </View>
-    </Modal>
+    )
   );
 };
 const styles = StyleSheet.create({
+  modalBg: {
+    position: 'absolute',
+    flex: 1,
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 99,
+  },
   overlay: {
     backgroundColor: '#000',
     opacity: 0.7,

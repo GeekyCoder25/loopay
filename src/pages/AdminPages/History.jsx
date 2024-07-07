@@ -60,10 +60,10 @@ const History = () => {
           );
 
           if (response.status === 200) {
-            const swapLength = response.data.data.filter(
+            const swapLength = response.data?.data?.filter(
               transaction => transaction.transactionType === 'swap',
             ).length;
-            setTotalTransactionsLength(response.data.total - swapLength);
+            setTotalTransactionsLength(response.data?.total - swapLength);
             const result = response.data.data.filter(
               transaction => transaction.transactionType !== 'swap',
             );
@@ -90,11 +90,11 @@ const History = () => {
         }&limit=${limit}&page=${page + 1}`,
       );
       if (response.status === 200 && response.data.pageSize) {
-        const swapLength = response.data.data.filter(
+        const swapLength = response.data?.data?.filter(
           transaction => transaction.transactionType === 'swap',
         ).length;
         setTotalTransactionsLength(totalTransactionsLength - swapLength);
-        const result = response.data.data.filter(
+        const result = response.data?.data?.filter(
           transaction => transaction.transactionType !== 'swap',
         );
         const uniqueIds = new Set();
