@@ -47,7 +47,7 @@ const AppStart = () => {
     if (isSessionTimedOut && isLoggedIn) {
       setTimeout(() => {
         setShowLockScreen(true);
-      }, 2000);
+      }, 1500);
     } else {
       setShowLockScreen(false);
     }

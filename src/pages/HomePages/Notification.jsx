@@ -214,7 +214,7 @@ export default Notification;
 
 const Message = ({ notification }) => {
   const { putFetchData } = useFetchData();
-  const { setWalletRefresh } = useContext(AppContext);
+  const { setWalletRefresh, showAmount } = useContext(AppContext);
   const [transactionTypeIcon, setTransactionTypeIcon] = useState(
     <Image
       source={require('../../../assets/images/icon.png')}
@@ -303,12 +303,28 @@ const Message = ({ notification }) => {
     }
   }, [networkProvider, photo, type]);
 
+  const hideAmountInMessage = () => {
+    if (!showAmount) {
+      const amountPattern = /[₦$€£]\d+(\.\d+)?/g;
+      const amountMatch = message.match(amountPattern);
+
+      if (amountMatch) {
+        const hiddenAmount = `${amountMatch[0][0]}***`;
+        const hiddenMessage = message.replace(amountPattern, hiddenAmount);
+        return hiddenMessage;
+      }
+    }
+    return message;
+  };
+
+  const finalMessage = hideAmountInMessage();
+
   return (
     <Pressable style={styles.history} onPress={handleNavigate}>
       {transactionTypeIcon}
       <View style={styles.historyContent}>
         <BoldText style={styles.title}>{header}</BoldText>
-        <RegularText>{message}</RegularText>
+        <RegularText>{finalMessage}</RegularText>
         <RegularText>{historyTime}</RegularText>
       </View>
       {status === 'unread' && <View style={styles.unread} />}

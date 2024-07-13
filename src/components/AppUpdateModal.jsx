@@ -1,4 +1,4 @@
-import { Modal, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import React, { useContext } from 'react';
 import RegularText from './fonts/RegularText';
 import Button from './Button';
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: 90,
+    zIndex: 99,
   },
   overlay: {
     backgroundColor: '#000',

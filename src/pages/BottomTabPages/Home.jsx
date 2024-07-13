@@ -681,6 +681,7 @@ const History = ({ history, navigation }) => {
     setShowAmount(prev => !prev);
     setShowBalance(!showAmount);
   };
+
   return (
     <Pressable
       onPress={() => navigation.navigate('TransactionHistoryDetails', history)}

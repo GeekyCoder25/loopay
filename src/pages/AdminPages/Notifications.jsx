@@ -313,6 +313,7 @@ export default Notifications;
 
 const Message = ({ notification, setModalData, setShowModal, setReload }) => {
   const { putFetchData } = useFetchData();
+  const { showAmount } = useContext(AppContext);
   const [transactionTypeIcon, setTransactionTypeIcon] = useState(
     <Image
       source={require('../../../assets/images/icon.png')}
@@ -403,12 +404,28 @@ const Message = ({ notification, setModalData, setShowModal, setReload }) => {
     }
   }, [photo, type]);
 
+  const hideAmountInMessage = () => {
+    if (!showAmount) {
+      const amountPattern = /[₦$€£]\d+(\.\d+)?/g;
+      const amountMatch = adminMessage.match(amountPattern);
+
+      if (amountMatch) {
+        const hiddenAmount = `${amountMatch[0][0]}***`;
+        const hiddenMessage = adminMessage.replace(amountPattern, hiddenAmount);
+        return hiddenMessage;
+      }
+    }
+    return adminMessage;
+  };
+
+  const finalMessage = hideAmountInMessage();
+
   return (
     <Pressable style={styles.notification} onPress={handleNavigate}>
       {transactionTypeIcon}
       <View style={styles.content}>
         <BoldText style={styles.title}>{header}</BoldText>
-        <RegularText>{adminMessage}</RegularText>
+        <RegularText>{finalMessage}</RegularText>
         <RegularText>{historyTime}</RegularText>
       </View>
       {adminStatus === 'unread' && <View style={styles.unread} />}

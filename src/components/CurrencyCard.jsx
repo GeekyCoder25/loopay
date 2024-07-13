@@ -7,6 +7,9 @@ import AtmChevron from '../../assets/images/atmChevronRight.svg';
 import { useContext } from 'react';
 import { AppContext } from './AppContext';
 import { setShowBalance } from '../../utils/storage';
+import * as Haptics from 'expo-haptics';
+import * as Clipboard from 'expo-clipboard';
+import ToastMessage from './ToastMessage';
 
 const CurrencyCard = ({ currencyIndex }) => {
   const { isAdmin, showAmount, setShowAmount } = useContext(AppContext);
@@ -17,6 +20,13 @@ const CurrencyCard = ({ currencyIndex }) => {
     setShowAmount(prev => !prev);
     setShowBalance(!showAmount);
   };
+
+  const handleCopy = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Clipboard.setStringAsync(accNo);
+    ToastMessage('Copied to clipboard');
+  };
+
   return (
     <View style={{ ...styles.atm, backgroundColor: color }}>
       <Image
@@ -59,7 +69,9 @@ const CurrencyCard = ({ currencyIndex }) => {
                 <View>
                   <View style={styles.atmBottom}>
                     <BoldText style={styles.fullName}>Account Number:</BoldText>
-                    <RegularText style={styles.fullName}>{accNo}</RegularText>
+                    <Pressable onPress={handleCopy}>
+                      <RegularText style={styles.fullName}>{accNo}</RegularText>
+                    </Pressable>
                   </View>
                 </View>
               )}

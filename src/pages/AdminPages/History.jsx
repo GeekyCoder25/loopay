@@ -402,6 +402,8 @@ const styles = StyleSheet.create({
 export default History;
 
 const HistoryComp = memo(({ history, setTransactionModal }) => {
+  const { showAmount, setShowAmount } = useContext(AppContext);
+
   const {
     senderName,
     receiverName,
@@ -463,12 +465,28 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
               </>
             )}
           </View>
-          <View style={styles.amount}>
-            <BoldText style={styles.creditAmount}>
-              +{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
-            </BoldText>
-            <RegularText>{accountDebited}</RegularText>
-          </View>
+          {showAmount ? (
+            <Pressable
+              onPress={() => {
+                setShowAmount(prev => !prev);
+              }}
+              style={styles.amount}>
+              <BoldText style={styles.creditAmount}>
+                +
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+              <RegularText>{accountDebited}</RegularText>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => {
+                setShowAmount(prev => !prev);
+              }}
+              style={styles.amount}>
+              <BoldText style={styles.creditAmount}>***</BoldText>
+            </Pressable>
+          )}
         </>
       )}
       {transactionType?.toLowerCase() === 'debit' && (
@@ -478,12 +496,28 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
             <BoldText>{receiverName}</BoldText>
             <RegularText>Transfer</RegularText>
           </View>
-          <View style={styles.amount}>
-            <BoldText style={styles.debitAmount}>
-              -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
-            </BoldText>
-            <RegularText> {accountDebited}</RegularText>
-          </View>
+          {showAmount ? (
+            <Pressable
+              onPress={() => {
+                setShowAmount(prev => !prev);
+              }}
+              style={styles.amount}>
+              <BoldText style={styles.debitAmount}>
+                -
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+              <RegularText> {accountDebited}</RegularText>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => {
+                setShowAmount(prev => !prev);
+              }}
+              style={styles.amount}>
+              <BoldText style={styles.debitAmount}>***</BoldText>
+            </Pressable>
+          )}
         </>
       )}
       {transactionType?.toLowerCase() === 'airtime' && (
@@ -495,12 +529,28 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
             </BoldText>
             <RegularText>Airtime</RegularText>
           </View>
-          <View style={styles.amount}>
-            <BoldText style={styles.debitAmount}>
-              -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
-            </BoldText>
-            <RegularText> {accountDebited}</RegularText>
-          </View>
+          {showAmount ? (
+            <Pressable
+              onPress={() => {
+                setShowAmount(prev => !prev);
+              }}
+              style={styles.amount}>
+              <BoldText style={styles.debitAmount}>
+                -
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+              <RegularText> {accountDebited}</RegularText>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => {
+                setShowAmount(prev => !prev);
+              }}
+              style={styles.amount}>
+              <BoldText style={styles.debitAmount}>***</BoldText>
+            </Pressable>
+          )}
         </>
       )}
       {transactionType?.toLowerCase() === 'data' && (
@@ -512,12 +562,28 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
             </BoldText>
             <RegularText>Data </RegularText>
           </View>
-          <View style={styles.amount}>
-            <BoldText style={styles.debitAmount}>
-              -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
-            </BoldText>
-            <RegularText> {accountDebited}</RegularText>
-          </View>
+          {showAmount ? (
+            <Pressable
+              onPress={() => {
+                setShowAmount(prev => !prev);
+              }}
+              style={styles.amount}>
+              <BoldText style={styles.debitAmount}>
+                -
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+              <RegularText> {accountDebited}</RegularText>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => {
+                setShowAmount(prev => !prev);
+              }}
+              style={styles.amount}>
+              <BoldText style={styles.debitAmount}>***</BoldText>
+            </Pressable>
+          )}
         </>
       )}
       {transactionType?.toLowerCase() === 'bill' && (
@@ -529,12 +595,28 @@ const HistoryComp = memo(({ history, setTransactionModal }) => {
               {billType} bill
             </RegularText>
           </View>
-          <View style={styles.amount}>
-            <BoldText style={styles.debitAmount}>
-              -{currencySymbol + addingDecimal(Number(amount).toLocaleString())}
-            </BoldText>
-            <RegularText> {accountDebited}</RegularText>
-          </View>
+          {showAmount ? (
+            <Pressable
+              onPress={() => {
+                setShowAmount(prev => !prev);
+              }}
+              style={styles.amount}>
+              <BoldText style={styles.debitAmount}>
+                -
+                {currencySymbol +
+                  addingDecimal(Number(amount).toLocaleString())}
+              </BoldText>
+              <RegularText> {accountDebited}</RegularText>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => {
+                setShowAmount(prev => !prev);
+              }}
+              style={styles.amount}>
+              <BoldText style={styles.debitAmount}>***</BoldText>
+            </Pressable>
+          )}
         </>
       )}
     </Pressable>

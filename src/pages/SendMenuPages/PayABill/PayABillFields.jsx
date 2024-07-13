@@ -52,7 +52,7 @@ export default function SelectInputField({
           [id]: addingDecimal(inputText),
         };
       });
-      if (Number(inputText) > wallet.balance) {
+      if (Number(inputText) > wallet[`${selectedCurrency.currency}Balance`]) {
         setErrorKey('amount');
         setErrorMessage('Insufficient funds');
       }
@@ -201,6 +201,7 @@ const LocalModal = ({
   showModalPrice,
   id,
 }) => {
+  const [searchQuery, setSearchQuery] = useState('');
   const handleModal = () => {
     setModalOpen(false);
   };
@@ -242,28 +243,51 @@ const LocalModal = ({
         <View style={styles.modal}>
           <ScrollView>
             {modalData.length ? (
-              modalData.map(provider => (
-                <Pressable
-                  key={provider.title || provider.name}
-                  style={{
-                    ...styles.modalList,
-                    backgroundColor:
-                      selected === (provider.title || provider.name)
-                        ? '#e4e2e2'
-                        : 'transparent',
-                  }}
-                  onPress={() => handleModalSelect(provider)}>
-                  <View style={styles.modalListRow}>
-                    <BoldText>
-                      {showModalPrice &&
-                        '₦' + Number(provider.price)?.toLocaleString() + ' - '}
-                    </BoldText>
-                    <BoldText style={styles.modalTitle}>
-                      {provider.title || provider.name}
-                    </BoldText>
-                  </View>
-                </Pressable>
-              ))
+              <>
+                <View style={styles.searchInputContainer}>
+                  <TextInput
+                    style={styles.searchInput}
+                    placeholder="Search..."
+                    placeholderTextColor={'#888'}
+                    onChangeText={text => setSearchQuery(text)}
+                    value={searchQuery}
+                  />
+                </View>
+                {modalData
+                  .filter(provider => {
+                    if (searchQuery) {
+                      return Object.values(provider)
+                        .toString()
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase());
+                    }
+                    return true;
+                  })
+                  .map(provider => (
+                    <Pressable
+                      key={provider.title || provider.name}
+                      style={{
+                        ...styles.modalList,
+                        backgroundColor:
+                          selected === (provider.title || provider.name)
+                            ? '#e4e2e2'
+                            : 'transparent',
+                      }}
+                      onPress={() => handleModalSelect(provider)}>
+                      <View style={styles.modalListRow}>
+                        <BoldText>
+                          {showModalPrice &&
+                            '₦' +
+                              Number(provider.price)?.toLocaleString() +
+                              ' - '}
+                        </BoldText>
+                        <BoldText style={styles.modalTitle}>
+                          {provider.title || provider.name}
+                        </BoldText>
+                      </View>
+                    </Pressable>
+                  ))}
+              </>
             ) : (
               <ActivityIndicator
                 color={'#1e1e1e'}
@@ -349,6 +373,17 @@ const styles = StyleSheet.create({
     width: 30 + '%',
     borderRadius: 3,
     maxWidth: 120,
+  },
+  searchInputContainer: {
+    marginHorizontal: 5 + '%',
+    marginBottom: 30,
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#bbb',
+    borderRadius: 15,
+    height: 40,
+    paddingHorizontal: 10,
   },
   modalLists: {
     flex: 1,

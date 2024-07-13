@@ -148,6 +148,14 @@ const Rate = ({ navigation }) => {
         amount: 0,
       };
     }),
+
+    {
+      feeName: 'Bill Fee',
+      index: 'bill',
+      group: 'bill',
+      currency: 'naira',
+      amount: 100,
+    },
     ...allCurrencies.map(currency => {
       return {
         feeName: `Tax fee for ${currency.acronym}`,
