@@ -18,7 +18,6 @@
       }
     },
     "production": {
-      "developmentClient": true,
       "channel": "production",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://loopay-api.koyeb.app/api"
