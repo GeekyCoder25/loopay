@@ -204,10 +204,6 @@ const SwapFunds = ({ navigation }) => {
           ? addingDecimal(toReceiveCalculate.toLocaleString())
           : 'Amount to receive',
       );
-    if (text > wallet[`${swapFrom.currency}Balance`]) {
-      setErrorKey(true);
-      return setErrorMessage('Insufficient funds');
-    }
     setErrorKey(false);
     setErrorMessage(false);
   };

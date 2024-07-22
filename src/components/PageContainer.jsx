@@ -2,6 +2,7 @@
 import { useContext } from 'react';
 import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { AppContext } from './AppContext';
+import { Audio } from 'expo-av';
 
 const PageContainer = ({
   children,
@@ -21,6 +22,13 @@ const PageContainer = ({
     setWalletRefresh(prev => !prev);
     setRefreshing(true);
     refreshFunc && (await refreshFunc());
+    const playSound = async () => {
+      const { sound } = await Audio.Sound.createAsync(
+        require('../../assets/refresh.mp3'),
+      );
+      await sound.playAsync();
+    };
+    playSound();
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);

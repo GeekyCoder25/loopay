@@ -406,7 +406,7 @@ const Message = ({ notification, setModalData, setShowModal, setReload }) => {
 
   const hideAmountInMessage = () => {
     if (!showAmount) {
-      const amountPattern = /[₦$€£]\d+(\.\d+)?/g;
+      const amountPattern = /[₦$€£]\d{1,3}(?:,\d{3})*(?:\.\d+)?/g;
       const amountMatch = adminMessage.match(amountPattern);
 
       if (amountMatch) {

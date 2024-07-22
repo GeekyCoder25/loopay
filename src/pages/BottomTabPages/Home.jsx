@@ -1,4 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
+
+import 'react-native-gesture-handler';
 import React, { useContext, useEffect, useState } from 'react';
 import {
   BackHandler,
@@ -137,204 +139,196 @@ const Home = ({ navigation }) => {
   };
 
   return (
-    <>
-      <PageContainer refreshFunc={refreshPage}>
-        <Pressable
-          style={styles.headerContainer}
-          onPress={() => setNoReload(false)}>
-          <View style={styles.bgContainer}>
-            <Bg />
-          </View>
-          <View style={styles.header}>
-            <Pressable
-              onPress={() => navigation.navigate('ProfileNavigator')}
-              // onLongPress={() => navigation.navigate('FaceDetection')}
-              style={styles.userImageContainer}>
-              <UserIcon />
-              <RegularText>Hello, {firstName}</RegularText>
-            </Pressable>
-            <Pressable onPress={() => navigation.navigate('Notification')}>
-              {unread.length ? <BellActive /> : <Bell />}
-            </Pressable>
-          </View>
-          {requests.length > 0 && !closeRequest && (
-            <Pressable
-              style={{ ...styles.request, width: vw }}
-              onPress={() => navigation.navigate('PendingRequest')}>
-              <View style={styles.requestBell}>
-                <BoldText>🔔 </BoldText>
-                <BoldText style={styles.requestText}>
-                  {requests.length > 1
-                    ? `You’ve ${requests.length} pending requests. Click to check requests`
-                    : 'You’ve a pending request. Click to check request'}
-                </BoldText>
-                <Pressable
-                  style={styles.close}
-                  onPress={() => setCloseRequest(true)}>
-                  <IonIcon
-                    name="close-circle-outline"
-                    color={'#fff'}
-                    size={18}
-                  />
-                </Pressable>
-              </View>
-            </Pressable>
-          )}
-          <ImageBackground
-            source={require('../../../assets/images/cardBg.png')}
-            resizeMode="contain"
-            style={{
-              ...styles.card,
-              height: requests.length && !closeRequest ? 150 : 200,
-            }}>
-            <View style={styles.cardHeader}>
-              <View style={styles.amountContainer}>
-                <View style={styles.symbolContainer}>
-                  <Text
-                    style={
-                      isAndroid
-                        ? {
-                            ...styles.symbol,
-                            transform: [
-                              { translateY: -3.5 },
-                              { translateX: -0.5 },
-                            ],
-                          }
-                        : styles.symbol
-                    }>
-                    {selectedCurrency.symbol}
-                  </Text>
-                </View>
-                <View>
-                  <WalletAmount />
-                  <View style={styles.flagContainer}>
-                    <RegularText style={styles.currencyType}>
-                      {selectedCurrency.acronym}
-                    </RegularText>
-                    <FlagSelect country={selectedCurrency.currency} />
-                  </View>
-                </View>
-              </View>
-              <View style={styles.eyeContainer}>
-                {wallet && (
-                  <Pressable style={styles.eye} onPress={handleShow}>
-                    <FaIcon
-                      name={showAmount ? 'eye-slash' : 'eye'}
-                      size={25}
-                      color={'#fff'}
-                    />
-                  </Pressable>
-                )}
-                <Pressable
-                  onPress={() => {
-                    setWalletRefresh(prev => !prev);
-                    setModalOpen(true);
-                  }}
-                  style={styles.chevronDown}>
-                  <ChevronDown />
-                </Pressable>
-              </View>
-            </View>
-
-            <View style={styles.cardHeader}>
-              <Pressable
-                style={styles.cardDetails}
-                onPress={() => navigation.navigate('AccountDetails')}>
-                <Wallet />
-                <RegularText style={styles.currencyType}>
-                  Account Details
-                </RegularText>
-              </Pressable>
-              <Pressable onPress={handleCopy} style={styles.cardDetails}>
-                <FaIcon name="copy" color="#ccc" size={24} />
-                <RegularText style={styles.currencyType}>
-                  {wallet?.accNo}
-                </RegularText>
-              </Pressable>
-            </View>
-          </ImageBackground>
-        </Pressable>
-        <ScrollView
-          style={styles.quickLinks}
-          horizontal
-          showsHorizontalScrollIndicator={false}>
-          <Pressable
-            style={styles.quickLink}
-            onPress={() => navigation.navigate('AddMoneyFromHome')}>
-            <FaIcon name="plus-circle" color={'#fff'} size={24} />
-            <BoldText style={styles.quickLinkText}>Add money</BoldText>
-          </Pressable>
-          <Pressable
-            style={styles.quickLink}
-            onPress={() => navigation.navigate('SendMoneyNavigatorFromHome')}>
-            <FaIcon name="send" color={'#fff'} size={14} />
-            <BoldText style={styles.quickLinkText}>Send money</BoldText>
-          </Pressable>
-          <Pressable
-            style={styles.quickLink}
-            onPress={() => navigation.navigate('SwapFunds')}>
-            <SwapIconWhite fill={'#fff'} width={25} height={25} />
-            <BoldText style={styles.quickLinkText}>Swap funds</BoldText>
-          </Pressable>
-        </ScrollView>
-        <BoldText style={styles.shortcutsHeader}>Shortcuts</BoldText>
-        <View style={styles.shortcuts}>
-          {shortcuts.map(link => (
-            <Pressable
-              onPress={() => {
-                navigation.navigate(link.routeNavigate);
-              }}
-              style={styles.route}
-              key={link.routeNavigate}>
-              <View style={styles.routeIcon}>{link.routeIcon}</View>
-              <View style={styles.routeText}>
-                <BoldText>{link.routeName}</BoldText>
-              </View>
-            </Pressable>
-          ))}
+    <PageContainer refreshFunc={refreshPage}>
+      <Pressable
+        style={styles.headerContainer}
+        onPress={() => setNoReload(false)}>
+        <View style={styles.bgContainer}>
+          <Bg />
         </View>
-        <View style={styles.body}>
-          <View style={styles.historyHeader}>
-            <RegularText style={styles.historyText}>History</RegularText>
-            {transactions.length > 3 && (
-              <Pressable
-                onPress={() => navigation.navigate('TransactionHistory')}>
-                <RegularText>
-                  See more <FaIcon name="chevron-right" color="#656565" />
-                </RegularText>
-              </Pressable>
-            )}
-          </View>
-          {transactions.length > 0 ? (
-            <ScrollView
-              style={styles.histories}
-              onScroll={() => {
-                setTimeout(() => {
-                  setNoReload(false);
-                }, 2000);
-                return setNoReload(true);
-              }}>
-              {transactions
-                .slice(0, Math.round((vh - 800) / 30))
-                .map(history => (
-                  <History
-                    key={history._id}
-                    history={history}
-                    navigation={navigation}
-                  />
-                ))}
-            </ScrollView>
-          ) : (
-            <View style={styles.historyEmpty}>
-              <BoldText style={styles.historyEmptyText}>
-                Your transaction histories will appear here
+        <View style={styles.header}>
+          <Pressable
+            onPress={() => navigation.navigate('ProfileNavigator')}
+            // onLongPress={() => navigation.navigate('FaceDetection')}
+            style={styles.userImageContainer}>
+            <UserIcon />
+            <RegularText>Hello, {firstName}</RegularText>
+          </Pressable>
+          <Pressable onPress={() => navigation.navigate('Notification')}>
+            {unread.length ? <BellActive /> : <Bell />}
+          </Pressable>
+        </View>
+        {requests.length > 0 && !closeRequest && (
+          <Pressable
+            style={{ ...styles.request, width: vw }}
+            onPress={() => navigation.navigate('PendingRequest')}>
+            <View style={styles.requestBell}>
+              <BoldText>🔔 </BoldText>
+              <BoldText style={styles.requestText}>
+                {requests.length > 1
+                  ? `You’ve ${requests.length} pending requests. Click to check requests`
+                  : 'You’ve a pending request. Click to check request'}
               </BoldText>
+              <Pressable
+                style={styles.close}
+                onPress={() => setCloseRequest(true)}>
+                <IonIcon name="close-circle-outline" color={'#fff'} size={18} />
+              </Pressable>
             </View>
+          </Pressable>
+        )}
+        <ImageBackground
+          source={require('../../../assets/images/cardBg.png')}
+          resizeMode="contain"
+          style={{
+            ...styles.card,
+            height: requests.length && !closeRequest ? 150 : 200,
+          }}>
+          <View style={styles.cardHeader}>
+            <View style={styles.amountContainer}>
+              <View style={styles.symbolContainer}>
+                <Text
+                  style={
+                    isAndroid
+                      ? {
+                          ...styles.symbol,
+                          transform: [
+                            { translateY: -3.5 },
+                            { translateX: -0.5 },
+                          ],
+                        }
+                      : styles.symbol
+                  }>
+                  {selectedCurrency.symbol}
+                </Text>
+              </View>
+              <View>
+                <WalletAmount />
+                <View style={styles.flagContainer}>
+                  <RegularText style={styles.currencyType}>
+                    {selectedCurrency.acronym}
+                  </RegularText>
+                  <FlagSelect country={selectedCurrency.currency} />
+                </View>
+              </View>
+            </View>
+            <View style={styles.eyeContainer}>
+              {wallet && (
+                <Pressable style={styles.eye} onPress={handleShow}>
+                  <FaIcon
+                    name={showAmount ? 'eye-slash' : 'eye'}
+                    size={25}
+                    color={'#fff'}
+                  />
+                </Pressable>
+              )}
+              <Pressable
+                onPress={() => {
+                  setWalletRefresh(prev => !prev);
+                  setModalOpen(true);
+                }}
+                style={styles.chevronDown}>
+                <ChevronDown />
+              </Pressable>
+            </View>
+          </View>
+
+          <View style={styles.cardHeader}>
+            <Pressable
+              style={styles.cardDetails}
+              onPress={() => navigation.navigate('AccountDetails')}>
+              <Wallet />
+              <RegularText style={styles.currencyType}>
+                Account Details
+              </RegularText>
+            </Pressable>
+            <Pressable onPress={handleCopy} style={styles.cardDetails}>
+              <FaIcon name="copy" color="#ccc" size={24} />
+              <RegularText style={styles.currencyType}>
+                {wallet?.accNo}
+              </RegularText>
+            </Pressable>
+          </View>
+        </ImageBackground>
+      </Pressable>
+      <ScrollView
+        style={styles.quickLinks}
+        horizontal
+        showsHorizontalScrollIndicator={false}>
+        <Pressable
+          style={styles.quickLink}
+          onPress={() => navigation.navigate('AddMoneyFromHome')}>
+          <FaIcon name="plus-circle" color={'#fff'} size={24} />
+          <BoldText style={styles.quickLinkText}>Add money</BoldText>
+        </Pressable>
+        <Pressable
+          style={styles.quickLink}
+          onPress={() => navigation.navigate('SendMoneyNavigatorFromHome')}>
+          <FaIcon name="send" color={'#fff'} size={14} />
+          <BoldText style={styles.quickLinkText}>Send money</BoldText>
+        </Pressable>
+        <Pressable
+          style={styles.quickLink}
+          onPress={() => navigation.navigate('SwapFunds')}>
+          <SwapIconWhite fill={'#fff'} width={25} height={25} />
+          <BoldText style={styles.quickLinkText}>Swap funds</BoldText>
+        </Pressable>
+      </ScrollView>
+      <BoldText style={styles.shortcutsHeader}>Shortcuts</BoldText>
+      <View style={styles.shortcuts}>
+        {shortcuts.map(link => (
+          <Pressable
+            onPress={() => {
+              navigation.navigate(link.routeNavigate);
+            }}
+            style={styles.route}
+            key={link.routeNavigate}>
+            <View style={styles.routeIcon}>{link.routeIcon}</View>
+            <View style={styles.routeText}>
+              <BoldText>{link.routeName}</BoldText>
+            </View>
+          </Pressable>
+        ))}
+      </View>
+      <View style={styles.body}>
+        <View style={styles.historyHeader}>
+          <RegularText style={styles.historyText}>History</RegularText>
+          {transactions.length > 3 && (
+            <Pressable
+              onPress={() => navigation.navigate('TransactionHistory')}>
+              <RegularText>
+                See more <FaIcon name="chevron-right" color="#656565" />
+              </RegularText>
+            </Pressable>
           )}
         </View>
-      </PageContainer>
+        {transactions.length > 0 ? (
+          <ScrollView
+            style={styles.histories}
+            onScroll={() => {
+              setTimeout(() => {
+                setNoReload(false);
+              }, 2000);
+              return setNoReload(true);
+            }}>
+            {transactions.slice(0, Math.round((vh - 800) / 30)).map(history => (
+              <History
+                key={history._id}
+                history={history}
+                navigation={navigation}
+              />
+            ))}
+          </ScrollView>
+        ) : (
+          <View style={styles.historyEmpty}>
+            <BoldText style={styles.historyEmptyText}>
+              Your transaction histories will appear here
+            </BoldText>
+          </View>
+        )}
+      </View>
       <SelectCurrencyModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
-    </>
+    </PageContainer>
   );
 };
 

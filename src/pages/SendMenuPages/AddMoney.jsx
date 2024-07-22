@@ -203,9 +203,12 @@ const AddMoney = ({ navigation }) => {
         return setErrorKey('amount');
       }
       setIsLoading(true);
-      const response = await postFetchData('user/add-money/card', {
-        amount: addBalanceData.toReceive,
-      });
+      const response = await postFetchData(
+        `user/add-money/card?currency=${selectedCurrency.acronym}`,
+        {
+          amount: addBalanceData.toReceive,
+        },
+      );
       if (response.status === 200) {
         return navigation.navigate('AddMoneyPaystack', response.data?.data);
       }

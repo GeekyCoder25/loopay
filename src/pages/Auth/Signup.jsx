@@ -17,7 +17,7 @@ import Lock from '../../../assets/images/lock.svg';
 import Eye from '../../../assets/images/eye.svg';
 import EyeClosed from '../../../assets/images/eye-slash.svg';
 import Refer from '../../../assets/images/referral.svg';
-import { signUpData } from '../../database/data.js';
+import { SignUpData } from '../../database/data.js';
 import Logo from '../../components/Logo.jsx';
 import Button from '../../components/Button.jsx';
 import Header from '../../components/Header.jsx';
@@ -175,7 +175,7 @@ const SignUp = ({ navigation }) => {
             title={'Personal Info'}
             text={'To continue, kindly complete the following fields.'}
           />
-          {signUpData.map(inputForm => (
+          {SignUpData.map(inputForm => (
             <FormField
               key={inputForm.name}
               inputForm={inputForm}
@@ -198,8 +198,8 @@ const SignUp = ({ navigation }) => {
             <RegularText style={styles.alreadyText}>
               Already have an account?
             </RegularText>
-            <Pressable onPress={() => navigation.replace('Signin')}>
-              <BoldText style={styles.signIn}>Sign in</BoldText>
+            <Pressable onPress={() => navigation.replace('SignIn')}>
+              <BoldText style={styles.SignIn}>Sign in</BoldText>
             </Pressable>
           </View>
           <Button text={'Register'} onPress={handleSignUp} />
@@ -321,10 +321,10 @@ const styles = StyleSheet.create({
   alreadyText: {
     color: '#868585',
   },
-  signIn: {
+  SignIn: {
     fontWeight: '600',
   },
-  signInIcons: {
+  SignInIcons: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
@@ -627,7 +627,7 @@ export const EmailVerify = ({
         setCodeSent(true);
       } else {
         if (typeof response === 'string') {
-          setErrorMessage(response);
+          setErrorMessage(response || 'An unexpected error occurred');
         } else {
           setErrorMessage(Object.values(result)[0]);
         }

@@ -1,4 +1,4 @@
-export const signUpData = [
+export const SignUpData = [
   {
     name: 'firstName',
     placeholder: 'First name',
@@ -52,7 +52,7 @@ export const signUpData = [
     optional: true,
   },
 ];
-export const signInData = [
+export const SignInData = [
   {
     name: 'email',
     placeholder: 'E-mail address',

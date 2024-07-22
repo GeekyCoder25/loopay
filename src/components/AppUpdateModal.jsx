@@ -1,11 +1,11 @@
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import React, { useContext } from 'react';
 import RegularText from './fonts/RegularText';
 import Button from './Button';
 import * as Updates from 'expo-updates';
 import { AppContext } from './AppContext';
 
-const AppUpdateModal = ({ visible }) => {
+const AppUpdateModal = () => {
   const { setIsUpdateAvailable } = useContext(AppContext);
 
   const handlePress = async () => {
@@ -23,6 +23,9 @@ const AppUpdateModal = ({ visible }) => {
             experience now
           </RegularText>
           <Button text={'Restart App'} onPress={handlePress} />
+          <Pressable onPress={() => setIsUpdateAvailable(false)}>
+            <RegularText style={styles.later}>Update Later</RegularText>
+          </Pressable>
         </View>
       </View>
     </View>
@@ -71,5 +74,9 @@ const styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
+  },
+  later: {
+    textDecorationLine: 'underline',
+    marginTop: 10,
   },
 });

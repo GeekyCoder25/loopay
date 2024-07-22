@@ -11,13 +11,14 @@
       }
     },
     "preview": {
-      "distribution": "internal",
+      "distribution": "store",
       "channel": "preview",
       "android": {
-        "buildType": "apk"
+        // "buildType": "apk"
       }
     },
     "production": {
+      "developmentClient": true,
       "channel": "production",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://loopay-api.koyeb.app/api"

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Image1 from '../../../assets/images/onboarding1.svg';
 import Image2 from '../../../assets/images/onboarding2.svg';
 import Image3 from '../../../assets/images/onboarding3.svg';
@@ -106,6 +106,11 @@ const OnboardingMaps = ({ route, navigation }) => {
   );
   return (
     <View style={styles.body}>
+      <Pressable
+        style={styles.skip}
+        onPress={() => navigation.replace('SignUp')}>
+        <BoldText>Skip</BoldText>
+      </Pressable>
       <Logo />
       {currentPage.image}
       <BoldText style={styles.title}>{currentPage.title}</BoldText>
@@ -118,7 +123,7 @@ const OnboardingMaps = ({ route, navigation }) => {
             text={'Next'}
             onPress={() =>
               route.name === `onboarding${onboardingPages.length}`
-                ? navigation.navigate('Signup')
+                ? navigation.navigate('SignUp')
                 : navigation.navigate(`onboarding${currentPage.uri + 1}`)
             }
           />
@@ -150,8 +155,8 @@ const OnboardingMaps = ({ route, navigation }) => {
             <RegularText style={styles.alreadyText}>
               Already have an account?
             </RegularText>
-            <Pressable onPress={() => navigation.navigate('Signin')}>
-              <BoldText style={styles.signIn}>Sign in</BoldText>
+            <Pressable onPress={() => navigation.navigate('SignIn')}>
+              <BoldText style={styles.SignIn}>Sign in</BoldText>
             </Pressable>
           </View>
         </View>
@@ -166,8 +171,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 15 + '%',
     paddingHorizontal: 5 + '%',
+    paddingTop: 5 + '%',
+    paddingBottom: 10 + '%',
+  },
+  skip: {
+    width: '100%',
+    alignItems: 'flex-end',
   },
   title: {
     fontSize: 20,
@@ -200,7 +210,7 @@ const styles = StyleSheet.create({
   alreadyText: {
     color: '#868585',
   },
-  signIn: {
+  SignIn: {
     fontWeight: '600',
   },
 });

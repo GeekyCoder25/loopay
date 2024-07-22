@@ -5,6 +5,7 @@ import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import Mail from '../../../assets/images/supportMail.svg';
 import Whatsapp from '../../../assets/images/supportWhatsapp.svg';
+import Phone from '../../../assets/images/phone.svg';
 import { FontAwesome } from '@expo/vector-icons';
 
 const Support = () => {
@@ -19,6 +20,11 @@ const Support = () => {
       placeholder: 'Chat Loopay Support on Whatsapp',
       contact: '+2347025008586',
     },
+    {
+      support: 'phone',
+      placeholder: 'Call our Customer Service',
+      contact: '+2348132143527',
+    },
   ];
 
   const supportLinks = [
@@ -28,7 +34,7 @@ const Support = () => {
     },
     {
       icon: <FontAwesome name="instagram" size={32} color={'#fff'} />,
-      link: 'https://instagram.con',
+      link: 'https://instagram.com/loopaygo',
     },
     {
       icon: <FontAwesome name="linkedin" size={32} color={'#fff'} />,
@@ -126,15 +132,28 @@ export const Contact = ({ contact }) => {
         return <Mail />;
       case 'whatsapp':
         return <Whatsapp />;
+      case 'phone':
+        return <Phone width={30} height={30} fill={'#000'} />;
       default:
         <Mail />;
     }
   };
 
   const handlePress = () => {
-    console.log(contact.support);
+    switch (contact.support) {
+      case 'mail':
+        Linking.openURL(`mailto:${contact.contact}`);
+        break;
+      case 'whatsapp':
+        Linking.openURL(`whatsapp://send?phone=${contact.contact}`);
+        break;
+      case 'phone':
+        Linking.openURL(`tel:${contact.contact}`);
+        break;
+      default:
+        console.log('Unsupported contact method');
+    }
   };
-
   return (
     <Pressable onPress={handlePress} style={styles.support}>
       {SVG()}

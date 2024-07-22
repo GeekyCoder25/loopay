@@ -231,7 +231,7 @@ const TransferFunds = ({ navigation, route }) => {
                       }}
                       value={description}
                       maxLength={40}
-                      placeholder="optional"
+                      placeholder="Sent from loopay"
                     />
                   </View>
                 </View>
