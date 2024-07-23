@@ -9,6 +9,7 @@ import { AppContext } from './AppContext';
 import { View } from 'react-native';
 import LockScreen from '../pages/GlobalPages/LockScreen';
 import AppUpdateModal from './AppUpdateModal';
+import Toast from 'react-native-toast-message';
 
 const AppStart = () => {
   const {
@@ -103,6 +104,7 @@ const AppStart = () => {
       {showLockScreen && <LockScreen />}
       {isUpdateAvailable && <AppUpdateModal />}
       <NoInternet modalOpen={!internetStatus} />
+      <Toast />
     </>
   );
 };

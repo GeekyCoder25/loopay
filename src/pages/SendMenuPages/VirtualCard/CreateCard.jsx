@@ -35,7 +35,7 @@ const CreateCard = ({ navigation }) => {
     },
     {
       type: 'virtual',
-      isAvailable: true,
+      isAvailable: false,
     },
   ];
 

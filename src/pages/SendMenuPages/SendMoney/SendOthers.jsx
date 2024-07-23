@@ -67,7 +67,7 @@ const SendOthers = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       getFetchData(
-        `user/savedbanks?limit=${3}&currency=${selectedCurrency.currency},${selectedCurrency.acronym}`,
+        `user/saved/bank?limit=${3}&currency=${selectedCurrency.currency},${selectedCurrency.acronym}`,
       )
         .then(response => {
           if (response.status === 200) {
@@ -238,7 +238,7 @@ const SendOthers = ({ navigation }) => {
       });
       if (response.status === 200) {
         const { transaction } = response.data;
-        await postFetchData('user/savedbanks', formData);
+        await postFetchData('user/saved/bank', formData);
         navigation.replace('Success', {
           userToSendTo: bankSelected,
           amountInput,

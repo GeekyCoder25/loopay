@@ -310,14 +310,18 @@ const Home = ({ navigation }) => {
                 setNoReload(false);
               }, 2000);
               return setNoReload(true);
-            }}>
-            {transactions.slice(0, Math.round((vh - 800) / 30)).map(history => (
-              <History
-                key={history._id}
-                history={history}
-                navigation={navigation}
-              />
-            ))}
+            }}
+            bounces={false}>
+            {transactions
+              .slice(0, Math.round((vh - 800) / 30))
+              .map((history, index) => (
+                <History
+                  key={history._id}
+                  history={history}
+                  navigation={navigation}
+                  index={index}
+                />
+              ))}
           </ScrollView>
         ) : (
           <View style={styles.historyEmpty}>
@@ -525,6 +529,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
+  historyLast: {
+    paddingHorizontal: 2.5 + '%',
+    paddingVertical: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   historyIcon: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -574,8 +585,8 @@ const styles = StyleSheet.create({
 });
 export default Home;
 
-const History = ({ history, navigation }) => {
-  const { appData, vw, showAmount, setShowAmount } = useContext(AppContext);
+const History = ({ history, index, navigation }) => {
+  const { appData, vw, showAmount, setShowAmount, vh } = useContext(AppContext);
   const [transactionTypeIcon, setTransactionTypeIcon] = useState('');
   const [transactionTypeTitle, setTransactionTypeTitle] = useState('');
   const [transactionAccount, setTransactionAccount] = useState('');
@@ -676,10 +687,12 @@ const History = ({ history, navigation }) => {
     setShowBalance(!showAmount);
   };
 
+  const isLastItem = Math.round((vh - 800) / 30) - 1 === index;
+
   return (
     <Pressable
       onPress={() => navigation.navigate('TransactionHistoryDetails', history)}
-      style={styles.history}>
+      style={isLastItem ? styles.historyLast : styles.history}>
       <View style={styles.historyIcon}>
         <View style={styles.historyIconText}>{transactionTypeIcon}</View>
       </View>

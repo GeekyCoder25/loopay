@@ -6,6 +6,7 @@ import RegularText from '../../components/fonts/RegularText';
 import Mail from '../../../assets/images/supportMail.svg';
 import Whatsapp from '../../../assets/images/supportWhatsapp.svg';
 import Phone from '../../../assets/images/phone.svg';
+import X from '../../../assets/images/x-twitter.svg';
 import { FontAwesome } from '@expo/vector-icons';
 
 const Support = () => {
@@ -21,15 +22,15 @@ const Support = () => {
       contact: '+2347025008586',
     },
     {
-      support: 'phone',
-      placeholder: 'Call our Customer Service',
+      support: 'whatsapp',
+      placeholder: 'Call or chat our Customer Service',
       contact: '+2348132143527',
     },
   ];
 
   const supportLinks = [
     {
-      icon: <FontAwesome name="twitter" size={32} color={'#fff'} />,
+      icon: <X name="x-twitter" width={32} height={32} fill={'#fff'} />,
       link: 'https://x.com/loopayapp',
     },
     {
@@ -55,7 +56,7 @@ const Support = () => {
         </View>
         <View>
           {supportContacts.map(contact => (
-            <Contact key={contact.support} contact={contact} />
+            <Contact key={contact.contact} contact={contact} />
           ))}
         </View>
 

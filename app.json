@@ -2,7 +2,7 @@
   "expo": {
     "name": "Loopay",
     "slug": "Loopay",
-    "version": "1.0.81",
+    "version": "1.0.9",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,12 +19,12 @@
         "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your camera to complete your facial verification"
       },
       "bundleIdentifier": "com.loopay",
-      "buildNumber": "12",
+      "buildNumber": "13",
       "icon": "./assets/ios-icon.png"
     },
     "android": {
       "package": "com.loopay",
-      "versionCode": 12,
+      "versionCode": 13,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"

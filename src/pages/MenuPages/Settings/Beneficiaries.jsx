@@ -34,7 +34,7 @@ const Beneficiaries = ({ navigation }) => {
         .finally(() => setIsLocalLoading(false));
 
     selectedTab === 'others' &&
-      getFetchData(`user/savedBanks?currency=${selectedCurrency.acronym}`)
+      getFetchData(`user/saved/bank?currency=${selectedCurrency.acronym}`)
         .then(response =>
           response.status === 200
             ? setOtherBeneficiaries(response.data)
@@ -225,7 +225,7 @@ const OtherBeneficiary = ({ beneficiary, setBeneficiaries, setAskPin }) => {
     try {
       setIsLoading(true);
       const response = await deleteFetchData(
-        `user/savedBank/${beneficiary._id}`,
+        `user/saved/bank/${beneficiary._id}`,
       );
       if (response.status === 200) {
         setBeneficiaries(prev =>

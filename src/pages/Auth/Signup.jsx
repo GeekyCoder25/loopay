@@ -35,6 +35,7 @@ import { CountryPicker } from 'react-native-country-codes-picker';
 import * as Haptics from 'expo-haptics';
 import ToastMessage from '../../components/ToastMessage.jsx';
 import { CurrencyFullDetails } from '../../../utils/allCountries.js';
+import Toast from 'react-native-toast-message';
 
 const SignUp = ({ navigation }) => {
   const { postFetchData } = useFetchData();
@@ -81,20 +82,21 @@ const SignUp = ({ navigation }) => {
       editInput();
       const localCurrencyCode = Object.values(CurrencyFullDetails).find(
         currency =>
-          currency.name
-            .split(' ')[0]
-            ?.slice(0, 4)
-            ?.startsWith(countryCodeData.name.en?.slice(0, 4)) ||
-          currency.name
-            .split(' ')[1]
-            ?.slice(0, 4)
-            ?.startsWith(countryCodeData.name.en?.slice(0, 4)) ||
-          countryCodeData.name.en
-            ?.slice(0, 4)
-            .startsWith(currency.name.split(' ')[1]?.slice(0, 4)) ||
-          countryCodeData.name.en
-            ?.slice(0, 4)
-            .startsWith(currency.name.split(' ')[2]?.slice(0, 4)),
+          // (currency.name
+          //   .split(' ')[0]
+          //   ?.slice(0, 4)
+          //   ?.startsWith(countryCodeData.name.en?.slice(0, 4)) ||
+          //   currency.name
+          //     .split(' ')[1]
+          //     ?.slice(0, 4)
+          //     ?.startsWith(countryCodeData.name.en?.slice(0, 4)) ||
+          //   countryCodeData.name.en
+          //     ?.slice(0, 4)
+          //     .startsWith(currency.name.split(' ')[1]?.slice(0, 4)) ||
+          //   countryCodeData.name.en
+          //     ?.slice(0, 4)
+          //     .startsWith(currency.name.split(' ')[2]?.slice(0, 4))) &&
+          currency.code.slice(0, 2) === countryCodeData.code,
       )?.code;
 
       if (!localCurrencyCode) {
@@ -146,6 +148,36 @@ const SignUp = ({ navigation }) => {
   const editInput = () => {
     setErrorMessage('');
     setSuccessMessage('');
+  };
+
+  const handleCountrySelect = item => {
+    const localCurrencyCode = Object.values(CurrencyFullDetails).find(
+      currency => currency.code.slice(0, 2) === item.code,
+    );
+    if (!localCurrencyCode) {
+      setErrorKey('phoneNumber');
+      Toast.show({
+        type: 'error',
+        text1: 'Currency currently not supported',
+        text2: "Our service doesn't cover for this region yet",
+      });
+    } else {
+      Toast.show({
+        type: 'success',
+        text1: localCurrencyCode?.code,
+        text2: localCurrencyCode?.name,
+      });
+    }
+    setCountryCode(item.dial_code);
+    setShowPicker(false);
+    setCountryCodeData(item);
+    setFormData(prev => {
+      return {
+        ...prev,
+        phoneNumber: '',
+        country: { code: item.code, name: item.name.en },
+      };
+    });
   };
 
   if (verifyEmail) {
@@ -207,18 +239,7 @@ const SignUp = ({ navigation }) => {
       </View>
       <CountryPicker
         show={showPicker}
-        pickerButtonOnPress={item => {
-          setCountryCode(item.dial_code);
-          setShowPicker(false);
-          setCountryCodeData(item);
-          setFormData(prev => {
-            return {
-              ...prev,
-              phoneNumber: '',
-              country: { code: item.code, name: item.name.en },
-            };
-          });
-        }}
+        pickerButtonOnPress={handleCountrySelect}
         searchMessage={'Search here'}
         onRequestClose={() => setShowPicker(false)}
         onBackdropPress={() => setShowPicker(false)}
