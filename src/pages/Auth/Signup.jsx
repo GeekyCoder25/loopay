@@ -162,6 +162,7 @@ const SignUp = ({ navigation }) => {
         text2: "Our service doesn't cover for this region yet",
       });
     } else {
+      setErrorKey('');
       Toast.show({
         type: 'success',
         text1: localCurrencyCode?.code,

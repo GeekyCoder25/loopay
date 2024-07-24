@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import { useContext } from 'react';
-import { FlatList, RefreshControl, StyleSheet } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { AppContext } from './AppContext';
 import { Audio } from 'expo-av';
 
@@ -35,7 +35,7 @@ const PageContainer = ({
   };
 
   return (
-    <FlatList
+    <ScrollView
       contentContainerStyle={{
         ...styles.container,
         paddingTop: paddingTop !== undefined ? paddingTop : 10,
@@ -54,9 +54,9 @@ const PageContainer = ({
           />
         )
       }
-      bounces={!avoidBounce}
-      ListEmptyComponent={() => children}
-    />
+      bounces={!avoidBounce}>
+      {children}
+    </ScrollView>
   );
 };
 

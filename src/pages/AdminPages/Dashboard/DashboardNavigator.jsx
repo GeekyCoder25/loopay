@@ -5,6 +5,8 @@ import Transactions from './Transactions';
 import Header from '../components/Header';
 import TransactionHistoryParams from '../../MenuPages/TransactionHistoryParams';
 import Back from '../../../components/Back';
+import ActiveUsers from '../ActiveUsers';
+import UserDetails from '../Users/UserDetails';
 
 const DashboardNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -24,14 +26,22 @@ const DashboardNavigator = () => {
       <Stack.Screen
         name="Transactions"
         component={Transactions}
-        options={{
-          headerShown: false,
-        }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="TransactionHistoryParams"
         component={TransactionHistoryParams}
         options={({ navigation, route }) => backHeader(navigation, route)}
+      />
+      <Stack.Screen
+        name="ActiveUsers"
+        component={ActiveUsers}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="UserDetailsDashboard"
+        component={UserDetails}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

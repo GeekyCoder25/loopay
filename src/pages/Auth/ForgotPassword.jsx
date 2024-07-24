@@ -17,17 +17,14 @@ import { PINInputFields } from '../../components/InputPinPage';
 import useFetchData from '../../../utils/fetchAPI';
 
 const ForgotPassword = ({ navigation, setCanChange }) => {
-  const { getFetchData, postFetchData } = useFetchData();
+  const { postFetchData } = useFetchData();
   const {
     appData,
     isSessionTimedOut,
     isLoading,
     setIsLoading,
     vh,
-    setAppData,
     isLoggedIn,
-    setVerified,
-    setCanChangeRole,
   } = useContext(AppContext);
   const [codeSent, setCodeSent] = useState(false);
   const [formData, setFormData] = useState({

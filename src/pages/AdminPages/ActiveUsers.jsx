@@ -493,9 +493,8 @@ const User = ({ status, userSession, users, isSearching }) => {
             <View style={styles.rowValue}>
               <Pressable
                 onPress={() =>
-                  navigation.navigate('UserDetails', {
+                  navigation.navigate('UserDetailsDashboard', {
                     email: user.email,
-                    previousScreen: 'ActiveUsers',
                     ...route.params,
                   })
                 }>

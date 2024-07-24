@@ -28,7 +28,7 @@ const AccountType = () => {
           const data = updateResult?.data?.updateData?.accountType;
           if (data) {
             setAppData(prev => {
-              return { ...prev, accountType: data };
+              return { ...prev, accountType: data, pin: false };
             });
           }
         })

@@ -80,6 +80,9 @@ const SignIn = ({ navigation }) => {
           setErrorMessage('');
           setSuccessMessage('Login Successful');
           const response2 = await getFetchData('user?popup=true');
+          if (response2.status === 401) {
+            return setErrorMessage('Unexpected error occurred');
+          }
           if (data.role === 'admin') {
             setIsAdmin(true);
             setCanChangeRole(true);
@@ -336,8 +339,6 @@ const FormField = ({
             return { ...prev, [inputForm.name]: text };
           });
           inputForm.eye && text.length === 6 && Keyboard.dismiss();
-          // setRedBorder(formData[inputForm.name] === '');
-          // setTempRedBorder(false);
         }}
         name={inputForm.name}
         autoComplete={inputForm.eye ? 'off' : inputForm.type}

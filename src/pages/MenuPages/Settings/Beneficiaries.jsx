@@ -218,7 +218,6 @@ const LoopayBeneficiary = ({ beneficiary, setBeneficiaries, setAskPin }) => {
 const OtherBeneficiary = ({ beneficiary, setBeneficiaries, setAskPin }) => {
   const { deleteFetchData } = useFetchData();
   const { setIsLoading } = useContext(AppContext);
-  const { setRefetchBeneficiary } = useContext(BeneficiaryContext);
   const { accNo, bankName, name } = beneficiary;
 
   const handleDelete = async () => {
@@ -229,10 +228,9 @@ const OtherBeneficiary = ({ beneficiary, setBeneficiaries, setAskPin }) => {
       );
       if (response.status === 200) {
         setBeneficiaries(prev =>
-          prev.filter(loopay => loopay.tagName !== beneficiary.tagName),
+          prev.filter(loopay => loopay._id !== beneficiary._id),
         );
         setAskPin(false);
-        setRefetchBeneficiary(prev => !prev);
         return ToastMessage('Beneficiary removed');
       }
       ToastMessage(`${response.data}`);

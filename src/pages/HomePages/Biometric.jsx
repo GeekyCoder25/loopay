@@ -34,7 +34,7 @@ const Biometric = () => {
         return ToastMessage("Couldn't authenticate user");
       }
     }
-    await setBiometric(!enableBiometric);
+    await setBiometric(!enableBiometric.forPin);
     setEnableBiometric(prev => {
       return { ...prev, forLock: !prev.forLock };
     });

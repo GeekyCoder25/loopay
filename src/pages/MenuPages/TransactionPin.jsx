@@ -21,8 +21,11 @@ const TransactionPin = ({ navigation, route }) => {
   const [canEditPin, setCanEditPin] = useState(false);
   const [remembersPassword, setRemembersPassword] = useState(true);
   const [inputOldPin, setInputOldPin] = useState(
-    JSON.parse(appData.pin) ?? !route.params?.forgotPin,
+    route.params?.forgotPin
+      ? !route.params?.forgotPin
+      : JSON.parse(appData.pin || false),
   );
+
   const [reload, setReload] = useState(false);
   const [hasSetPin] = useState(JSON.parse(appData.pin));
 

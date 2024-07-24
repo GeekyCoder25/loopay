@@ -55,17 +55,22 @@ const AddMoney = ({ navigation }) => {
   const [savedCards, setSavedCards] = useState([]);
 
   const [addBalanceData, setAddBalanceData] = useState({
-    toBeCredited: 0,
-    toReceive: 0,
+    toCharge: 0,
     paymentMethod,
     symbol: selectedCurrency.symbol,
   });
   const { minimumAmountToAdd } = selectedCurrency;
 
   useEffect(() => {
-    getFetchData(`user/debit-card/${selectedCurrency.currency}`).then(
-      response => response.status === 200 && setSavedCards(response.data),
-    );
+    const getCard = async () => {
+      const response = await getFetchData(
+        `user/debit-card/${selectedCurrency.currency}`,
+      );
+      if (response.status === 200) {
+        setSavedCards(response.data);
+      }
+    };
+    getCard();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCurrency.currency, walletRefresh]);
 
@@ -137,14 +142,14 @@ const AddMoney = ({ navigation }) => {
     text = Number(text);
     const transactionFee = text * feeRate;
     setFee(transactionFee.toFixed(2));
-    const swapFromAmountAfterFee = text - transactionFee;
+    const swapFromAmountAfterFee = text + transactionFee;
     const toReceiveCalculate = Number(swapFromAmountAfterFee.toFixed(2));
 
     setAddBalanceData(prev => {
       return {
         ...prev,
         amount: text,
-        toReceive: toReceiveCalculate,
+        toCharge: toReceiveCalculate,
         fee: transactionFee,
       };
     });
@@ -169,7 +174,7 @@ const AddMoney = ({ navigation }) => {
 
   const addSpaceEvery4Characters = inputString => {
     let result = '';
-    for (let i = 0; i < inputString.length; i++) {
+    for (let i = 0; i < inputString?.length; i++) {
       if (i > 0 && i % 4 === 0) {
         result += ' ';
       }
@@ -198,7 +203,7 @@ const AddMoney = ({ navigation }) => {
 
   const handleAdd = async () => {
     try {
-      if (!addBalanceData.toReceive) {
+      if (!addBalanceData.toCharge) {
         setErrorMessage('Please input amount');
         return setErrorKey('amount');
       }
@@ -206,7 +211,8 @@ const AddMoney = ({ navigation }) => {
       const response = await postFetchData(
         `user/add-money/card?currency=${selectedCurrency.acronym}`,
         {
-          amount: addBalanceData.toReceive,
+          amount: addBalanceData.toCharge,
+          fee: addBalanceData.fee,
         },
       );
       if (response.status === 200) {
@@ -380,7 +386,7 @@ const AddMoney = ({ navigation }) => {
                 )}
 
                 <RegularText style={styles.label}>
-                  Amount you’ll receive
+                  Amount you’ll be charged
                 </RegularText>
                 <View style={styles.textInputContainer}>
                   <BoldText style={styles.symbol}>

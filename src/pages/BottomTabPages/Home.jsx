@@ -139,7 +139,7 @@ const Home = ({ navigation }) => {
   };
 
   return (
-    <PageContainer refreshFunc={refreshPage}>
+    <PageContainer refreshFunc={refreshPage} scroll>
       <Pressable
         style={styles.headerContainer}
         onPress={() => setNoReload(false)}>
