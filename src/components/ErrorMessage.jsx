@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import { useEffect } from 'react';
 
-const ErrorMessage = ({ errorMessage, style }) => {
+const ErrorMessage = ({ errorMessage, style, isOnlyToast }) => {
   useEffect(() => {
     errorMessage &&
       Toast.show({
@@ -15,7 +15,8 @@ const ErrorMessage = ({ errorMessage, style }) => {
   }, [errorMessage]);
 
   return (
-    errorMessage && (
+    errorMessage &&
+    !isOnlyToast && (
       <View style={{ ...styles.errorMessage, ...style }}>
         <Ionicons name="warning-sharp" size={15} color={'red'} />
         <RegularText style={styles.errorMessageText}>

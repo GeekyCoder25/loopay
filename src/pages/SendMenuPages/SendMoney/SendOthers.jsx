@@ -420,7 +420,7 @@ const SendOthers = ({ navigation }) => {
                       }}
                       value={description}
                       maxLength={40}
-                      placeholder="Sent from loopay"
+                      placeholder="Sent from Loopay"
                     />
                   </View>
                 </View>

@@ -86,7 +86,7 @@ const InputPinPage = ({
         </Pressable>
         <TextInput
           autoFocus
-          style={{ height: 1 }}
+          style={styles.input}
           inputMode="numeric"
           onChangeText={text => {
             setPinCode(text);
@@ -126,6 +126,11 @@ const styles = StyleSheet.create({
     gap: 30,
     justifyContent: 'center',
     marginVertical: 0,
+  },
+  input: {
+    color: '#fff',
+    position: 'absolute',
+    transform: [{ translateX: -1000 }],
   },
   codeInput: {
     borderWidth: 1,

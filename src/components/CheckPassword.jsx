@@ -1,9 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useState } from 'react';
 import Header from './Header';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Lock from '../../assets/images/lock.svg';
 import Eye from '../../assets/images/eye.svg';
+import EyeClosed from '../../assets/images/eye-slash.svg';
 import { AppContext } from './AppContext';
 import ErrorMessage from './ErrorMessage';
 import Button from './Button';
@@ -93,6 +94,7 @@ const CheckPassword = ({
             onChangeText={text => {
               editInput();
               setFormData({ password: text });
+              text.length === 6 && Keyboard.dismiss();
             }}
             name={'password'}
             inputMode={'numeric'}
@@ -105,7 +107,7 @@ const CheckPassword = ({
           <Pressable
             style={styles.eye}
             onPress={() => setHidePassword(prev => !prev)}>
-            <Eye />
+            {hidePassword ? <Eye /> : <EyeClosed />}
           </Pressable>
         </View>
         <View style={styles.forgetPressable}>

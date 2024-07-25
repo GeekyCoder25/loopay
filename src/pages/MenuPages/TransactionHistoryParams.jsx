@@ -566,7 +566,7 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Payment Wallet
+                      Payment Account
                     </RegularText>
                     <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
                       {currencyAcronym} Balance
@@ -661,7 +661,7 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Payment Wallet
+                      Payment Account
                     </RegularText>
                     <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
                       {currencyAcronym} Balance
@@ -755,7 +755,7 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Payment Wallet
+                      Payment Account
                     </RegularText>
                     <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
                       {currencyAcronym} Balance
@@ -842,7 +842,7 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Payment Wallet
+                      Payment Account
                     </RegularText>
                     <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
                       {currencyAcronym} Balance

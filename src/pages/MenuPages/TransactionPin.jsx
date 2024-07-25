@@ -11,7 +11,6 @@ import Button from '../../components/Button';
 import SuccessMessage from '../../components/SuccessMessage';
 import RegularText from '../../components/fonts/RegularText';
 import InputPinPage, { PINInputFields } from '../../components/InputPinPage';
-import { useWalletContext } from '../../context/WalletContext';
 import useFetchData from '../../../utils/fetchAPI';
 
 const TransactionPin = ({ navigation, route }) => {
@@ -137,7 +136,6 @@ export default TransactionPin;
 const ChangePin = ({ navigation, setReload }) => {
   const { postFetchData } = useFetchData();
   const { appData, setAppData, setIsLoading } = useContext(AppContext);
-  const walletContext = useWalletContext();
   const [pinCode, setPinCode] = useState('');
   const [pinCode2, setPinCode2] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -202,7 +200,7 @@ const ChangePin = ({ navigation, setReload }) => {
           !isVerified
             ? navigation.replace('FirstTimeVerifications')
             : setTimeout(() => {
-                navigation.goBack();
+                navigation.canGoBack() && navigation.goBack();
               }, 1000);
         } else {
           setErrorMessage(result.data);

@@ -14,6 +14,7 @@ import ChangePassword from '../pages/MenuPages/ChangePassword';
 import Onboarding from '../pages/Auth/Onboarding';
 import TabsNavigator from './TabsNavigator';
 import VerificationNavigator from './VerificationNavigator';
+import BusinessOnboarding from '../pages/Auth/BusinessOnboarding';
 
 const AppPagesNavigator = () => {
   const { isLoggedIn, isAdmin, appData, verified } = useContext(AppContext);
@@ -67,6 +68,10 @@ const AppPagesNavigator = () => {
             ) : (
               <Stack.Screen name="FirstPage" component={TabsNavigator} />
             )}
+            <Stack.Screen
+              name="BusinessOnboarding"
+              component={BusinessOnboarding}
+            />
           </Stack.Group>
         )}
       </Stack.Navigator>

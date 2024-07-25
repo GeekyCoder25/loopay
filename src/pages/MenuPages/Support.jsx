@@ -19,11 +19,11 @@ const Support = () => {
     {
       support: 'whatsapp',
       placeholder: 'Chat Loopay Support on Whatsapp',
-      contact: '+2347025008586',
+      contact: '+2348132143527',
     },
     {
-      support: 'whatsapp',
-      placeholder: 'Call or chat our Customer Service',
+      support: 'phone',
+      placeholder: 'Call our Customer Service',
       contact: '+2348132143527',
     },
   ];
@@ -56,7 +56,7 @@ const Support = () => {
         </View>
         <View>
           {supportContacts.map(contact => (
-            <Contact key={contact.contact} contact={contact} />
+            <Contact key={contact.support} contact={contact} />
           ))}
         </View>
 
