@@ -2,7 +2,7 @@
   "expo": {
     "name": "Loopay",
     "slug": "Loopay",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,12 +19,12 @@
         "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your camera to complete your facial verification"
       },
       "bundleIdentifier": "com.loopay",
-      "buildNumber": "13",
+      "buildNumber": "14",
       "icon": "./assets/ios-icon.png"
     },
     "android": {
       "package": "com.loopay",
-      "versionCode": 13,
+      "versionCode": 14,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
@@ -34,7 +34,8 @@
         "android.permission.USE_FINGERPRINT",
         "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA"
-      ]
+      ],
+      "googleServicesFile": "./assets/triluxy-app-396805-4032b6f30bcd.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"

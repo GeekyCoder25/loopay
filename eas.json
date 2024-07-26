@@ -11,11 +11,11 @@
       }
     },
     "preview": {
-      "developmentClient": true,
-      "distribution": "internal",
+      // "developmentClient": true,
+      // "distribution": "internal",
       "channel": "preview",
       "android": {
-        // "buildType": "apk"
+        "buildType": "apk"
       }
     },
     "production": {

@@ -4,7 +4,7 @@ import { randomUUID } from 'expo-crypto';
 const saveSessionOptions = () => {
   return {
     deviceManufacturer: Device.manufacturer,
-    deviceName: Device.modelName,
+    deviceName: Device.deviceName,
     deviceID: randomUUID(),
     osName: Device.osName,
     osVersion: Device.osVersion,

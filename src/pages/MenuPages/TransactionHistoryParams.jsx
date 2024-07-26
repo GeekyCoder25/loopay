@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { Dimensions, Pressable, StyleSheet, View } from 'react-native';
+import { Dimensions, Modal, Pressable, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
@@ -287,7 +287,9 @@ const TransactionHistoryParams = ({ route }) => {
 
   return (
     <>
-      <LoadingModal isLoading={isLocalLoading} />
+      <Modal visible={isLocalLoading} transparent>
+        <LoadingModal isLoading={isLocalLoading} />
+      </Modal>
       <PageContainer justify={true} scroll avoidBounce>
         <BoldText style={styles.historyHeader}>Transaction history</BoldText>
         <View style={{ ...styles.body, minHeight: vh * 0.5 }}>
@@ -566,7 +568,7 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Payment Account
+                      Payment Wallet
                     </RegularText>
                     <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
                       {currencyAcronym} Balance
@@ -661,7 +663,7 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Payment Account
+                      Payment Wallet
                     </RegularText>
                     <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
                       {currencyAcronym} Balance
@@ -755,7 +757,7 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Payment Account
+                      Payment Wallet
                     </RegularText>
                     <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
                       {currencyAcronym} Balance
@@ -842,7 +844,7 @@ const TransactionHistoryParams = ({ route }) => {
                   </View>
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
-                      Payment Account
+                      Payment Wallet
                     </RegularText>
                     <BoldText style={{ ...styles.cardValue, color: '#38b34a' }}>
                       {currencyAcronym} Balance

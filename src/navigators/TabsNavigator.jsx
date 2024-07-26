@@ -67,6 +67,7 @@ import Report from '../pages/HomePages/Report';
 import CreateCard from '../pages/SendMenuPages/VirtualCard/CreateCard';
 import CardCreateSuccess from '../pages/SendMenuPages/VirtualCard/CardCreateSuccess';
 import AddMoneyPaystack from '../pages/SendMenuPages/AddMoney/AddMoneyPaystack';
+import { usePushNotification } from '../components/Notification';
 
 const TabsNavigator = () => {
   const {
@@ -79,6 +80,7 @@ const TabsNavigator = () => {
     isAdmin,
   } = useContext(AppContext);
   const Stack = createNativeStackNavigator();
+  usePushNotification();
 
   useEffect(() => {
     setAppData(prev => {
