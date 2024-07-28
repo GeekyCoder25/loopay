@@ -11,8 +11,8 @@
       }
     },
     "preview": {
-      // "developmentClient": true,
-      // "distribution": "internal",
+      "developmentClient": true,
+      "distribution": "internal",
       "channel": "preview",
       "android": {
         "buildType": "apk"
@@ -28,7 +28,7 @@
   "submit": {
     "production": {
       "android": {
-        "serviceAccountKeyPath": "./assets/triluxy-app-396805-4032b6f30bcd.json"
+        "serviceAccountKeyPath": "./google-services.json"
       },
       "ios": {
         "appleId": "john.ogbonna@hmghomes.com",

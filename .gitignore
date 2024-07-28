@@ -17,5 +17,8 @@ web-build/
 .metro-health-check*
 
 #custom
-.env
+.venv
 assets/triluxy-app-396805-4032b6f30bcd.json
+assets/loopay-e5736-firebase-adminsdk-tuqqc-55cfd85ae1.json
+google-services.json
+android/

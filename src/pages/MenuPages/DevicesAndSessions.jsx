@@ -129,6 +129,7 @@ export const Session = ({ session, activeSessions }) => {
         );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <View
       style={
@@ -139,6 +140,7 @@ export const Session = ({ session, activeSessions }) => {
       <BoldText>
         {session.deviceManufacturer} - {session.deviceName}
       </BoldText>
+      <RegularText>{session.deviceModel}</RegularText>
       <RegularText>
         {session.osName} {session.osVersion}
       </RegularText>

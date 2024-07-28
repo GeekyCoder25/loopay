@@ -31,6 +31,7 @@ import { setShowBalance } from '../../../utils/storage';
 import * as Haptics from 'expo-haptics';
 import useFetchData from '../../../utils/fetchAPI';
 import FaIcon from '@expo/vector-icons/FontAwesome';
+import { FontAwesome } from '@expo/vector-icons';
 
 const AddMoney = ({ navigation }) => {
   const { getFetchData, postFetchData } = useFetchData();
@@ -53,7 +54,6 @@ const AddMoney = ({ navigation }) => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [fee, setFee] = useState(0);
   const [savedCards, setSavedCards] = useState([]);
-
   const [addBalanceData, setAddBalanceData] = useState({
     toCharge: 0,
     paymentMethod,
@@ -87,7 +87,22 @@ const AddMoney = ({ navigation }) => {
       method: 'card',
       fullTitle: 'Debit Card',
     },
+    {
+      label: 'Pay with USSD',
+      icon: 'ussd',
+      method: 'ussd',
+      fullTitle: 'USSD',
+    },
   ];
+
+  if (Platform.OS) {
+    paymentMethods.push({
+      label: 'Pay with Apple Pay',
+      icon: 'apple',
+      method: 'apple',
+      fullTitle: 'Apple Pay',
+    });
+  }
   const handleCurrencyChange = newSelect => {
     setErrorKey('');
     setErrorMessage('');
@@ -122,6 +137,10 @@ const AddMoney = ({ navigation }) => {
         return 'Pay via Bank Transfer';
       case 'card':
         return 'Pay via Debit Card';
+      case 'ussd':
+        return 'Pay via USSD';
+      case 'apple':
+        return 'Pay via Apple Pay';
 
       default:
         break;
@@ -133,6 +152,10 @@ const AddMoney = ({ navigation }) => {
         return <BankIcon />;
       case 'card':
         return <CardIcon />;
+      case 'ussd':
+        return <FontAwesome name="hashtag" color={'#525252'} size={40} />;
+      case 'apple':
+        return <FontAwesome name="apple" color={'#525252'} size={40} />;
     }
   };
 
@@ -210,6 +233,56 @@ const AddMoney = ({ navigation }) => {
       setIsLoading(true);
       const response = await postFetchData(
         `user/add-money/card?currency=${selectedCurrency.acronym}`,
+        {
+          amount: addBalanceData.toCharge,
+          fee: addBalanceData.fee,
+        },
+      );
+      if (response.status === 200) {
+        return navigation.navigate('AddMoneyPaystack', response.data?.data);
+      }
+      throw new Error(response.data?.data || response.data);
+    } catch (error) {
+      console.log('error', error.message);
+      ToastMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleAppleContinue = async () => {
+    try {
+      if (!addBalanceData.toCharge) {
+        setErrorMessage('Please input amount');
+        return setErrorKey('amount');
+      }
+      setIsLoading(true);
+      const response = await postFetchData(
+        `user/add-money/card?currency=${selectedCurrency.acronym}&apple=true`,
+        {
+          amount: addBalanceData.toCharge,
+          fee: addBalanceData.fee,
+        },
+      );
+      if (response.status === 200) {
+        return navigation.navigate('AddMoneyPaystack', response.data?.data);
+      }
+      throw new Error(response.data?.data || response.data);
+    } catch (error) {
+      console.log('error', error.message);
+      ToastMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleUssdContinue = async () => {
+    try {
+      if (!addBalanceData.toCharge) {
+        setErrorMessage('Please input amount');
+        return setErrorKey('amount');
+      }
+      setIsLoading(true);
+      const response = await postFetchData(
+        `user/add-money/card?currency=${selectedCurrency.acronym}&ussd=true`,
         {
           amount: addBalanceData.toCharge,
           fee: addBalanceData.fee,
@@ -352,8 +425,9 @@ const AddMoney = ({ navigation }) => {
                 )}
               </>
             )}
-
-            {paymentMethod === 'card' && (
+            {(paymentMethod === 'card' ||
+              paymentMethod === 'ussd' ||
+              paymentMethod === 'apple') && (
               <>
                 <Text style={styles.topUp}>Amount to be credited</Text>
                 <View style={styles.textInputContainer}>
@@ -393,62 +467,88 @@ const AddMoney = ({ navigation }) => {
                     {selectedCurrency.symbol}
                   </BoldText>
                   <View
-                    style={{ ...styles.textInput, ...styles.textInputStyles }}>
+                    style={{
+                      ...styles.textInput,
+                      ...styles.textInputStyles,
+                    }}>
                     <RegularText
                       style={{ fontSize: styles.textInputStyles.fontSize }}>
                       {toReceive}
                     </RegularText>
                   </View>
                 </View>
-                {savedCards.length > 0 && (
-                  <View style={styles.savedCards}>
-                    <BoldText>
-                      Saved card{savedCards.length > 1 && 's'}
-                    </BoldText>
-                    {savedCards.map(card => (
-                      <Pressable
-                        key={card.id}
-                        style={styles.savedCard}
-                        onPress={() =>
-                          selectedCard && selectedCard.id === card.id
-                            ? setSelectedCard(null)
-                            : setSelectedCard(card)
-                        }>
-                        <View style={styles.savedCardCheck}>
-                          {selectedCard?.id === card.id ? (
-                            <FilledCheckbox width={30} height={30} />
-                          ) : (
-                            <EmptyCheckbox width={30} height={30} />
-                          )}
-                          <View>
-                            <BoldText style={styles.boldText}>
-                              {addSpaceEvery4Characters(card.cardNo)}
-                            </BoldText>
-                            <RegularText style={styles.subText}>
-                              {card.type}
-                            </RegularText>
-                          </View>
-                        </View>
-                        <View style={styles.expiry}>
-                          <BoldText style={styles.boldText}>
-                            {card.expiryMonth + '/' + card.expiryYear}
-                          </BoldText>
-                          <RegularText style={styles.subText}>***</RegularText>
-                        </View>
-                      </Pressable>
-                    ))}
+                {paymentMethod === 'card' && (
+                  <>
+                    {savedCards.length > 0 && (
+                      <View style={styles.savedCards}>
+                        <BoldText>
+                          Saved card{savedCards.length > 1 && 's'}
+                        </BoldText>
+                        {savedCards.map(card => (
+                          <Pressable
+                            key={card.id}
+                            style={styles.savedCard}
+                            onPress={() =>
+                              selectedCard && selectedCard.id === card.id
+                                ? setSelectedCard(null)
+                                : setSelectedCard(card)
+                            }>
+                            <View style={styles.savedCardCheck}>
+                              {selectedCard?.id === card.id ? (
+                                <FilledCheckbox width={30} height={30} />
+                              ) : (
+                                <EmptyCheckbox width={30} height={30} />
+                              )}
+                              <View>
+                                <BoldText style={styles.boldText}>
+                                  {addSpaceEvery4Characters(card.cardNo)}
+                                </BoldText>
+                                <RegularText style={styles.subText}>
+                                  {card.type}
+                                </RegularText>
+                              </View>
+                            </View>
+                            <View style={styles.expiry}>
+                              <BoldText style={styles.boldText}>
+                                {card.expiryMonth + '/' + card.expiryYear}
+                              </BoldText>
+                              <RegularText style={styles.subText}>
+                                ***
+                              </RegularText>
+                            </View>
+                          </Pressable>
+                        ))}
+                      </View>
+                    )}
+                    {selectedCard ? (
+                      <View style={styles.button}>
+                        <Button text="Continue" onPress={handleContinue} />
+                      </View>
+                    ) : (
+                      <Button
+                        text={'Pay with card'}
+                        onPress={handleAdd}
+                        // onPress={() => navigation.navigate('AddNewCard')}
+                      />
+                    )}
+                  </>
+                )}
+
+                {paymentMethod === 'apple' && (
+                  <View style={styles.button}>
+                    <Button
+                      text="Continue"
+                      onPress={handleAppleContinue}
+                      leftIcon={
+                        <FontAwesome name="apple" color={'#fff'} size={30} />
+                      }
+                    />
                   </View>
                 )}
-                {selectedCard ? (
+                {paymentMethod === 'ussd' && (
                   <View style={styles.button}>
-                    <Button text="Continue" onPress={handleContinue} />
+                    <Button text="Continue" onPress={handleUssdContinue} />
                   </View>
-                ) : (
-                  <Button
-                    text={'Add new card'}
-                    onPress={handleAdd}
-                    // onPress={() => navigation.navigate('AddNewCard')}
-                  />
                 )}
               </>
             )}

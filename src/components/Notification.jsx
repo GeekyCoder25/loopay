@@ -6,11 +6,12 @@ import { getPushNotification, setPushNotification } from '../../utils/storage';
 import { AppContext } from './AppContext';
 import { Platform } from 'react-native';
 import * as Device from 'expo-device';
+import Constants from 'expo-constants';
 import { useNavigation } from '@react-navigation/native';
 
 export const usePushNotification = () => {
   const { postFetchData } = useFetchData();
-  const { isLoggedIn } = useContext(AppContext);
+  const { isLoggedIn, setWalletRefresh } = useContext(AppContext);
   const notificationListener = useRef();
   const responseListener = useRef();
   const navigation = useNavigation();
@@ -43,7 +44,9 @@ export const usePushNotification = () => {
               text2: 'Failed to enable permission for push notification!',
             });
           }
-          const token = await Notifications.getExpoPushTokenAsync();
+          const token = await Notifications.getExpoPushTokenAsync({
+            projectId: Constants.expoConfig.extra.eas.projectId,
+          });
 
           Notifications.setNotificationHandler({
             handleNotification: async () => ({
@@ -55,7 +58,12 @@ export const usePushNotification = () => {
           return token.data;
         }
       } catch (error) {
-        console.log(error);
+        console.log(error.message);
+        Toast.show({
+          type: 'error',
+          text1: 'Permission Error',
+          text2: error.message,
+        });
       }
     };
 
@@ -68,12 +76,19 @@ export const usePushNotification = () => {
           setPushNotification(true);
         }
       } catch (err) {
-        console.log('err', err);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: err.message,
+        });
       }
     };
 
     if (isLoggedIn) {
       registerForPushNotificationsAsync().then(async token => {
+        if (!token) {
+          throw new Error('No token');
+        }
         if ((await getPushNotification()) !== true) {
           sendTokenAPI(token);
         }
@@ -84,6 +99,7 @@ export const usePushNotification = () => {
       Notifications.addNotificationReceivedListener(notification => {
         try {
           if (notification) {
+            setWalletRefresh(prev => !prev);
             const { data, title, body } = notification.request.content;
             switch (data.notificationType) {
               case 'transaction':
@@ -92,14 +108,36 @@ export const usePushNotification = () => {
                     type: 'success',
                     text1: title,
                     text2: body,
-                    position: Platform.OS === 'ios' ? 'bottom' : 'top',
+                    position: 'bottom',
+                    onPress: () =>
+                      navigation.navigate(
+                        'TransactionHistoryDetails',
+                        notification.request.content.data.data,
+                      ),
                   });
                 } else if (data.data.transactionType === 'debit') {
                   Toast.show({
                     type: 'error',
                     text1: title,
                     text2: body,
-                    position: Platform.OS === 'ios' ? 'bottom' : 'top',
+                    position: 'bottom',
+                    onPress: () =>
+                      navigation.navigate(
+                        'TransactionHistoryDetails',
+                        notification.request.content.data.data,
+                      ),
+                  });
+                } else if (data.data.transactionType === 'airtime') {
+                  Toast.show({
+                    type: 'success',
+                    text1: title,
+                    text2: body,
+                    position: 'bottom',
+                    onPress: () =>
+                      navigation.navigate(
+                        'TransactionHistoryDetails',
+                        notification.request.content.data.data,
+                      ),
                   });
                 }
                 break;
@@ -108,16 +146,19 @@ export const usePushNotification = () => {
                   type: 'success',
                   text1: title,
                   text2: body,
-                  position: Platform.OS === 'ios' ? 'bottom' : 'top',
+                  position: 'bottom',
+                  onPress: () =>
+                    navigation.navigate(
+                      'Notification',
+                      notification.request.content.data.data,
+                    ),
                 });
                 break;
               default:
                 break;
             }
           }
-        } catch (error) {
-          console.log(error.message);
-        }
+        } catch (error) {}
       });
 
     responseListener.current =

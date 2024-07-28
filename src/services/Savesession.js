@@ -5,6 +5,7 @@ const saveSessionOptions = () => {
   return {
     deviceManufacturer: Device.manufacturer,
     deviceName: Device.deviceName,
+    deviceModel: Device.modelName,
     deviceID: randomUUID(),
     osName: Device.osName,
     osVersion: Device.osVersion,

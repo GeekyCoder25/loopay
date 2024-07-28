@@ -35,7 +35,7 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA"
       ],
-      "googleServicesFile": "./assets/triluxy-app-396805-4032b6f30bcd.json"
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
