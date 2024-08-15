@@ -95,7 +95,7 @@ const AddMoney = ({ navigation }) => {
     },
   ];
 
-  if (Platform.OS) {
+  if (Platform.OS === 'ios') {
     paymentMethods.push({
       label: 'Pay with Apple Pay',
       icon: 'apple',

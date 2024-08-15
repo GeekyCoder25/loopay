@@ -18,7 +18,6 @@ import RegularText from '../../components/fonts/RegularText';
 import { getSessionID, logoutUser } from '../../../utils/storage';
 import UserIcon from '../../components/UserIcon';
 import { allCurrencies, menuRoutes } from '../../database/data';
-import { useFocusEffect } from '@react-navigation/native';
 import ToastMessage from '../../components/ToastMessage';
 import IonIcon from '@expo/vector-icons/Ionicons';
 import MaIcon from '@expo/vector-icons/MaterialIcons';
@@ -32,7 +31,6 @@ const Menu = ({ navigation }) => {
     vh,
     appData,
     setAppData,
-    setShowTabBar,
     setCanChangeRole,
     setVerified,
   } = useContext(AppContext);
@@ -61,11 +59,6 @@ const Menu = ({ navigation }) => {
     appData.pin ? 'Change' : 'Create'
   } Transaction Pin`;
 
-  useFocusEffect(
-    React.useCallback(() => {
-      setShowTabBar(true);
-    }, [setShowTabBar]),
-  );
   return (
     <>
       <View style={styles.header}>

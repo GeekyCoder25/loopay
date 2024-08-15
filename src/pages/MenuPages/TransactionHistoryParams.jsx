@@ -20,10 +20,12 @@ import ToastMessage from '../../components/ToastMessage';
 import useFetchData from '../../../utils/fetchAPI';
 import { printToFileAsync } from 'expo-print';
 import LoadingModal from '../../components/LoadingModal';
-import { useNavigation } from '@react-navigation/native';
 
-const TransactionHistoryParams = ({ route }) => {
-  const navigation = useNavigation();
+const TransactionHistoryParams = ({
+  route,
+  navigation,
+  isFromNotification,
+}) => {
   const { postFetchData } = useFetchData();
   const { vh, setRefetchTransactions, showAmount, setShowAmount, isAdmin } =
     useContext(AppContext);
@@ -290,7 +292,7 @@ const TransactionHistoryParams = ({ route }) => {
       <Modal visible={isLocalLoading} transparent>
         <LoadingModal isLoading={isLocalLoading} />
       </Modal>
-      <PageContainer justify={true} scroll avoidBounce>
+      <PageContainer justify={true} scroll>
         <BoldText style={styles.historyHeader}>Transaction history</BoldText>
         <View style={{ ...styles.body, minHeight: vh * 0.5 }}>
           {transactionType?.toLowerCase() === 'credit' && (
@@ -993,7 +995,7 @@ const TransactionHistoryParams = ({ route }) => {
       </PageContainer>
 
       <View style={styles.buttons}>
-        {isAdmin ? (
+        {isAdmin && !isFromNotification ? (
           <View style={styles.button}>
             <Button
               text={`${statusState === 'reversed' || statusState === 'refunded' ? 'Undo Reverse' : 'Reverse'} Transaction`}
@@ -1001,9 +1003,11 @@ const TransactionHistoryParams = ({ route }) => {
             />
           </View>
         ) : (
-          <View style={styles.button}>
-            <Button text={'Report Transaction'} onPress={handleReport} />
-          </View>
+          !isFromNotification && (
+            <View style={styles.button}>
+              <Button text={'Report Transaction'} onPress={handleReport} />
+            </View>
+          )
         )}
         <View style={styles.button}>
           <Button text={'Share Receipt'} onPress={handleShare} />

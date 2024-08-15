@@ -46,7 +46,6 @@ const LockScreen = () => {
     timerId,
     timerIdTotal,
     hasFaceID,
-    setHasFaceID,
   } = useContext(AppContext);
   const [inputCode, setInputCode] = useState('');
   const [hasForgot, setHasForgot] = useState(false);
@@ -61,11 +60,6 @@ const LockScreen = () => {
   const iconPosition = useSharedValue(100);
   const errorPosition = useSharedValue(0);
 
-  useEffect(() => {
-    LocalAuthentication.supportedAuthenticationTypesAsync().then(result =>
-      setHasFaceID(result[0] === 2),
-    );
-  }, [setHasFaceID]);
   useEffect(() => {
     const checkFingerprint = async () => {
       const biometric = (await getBiometric()) || false;

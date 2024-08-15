@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import {
   Dimensions,
   Keyboard,
+  KeyboardAvoidingView,
   PanResponder,
   Platform,
   SafeAreaView,
@@ -28,6 +29,7 @@ import FaIcon from '@expo/vector-icons/FontAwesome';
 import BoldText from './src/components/fonts/BoldText';
 import { timeForInactivityInSecond } from './src/config/config';
 import { CurrencyFullDetails } from './utils/allCountries';
+import * as LocalAuthentication from 'expo-local-authentication';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -178,6 +180,12 @@ export default function App() {
       setShowPopUp(true);
   }, [appData.popUps?.length, isLoggedIn, popUpClosed]);
 
+  useEffect(() => {
+    LocalAuthentication.supportedAuthenticationTypesAsync().then(result =>
+      setHasFaceID(result[0] === 2),
+    );
+  }, []);
+
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponderCapture: () => {
@@ -202,6 +210,8 @@ export default function App() {
     }
   }, [isLoggedIn, isSessionTimedOut]);
 
+  // const Container = Platform.OS === 'ios' ? KeyboardAvoidingView : View;
+
   return (
     <AppContext.Provider value={contextValue}>
       <StatusBar style="auto" translucent={false} backgroundColor="#f5f5f5" />
@@ -216,6 +226,10 @@ export default function App() {
               Keyboard.dismiss();
             }}
             touchSoundDisabled={true}>
+            {/* <Container
+              style={styles.appContainer}
+              behavior={'padding'}
+              keyboardVerticalOffset={0}> */}
             <>
               {showConnected && (
                 <View style={styles.connected}>
@@ -225,6 +239,7 @@ export default function App() {
               )}
               <AppStart />
             </>
+            {/* </Container> */}
           </TouchableWithoutFeedback>
           <LoadingModal isLoading={isLoading} />
         </SafeAreaView>

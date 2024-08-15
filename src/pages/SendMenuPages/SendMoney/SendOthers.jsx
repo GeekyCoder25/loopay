@@ -345,7 +345,7 @@ const SendOthers = ({ navigation }) => {
                     ) : addedBanks.length ? (
                       addedBanks.map(bank => (
                         <Pressable
-                          key={bank.accNo + bank.bankName}
+                          key={bank._id}
                           style={styles.bank}
                           onPress={() => handleSelectRecent(bank)}>
                           <View style={styles.bankDetails}>
@@ -360,7 +360,7 @@ const SendOthers = ({ navigation }) => {
                       ))
                     ) : (
                       <View style={styles.noBank}>
-                        <BoldText>No recent banks will show here</BoldText>
+                        <BoldText>No recent banks</BoldText>
                       </View>
                     )}
                   </View>

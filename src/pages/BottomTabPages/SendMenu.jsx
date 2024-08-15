@@ -29,13 +29,8 @@ import FaIcon from '@expo/vector-icons/FontAwesome';
 import { allCurrencies } from '../../database/data';
 
 const SendMenu = ({ navigation }) => {
-  const { selectedCurrency, setShowTabBar } = useContext(AppContext);
+  const { selectedCurrency } = useContext(AppContext);
   const { beneficiaryState } = useBeneficiaryContext();
-  useFocusEffect(
-    React.useCallback(() => {
-      setShowTabBar(true);
-    }, [setShowTabBar]),
-  );
 
   const handleBeneficiaryPress = beneficiary => {
     navigation.navigate('TransferFunds', beneficiary);

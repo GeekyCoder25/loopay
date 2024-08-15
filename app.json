@@ -18,13 +18,13 @@
         "NSFaceIDUsageDescription": "Loopay uses Face ID to validate your identity",
         "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your camera to complete your facial verification"
       },
-      "bundleIdentifier": "com.loopay",
+      "bundleIdentifier": "com.loopaydev",
       "buildNumber": "14",
       "icon": "./assets/ios-icon.png"
     },
     "android": {
-      "package": "com.loopay",
-      "versionCode": 14,
+      "package": "com.hmg.loopay",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"

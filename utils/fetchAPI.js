@@ -6,8 +6,8 @@ import ToastMessage from '../src/components/ToastMessage';
 
 // export const apiUrl = 'http://10.0.2.2:8000/api';
 // export const apiUrl = 'http://172.20.10.2:8000/api';
-// export const apiUrl = 'http://192.168.50.247:8000/api';
-// export const apiUrl = 'http://192.168.188.100:8000/api';
+// export const apiUrl = 'http://192.168.19.247:8000/api';
+// export const apiUrl = 'http://192.168.188.102:8000/api';
 export const apiUrl = 'https://loopay-api.koyeb.app/api';
 
 const timeoutSeconds = 30;

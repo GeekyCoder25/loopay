@@ -13,7 +13,7 @@ export const usePushNotification = () => {
   const { postFetchData } = useFetchData();
   const { isLoggedIn, setWalletRefresh } = useContext(AppContext);
   const notificationListener = useRef();
-  const responseListener = useRef();
+  // const responseListener = useRef();
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -143,7 +143,7 @@ export const usePushNotification = () => {
                 break;
               case 'notification':
                 Toast.show({
-                  type: 'success',
+                  type: 'info',
                   text1: title,
                   text2: body,
                   position: 'bottom',
@@ -161,24 +161,7 @@ export const usePushNotification = () => {
         } catch (error) {}
       });
 
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener(response => {
-        const notification = response.notification.request.content.data;
-        switch (notification.notificationType) {
-          case 'transaction':
-            navigation.navigate('TransactionHistoryDetails', notification.data);
-            break;
-          case 'notification':
-            navigation.navigate('Notification', notification);
-            break;
-          default:
-            break;
-        }
-      });
-
-    return () => {
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
+    return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn]);
 };

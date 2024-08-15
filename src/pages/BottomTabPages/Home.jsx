@@ -51,7 +51,6 @@ const Home = ({ navigation }) => {
     appData,
     setWalletRefresh,
     setNoReload,
-    setShowTabBar,
     showAmount,
     setShowAmount,
     vw,
@@ -69,8 +68,6 @@ const Home = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      setShowTabBar(true);
-      setWalletRefresh(prev => !prev);
       const onBackPress = () => {
         if (isExiting) {
           return false;
@@ -90,7 +87,7 @@ const Home = ({ navigation }) => {
           setIsExiting(false);
         }, 3000);
       };
-    }, [isExiting, setShowTabBar, setWalletRefresh]),
+    }, [isExiting]),
   );
 
   useEffect(() => {

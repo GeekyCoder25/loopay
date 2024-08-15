@@ -10,6 +10,8 @@ import { View } from 'react-native';
 import LockScreen from '../pages/GlobalPages/LockScreen';
 import AppUpdateModal from './AppUpdateModal';
 import Toast from 'react-native-toast-message';
+import PushNotificationNavigator from '../navigators/PushNotificationNavigator';
+import * as Notifications from 'expo-notifications';
 
 const AppStart = () => {
   const {
@@ -21,6 +23,7 @@ const AppStart = () => {
     setIsUpdateAvailable,
   } = useContext(AppContext);
   const [showLockScreen, setShowLockScreen] = useState(false);
+  const [isFromNotification, setIsFromNotification] = useState(false);
 
   useEffect(() => {
     const getFetchData = async () => {
@@ -71,6 +74,13 @@ const AppStart = () => {
     checkUpdate();
   }, [setIsUpdateAvailable]);
 
+  Notifications.addNotificationResponseReceivedListener(response => {
+    const notification = response.notification.request.content.data;
+    setIsFromNotification(notification);
+    if (notification) {
+    }
+  });
+
   const [fontsLoaded] = useFonts({
     'OpenSans-300': require('../../assets/fonts/OpenSans-Light.ttf'),
     'OpenSans-400': require('../../assets/fonts/OpenSans-Regular.ttf'),
@@ -101,9 +111,18 @@ const AppStart = () => {
     <>
       <View onLayout={onLayoutRootView} />
       <AppPagesNavigator />
-      {showLockScreen && <LockScreen />}
-      {isUpdateAvailable && <AppUpdateModal />}
-      <NoInternet modalOpen={!internetStatus} />
+      {isFromNotification ? (
+        <PushNotificationNavigator
+          notification={isFromNotification}
+          setIsFromNotification={setIsFromNotification}
+        />
+      ) : (
+        <>
+          {showLockScreen && <LockScreen />}
+          {isUpdateAvailable && <AppUpdateModal />}
+          <NoInternet modalOpen={!internetStatus} />
+        </>
+      )}
       <Toast />
     </>
   );
