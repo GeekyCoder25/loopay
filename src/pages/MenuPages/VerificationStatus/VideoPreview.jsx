@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { apiUrl } from '../../../../utils/fetchAPI';
 import { getToken } from '../../../../utils/storage';
 import ToastMessage from '../../../components/ToastMessage';
+import * as Updates from 'expo-updates';
 
 const VideoPreview = ({ video, reloadState }) => {
   const { setIsLoading, vw } = useContext(AppContext);
@@ -50,6 +51,7 @@ const VideoPreview = ({ video, reloadState }) => {
     }
   };
   const handleReload = () => {
+    // Updates.reloadAsync();
     reloadState.setVideo(null);
     reloadState.setShowPreview(null);
     reloadState.setIsVideoRecorded(null);

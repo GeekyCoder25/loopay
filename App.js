@@ -35,7 +35,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [selectedCurrency, setSelectedCurrency] = useState(
-    allCurrencies.find(currency => currency.currency === 'dollar'),
+    allCurrencies.find(currency => currency.currency === 'dollar') || {},
   );
   const [verified, setVerified] = useState(false);
   const [showTabBar, setShowTabBar] = useState(true);
@@ -150,6 +150,13 @@ export default function App() {
             minimumAmountToAdd: 1,
             isLocal: true,
           });
+        } else if (checkCurrency.length) {
+          const arrIndex = allCurrencies.findIndex(
+            currency => currency.currency === checkCurrency[0].currency,
+          );
+          if (arrIndex !== -1) {
+            allCurrencies[arrIndex].isLocal = true;
+          }
         }
       }
     });

@@ -48,19 +48,14 @@ const Notification = () => {
 
   const handleSearch = async text => {
     setSearchInput(text);
-    const foundHistories = notifications.map(history =>
+    const foundHistories = notifications.filter(history =>
       Object.values(history)
         .toString()
         .toLowerCase()
-        .includes(text.toLowerCase())
-        ? history
-        : null,
+        .includes(text.toLowerCase()),
     );
-
-    foundHistories.length && setSearchHistory(foundHistories);
-    text && foundHistories.length
-      ? setIsSearching(true)
-      : setIsSearching(false);
+    setSearchHistory(foundHistories);
+    text ? setIsSearching(true) : setIsSearching(false);
   };
 
   return (
@@ -90,29 +85,38 @@ const Notification = () => {
             />
           </View>
           <View style={styles.body}>
-            {groupNotificationsByDate(notifications).map(dayNotifications => (
-              <View key={dayNotifications.date} style={styles.dateHistory}>
-                <RegularText style={styles.date}>
-                  {dayNotifications.date}
-                </RegularText>
-                {isSearching
-                  ? searchHistory.map(
-                      notification =>
-                        notification && (
-                          <Message
-                            key={notification.id}
-                            notification={notification}
-                          />
-                        ),
-                    )
-                  : dayNotifications.notifications.map(notification => (
-                      <Message
-                        key={notification.id}
-                        notification={notification}
-                      />
-                    ))}
+            {(isSearching && searchHistory.length) || !isSearching ? (
+              groupNotificationsByDate(notifications).map(dayNotifications => (
+                <View key={dayNotifications.date} style={styles.dateHistory}>
+                  <RegularText style={styles.date}>
+                    {dayNotifications.date}
+                  </RegularText>
+
+                  {isSearching
+                    ? searchHistory.map(
+                        notification =>
+                          notification && (
+                            <Message
+                              key={notification.id}
+                              notification={notification}
+                            />
+                          ),
+                      )
+                    : dayNotifications.notifications.map(notification => (
+                        <Message
+                          key={notification.id}
+                          notification={notification}
+                        />
+                      ))}
+                </View>
+              ))
+            ) : (
+              <View style={{ ...styles.historyEmpty, minHeight: vh * 0.8 }}>
+                <BoldText style={styles.historyEmptyText}>
+                  No notification found
+                </BoldText>
               </View>
-            ))}
+            )}
           </View>
         </View>
       ) : (

@@ -32,14 +32,14 @@ export const SignUpData = [
   },
   {
     name: 'password',
-    placeholder: 'Password',
+    placeholder: 'Password (6 digits)',
     type: 'password',
     inputMode: 'numeric',
     eye: true,
   },
   {
     name: 'confirmPassword',
-    placeholder: 'Retype Password',
+    placeholder: 'Retype Password (6 digits)',
     type: 'password',
     inputMode: 'numeric',
     eye: true,

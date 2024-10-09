@@ -136,27 +136,33 @@ const Notifications = () => {
           <FlatList
             data={groupNotificationsByDate(notifications)}
             keyExtractor={({ date }) => date}
-            renderItem={({ item: dayNotifications }) => (
-              <View key={dayNotifications.date} style={styles.dateNotification}>
-                <RegularText style={styles.date}>
-                  {dayNotifications.date}
-                </RegularText>
-                <FlatList
-                  data={
-                    isSearching ? searchHistory : dayNotifications.notifications
-                  }
-                  keyExtractor={({ _id }) => _id}
-                  renderItem={({ item }) => (
-                    <Message
-                      notification={item}
-                      setShowModal={setShowModal}
-                      setModalData={setModalData}
-                      setReload={setReload}
-                    />
-                  )}
-                />
-              </View>
-            )}
+            renderItem={({ item: dayNotifications }) =>
+              ((isSearching && searchHistory.length) || !isSearching) && (
+                <View
+                  key={dayNotifications.date}
+                  style={styles.dateNotification}>
+                  <RegularText style={styles.date}>
+                    {dayNotifications.date}
+                  </RegularText>
+                  <FlatList
+                    data={
+                      isSearching
+                        ? searchHistory
+                        : dayNotifications.notifications
+                    }
+                    keyExtractor={({ _id }) => _id}
+                    renderItem={({ item }) => (
+                      <Message
+                        notification={item}
+                        setShowModal={setShowModal}
+                        setModalData={setModalData}
+                        setReload={setReload}
+                      />
+                    )}
+                  />
+                </View>
+              )
+            }
             ListHeaderComponent={
               <Header
                 notifications={notifications}
@@ -174,11 +180,19 @@ const Notifications = () => {
               )
             }
             ListEmptyComponent={
-              <View style={{ ...styles.empty, minHeight: vh * 0.9 }}>
-                <BoldText style={styles.emptyText}>
-                  Your notifications will appear here
-                </BoldText>
-              </View>
+              isSearching ? (
+                <View style={{ ...styles.empty, minHeight: vh * 0.8 }}>
+                  <BoldText style={styles.emptyText}>
+                    No notification found
+                  </BoldText>
+                </View>
+              ) : (
+                <View style={{ ...styles.empty, minHeight: vh * 0.9 }}>
+                  <BoldText style={styles.emptyText}>
+                    Your notifications will appear here
+                  </BoldText>
+                </View>
+              )
             }
             onEndReachedThreshold={0.5}
             onEndReached={
@@ -446,10 +460,8 @@ const Header = memo(({ notifications, setIsSearching, setSearchHistory }) => {
         .includes(text.toLowerCase()),
     );
 
-    foundHistories.length && setSearchHistory(foundHistories);
-    text && foundHistories.length
-      ? setIsSearching(true)
-      : setIsSearching(false);
+    setSearchHistory(foundHistories);
+    text ? setIsSearching(true) : setIsSearching(false);
   };
 
   return (

@@ -47,7 +47,7 @@ import * as Haptics from 'expo-haptics';
 
 const Home = ({ navigation }) => {
   const {
-    selectedCurrency,
+    selectedCurrency = {},
     appData,
     setWalletRefresh,
     setNoReload,
@@ -196,7 +196,7 @@ const Home = ({ navigation }) => {
                         }
                       : styles.symbol
                   }>
-                  {selectedCurrency.symbol}
+                  {selectedCurrency?.symbol}
                 </Text>
               </View>
               <View>

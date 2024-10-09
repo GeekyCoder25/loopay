@@ -217,7 +217,6 @@ const Verification = ({ route, setModalOpen }) => {
           setModalOpen={setModalOpen}
         />
       )}
-      <LoadingModal isLoading={isLoading} />
     </>
   );
 };

@@ -167,10 +167,12 @@ const FaceDetection = () => {
           setRecordTime(prev => prev - 1);
         }, 1000);
         setTimeout(() => {
+          handleStopRecord();
           clearTimeout(interval);
         }, recordTime * 1000);
         const videoData = await camera.current.recordAsync();
         setVideo(videoData.uri);
+        setRecordTime(10);
       }
     } catch (error) {
       console.warn('Failed to start recording:', error);
@@ -178,10 +180,10 @@ const FaceDetection = () => {
   };
 
   const handleStopRecord = () => {
+    camera.current.stopRecording();
     setIsRecording(false);
     setIsVideoRecorded(true);
     setRecordTime(10);
-    camera.current.stopRecording();
   };
 
   return (
@@ -193,26 +195,34 @@ const FaceDetection = () => {
             ...styles.container,
             maxWidth: vw * 0.9,
             maxHeight: vw * 0.9,
+            height: vw * 0.9,
+            width: vw * 0.9,
           }}>
           <AnimatedCircularProgress
             size={vw * 0.89}
             width={10}
             fill={100}
             tintColor="#5bb85d"
-            onAnimationComplete={handleStopRecord}
             backgroundColor="#fff"
-            duration={recordTime * 1000}
+            duration={9 * 1000}
             easing={Easing.linear}
             rotation={0}
-            style={styles.progress}>
+            style={styles.progress}
+            delay={1000}>
             {() => (
-              <CameraView
-                style={{ ...StyleSheet.absoluteFill, width: vw * 0.89 }}
-                facing="front"
-                ref={camera}
-                onCameraReady={handleRecord}
-                mode="video"
-              />
+              <>
+                <CameraView
+                  style={{
+                    ...StyleSheet.absoluteFill,
+                    height: vw * 0.9,
+                    width: vw * 0.9,
+                  }}
+                  facing="front"
+                  ref={camera}
+                  mode="video"
+                />
+                <View onLayout={() => handleRecord()} />
+              </>
             )}
           </AnimatedCircularProgress>
         </View>

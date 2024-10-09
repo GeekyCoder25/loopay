@@ -277,14 +277,30 @@ const TransactionHistoryParams = ({
     );
 
   const emailFieldRow = isAdmin && (
-    <View style={styles.cardLine}>
-      <RegularText style={styles.cardKey}>Email</RegularText>
-      <Pressable
-        style={styles.cardValue}
-        onPress={() => navigation.navigate('UserDetails', { email })}>
-        <BoldText style={styles.cardValue}>{email}</BoldText>
-      </Pressable>
-    </View>
+    <>
+      <View style={styles.cardLine}>
+        <RegularText style={styles.cardKey}>Email</RegularText>
+        <Pressable
+          style={styles.cardValue}
+          onPress={() => navigation.navigate('UserDetails', { email })}>
+          <BoldText style={styles.cardValue}>{email}</BoldText>
+        </Pressable>
+      </View>
+      <View style={styles.cardLine}>
+        <RegularText style={styles.cardKey}>From Balance</RegularText>
+        <BoldText style={styles.cardValue}>
+          {currencySymbol +
+            addingDecimal(Number(fromBalance / 100).toLocaleString())}
+        </BoldText>
+      </View>
+      <View style={styles.cardLine}>
+        <RegularText style={styles.cardKey}>To Balance</RegularText>
+        <BoldText style={styles.cardValue}>
+          {currencySymbol +
+            addingDecimal(Number(toBalance / 100).toLocaleString())}
+        </BoldText>
+      </View>
+    </>
   );
 
   return (
@@ -354,32 +370,6 @@ const TransactionHistoryParams = ({
                         : '***'}
                     </BoldText>
                   </View>
-                  {isAdmin && (
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>
-                        From Balance
-                      </RegularText>
-                      <BoldText style={styles.cardValue}>
-                        {currencySymbol +
-                          addingDecimal(
-                            Number(fromBalance / 100).toLocaleString(),
-                          )}
-                      </BoldText>
-                    </View>
-                  )}
-                  {isAdmin && (
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>
-                        To Balance
-                      </RegularText>
-                      <BoldText style={styles.cardValue}>
-                        {currencySymbol +
-                          addingDecimal(
-                            Number(toBalance / 100).toLocaleString(),
-                          )}
-                      </BoldText>
-                    </View>
-                  )}
                   {method === 'card' ? (
                     <>
                       <View style={styles.cardLine}>
@@ -510,32 +500,6 @@ const TransactionHistoryParams = ({
                         : '***'}
                     </BoldText>
                   </View>
-                  {isAdmin && (
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>
-                        From Balance
-                      </RegularText>
-                      <BoldText style={styles.cardValue}>
-                        {currencySymbol +
-                          addingDecimal(
-                            Number(fromBalance / 100).toLocaleString(),
-                          )}
-                      </BoldText>
-                    </View>
-                  )}
-                  {isAdmin && (
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>
-                        To Balance
-                      </RegularText>
-                      <BoldText style={styles.cardValue}>
-                        {currencySymbol +
-                          addingDecimal(
-                            Number(toBalance / 100).toLocaleString(),
-                          )}
-                      </BoldText>
-                    </View>
-                  )}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
                       Receiver Name

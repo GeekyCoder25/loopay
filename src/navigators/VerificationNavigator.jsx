@@ -32,7 +32,7 @@ export default function VerificationNavigator() {
       }>
       <Stack.Screen
         name="FirstPage"
-        component={VerificationStatus}
+        component={FaceDetection}
         options={{ headerShown: false }}
       />
       <Stack.Screen

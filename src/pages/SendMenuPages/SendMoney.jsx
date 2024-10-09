@@ -38,7 +38,7 @@ const SendMoney = ({ navigation }) => {
     },
     {
       routeName: 'Send International',
-      routeDetails: `Send ${selectedCurrency.acronym} to any currency word wide`,
+      routeDetails: `Send ${selectedCurrency.acronym} to any currency world wide`,
       routeIcon: 'sendGlobe',
       routeNavigate: 'SendInternational',
     },
