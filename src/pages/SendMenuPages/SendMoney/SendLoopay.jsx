@@ -167,8 +167,8 @@ const SendLoopay = ({ navigation, route }) => {
                 </View>
               )}
               <View style={styles.userFoundDetails}>
-                <BoldText>
-                  {userFound.fullName}{' '}
+                <View style={styles.verifyContainer}>
+                  <BoldText>{userFound.fullName} </BoldText>
                   {userFound.verificationStatus === 'verified' && (
                     <Image
                       source={require('../../../../assets/images/verify.png')}
@@ -176,7 +176,7 @@ const SendLoopay = ({ navigation, route }) => {
                       resizeMode="contain"
                     />
                   )}
-                </BoldText>
+                </View>
                 <BoldText>{userFound.tagName}</BoldText>
               </View>
 
@@ -308,6 +308,10 @@ const styles = StyleSheet.create({
   },
   userFoundDetails: {
     gap: 5,
+  },
+  verifyContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
   verify: {
     width: 15,

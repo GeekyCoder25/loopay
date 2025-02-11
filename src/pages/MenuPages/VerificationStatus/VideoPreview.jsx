@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { apiUrl } from '../../../../utils/fetchAPI';
 import { getToken } from '../../../../utils/storage';
 import ToastMessage from '../../../components/ToastMessage';
+import * as Updates from 'expo-updates';
 
 const VideoPreview = ({ video, reloadState }) => {
   const { setIsLoading, vw } = useContext(AppContext);
@@ -50,6 +51,7 @@ const VideoPreview = ({ video, reloadState }) => {
     }
   };
   const handleReload = () => {
+    // Updates.reloadAsync();
     reloadState.setVideo(null);
     reloadState.setShowPreview(null);
     reloadState.setIsVideoRecorded(null);
@@ -57,16 +59,16 @@ const VideoPreview = ({ video, reloadState }) => {
 
   const handleSubmit = async () => {
     try {
-      if (!video.path) return ToastMessage('No video file found');
+      if (!video) return ToastMessage('No video file found');
       setIsLoading(true);
       const token = await getToken();
-      const videoFile = video.path;
+      const videoFile = video.path ? `file://${video.path}` : video;
       const fileName = videoFile.split('/').pop();
       const fileType = fileName.split('.').pop();
       const formData = new FormData();
 
       formData.append('video', {
-        uri: `file://${videoFile}`,
+        uri: videoFile,
         name: fileName,
         type: `video/${fileType}`,
       });
@@ -84,7 +86,6 @@ const VideoPreview = ({ video, reloadState }) => {
 
       if (response.status === 200) {
         ToastMessage('Submitted successfully, verification is pending');
-        navigation.popToTop();
         return navigation.replace('Splash');
       }
       const data = await response.json();
@@ -110,7 +111,7 @@ const VideoPreview = ({ video, reloadState }) => {
           }}>
           <Video
             source={{
-              uri: video.path,
+              uri: video.path || video,
             }}
             style={style}
             useNativeControls={true}

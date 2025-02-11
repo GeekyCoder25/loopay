@@ -29,13 +29,8 @@ import FaIcon from '@expo/vector-icons/FontAwesome';
 import { allCurrencies } from '../../database/data';
 
 const SendMenu = ({ navigation }) => {
-  const { selectedCurrency, setShowTabBar } = useContext(AppContext);
+  const { selectedCurrency } = useContext(AppContext);
   const { beneficiaryState } = useBeneficiaryContext();
-  useFocusEffect(
-    React.useCallback(() => {
-      setShowTabBar(true);
-    }, [setShowTabBar]),
-  );
 
   const handleBeneficiaryPress = beneficiary => {
     navigation.navigate('TransferFunds', beneficiary);
@@ -104,38 +99,41 @@ const SendMenu = ({ navigation }) => {
   ];
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <RegularText>Beneficiaries</RegularText>
-        {beneficiaryState.length > 3 && <RegularText>View all</RegularText>}
-      </View>
-      {beneficiaryState.length ? (
-        <ScrollView horizontal={true} style={styles.beneficiaries}>
-          {beneficiaryState.map(beneficiary => (
-            <Pressable
-              key={beneficiary.tagName}
-              style={styles.beneficiary}
-              onPress={() => handleBeneficiaryPress(beneficiary)}>
-              <UserIcon uri={beneficiary.photo} />
-              <RegularText>
-                {beneficiary.fullName}{' '}
-                {beneficiary.verificationStatus === 'verified' && (
-                  <Image
-                    source={require('../../../assets/images/verify.png')}
-                    style={styles.verify}
-                    resizeMode="contain"
-                  />
-                )}
-              </RegularText>
-            </Pressable>
-          ))}
-        </ScrollView>
-      ) : (
-        <View style={styles.beneficiaryEmpty}>
-          <RegularText>Your recent beneficiaries will appear here</RegularText>
-        </View>
+    <View
+      style={
+        beneficiaryState.length > 0
+          ? styles.containerBeneficiary
+          : styles.container
+      }>
+      {beneficiaryState.length > 0 && (
+        <>
+          <View style={styles.header}>
+            <RegularText>Beneficiaries</RegularText>
+            {beneficiaryState.length > 3 && <RegularText>View all</RegularText>}
+          </View>
+          <ScrollView horizontal={true} style={styles.beneficiaries}>
+            {beneficiaryState.map(beneficiary => (
+              <Pressable
+                key={beneficiary.tagName}
+                style={styles.beneficiary}
+                onPress={() => handleBeneficiaryPress(beneficiary)}>
+                <UserIcon uri={beneficiary.photo} />
+                <RegularText>
+                  {beneficiary.fullName}{' '}
+                  {beneficiary.verificationStatus === 'verified' && (
+                    <Image
+                      source={require('../../../assets/images/verify.png')}
+                      style={styles.verify}
+                      resizeMode="contain"
+                    />
+                  )}
+                </RegularText>
+              </Pressable>
+            ))}
+          </ScrollView>
+          <View style={styles.modalBorder} />
+        </>
       )}
-      <View style={styles.modalBorder} />
       <ImageBackground
         source={require('../../../assets/images/pageBg.png')}
         style={styles.bg}>
@@ -154,6 +152,11 @@ const SendMenu = ({ navigation }) => {
 };
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    paddingTop: 30,
+    backgroundColor: '#fff',
+  },
+  containerBeneficiary: {
     flex: 1,
     paddingTop: 10,
     backgroundColor: '#fff',

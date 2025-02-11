@@ -38,6 +38,7 @@ const InputPin = ({
     isBiometricSupported,
     enableBiometric,
     isAdmin,
+    hasFaceID,
   } = useContext(AppContext);
   const [errorMessage, setErrorMessage] = useState('');
   const [errorCode, setErrorCode] = useState(false);
@@ -48,18 +49,7 @@ const InputPin = ({
   const [hideDigits, setHideDigits] = useState(false);
   const [showBiometrics, setShowBiometrics] = useState(false);
   const [errorAnimated, setErrorAnimated] = useState(false);
-  const [hasFaceID, setHasFaceID] = useState(false);
   const errorPosition = useSharedValue(0);
-
-  useEffect(() => {
-    LocalAuthentication.supportedAuthenticationTypesAsync().then(result =>
-      setHasFaceID(result[0] === 2),
-    );
-
-    return () => {
-      setIsLoading(false);
-    };
-  }, [setIsLoading]);
 
   const errorAnimation = () => {
     if (!errorAnimated) {
@@ -114,11 +104,16 @@ const InputPin = ({
           if (customFunc) {
             const customFuncStatus = await customFunc(setErrorMessage);
             return setTimeout(() => {
-              customFuncStatus === 200
-                ? setTimeout(() => {
-                    setModalOpen(false);
-                  }, 1000)
-                : setErrorMessage(customFuncStatus);
+              if (customFuncStatus === 200) {
+                setTimeout(() => {
+                  setModalOpen(false);
+                }, 1000);
+              } else {
+                setErrorMessage(customFuncStatus);
+                setTimeout(() => {
+                  setPinCode('');
+                }, 1500);
+              }
             }, 200);
           }
         }
@@ -145,13 +140,19 @@ const InputPin = ({
           setIsLoading(true);
           const customFuncStatus = await customFunc(setErrorMessage);
           return setTimeout(() => {
-            customFuncStatus === 200
-              ? setTimeout(() => {
-                  setModalOpen(false);
-                }, 1000)
-              : setErrorMessage(`${customFuncStatus || ''}`);
+            if (customFuncStatus === 200) {
+              setTimeout(() => {
+                setModalOpen(false);
+              }, 1000);
+            } else {
+              setErrorMessage(customFuncStatus);
+              setTimeout(() => {
+                setPinCode('');
+              }, 1500);
+            }
           }, 200);
         }
+        return;
       }
 
       if (result.status === 400) {

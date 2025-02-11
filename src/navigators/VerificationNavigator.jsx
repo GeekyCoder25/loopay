@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -7,13 +8,14 @@ import VerificationInformation from '../pages/MenuPages/VerificationStatus/Verif
 import VerifyImage from '../pages/MenuPages/VerificationStatus/VerifyImage';
 import VerifyInputNumber from '../pages/MenuPages/VerificationStatus/VerifyInputNumber';
 import Back from '../components/Back';
-import Constants from 'expo-constants';
+import FaceDetection from '../pages/MenuPages/VerificationStatus/FaceDetectionExpo';
+// import Constants from 'expo-constants';
 
-const FaceDetection = React.lazy(() => {
-  return Constants.appOwnership === 'expo'
-    ? import('../pages/MenuPages/VerificationStatus/FaceDetectionExpo')
-    : import('../pages/MenuPages/VerificationStatus/FaceDetection');
-});
+// const FaceDetection = React.lazy(() => {
+//   return Constants.appOwnership === 'expo'
+//     ? import('../pages/MenuPages/VerificationStatus/FaceDetectionExpo')
+//     : import('../pages/MenuPages/VerificationStatus/FaceDetectionExpo');
+// });
 
 export default function VerificationNavigator() {
   const Stack = createNativeStackNavigator();
@@ -30,7 +32,7 @@ export default function VerificationNavigator() {
       }>
       <Stack.Screen
         name="FirstPage"
-        component={VerificationStatus}
+        component={FaceDetection}
         options={{ headerShown: false }}
       />
       <Stack.Screen

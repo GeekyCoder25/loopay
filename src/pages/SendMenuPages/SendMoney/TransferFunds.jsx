@@ -163,8 +163,10 @@ const TransferFunds = ({ navigation, route }) => {
                 </View>
               )}
               <View>
-                <BoldText style={styles.fullName}>
-                  {userToSendTo.fullName}{' '}
+                <View style={styles.verifyContainer}>
+                  <BoldText style={styles.fullName}>
+                    {userToSendTo.fullName}{' '}
+                  </BoldText>
                   {userToSendTo.verificationStatus === 'verified' && (
                     <Image
                       source={require('../../../../assets/images/verify.png')}
@@ -172,7 +174,7 @@ const TransferFunds = ({ navigation, route }) => {
                       resizeMode="contain"
                     />
                   )}
-                </BoldText>
+                </View>
                 <RegularText style={styles.tagName}>
                   {userToSendTo.tagName || userToSendTo.userName}
                 </RegularText>
@@ -231,7 +233,7 @@ const TransferFunds = ({ navigation, route }) => {
                       }}
                       value={description}
                       maxLength={40}
-                      placeholder="optional"
+                      placeholder="Sent from Loopay"
                     />
                   </View>
                 </View>
@@ -320,6 +322,10 @@ const styles = StyleSheet.create({
   },
   fullName: {
     color: '#fff',
+  },
+  verifyContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
   verify: {
     width: 15,

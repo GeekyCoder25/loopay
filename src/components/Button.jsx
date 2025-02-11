@@ -2,7 +2,16 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import BoldText from './fonts/BoldText';
 
-const Button = ({ text, onPress, Icon, disabled, flex, color, style }) => {
+const Button = ({
+  text,
+  onPress,
+  leftIcon,
+  Icon,
+  disabled,
+  flex,
+  color,
+  style,
+}) => {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -14,6 +23,7 @@ const Button = ({ text, onPress, Icon, disabled, flex, color, style }) => {
         ...style,
       }}
       disabled={disabled || false}>
+      {leftIcon && <View>{leftIcon}</View>}
       <BoldText
         style={{
           ...styles.activeButtonText,

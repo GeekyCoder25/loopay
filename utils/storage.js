@@ -15,6 +15,7 @@ const StorageKeys = {
   INVALID_PIN: 'INVALID_PIN',
   EMAIL: 'EMAIL',
   SHAKE: 'SHAKE',
+  PUSH_NOTIFICATION: 'PUSH_NOTIFICATION',
 };
 
 export const loginUser = async (data, session) => {
@@ -42,6 +43,7 @@ export const logoutUser = async () => {
   await AsyncStorage.removeItem(StorageKeys.LOCAL_CURRENCY);
   await AsyncStorage.removeItem(StorageKeys.DEFAULT_CURRENCY);
   await AsyncStorage.removeItem(StorageKeys.INVALID_PIN);
+  await AsyncStorage.removeItem(StorageKeys.PUSH_NOTIFICATION);
   // await AsyncStorage.removeItem(StorageKeys.BIOMETRIC);
   await AsyncStorage.setItem(StorageKeys.LOGGED_IN, 'false');
 };
@@ -73,6 +75,17 @@ export const getEmail = async () => {
 
 export const getSessionID = async () => {
   return await AsyncStorage.getItem(StorageKeys.SESSION);
+};
+
+export const getPushNotification = async () => {
+  const stringifiedState = await AsyncStorage.getItem(
+    StorageKeys.PUSH_NOTIFICATION,
+  );
+  return JSON.parse(stringifiedState);
+};
+
+export const setPushNotification = async state => {
+  return await AsyncStorage.setItem(StorageKeys.PUSH_NOTIFICATION, `${state}`);
 };
 
 export const getCurrency = async () => {
@@ -154,4 +167,4 @@ const deleteStorage = async key => {
 // getAllKeys();
 // clearAllKeys();
 // deleteStorage('USER');
-// getStorage(StorageKeys.SHAKE);
+// getStorage(StorageKeys.PUSH_NOTIFICATION);

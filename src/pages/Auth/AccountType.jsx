@@ -11,8 +11,9 @@ import BoldText from '../../components/fonts/BoldText';
 import { AppContext } from '../../components/AppContext';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import useFetchData from '../../../utils/fetchAPI';
+import ToastMessage from '../../components/ToastMessage';
 
-const AccountType = () => {
+const AccountType = ({ navigation }) => {
   const { putFetchData } = useFetchData();
   const { setAppData, setIsLoading } = useContext(AppContext);
   const [accountTypeState, setAccountTypeState] = useState('');
@@ -22,17 +23,26 @@ const AccountType = () => {
     if (accountTypeState === '') {
       setIsError(true);
     } else {
-      setIsLoading(true);
-      putFetchData('user', { accountType: accountTypeState })
-        .then(updateResult => {
-          const data = updateResult?.data?.updateData?.accountType;
+      if (accountTypeState === 'Business') {
+        navigation.navigate('BusinessOnboarding');
+      } else {
+        setIsLoading(true);
+        try {
+          const response = await putFetchData('user', {
+            accountType: accountTypeState,
+          });
+          const data = response.data?.updateData?.accountType;
           if (data) {
             setAppData(prev => {
-              return { ...prev, accountType: data };
+              return { ...prev, accountType: data, pin: !!prev.pin };
             });
           }
-        })
-        .finally(() => setIsLoading(false));
+        } catch (error) {
+          ToastMessage(error.message);
+        } finally {
+          setIsLoading(false);
+        }
+      }
     }
   };
 

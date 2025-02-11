@@ -74,7 +74,7 @@ const Referrals = ({ navigation }) => {
               <BoldText style={styles.cardValue}>{referralCode}</BoldText>
             </View>
             <Pressable style={styles.share} onPress={handleShare}>
-              <RegularText style={styles.shareText}>Share</RegularText>
+              <RegularText style={styles.shareText}>Copy</RegularText>
             </Pressable>
           </View>
           <View style={styles.card}>

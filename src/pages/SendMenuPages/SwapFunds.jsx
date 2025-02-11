@@ -204,10 +204,6 @@ const SwapFunds = ({ navigation }) => {
           ? addingDecimal(toReceiveCalculate.toLocaleString())
           : 'Amount to receive',
       );
-    if (text > wallet[`${swapFrom.currency}Balance`]) {
-      setErrorKey(true);
-      return setErrorMessage('Insufficient funds');
-    }
     setErrorKey(false);
     setErrorMessage(false);
   };
@@ -799,8 +795,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Platform.OS === 'android' ? 240 : 285,
     width: 50.5 + '%',
-    paddingVertical: 10 + '%',
-    paddingHorizontal: 10 + '%',
+    paddingVertical: 5 + '%',
+    paddingHorizontal: 5 + '%',
     backgroundColor: '#fff',
     gap: 20,
     elevation: 20,

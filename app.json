@@ -2,7 +2,7 @@
   "expo": {
     "name": "Loopay",
     "slug": "Loopay",
-    "version": "1.0.7",
+    "version": "1.0.11",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,23 +16,26 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSFaceIDUsageDescription": "Loopay uses Face ID to validate your identity",
-        "NSCameraUsageDescription": "Loopay uses the camera to set yor profile picture"
+        "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your camera to complete your facial verification"
       },
-      "bundleIdentifier": "com.loopay",
-      "buildNumber": "10",
+      "bundleIdentifier": "com.loopaydev",
+      "buildNumber": "15",
       "icon": "./assets/ios-icon.png"
     },
     "android": {
-      "package": "com.loopay",
-      "versionCode": 10,
+      "package": "com.hmg.loopay",
+      "versionCode": 15,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
       "permissions": [
         "android.permission.USE_BIOMETRIC",
-        "android.permission.USE_FINGERPRINT"
-      ]
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA"
+      ],
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -64,14 +67,6 @@
       ],
       "expo-font",
       [
-        "react-native-vision-camera",
-        {
-          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your camera to complete your facial verification",
-          "enableMicrophonePermission": true,
-          "microphonePermissionText": "$(PRODUCT_NAME) needs access to your Microphone."
-        }
-      ],
-      [
         "expo-camera",
         {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
@@ -89,6 +84,6 @@
     "updates": {
       "url": "https://u.expo.dev/055518e9-09c1-4eb9-99b2-42d79d874996"
     },
-    "useCLassicUpdates": true
+    "owner": "jraph_14"
   }
 }

@@ -152,7 +152,7 @@ const Referral = ({ navigation }) => {
           <BoldText style={styles.referralCode}>{referralCode}</BoldText>
         </Pressable>
       </View>
-      <Button text={'Share Link'} onPress={handleShare} />
+      <Button text={'Copy Link'} onPress={handleShare} />
     </PageContainer>
   );
 };

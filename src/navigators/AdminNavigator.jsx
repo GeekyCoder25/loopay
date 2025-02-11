@@ -26,9 +26,11 @@ import ReportNavigator from '../pages/AdminPages/Reports/ReportNavigator';
 import UserDetails from '../pages/AdminPages/Users/UserDetails';
 import UserTransaction from '../pages/AdminPages/Users/UserTransaction';
 import Internationals from '../pages/AdminPages/Internationals';
+import { usePushNotification } from '../components/Notification';
 
 const AdminNavigator = () => {
   const Drawer = createDrawerNavigator();
+  usePushNotification();
 
   const BackHeader = (navigation, route) => {
     const previousScreen = route?.params?.previousScreen;

@@ -48,19 +48,14 @@ const Notification = () => {
 
   const handleSearch = async text => {
     setSearchInput(text);
-    const foundHistories = notifications.map(history =>
+    const foundHistories = notifications.filter(history =>
       Object.values(history)
         .toString()
         .toLowerCase()
-        .includes(text.toLowerCase())
-        ? history
-        : null,
+        .includes(text.toLowerCase()),
     );
-
-    foundHistories.length && setSearchHistory(foundHistories);
-    text && foundHistories.length
-      ? setIsSearching(true)
-      : setIsSearching(false);
+    setSearchHistory(foundHistories);
+    text ? setIsSearching(true) : setIsSearching(false);
   };
 
   return (
@@ -90,29 +85,38 @@ const Notification = () => {
             />
           </View>
           <View style={styles.body}>
-            {groupNotificationsByDate(notifications).map(dayNotifications => (
-              <View key={dayNotifications.date} style={styles.dateHistory}>
-                <RegularText style={styles.date}>
-                  {dayNotifications.date}
-                </RegularText>
-                {isSearching
-                  ? searchHistory.map(
-                      notification =>
-                        notification && (
-                          <Message
-                            key={notification.id}
-                            notification={notification}
-                          />
-                        ),
-                    )
-                  : dayNotifications.notifications.map(notification => (
-                      <Message
-                        key={notification.id}
-                        notification={notification}
-                      />
-                    ))}
+            {(isSearching && searchHistory.length) || !isSearching ? (
+              groupNotificationsByDate(notifications).map(dayNotifications => (
+                <View key={dayNotifications.date} style={styles.dateHistory}>
+                  <RegularText style={styles.date}>
+                    {dayNotifications.date}
+                  </RegularText>
+
+                  {isSearching
+                    ? searchHistory.map(
+                        notification =>
+                          notification && (
+                            <Message
+                              key={notification.id}
+                              notification={notification}
+                            />
+                          ),
+                      )
+                    : dayNotifications.notifications.map(notification => (
+                        <Message
+                          key={notification.id}
+                          notification={notification}
+                        />
+                      ))}
+                </View>
+              ))
+            ) : (
+              <View style={{ ...styles.historyEmpty, minHeight: vh * 0.8 }}>
+                <BoldText style={styles.historyEmptyText}>
+                  No notification found
+                </BoldText>
               </View>
-            ))}
+            )}
           </View>
         </View>
       ) : (
@@ -214,7 +218,7 @@ export default Notification;
 
 const Message = ({ notification }) => {
   const { putFetchData } = useFetchData();
-  const { setWalletRefresh } = useContext(AppContext);
+  const { setWalletRefresh, showAmount } = useContext(AppContext);
   const [transactionTypeIcon, setTransactionTypeIcon] = useState(
     <Image
       source={require('../../../assets/images/icon.png')}
@@ -259,10 +263,9 @@ const Message = ({ notification }) => {
       navigate('PendingRequest');
     } else if (type === 'request_confirm') {
       navigate('Home');
-    } else if (type === 'transfer' || type === 'airtime') {
+    } else if (type === 'transfer' || type === 'airtime' || type === 'bill') {
       navigate('TransactionHistoryDetails', notification.metadata);
     } else {
-      await putFetchData(`user/notification/${_id}`);
       ToastMessage('Read');
     }
     const response = await putFetchData(`user/notification/${_id}`);
@@ -304,12 +307,28 @@ const Message = ({ notification }) => {
     }
   }, [networkProvider, photo, type]);
 
+  const hideAmountInMessage = () => {
+    if (!showAmount) {
+      const amountPattern = /[₦$€£]\d{1,3}(?:,\d{3})*(?:\.\d+)?/g;
+      const amountMatch = message.match(amountPattern);
+
+      if (amountMatch) {
+        const hiddenAmount = `${amountMatch[0][0]}***`;
+        const hiddenMessage = message.replace(amountPattern, hiddenAmount);
+        return hiddenMessage;
+      }
+    }
+    return message;
+  };
+
+  const finalMessage = hideAmountInMessage();
+
   return (
     <Pressable style={styles.history} onPress={handleNavigate}>
       {transactionTypeIcon}
       <View style={styles.historyContent}>
         <BoldText style={styles.title}>{header}</BoldText>
-        <RegularText>{message}</RegularText>
+        <RegularText>{finalMessage}</RegularText>
         <RegularText>{historyTime}</RegularText>
       </View>
       {status === 'unread' && <View style={styles.unread} />}

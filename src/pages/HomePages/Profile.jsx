@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
@@ -21,10 +21,12 @@ import ChevronLeft from '../../../assets/images/chevron-right.svg';
 import FaceIDIcon from '../../../assets/images/face-id.svg';
 import BiometricIcon from '../../../assets/images/biometric.svg';
 import ToastMessage from '../../components/ToastMessage';
+import { Ionicons } from '@expo/vector-icons';
 
 const Profile = ({ navigation, children, route }) => {
   const { appData, setAppData, isBiometricSupported, selectedCurrency } =
     useContext(AppContext);
+  const [showModal, setShowModal] = useState(false);
   const { email } = appData;
   const { firstName, lastName } = appData.userProfile;
   const fullName = `${firstName} ${lastName}`;
@@ -77,6 +79,24 @@ const Profile = ({ navigation, children, route }) => {
   };
 
   const selectImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      return ToastMessage('Permission was denied by user');
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    });
+    setShowModal(false);
+    if (!result.canceled) {
+      uploadImage(result.assets[0].uri);
+    }
+  };
+
+  const launchCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
       return ToastMessage('Camera permission was denied by user');
@@ -135,103 +155,130 @@ const Profile = ({ navigation, children, route }) => {
   ];
 
   return (
-    <PageContainer scroll>
-      <View style={styles.body}>
-        <UserIcon style={styles.userIcon} />
-        <Pressable onPress={selectImage} style={styles.userIconContainer}>
-          {appData.photo ? (
-            <FaIcon name="edit" size={25} color="#000" style={styles.faIcon} />
-          ) : (
-            <FaIcon name="plus" size={25} color="#000" style={styles.faIcon} />
-          )}
-        </Pressable>
-        <View>
-          <View>
-            <BoldText style={styles.name}>{fullName} </BoldText>
-            {appData.verificationStatus === 'verified' && (
-              <Image
-                source={require('../../../assets/images/verify.png')}
-                style={styles.verify}
-                resizeMode="contain"
+    <>
+      <PageContainer scroll>
+        <View style={styles.body}>
+          <UserIcon style={styles.userIcon} />
+          <Pressable
+            onPress={() => setShowModal(true)}
+            style={styles.userIconContainer}>
+            {appData.photo ? (
+              <FaIcon
+                name="edit"
+                size={25}
+                color="#000"
+                style={styles.faIcon}
+              />
+            ) : (
+              <FaIcon
+                name="plus"
+                size={25}
+                color="#000"
+                style={styles.faIcon}
               />
             )}
-          </View>
-          <RegularText style={styles.email}>{email}</RegularText>
-        </View>
-        <View style={styles.modalBorder} />
-        <RegularText style={styles.textHeader}>Loopay Tag</RegularText>
-        <View style={styles.tagContainer}>
-          {appData.tagName ? (
-            <>
-              <View style={styles.textContainer}>
-                <View style={styles.tagNameContainer}>
-                  <View style={styles.tagName}>
-                    <BoldText>#{appData.tagName}</BoldText>
-                    <Pressable onPress={() => navigation.navigate('LoopayTag')}>
-                      <FaIcon name="edit" size={15} color={'#868585'} />
-                    </Pressable>
-                  </View>
-                  <RegularText style={styles.text}>
-                    Your unique Loopay tag
-                  </RegularText>
-                </View>
-                <View style={styles.tagIcon}>
-                  <Image
-                    source={require('../../../assets/images/pageBg.png')}
-                    resizeMode="cover"
-                    style={styles.bg}
-                  />
-                  <Tag />
-                </View>
-              </View>
-            </>
-          ) : (
-            <>
-              <BoldText>Loopay Tags</BoldText>
-              <View style={styles.textContainer}>
-                <RegularText style={styles.text}>
-                  Create a unique username to send and receive funds
-                </RegularText>
-                <View style={styles.tagIcon}>
-                  <Image
-                    source={require('../../../assets/images/pageBg.png')}
-                    resizeMode="cover"
-                    style={styles.bg2}
-                  />
-                  <Tag />
-                </View>
-              </View>
-              <View style={styles.button}>
-                <Button
-                  text={'Create Loopay Tag'}
-                  onPress={() => navigation.navigate('LoopayTag')}
+          </Pressable>
+          <View>
+            <View>
+              <BoldText style={styles.name}>{fullName} </BoldText>
+              {appData.verificationStatus === 'verified' && (
+                <Image
+                  source={require('../../../assets/images/verify.png')}
+                  style={styles.verify}
+                  resizeMode="contain"
                 />
-              </View>
-            </>
-          )}
-        </View>
-        <View style={styles.childComponent}>{children}</View>
-        {route?.name === 'Profile' &&
-          profileRoutes.map(routePage => (
+              )}
+            </View>
+            <RegularText style={styles.email}>{email}</RegularText>
+          </View>
+          <View style={styles.modalBorder} />
+          <RegularText style={styles.textHeader}>Loopay Tag</RegularText>
+          <View style={styles.tagContainer}>
+            {appData.tagName ? (
+              <>
+                <View style={styles.textContainer}>
+                  <View style={styles.tagNameContainer}>
+                    <View style={styles.tagName}>
+                      <BoldText>#{appData.tagName}</BoldText>
+                      <Pressable
+                        onPress={() => navigation.navigate('LoopayTag')}>
+                        <FaIcon name="edit" size={15} color={'#868585'} />
+                      </Pressable>
+                    </View>
+                    <RegularText style={styles.text}>
+                      Your unique Loopay tag
+                    </RegularText>
+                  </View>
+                  <View style={styles.tagIcon}>
+                    <Image
+                      source={require('../../../assets/images/pageBg.png')}
+                      resizeMode="cover"
+                      style={styles.bg}
+                    />
+                    <Tag />
+                  </View>
+                </View>
+              </>
+            ) : (
+              <>
+                <BoldText>Loopay Tags</BoldText>
+                <View style={styles.textContainer}>
+                  <RegularText style={styles.text}>
+                    Create a unique username to send and receive funds
+                  </RegularText>
+                  <View style={styles.tagIcon}>
+                    <Image
+                      source={require('../../../assets/images/pageBg.png')}
+                      resizeMode="cover"
+                      style={styles.bg2}
+                    />
+                    <Tag />
+                  </View>
+                </View>
+                <View style={styles.button}>
+                  <Button
+                    text={'Create Loopay Tag'}
+                    onPress={() => navigation.navigate('LoopayTag')}
+                  />
+                </View>
+              </>
+            )}
+          </View>
+          <View style={styles.childComponent}>{children}</View>
+          {route?.name === 'Profile' &&
+            profileRoutes.map(routePage => (
+              <RouteLink
+                key={routePage.routeIcon}
+                route={routePage}
+                navigation={navigation}
+              />
+            ))}
+          {route?.name === 'Profile' && isBiometricSupported && (
             <RouteLink
-              key={routePage.routeIcon}
-              route={routePage}
+              route={{
+                routeName: 'Biometric Authentication',
+                routeNavigate: 'Biometric',
+                routeIcon: 'biometric',
+                routeDetails: 'Enable/Disable biometric authentication method',
+              }}
               navigation={navigation}
             />
-          ))}
-        {route?.name === 'Profile' && isBiometricSupported && (
-          <RouteLink
-            route={{
-              routeName: 'Biometric Authentication',
-              routeNavigate: 'Biometric',
-              routeIcon: 'biometric',
-              routeDetails: 'Enable/Disable biometric authentication method',
-            }}
-            navigation={navigation}
-          />
-        )}
-      </View>
-    </PageContainer>
+          )}
+        </View>
+      </PageContainer>
+      {showModal && (
+        <Pressable style={styles.modal} onPress={() => setShowModal(false)}>
+          <Pressable onPress={selectImage} style={styles.select}>
+            <Ionicons name="image-outline" size={24} />
+            <RegularText>Select Image</RegularText>
+          </Pressable>
+          <Pressable onPress={launchCamera} style={styles.select}>
+            <Ionicons name="camera-outline" size={24} />
+            <RegularText>Launch Camera</RegularText>
+          </Pressable>
+        </Pressable>
+      )}
+    </>
   );
 };
 
@@ -362,6 +409,25 @@ const styles = StyleSheet.create({
   routeArrow: {
     marginTop: 15,
     marginLeft: -25,
+  },
+  modal: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    left: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'flex-end',
+  },
+  select: {
+    width: '100%',
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    paddingVertical: 20,
+    paddingLeft: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 20,
   },
 });
 export default Profile;

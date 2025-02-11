@@ -3,7 +3,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Logo from '../../components/Logo';
 import Button from '../../components/Button';
-import { signInData } from '../../database/data';
+import { SignInData } from '../../database/data';
 import Header from '../../components/Header';
 import Email from '../../../assets/images/mail.svg';
 import PageContainer from '../../components/PageContainer';
@@ -17,17 +17,14 @@ import { PINInputFields } from '../../components/InputPinPage';
 import useFetchData from '../../../utils/fetchAPI';
 
 const ForgotPassword = ({ navigation, setCanChange }) => {
-  const { getFetchData, postFetchData } = useFetchData();
+  const { postFetchData } = useFetchData();
   const {
     appData,
     isSessionTimedOut,
     isLoading,
     setIsLoading,
     vh,
-    setAppData,
     isLoggedIn,
-    setVerified,
-    setCanChangeRole,
   } = useContext(AppContext);
   const [codeSent, setCodeSent] = useState(false);
   const [formData, setFormData] = useState({
@@ -217,7 +214,7 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
             </>
           ) : (
             <>
-              {signInData.slice(0, 1).map(item => (
+              {SignInData.slice(0, 1).map(item => (
                 <Form
                   item={item}
                   formData={formData}
@@ -239,11 +236,11 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
               <RegularText style={styles.alreadyText}>
                 Already have an account?
               </RegularText>
-              <Pressable onPress={() => navigation.navigate('Signin')}>
-                <BoldText style={styles.signIn}>Sign in</BoldText>
+              <Pressable onPress={() => navigation.navigate('SignIn')}>
+                <BoldText style={styles.SignIn}>Sign in</BoldText>
               </Pressable>
             </View>
-            {/* <View style={styles.signInIcons}>
+            {/* <View style={styles.SignInIcons}>
               <Pressable onPress={() => console.log('apple was clicked')}>
                 <Apple />
               </Pressable>
@@ -367,10 +364,10 @@ const styles = StyleSheet.create({
   alreadyText: {
     color: '#868585',
   },
-  signIn: {
+  SignIn: {
     fontWeight: '600',
   },
-  signInIcons: {
+  SignInIcons: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,

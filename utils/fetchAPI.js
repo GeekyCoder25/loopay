@@ -1,14 +1,14 @@
 import { useContext } from 'react';
-import { getToken } from './storage';
+import { getToken, logoutUser } from './storage';
 import { AppContext } from '../src/components/AppContext';
 import { allCurrencies } from '../src/database/data';
 import ToastMessage from '../src/components/ToastMessage';
 
 // export const apiUrl = 'http://10.0.2.2:8000/api';
 // export const apiUrl = 'http://172.20.10.2:8000/api';
-// export const apiUrl = 'http://192.168.22.247:8000/api';
+// export const apiUrl = 'http://192.168.19.247:8000/api';
 // export const apiUrl = 'http://192.168.188.101:8000/api';
-export const apiUrl = 'https://loopay-api.up.railway.app/api';
+export const apiUrl = 'https://loopay-api.koyeb.app/api';
 
 const timeoutSeconds = 30;
 
@@ -19,7 +19,6 @@ const useFetchData = () => {
     setAppData,
     setCanChangeRole,
     setVerified,
-    setIsLoading,
     setIsAdmin,
   } = useContext(AppContext);
 
@@ -30,6 +29,7 @@ const useFetchData = () => {
     setAppData({});
     setCanChangeRole(false);
     allCurrencies.length > 3 && allCurrencies.shift();
+    logoutUser();
     ToastMessage(
       message.includes('authorized')
         ? 'Session timed out, login again to continue using the app'
@@ -62,10 +62,6 @@ const useFetchData = () => {
     } catch (err) {
       clearTimeout(timeout);
       return "Couldn't connect to server";
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 40000);
     }
   };
 
@@ -115,10 +111,6 @@ const useFetchData = () => {
     } catch (err) {
       clearTimeout(timeout);
       return "Couldn't connect to server";
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 40000);
     }
   };
 
@@ -150,10 +142,6 @@ const useFetchData = () => {
     } catch (err) {
       clearTimeout(timeout);
       return "Couldn't connect to server";
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 40000);
     }
   };
 
@@ -185,10 +173,6 @@ const useFetchData = () => {
     } catch (err) {
       clearTimeout(timeout);
       return "Couldn't connect to server";
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 40000);
     }
   };
   return { getFetchData, postFetchData, putFetchData, deleteFetchData };

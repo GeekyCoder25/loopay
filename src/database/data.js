@@ -1,4 +1,4 @@
-export const signUpData = [
+export const SignUpData = [
   {
     name: 'firstName',
     placeholder: 'First name',
@@ -32,14 +32,14 @@ export const signUpData = [
   },
   {
     name: 'password',
-    placeholder: 'Password',
+    placeholder: 'Password (6 digits)',
     type: 'password',
     inputMode: 'numeric',
     eye: true,
   },
   {
     name: 'confirmPassword',
-    placeholder: 'Retype Password',
+    placeholder: 'Retype Password (6 digits)',
     type: 'password',
     inputMode: 'numeric',
     eye: true,
@@ -52,7 +52,7 @@ export const signUpData = [
     optional: true,
   },
 ];
-export const signInData = [
+export const SignInData = [
   {
     name: 'email',
     placeholder: 'E-mail address',

@@ -18,7 +18,7 @@ import useFetchData from '../../../utils/fetchAPI';
 
 const Success = ({ navigation, route }) => {
   const { postFetchData } = useFetchData();
-  const { isAdmin, setShowTabBar, vh, setIsLoading } = useContext(AppContext);
+  const { isAdmin, vh, setIsLoading } = useContext(AppContext);
   const {
     userToSendTo,
     amountInput,
@@ -46,10 +46,6 @@ const Success = ({ navigation, route }) => {
       return () => subscription.remove();
     }, [navigation]),
   );
-
-  useEffect(() => {
-    setShowTabBar(false);
-  }, [setShowTabBar]);
 
   useEffect(() => {
     const playSound = async () => {

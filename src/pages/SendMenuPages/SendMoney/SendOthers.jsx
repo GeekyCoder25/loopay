@@ -67,7 +67,7 @@ const SendOthers = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       getFetchData(
-        `user/savedbanks?limit=${3}&currency=${selectedCurrency.currency},${selectedCurrency.acronym}`,
+        `user/saved/bank?limit=${3}&currency=${selectedCurrency.currency},${selectedCurrency.acronym}`,
       )
         .then(response => {
           if (response.status === 200) {
@@ -238,7 +238,7 @@ const SendOthers = ({ navigation }) => {
       });
       if (response.status === 200) {
         const { transaction } = response.data;
-        await postFetchData('user/savedbanks', formData);
+        await postFetchData('user/saved/bank', formData);
         navigation.replace('Success', {
           userToSendTo: bankSelected,
           amountInput,
@@ -345,7 +345,7 @@ const SendOthers = ({ navigation }) => {
                     ) : addedBanks.length ? (
                       addedBanks.map(bank => (
                         <Pressable
-                          key={bank.accNo + bank.bankName}
+                          key={bank._id}
                           style={styles.bank}
                           onPress={() => handleSelectRecent(bank)}>
                           <View style={styles.bankDetails}>
@@ -360,7 +360,7 @@ const SendOthers = ({ navigation }) => {
                       ))
                     ) : (
                       <View style={styles.noBank}>
-                        <BoldText>No recent banks will show here</BoldText>
+                        <BoldText>No recent banks</BoldText>
                       </View>
                     )}
                   </View>
@@ -420,7 +420,7 @@ const SendOthers = ({ navigation }) => {
                       }}
                       value={description}
                       maxLength={40}
-                      placeholder="optional"
+                      placeholder="Sent from Loopay"
                     />
                   </View>
                 </View>

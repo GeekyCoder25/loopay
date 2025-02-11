@@ -8,6 +8,7 @@ import {
   Image,
   ScrollView,
   Dimensions,
+  SafeAreaView,
 } from 'react-native';
 import User from '../../../assets/images/user.svg';
 import Email from '../../../assets/images/mail.svg';
@@ -16,7 +17,7 @@ import Lock from '../../../assets/images/lock.svg';
 import Eye from '../../../assets/images/eye.svg';
 import EyeClosed from '../../../assets/images/eye-slash.svg';
 import Refer from '../../../assets/images/referral.svg';
-import { signUpData } from '../../database/data.js';
+import { SignUpData } from '../../database/data.js';
 import Logo from '../../components/Logo.jsx';
 import Button from '../../components/Button.jsx';
 import Header from '../../components/Header.jsx';
@@ -34,6 +35,7 @@ import { CountryPicker } from 'react-native-country-codes-picker';
 import * as Haptics from 'expo-haptics';
 import ToastMessage from '../../components/ToastMessage.jsx';
 import { CurrencyFullDetails } from '../../../utils/allCountries.js';
+import Toast from 'react-native-toast-message';
 
 const SignUp = ({ navigation }) => {
   const { postFetchData } = useFetchData();
@@ -80,20 +82,21 @@ const SignUp = ({ navigation }) => {
       editInput();
       const localCurrencyCode = Object.values(CurrencyFullDetails).find(
         currency =>
-          currency.name
-            .split(' ')[0]
-            ?.slice(0, 4)
-            ?.startsWith(countryCodeData.name.en?.slice(0, 4)) ||
-          currency.name
-            .split(' ')[1]
-            ?.slice(0, 4)
-            ?.startsWith(countryCodeData.name.en?.slice(0, 4)) ||
-          countryCodeData.name.en
-            ?.slice(0, 4)
-            .startsWith(currency.name.split(' ')[1]?.slice(0, 4)) ||
-          countryCodeData.name.en
-            ?.slice(0, 4)
-            .startsWith(currency.name.split(' ')[2]?.slice(0, 4)),
+          // (currency.name
+          //   .split(' ')[0]
+          //   ?.slice(0, 4)
+          //   ?.startsWith(countryCodeData.name.en?.slice(0, 4)) ||
+          //   currency.name
+          //     .split(' ')[1]
+          //     ?.slice(0, 4)
+          //     ?.startsWith(countryCodeData.name.en?.slice(0, 4)) ||
+          //   countryCodeData.name.en
+          //     ?.slice(0, 4)
+          //     .startsWith(currency.name.split(' ')[1]?.slice(0, 4)) ||
+          //   countryCodeData.name.en
+          //     ?.slice(0, 4)
+          //     .startsWith(currency.name.split(' ')[2]?.slice(0, 4))) &&
+          currency.code.slice(0, 2) === countryCodeData.code,
       )?.code;
 
       if (!localCurrencyCode) {
@@ -147,6 +150,37 @@ const SignUp = ({ navigation }) => {
     setSuccessMessage('');
   };
 
+  const handleCountrySelect = item => {
+    const localCurrencyCode = Object.values(CurrencyFullDetails).find(
+      currency => currency.code.slice(0, 2) === item.code,
+    );
+    if (!localCurrencyCode) {
+      setErrorKey('phoneNumber');
+      Toast.show({
+        type: 'error',
+        text1: 'Currency currently not supported',
+        text2: "Our service doesn't cover for this region yet",
+      });
+    } else {
+      setErrorKey('');
+      Toast.show({
+        type: 'success',
+        text1: localCurrencyCode?.code,
+        text2: localCurrencyCode?.name,
+      });
+    }
+    setCountryCode(item.dial_code);
+    setShowPicker(false);
+    setCountryCodeData(item);
+    setFormData(prev => {
+      return {
+        ...prev,
+        phoneNumber: '',
+        country: { code: item.code, name: item.name.en },
+      };
+    });
+  };
+
   if (verifyEmail) {
     return (
       <EmailVerify
@@ -174,7 +208,7 @@ const SignUp = ({ navigation }) => {
             title={'Personal Info'}
             text={'To continue, kindly complete the following fields.'}
           />
-          {signUpData.map(inputForm => (
+          {SignUpData.map(inputForm => (
             <FormField
               key={inputForm.name}
               inputForm={inputForm}
@@ -197,8 +231,8 @@ const SignUp = ({ navigation }) => {
             <RegularText style={styles.alreadyText}>
               Already have an account?
             </RegularText>
-            <Pressable onPress={() => navigation.replace('Signin')}>
-              <BoldText style={styles.signIn}>Sign in</BoldText>
+            <Pressable onPress={() => navigation.replace('SignIn')}>
+              <BoldText style={styles.SignIn}>Sign in</BoldText>
             </Pressable>
           </View>
           <Button text={'Register'} onPress={handleSignUp} />
@@ -206,23 +240,14 @@ const SignUp = ({ navigation }) => {
       </View>
       <CountryPicker
         show={showPicker}
-        pickerButtonOnPress={item => {
-          setCountryCode(item.dial_code);
-          setShowPicker(false);
-          setCountryCodeData(item);
-          setFormData(prev => {
-            return {
-              ...prev,
-              phoneNumber: '',
-              country: { code: item.code, name: item.name.en },
-            };
-          });
-        }}
+        pickerButtonOnPress={handleCountrySelect}
         searchMessage={'Search here'}
         onRequestClose={() => setShowPicker(false)}
+        onBackdropPress={() => setShowPicker(false)}
         style={{
           modal: {
-            height: vh * 0.975,
+            marginTop: SafeAreaView.length ? SafeAreaView.length * 8 : 100,
+            flex: 1,
           },
         }}
       />
@@ -318,10 +343,10 @@ const styles = StyleSheet.create({
   alreadyText: {
     color: '#868585',
   },
-  signIn: {
+  SignIn: {
     fontWeight: '600',
   },
-  signInIcons: {
+  SignInIcons: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
@@ -331,7 +356,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 50,
-    minHeight: Dimensions.get('screen').height * 0.9,
+    minHeight: Dimensions.get('screen').height * 0.98,
   },
   logo: {
     width: 100,
@@ -624,7 +649,7 @@ export const EmailVerify = ({
         setCodeSent(true);
       } else {
         if (typeof response === 'string') {
-          setErrorMessage(response);
+          setErrorMessage(response || 'An unexpected error occurred');
         } else {
           setErrorMessage(Object.values(result)[0]);
         }

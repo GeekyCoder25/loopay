@@ -1,0 +1,96 @@
+{
+  "expo": {
+    "name": "LoopayDev",
+    "slug": "LoopayDev",
+    "version": "1.0.8",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#cccccc"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "LoopayDev uses Face ID to validate your identity",
+        "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your camera to complete your facial verification"
+      },
+      "bundleIdentifier": "com.loopaydev",
+      "buildNumber": "11",
+      "icon": "./assets/ios-icon.png"
+    },
+    "android": {
+      "package": "com.loopaydev",
+      "versionCode": 11,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "permissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID to validate your identity"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Loopay access your photos to set your profile picture",
+          "cameraPermission": "Loopay will use your camera to set your profile picture"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "newArchEnabled": true
+          },
+          "android": {
+            "newArchEnabled": true
+          }
+        }
+      ],
+      "expo-font",
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your camera to complete your facial verification",
+          "enableMicrophonePermission": true,
+          "microphonePermissionText": "$(PRODUCT_NAME) needs access to your Microphone."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "055518e9-09c1-4eb9-99b2-42d79d874996"
+      }
+    },
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/055518e9-09c1-4eb9-99b2-42d79d874996"
+    },
+    "owner": "jraph_14"
+  }
+}

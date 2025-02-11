@@ -196,7 +196,7 @@ const Verification = ({ route, setModalOpen }) => {
           </View>
         </View>
         <View style={styles.gap} />
-        <View>
+        <View style={styles.buttons}>
           <Button text={'Approve'} onPress={() => handleVerify('approve')} />
           <Button
             text={'Decline with email'}
@@ -207,7 +207,6 @@ const Verification = ({ route, setModalOpen }) => {
             text={'Decline and Delete'}
             onPress={() => handleVerify('delete')}
           />
-          <View style={styles.gap} />
         </View>
       </PageContainer>
       {openMessageModal && (
@@ -218,7 +217,6 @@ const Verification = ({ route, setModalOpen }) => {
           setModalOpen={setModalOpen}
         />
       )}
-      <LoadingModal isLoading={isLoading} />
     </>
   );
 };
@@ -284,6 +282,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: Dimensions.get('screen').height,
     width: Dimensions.get('screen').width,
+  },
+  buttons: {
+    marginBottom: 150,
   },
 });
 

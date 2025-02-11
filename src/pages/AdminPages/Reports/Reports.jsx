@@ -4,9 +4,11 @@ import PageContainer from '../../../components/PageContainer';
 import useFetchData from '../../../../utils/fetchAPI';
 import BoldText from '../../../components/fonts/BoldText';
 import RegularText from '../../../components/fonts/RegularText';
+import { Ionicons } from '@expo/vector-icons';
+import ToastMessage from '../../../components/ToastMessage';
 
 const Reports = ({ navigation }) => {
-  const { getFetchData } = useFetchData();
+  const { getFetchData, deleteFetchData } = useFetchData();
   const [reports, setReports] = useState([]);
 
   useEffect(() => {
@@ -19,6 +21,15 @@ const Reports = ({ navigation }) => {
     getAnnouncements();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleDelete = async id => {
+    const response = await deleteFetchData(`admin/report/${id}`);
+    if (response.status === 200) {
+      return setReports(prev => prev.filter(index => index._id !== id));
+    }
+
+    ToastMessage(response.data);
+  };
 
   return (
     <PageContainer paddingTop={30} padding scroll>
@@ -40,25 +51,32 @@ const Reports = ({ navigation }) => {
               onPress={() =>
                 navigation.navigate('ReportIndex', report.metadata)
               }>
-              <View style={styles.row}>
-                <BoldText>Title: </BoldText>
-                <BoldText>{report.title}</BoldText>
+              <View style={styles.card}>
+                <View style={styles.row}>
+                  <BoldText>Title: </BoldText>
+                  <BoldText>{report.title}</BoldText>
+                </View>
+                <View style={styles.row}>
+                  <BoldText>Message: </BoldText>
+                  <BoldText>{report.message}</BoldText>
+                </View>
+                <View style={styles.row}>
+                  <BoldText>Transaction ID: </BoldText>
+                  <BoldText>{report.id}</BoldText>
+                </View>
+                <View style={styles.row}>
+                  <BoldText>Date: </BoldText>
+                  <BoldText>
+                    {new Date(report.createdAt).toLocaleDateString() + ' '}
+                    {new Date(report.createdAt).toLocaleTimeString()}
+                  </BoldText>
+                </View>
               </View>
-              <View style={styles.row}>
-                <BoldText>Message: </BoldText>
-                <BoldText>{report.message}</BoldText>
-              </View>
-              <View style={styles.row}>
-                <BoldText>Transaction ID: </BoldText>
-                <BoldText>{report.id}</BoldText>
-              </View>
-              <View style={styles.row}>
-                <BoldText>Date: </BoldText>
-                <BoldText>
-                  {new Date(report.createdAt).toLocaleDateString() + ' '}
-                  {new Date(report.createdAt).toLocaleTimeString()}
-                </BoldText>
-              </View>
+              <Pressable
+                onPress={() => handleDelete(report._id)}
+                style={styles.bin}>
+                <Ionicons name="trash" size={20} />
+              </Pressable>
             </Pressable>
           ))}
         </View>
@@ -102,12 +120,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
     padding: 10,
     borderRadius: 5,
+  },
+  card: {
     paddingRight: 50,
   },
   row: {
     flexDirection: 'row',
     marginBottom: 10,
     width: 100 + '%',
+  },
+  bin: {
+    padding: 5,
+    alignItems: 'flex-end',
   },
   empty: {
     alignItems: 'center',

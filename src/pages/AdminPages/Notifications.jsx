@@ -19,6 +19,7 @@ import { networkProvidersIcon } from '../SendMenuPages/AirtimeTopUp/BuyAirtime';
 import Back from '../../components/Back';
 import TransactionHistoryParams from '../MenuPages/TransactionHistoryParams';
 import useFetchData from '../../../utils/fetchAPI';
+import ToastMessage from '../../components/ToastMessage';
 
 const Notifications = () => {
   const { getFetchData } = useFetchData();
@@ -33,6 +34,7 @@ const Notifications = () => {
   const [totalPages, setTotalPages] = useState(null);
   const limit = Math.round(vh / 50);
   const [isLoading, setIsLoading] = useState(false);
+  const [reload, setReload] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -53,7 +55,7 @@ const Notifications = () => {
       getNotifications();
       return () => setPage(1);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [limit]),
+    }, [limit, reload]),
   );
 
   const groupNotificationsByDate = inputArray => {
@@ -134,26 +136,33 @@ const Notifications = () => {
           <FlatList
             data={groupNotificationsByDate(notifications)}
             keyExtractor={({ date }) => date}
-            renderItem={({ item: dayNotifications }) => (
-              <View key={dayNotifications.date} style={styles.dateNotification}>
-                <RegularText style={styles.date}>
-                  {dayNotifications.date}
-                </RegularText>
-                <FlatList
-                  data={
-                    isSearching ? searchHistory : dayNotifications.notifications
-                  }
-                  keyExtractor={({ _id }) => _id}
-                  renderItem={({ item }) => (
-                    <Message
-                      notification={item}
-                      setShowModal={setShowModal}
-                      setModalData={setModalData}
-                    />
-                  )}
-                />
-              </View>
-            )}
+            renderItem={({ item: dayNotifications }) =>
+              ((isSearching && searchHistory.length) || !isSearching) && (
+                <View
+                  key={dayNotifications.date}
+                  style={styles.dateNotification}>
+                  <RegularText style={styles.date}>
+                    {dayNotifications.date}
+                  </RegularText>
+                  <FlatList
+                    data={
+                      isSearching
+                        ? searchHistory
+                        : dayNotifications.notifications
+                    }
+                    keyExtractor={({ _id }) => _id}
+                    renderItem={({ item }) => (
+                      <Message
+                        notification={item}
+                        setShowModal={setShowModal}
+                        setModalData={setModalData}
+                        setReload={setReload}
+                      />
+                    )}
+                  />
+                </View>
+              )
+            }
             ListHeaderComponent={
               <Header
                 notifications={notifications}
@@ -171,11 +180,19 @@ const Notifications = () => {
               )
             }
             ListEmptyComponent={
-              <View style={{ ...styles.empty, minHeight: vh * 0.9 }}>
-                <BoldText style={styles.emptyText}>
-                  Your notifications will appear here
-                </BoldText>
-              </View>
+              isSearching ? (
+                <View style={{ ...styles.empty, minHeight: vh * 0.8 }}>
+                  <BoldText style={styles.emptyText}>
+                    No notification found
+                  </BoldText>
+                </View>
+              ) : (
+                <View style={{ ...styles.empty, minHeight: vh * 0.9 }}>
+                  <BoldText style={styles.emptyText}>
+                    Your notifications will appear here
+                  </BoldText>
+                </View>
+              )
             }
             onEndReachedThreshold={0.5}
             onEndReached={
@@ -194,21 +211,23 @@ const Notifications = () => {
           </BoldText>
         </View>
       )}
-      <Modal
-        visible={showModal}
-        animationType="slide"
-        onRequestClose={() => {
-          setShowModal(false);
-          setModalData(null);
-        }}>
-        <Back
-          onPress={() => {
+      {showModal && (
+        <Modal
+          visible={showModal}
+          animationType="slide"
+          onRequestClose={() => {
             setShowModal(false);
             setModalData(null);
-          }}
-        />
-        <TransactionHistoryParams route={{ params: modalData }} />
-      </Modal>
+          }}>
+          <Back
+            onPress={() => {
+              setShowModal(false);
+              setModalData(null);
+            }}
+          />
+          <TransactionHistoryParams route={{ params: modalData }} />
+        </Modal>
+      )}
     </>
   );
 };
@@ -306,14 +325,16 @@ const styles = StyleSheet.create({
 
 export default Notifications;
 
-const Message = ({ notification, setModalData, setShowModal }) => {
+const Message = ({ notification, setModalData, setShowModal, setReload }) => {
+  const { putFetchData } = useFetchData();
+  const { showAmount } = useContext(AppContext);
   const [transactionTypeIcon, setTransactionTypeIcon] = useState(
     <Image
       source={require('../../../assets/images/icon.png')}
       style={styles.image}
     />,
   );
-  const { header, adminMessage, photo, createdAt, adminStatus, type } =
+  const { _id, header, adminMessage, photo, createdAt, adminStatus, type } =
     notification;
   const { navigate } = useNavigation();
   const date = new Date(createdAt);
@@ -345,9 +366,20 @@ const Message = ({ notification, setModalData, setShowModal }) => {
       navigate('PendingRequest');
     } else if (type === 'request_confirm') {
       navigate('Home');
-    } else if (type === 'transfer' || type === 'airtime' || type === 'data') {
+    } else if (
+      type === 'transfer' ||
+      type === 'airtime' ||
+      type === 'data' ||
+      type === 'bill'
+    ) {
       setModalData(notification.metadata);
       setShowModal(true);
+    } else {
+      ToastMessage('Read');
+    }
+    if (adminStatus === 'unread') {
+      const response = await putFetchData(`admin/notification/${_id}`);
+      response.status === 200 && setReload(prev => !prev);
     }
   };
 
@@ -386,12 +418,28 @@ const Message = ({ notification, setModalData, setShowModal }) => {
     }
   }, [photo, type]);
 
+  const hideAmountInMessage = () => {
+    if (!showAmount) {
+      const amountPattern = /[₦$€£]\d{1,3}(?:,\d{3})*(?:\.\d+)?/g;
+      const amountMatch = adminMessage.match(amountPattern);
+
+      if (amountMatch) {
+        const hiddenAmount = `${amountMatch[0][0]}***`;
+        const hiddenMessage = adminMessage.replace(amountPattern, hiddenAmount);
+        return hiddenMessage;
+      }
+    }
+    return adminMessage;
+  };
+
+  const finalMessage = hideAmountInMessage();
+
   return (
     <Pressable style={styles.notification} onPress={handleNavigate}>
       {transactionTypeIcon}
       <View style={styles.content}>
         <BoldText style={styles.title}>{header}</BoldText>
-        <RegularText>{adminMessage}</RegularText>
+        <RegularText>{finalMessage}</RegularText>
         <RegularText>{historyTime}</RegularText>
       </View>
       {adminStatus === 'unread' && <View style={styles.unread} />}
@@ -412,10 +460,8 @@ const Header = memo(({ notifications, setIsSearching, setSearchHistory }) => {
         .includes(text.toLowerCase()),
     );
 
-    foundHistories.length && setSearchHistory(foundHistories);
-    text && foundHistories.length
-      ? setIsSearching(true)
-      : setIsSearching(false);
+    setSearchHistory(foundHistories);
+    text ? setIsSearching(true) : setIsSearching(false);
   };
 
   return (

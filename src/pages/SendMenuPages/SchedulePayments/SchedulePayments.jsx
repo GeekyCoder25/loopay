@@ -191,7 +191,9 @@ const SchedulePayments = ({ navigation }) => {
                   {schedule.description && (
                     <View style={styles.scheduleRow}>
                       <RegularText>Description: </RegularText>
-                      <RegularText>{schedule.description}</RegularText>
+                      <RegularText style={{ flex: 1 }}>
+                        {schedule.description}
+                      </RegularText>
                     </View>
                   )}
                 </View>
@@ -407,6 +409,7 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     gap: 10,
+    flex: 1,
   },
   scheduleRow: {
     flexDirection: 'row',

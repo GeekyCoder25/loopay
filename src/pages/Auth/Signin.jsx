@@ -5,7 +5,7 @@ import Email from '../../../assets/images/mail.svg';
 import Lock from '../../../assets/images/lock.svg';
 import Eye from '../../../assets/images/eye.svg';
 import EyeClosed from '../../../assets/images/eye-slash.svg';
-import { signInData } from '../../database/data.js';
+import { SignInData } from '../../database/data.js';
 import Logo from '../../components/Logo';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
@@ -17,7 +17,7 @@ import { getEmail, loginUser } from '../../../utils/storage';
 import ErrorMessage from '../../components/ErrorMessage';
 import SuccessMessage from '../../components/SuccessMessage';
 import saveSessionOptions from '../../services/saveSession.js';
-import { EmailVerify } from './Signup.jsx';
+import { EmailVerify } from './SignUp.jsx';
 import { timeForInactivityInSecond } from '../../config/config.js';
 import useFetchData from '../../../utils/fetchAPI.js';
 
@@ -80,6 +80,9 @@ const SignIn = ({ navigation }) => {
           setErrorMessage('');
           setSuccessMessage('Login Successful');
           const response2 = await getFetchData('user?popup=true');
+          if (response2.status === 401) {
+            return setErrorMessage('Unexpected error occurred');
+          }
           if (data.role === 'admin') {
             setIsAdmin(true);
             setCanChangeRole(true);
@@ -142,7 +145,7 @@ const SignIn = ({ navigation }) => {
               title={'Login Information'}
               text={'To continue, kindly complete the following details'}
             />
-            {signInData.map(inputForm => (
+            {SignInData.map(inputForm => (
               <FormField
                 key={inputForm.name}
                 inputForm={inputForm}
@@ -167,8 +170,8 @@ const SignIn = ({ navigation }) => {
               <RegularText style={styles.alreadyText}>
                 Don&apos;t have an account?
               </RegularText>
-              <Pressable onPress={() => navigation.replace('Signup')}>
-                <BoldText style={styles.signIn}>Sign up</BoldText>
+              <Pressable onPress={() => navigation.replace('SignUp')}>
+                <BoldText style={styles.SignIn}>Sign up</BoldText>
               </Pressable>
             </View>
             <Button text={'Log in'} onPress={handleLogin} />
@@ -270,10 +273,10 @@ const styles = StyleSheet.create({
   alreadyText: {
     color: '#868585',
   },
-  signIn: {
+  SignIn: {
     fontWeight: '600',
   },
-  signInIcons: {
+  SignInIcons: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginVertical: 20,
@@ -336,8 +339,6 @@ const FormField = ({
             return { ...prev, [inputForm.name]: text };
           });
           inputForm.eye && text.length === 6 && Keyboard.dismiss();
-          // setRedBorder(formData[inputForm.name] === '');
-          // setTempRedBorder(false);
         }}
         name={inputForm.name}
         autoComplete={inputForm.eye ? 'off' : inputForm.type}

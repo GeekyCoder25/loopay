@@ -581,7 +581,7 @@ export default Transactions;
 
 const Transaction = memo(({ transaction, setTransactions }) => {
   const navigation = useNavigation();
-  const { isAdmin } = useContext(AppContext);
+  const { isAdmin, showAmount, setShowAmount } = useContext(AppContext);
   const [isExpanded, setIsExpanded] = useState(false);
   const {
     amount,
@@ -637,21 +637,39 @@ const Transaction = memo(({ transaction, setTransactions }) => {
             <Pressable
               onPress={() => setIsExpanded(prev => !prev)}
               style={styles.pendingContainer}>
-              <View style={styles.amount}>
-                <BoldText style={styles.creditAmount}>
-                  +
-                  {currencySymbol +
-                    addingDecimal(Number(amount).toLocaleString())}
-                </BoldText>
-                <RegularText>{accountDebited}</RegularText>
-              </View>
-              {status === 'pending' && (
+              {showAmount ? (
+                <>
+                  <Pressable
+                    style={styles.amount}
+                    onPress={() => {
+                      setShowAmount(prev => !prev);
+                    }}>
+                    <BoldText style={styles.creditAmount}>
+                      +
+                      {currencySymbol +
+                        addingDecimal(Number(amount).toLocaleString())}
+                    </BoldText>
+                    <RegularText>{accountDebited}</RegularText>
+                  </Pressable>
+                  {status === 'pending' && (
+                    <Pressable
+                      onPress={() => setIsExpanded(prev => !prev)}
+                      style={{
+                        transform: [
+                          { rotateZ: isExpanded ? '180deg' : '0deg' },
+                        ],
+                      }}>
+                      <ChevronDown />
+                    </Pressable>
+                  )}
+                </>
+              ) : (
                 <Pressable
-                  onPress={() => setIsExpanded(prev => !prev)}
-                  style={{
-                    transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
+                  style={styles.amount}
+                  onPress={() => {
+                    setShowAmount(prev => !prev);
                   }}>
-                  <ChevronDown />
+                  <BoldText style={styles.creditAmount}>***</BoldText>
                 </Pressable>
               )}
             </Pressable>
@@ -672,21 +690,39 @@ const Transaction = memo(({ transaction, setTransactions }) => {
             <Pressable
               onPress={() => setIsExpanded(prev => !prev)}
               style={styles.pendingContainer}>
-              <View style={styles.amount}>
-                <BoldText style={styles.debitAmount}>
-                  -
-                  {currencySymbol +
-                    addingDecimal(Number(amount).toLocaleString())}
-                </BoldText>
-                <RegularText>{accountDebited}</RegularText>
-              </View>
-              {status === 'pending' && (
+              {showAmount ? (
+                <>
+                  <Pressable
+                    style={styles.amount}
+                    onPress={() => {
+                      setShowAmount(prev => !prev);
+                    }}>
+                    <BoldText style={styles.debitAmount}>
+                      -
+                      {currencySymbol +
+                        addingDecimal(Number(amount).toLocaleString())}
+                    </BoldText>
+                    <RegularText>{accountDebited}</RegularText>
+                  </Pressable>
+                  {status === 'pending' && (
+                    <Pressable
+                      onPress={() => setIsExpanded(prev => !prev)}
+                      style={{
+                        transform: [
+                          { rotateZ: isExpanded ? '180deg' : '0deg' },
+                        ],
+                      }}>
+                      <ChevronDown />
+                    </Pressable>
+                  )}
+                </>
+              ) : (
                 <Pressable
-                  onPress={() => setIsExpanded(prev => !prev)}
-                  style={{
-                    transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
+                  style={styles.amount}
+                  onPress={() => {
+                    setShowAmount(prev => !prev);
                   }}>
-                  <ChevronDown />
+                  <BoldText style={styles.debitAmount}>***</BoldText>
                 </Pressable>
               )}
             </Pressable>
@@ -701,23 +737,37 @@ const Transaction = memo(({ transaction, setTransactions }) => {
               </BoldText>
               <RegularText>Airtime Recharge</RegularText>
             </View>
-            <View style={styles.amount}>
-              <BoldText style={styles.debitAmount}>
-                -
-                {currencySymbol +
-                  addingDecimal(Number(amount).toLocaleString())}
-              </BoldText>
-              <RegularText> {accountDebited}</RegularText>
-              {status === 'pending' && (
-                <Pressable
-                  onPress={() => setIsExpanded(prev => !prev)}
-                  style={{
-                    transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
-                  }}>
-                  <ChevronDown />
-                </Pressable>
-              )}
-            </View>
+            {showAmount ? (
+              <Pressable
+                style={styles.amount}
+                onPress={() => {
+                  setShowAmount(prev => !prev);
+                }}>
+                <BoldText style={styles.debitAmount}>
+                  -
+                  {currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())}
+                </BoldText>
+                <RegularText> {accountDebited}</RegularText>
+                {status === 'pending' && (
+                  <Pressable
+                    onPress={() => setIsExpanded(prev => !prev)}
+                    style={{
+                      transform: [{ rotateZ: isExpanded ? '180deg' : '0deg' }],
+                    }}>
+                    <ChevronDown />
+                  </Pressable>
+                )}
+              </Pressable>
+            ) : (
+              <Pressable
+                style={styles.amount}
+                onPress={() => {
+                  setShowAmount(prev => !prev);
+                }}>
+                <BoldText style={styles.debitAmount}>***</BoldText>
+              </Pressable>
+            )}
           </>
         )}
         {transactionType?.toLowerCase() === 'data' && (
@@ -729,14 +779,28 @@ const Transaction = memo(({ transaction, setTransactions }) => {
               </BoldText>
               <RegularText>Data Recharge - {dataPlan.value}</RegularText>
             </View>
-            <View style={styles.amount}>
-              <BoldText style={styles.debitAmount}>
-                -
-                {currencySymbol +
-                  addingDecimal(Number(amount).toLocaleString())}
-              </BoldText>
-              <RegularText> {accountDebited}</RegularText>
-            </View>
+            {showAmount ? (
+              <Pressable
+                style={styles.amount}
+                onPress={() => {
+                  setShowAmount(prev => !prev);
+                }}>
+                <BoldText style={styles.debitAmount}>
+                  -
+                  {currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())}
+                </BoldText>
+                <RegularText> {accountDebited}</RegularText>
+              </Pressable>
+            ) : (
+              <Pressable
+                style={styles.amount}
+                onPress={() => {
+                  setShowAmount(prev => !prev);
+                }}>
+                <BoldText style={styles.debitAmount}>***</BoldText>
+              </Pressable>
+            )}
           </>
         )}
 
@@ -749,14 +813,28 @@ const Transaction = memo(({ transaction, setTransactions }) => {
                 {billType} bill
               </RegularText>
             </View>
-            <View style={styles.amount}>
-              <BoldText style={styles.debitAmount}>
-                -
-                {currencySymbol +
-                  addingDecimal(Number(amount).toLocaleString())}
-              </BoldText>
-              <RegularText> {accountDebited}</RegularText>
-            </View>
+            {showAmount ? (
+              <Pressable
+                style={styles.amount}
+                onPress={() => {
+                  setShowAmount(prev => !prev);
+                }}>
+                <BoldText style={styles.debitAmount}>
+                  -
+                  {currencySymbol +
+                    addingDecimal(Number(amount).toLocaleString())}
+                </BoldText>
+                <RegularText> {accountDebited}</RegularText>
+              </Pressable>
+            ) : (
+              <Pressable
+                style={styles.amount}
+                onPress={() => {
+                  setShowAmount(prev => !prev);
+                }}>
+                <BoldText style={styles.debitAmount}>***</BoldText>
+              </Pressable>
+            )}
           </>
         )}
       </Pressable>

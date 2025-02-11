@@ -219,7 +219,7 @@ const RequestStatus = ({ navigation, route }) => {
                     inputMode="text"
                     onChangeText={text => {}}
                     maxLength={40}
-                    placeholder="optional"
+                    placeholder="Sent from Loopay"
                   />
                 </View>
               </View>

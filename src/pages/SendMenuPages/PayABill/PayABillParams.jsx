@@ -93,7 +93,7 @@ const PayABillParams = ({ route, navigation }) => {
   const payElectricity = () => {
     if (Object.values(stateFields).includes('')) {
       return setErrorMessage('Please provide all required fields');
-    } else if (stateFields.amount > wallet.localBalance) {
+    } else if (stateFields.amount > wallet[`${selected.currency}Balance`]) {
       setErrorMessage('Insufficient balance');
       return setErrorKey('amount');
     } else if (
@@ -227,56 +227,52 @@ const PayABillParams = ({ route, navigation }) => {
   }
   return (
     <>
-      <PageContainer paddingTop={0} padding>
-        <ScrollView style={styles.body}>
-          <BoldText style={styles.headerText}>
-            {route.params.headerText}
-          </BoldText>
-          <View style={styles.labelContainer}>
-            <Text style={styles.label}>Pay With</Text>
-          </View>
-          <View style={styles.textInputContainer}>
-            <Pressable
-              onPress={() => setModalOpen(true)}
-              style={styles.textInputContainer}>
-              <View style={styles.textInput}>
-                <View style={styles.currencyIcon}>
-                  <FlagSelect country={selected.currency} />
-                  <View>
-                    <RegularText style={styles.currencyName}>
-                      {selected.currency} Balance
-                    </RegularText>
-                  </View>
+      <PageContainer paddingTop={0} padding scroll>
+        <BoldText style={styles.headerText}>{route.params.headerText}</BoldText>
+        <View style={styles.labelContainer}>
+          <Text style={styles.label}>Pay With</Text>
+        </View>
+        <View style={styles.textInputContainer}>
+          <Pressable
+            onPress={() => setModalOpen(true)}
+            style={styles.textInputContainer}>
+            <View style={styles.textInput}>
+              <View style={styles.currencyIcon}>
+                <FlagSelect country={selected.currency} />
+                <View>
+                  <RegularText style={styles.currencyName}>
+                    {selected.currency} Balance
+                  </RegularText>
                 </View>
-                <ChevronDown />
               </View>
-            </Pressable>
-          </View>
-          <View style={styles.textInputContainer} />
-          {childComponent}
-          <View style={styles.recurringContainer}>
-            <RecurringSwitch
-              isRecurring={isRecurring}
-              setIsRecurring={setIsRecurring}
-              scheduleData={scheduleData}
-              setScheduleData={setScheduleData}
-              setHasAskedPin={setHasAskedPin}
-            />
-            {errorMessage && (
-              <View>
-                <ErrorMessage errorMessage={errorMessage} />
-              </View>
-            )}
-          </View>
-          <View style={styles.button}>
-            <Button
-              text={buttonText}
-              onPress={buttonFunc}
-              disabled={isButtonDisabled}
-              style={isButtonDisabled && styles.disabledButton}
-            />
-          </View>
-        </ScrollView>
+              <ChevronDown />
+            </View>
+          </Pressable>
+        </View>
+        <View style={styles.textInputContainer} />
+        {childComponent}
+        <View style={styles.recurringContainer}>
+          <RecurringSwitch
+            isRecurring={isRecurring}
+            setIsRecurring={setIsRecurring}
+            scheduleData={scheduleData}
+            setScheduleData={setScheduleData}
+            setHasAskedPin={setHasAskedPin}
+          />
+          {errorMessage && (
+            <View>
+              <ErrorMessage errorMessage={errorMessage} />
+            </View>
+          )}
+        </View>
+        <View style={styles.button}>
+          <Button
+            text={buttonText}
+            onPress={buttonFunc}
+            disabled={isButtonDisabled}
+            style={isButtonDisabled && styles.disabledButton}
+          />
+        </View>
       </PageContainer>
       <Modal
         visible={modalOpen}

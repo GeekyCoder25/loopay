@@ -27,22 +27,27 @@ const VirtualCard = ({ navigation }) => {
   const [activeCards, setActiveCards] = useState([
     {
       id: 1,
-      fullName,
-      exp_month: '08',
-      exp_year: '2027',
-      cvc: (Math.random() * 1000).toFixed(0),
+      card_no: (Math.random() * 1000000000000000000).toFixed(0).slice(0, 16),
+      exp_month: 8,
+      exp_year: 2027,
+      cvc: (Math.random() * 10000).toFixed(0).slice(0, 3),
     },
   ]);
 
   useEffect(() => {
-    const getCards = async () => {
-      const response = await getFetchData('user/wallet');
+    const getCard = async () => {
+      const response = await getFetchData('user/card');
       if (response.status === 200) {
         setActiveCards(response.data);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleCreate = () => {
+    navigation.navigate('CreateCard');
+  };
+
   return (
     <PageContainer paddingTop={10} style={styles.body} scroll>
       <BoldText style={styles.headerText}>Cards</BoldText>
@@ -56,7 +61,7 @@ const VirtualCard = ({ navigation }) => {
               onPress={() => navigation.navigate('VirtualCardDetails', card)}>
               <View style={{ zIndex: 9 }}>
                 <BoldText style={styles.activeCardName}>
-                  {card.fullName}
+                  {card.card_no}
                 </BoldText>
                 <BoldText
                   style={
@@ -119,7 +124,7 @@ const VirtualCard = ({ navigation }) => {
         </View>
       </ImageBackground>
       <View style={styles.button}>
-        <Button text={'Create New Card'} />
+        <Button text={'Create New Card'} onPress={handleCreate} />
       </View>
     </PageContainer>
   );

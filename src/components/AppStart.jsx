@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import useFetchData, { apiUrl } from '../../utils/fetchAPI';
+import { apiUrl } from '../../utils/fetchAPI';
 import AppPagesNavigator from '../navigators/AppPagesNavigator';
 import NoInternet from './NoInternet';
 import { useFonts } from 'expo-font';
@@ -9,6 +9,9 @@ import { AppContext } from './AppContext';
 import { View } from 'react-native';
 import LockScreen from '../pages/GlobalPages/LockScreen';
 import AppUpdateModal from './AppUpdateModal';
+import Toast from 'react-native-toast-message';
+import PushNotificationNavigator from '../navigators/PushNotificationNavigator';
+import * as Notifications from 'expo-notifications';
 
 const AppStart = () => {
   const {
@@ -20,7 +23,7 @@ const AppStart = () => {
     setIsUpdateAvailable,
   } = useContext(AppContext);
   const [showLockScreen, setShowLockScreen] = useState(false);
-  const { postFetchData } = useFetchData();
+  const [isFromNotification, setIsFromNotification] = useState(false);
 
   useEffect(() => {
     const getFetchData = async () => {
@@ -48,7 +51,7 @@ const AppStart = () => {
     if (isSessionTimedOut && isLoggedIn) {
       setTimeout(() => {
         setShowLockScreen(true);
-      }, 2000);
+      }, 1500);
     } else {
       setShowLockScreen(false);
     }
@@ -59,17 +62,24 @@ const AppStart = () => {
       try {
         const update = await Updates.checkForUpdateAsync();
         if (update.isAvailable) {
-          await postFetchData('test-update', { message: update });
           await Updates.fetchUpdateAsync();
           setIsUpdateAvailable(true);
+          setTimeout(() => {
+            Updates.reloadAsync();
+            setIsUpdateAvailable(false);
+          }, 2000);
         }
-      } catch (e) {
-        await postFetchData('test-update', { message: e.message });
-      }
+      } catch (e) {}
     };
     checkUpdate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setIsUpdateAvailable]);
+
+  Notifications.addNotificationResponseReceivedListener(response => {
+    const notification = response.notification.request.content.data;
+    setIsFromNotification(notification);
+    if (notification) {
+    }
+  });
 
   const [fontsLoaded] = useFonts({
     'OpenSans-300': require('../../assets/fonts/OpenSans-Light.ttf'),
@@ -101,9 +111,19 @@ const AppStart = () => {
     <>
       <View onLayout={onLayoutRootView} />
       <AppPagesNavigator />
-      {showLockScreen && <LockScreen />}
-      {isUpdateAvailable && <AppUpdateModal visible={isUpdateAvailable} />}
-      <NoInternet modalOpen={!internetStatus} />
+      {isFromNotification ? (
+        <PushNotificationNavigator
+          notification={isFromNotification}
+          setIsFromNotification={setIsFromNotification}
+        />
+      ) : (
+        <>
+          {showLockScreen && <LockScreen />}
+          {isUpdateAvailable && <AppUpdateModal />}
+          <NoInternet modalOpen={!internetStatus} />
+        </>
+      )}
+      <Toast />
     </>
   );
 };

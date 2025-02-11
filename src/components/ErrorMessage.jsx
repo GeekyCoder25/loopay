@@ -1,10 +1,22 @@
 import { StyleSheet, View } from 'react-native';
 import RegularText from './fonts/RegularText';
 import { Ionicons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
+import { useEffect } from 'react';
 
-const ErrorMessage = ({ errorMessage, style }) => {
+const ErrorMessage = ({ errorMessage, style, isOnlyToast }) => {
+  useEffect(() => {
+    errorMessage &&
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: errorMessage,
+      });
+  }, [errorMessage]);
+
   return (
-    errorMessage && (
+    errorMessage &&
+    !isOnlyToast && (
       <View style={{ ...styles.errorMessage, ...style }}>
         <Ionicons name="warning-sharp" size={15} color={'red'} />
         <RegularText style={styles.errorMessageText}>

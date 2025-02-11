@@ -1,8 +1,8 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Splash from '../../src/components/Splash';
-import SignUp from '../pages/Auth/Signup';
-import SignIn from '../../src/pages/Auth/Signin';
+import SignUp from '../pages/Auth/SignUp';
+import SignIn from '../pages/Auth/SignIn';
 import AccountType from '../../src/pages/Auth/AccountType';
 import ForgotPassword from '../../src/pages/Auth/ForgotPassword';
 import { useContext, useState } from 'react';
@@ -14,6 +14,7 @@ import ChangePassword from '../pages/MenuPages/ChangePassword';
 import Onboarding from '../pages/Auth/Onboarding';
 import TabsNavigator from './TabsNavigator';
 import VerificationNavigator from './VerificationNavigator';
+import BusinessOnboarding from '../pages/Auth/BusinessOnboarding';
 
 const AppPagesNavigator = () => {
   const { isLoggedIn, isAdmin, appData, verified } = useContext(AppContext);
@@ -51,8 +52,8 @@ const AppPagesNavigator = () => {
                 <Stack.Screen name="FirstPage" component={Onboarding} />
               </>
             )}
-            <Stack.Screen name="Signup" component={SignUp} />
-            <Stack.Screen name="Signin" component={SignIn} />
+            <Stack.Screen name="SignUp" component={SignUp} />
+            <Stack.Screen name="SignIn" component={SignIn} />
             <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
             <Stack.Screen name="ChangePassword" component={ChangePassword} />
           </Stack.Group>
@@ -67,6 +68,10 @@ const AppPagesNavigator = () => {
             ) : (
               <Stack.Screen name="FirstPage" component={TabsNavigator} />
             )}
+            <Stack.Screen
+              name="BusinessOnboarding"
+              component={BusinessOnboarding}
+            />
           </Stack.Group>
         )}
       </Stack.Navigator>

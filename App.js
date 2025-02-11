@@ -1,14 +1,15 @@
 import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import {
+  Dimensions,
   Keyboard,
+  KeyboardAvoidingView,
   PanResponder,
   Platform,
   SafeAreaView,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
-  useWindowDimensions,
 } from 'react-native';
 
 import { AppContext } from './src/components/AppContext';
@@ -28,12 +29,13 @@ import FaIcon from '@expo/vector-icons/FontAwesome';
 import BoldText from './src/components/fonts/BoldText';
 import { timeForInactivityInSecond } from './src/config/config';
 import { CurrencyFullDetails } from './utils/allCountries';
+import * as LocalAuthentication from 'expo-local-authentication';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [selectedCurrency, setSelectedCurrency] = useState(
-    allCurrencies.find(currency => currency.currency === 'dollar'),
+    allCurrencies.find(currency => currency.currency === 'dollar') || {},
   );
   const [verified, setVerified] = useState(false);
   const [showTabBar, setShowTabBar] = useState(true);
@@ -65,8 +67,8 @@ export default function App() {
   const [refetchTransactions, setRefetchTransactions] = useState(false);
   const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
   const isAndroid = Platform.OS === 'android';
-  const vw = useWindowDimensions().width;
-  const vh = useWindowDimensions().height;
+  const vw = Dimensions.get('screen').width;
+  const vh = Dimensions.get('screen').height;
   const timerId = useRef(false);
   const timerIdTotal = useRef(false);
 
@@ -148,6 +150,13 @@ export default function App() {
             minimumAmountToAdd: 1,
             isLocal: true,
           });
+        } else if (checkCurrency.length) {
+          const arrIndex = allCurrencies.findIndex(
+            currency => currency.currency === checkCurrency[0].currency,
+          );
+          if (arrIndex !== -1) {
+            allCurrencies[arrIndex].isLocal = true;
+          }
         }
       }
     });
@@ -178,6 +187,12 @@ export default function App() {
       setShowPopUp(true);
   }, [appData.popUps?.length, isLoggedIn, popUpClosed]);
 
+  useEffect(() => {
+    LocalAuthentication.supportedAuthenticationTypesAsync().then(result =>
+      setHasFaceID(result[0] === 2),
+    );
+  }, []);
+
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponderCapture: () => {
@@ -202,6 +217,8 @@ export default function App() {
     }
   }, [isLoggedIn, isSessionTimedOut]);
 
+  // const Container = Platform.OS === 'ios' ? KeyboardAvoidingView : View;
+
   return (
     <AppContext.Provider value={contextValue}>
       <StatusBar style="auto" translucent={false} backgroundColor="#f5f5f5" />
@@ -216,6 +233,10 @@ export default function App() {
               Keyboard.dismiss();
             }}
             touchSoundDisabled={true}>
+            {/* <Container
+              style={styles.appContainer}
+              behavior={'padding'}
+              keyboardVerticalOffset={0}> */}
             <>
               {showConnected && (
                 <View style={styles.connected}>
@@ -225,6 +246,7 @@ export default function App() {
               )}
               <AppStart />
             </>
+            {/* </Container> */}
           </TouchableWithoutFeedback>
           <LoadingModal isLoading={isLoading} />
         </SafeAreaView>
@@ -249,8 +271,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     padding: 8,
-    position: Platform.OS === 'android' ? 'absolute' : 'relative',
+    position: Platform.OS === 'android' ? 'absolute' : 'absolute',
     zIndex: 1,
+    top: SafeAreaView.length ? SafeAreaView.length * 3 : 0,
     width: 100 + '%',
   },
   connectedText: { color: '#fff' },

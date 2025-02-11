@@ -151,6 +151,8 @@ export default Proofs;
 
 const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
   const { deleteFetchData, postFetchData } = useFetchData();
+  const { showAmount, setShowAmount } = useContext(AppContext);
+
   const {
     accNo,
     amount,
@@ -209,10 +211,19 @@ const Proof = ({ proof, setCustomFunc, setRequestPin, setProofs }) => {
 
   return (
     <Pressable style={styles.proof} onPress={handlePress}>
-      <BoldText style={styles.amount}>
-        {symbol}
-        {addingDecimal(Number(amount).toLocaleString())}
-      </BoldText>
+      {showAmount ? (
+        <Pressable onPress={() => setShowAmount(prev => !prev)}>
+          <BoldText style={styles.amount}>
+            {symbol}
+            {addingDecimal(Number(amount).toLocaleString())}
+          </BoldText>
+        </Pressable>
+      ) : (
+        <Pressable onPress={() => setShowAmount(prev => !prev)}>
+          <BoldText style={styles.amount}>***</BoldText>
+        </Pressable>
+      )}
+
       <BoldText>
         Email:{' '}
         <RegularText>

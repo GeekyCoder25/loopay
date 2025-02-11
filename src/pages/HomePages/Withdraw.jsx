@@ -53,7 +53,7 @@ const Withdraw = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       getFetchData(
-        `user/savedbanks?limit=${3}&currency=${selectedCurrency.currency},${selectedCurrency.acronym}`,
+        `user/saved/bank?limit=${3}&currency=${selectedCurrency.currency},${selectedCurrency.acronym}`,
       ).then(response => {
         if (response.status === 200) {
           return setAddedBanks(response.data);
@@ -192,7 +192,7 @@ const Withdraw = ({ navigation }) => {
       });
       if (response.status === 200) {
         const { transaction } = response.data;
-        await postFetchData('user/savedbanks', formData);
+        await postFetchData('user/saved/bank', formData);
         navigation.replace('Success', {
           userToSendTo: bankSelected,
           amountInput,
@@ -365,7 +365,7 @@ const Withdraw = ({ navigation }) => {
                     }}
                     value={description}
                     maxLength={40}
-                    placeholder="optional"
+                    placeholder="Sent from Loopay"
                   />
                 </View>
               </View>

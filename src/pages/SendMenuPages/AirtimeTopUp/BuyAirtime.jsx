@@ -33,8 +33,9 @@ import Back from '../../../components/Back';
 import RecurringSwitch from '../../../components/RecurringSwitch';
 import SchedulePayment from '../SchedulePayments/SchedulePayment';
 import useFetchData from '../../../../utils/fetchAPI';
+import { Ionicons } from '@expo/vector-icons';
 
-const BuyAirtime = ({ route, navigation }) => {
+const BuyAirtime = ({ navigation }) => {
   const { getFetchData } = useFetchData();
   const { appData, setIsLoading, showAmount, setShowAmount, selectedCurrency } =
     useContext(AppContext);
@@ -69,29 +70,22 @@ const BuyAirtime = ({ route, navigation }) => {
     phoneNo: '',
   });
   const balance = wallet[`${selected.currency}Balance`];
-  const airtimeBeneficiaries = [
-    // {
-    //   phoneNo: '09073002599',
-    //   network: 'airtel',
-    // },
-    // {
-    //   phoneNo: '+2349054343663',
-    //   network: '9mobile',
-    // },
-    // {
-    //   phoneNo: '09066487855',
-    //   network: 'mtn',
-    // },
-    // {
-    //   phoneNo: '09063555855',
-    //   network: 'glo',
-    // },
-  ];
+  const [beneficiaries, setBeneficiaries] = useState([]);
 
   useEffect(() => {
     setErrorMessage2('');
   }, [formData]);
 
+  useEffect(() => {
+    const getBeneficiaries = async () => {
+      const response = await getFetchData('user/beneficiary/airtime');
+      if (response.status === 200) {
+        setBeneficiaries(response.data);
+      }
+    };
+    getBeneficiaries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   useEffect(() => {
     const getOperators = async () => {
       const response = await getFetchData(
@@ -115,6 +109,27 @@ const BuyAirtime = ({ route, navigation }) => {
     setNetworkModal(prev => !prev);
   };
 
+  const handleAutoFill = async phoneNo => {
+    setFormData(prev => {
+      return { ...prev, phoneNo };
+    });
+    setErrorMessage('');
+    setErrorKey('');
+    if (isNigeria && phoneNo.length === 11) {
+      setIsLoading(true);
+      const response = await getFetchData(
+        `user/get-network?phone=${phoneNo}&country=${countryCode}`,
+      );
+      setIsLoading(false);
+      if (response.status === 200) {
+        const network = response.data.name.toLowerCase();
+        return handleNetworkSelect(
+          networkProviders.find(index => network.startsWith(index.network)),
+        );
+      }
+      ToastMessage(`${response.data || response}`);
+    }
+  };
   const handleCurrencyChange = newSelect => {
     setErrorKey('');
     setErrorMessage('');
@@ -230,194 +245,196 @@ const BuyAirtime = ({ route, navigation }) => {
   };
   return (
     <>
-      <PageContainer padding paddingTop={0}>
-        <ScrollView style={styles.body}>
-          <View style={styles.header}>
-            <RegularText>Beneficiaries</RegularText>
-            {airtimeBeneficiaries.length > 3 && (
-              <RegularText>View all</RegularText>
-            )}
-          </View>
-          <ScrollView
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            style={styles.beneficiaries}>
-            {airtimeBeneficiaries.map(beneficiary => (
-              <Beneficiary
-                beneficiary={beneficiary}
-                key={beneficiary.phoneNo}
-                networkProvidersIcon={networkProvidersIcon}
-              />
-            ))}
-          </ScrollView>
-          <BoldText style={styles.headerText}>Buy Airtime</BoldText>
-          <View style={styles.label}>
-            <Text style={styles.label}>Pay With</Text>
-          </View>
-          <Pressable
-            onPress={() => setPaymentModal(true)}
-            style={styles.textInputContainer}>
-            <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
-              <View style={styles.currencyIcon}>
-                <FlagSelect country={selected.currency} />
-                <View>
-                  <RegularText style={styles.currencyName}>
-                    {selected.currency} Balance
-                  </RegularText>
-                </View>
-              </View>
-              <ChevronDown />
+      <PageContainer scroll style={styles.body}>
+        {beneficiaries.length > 0 && (
+          <View style={styles.beneficiaryContainer}>
+            <View style={styles.header}>
+              <RegularText>Beneficiaries</RegularText>
+              {/* {beneficiaries.length > 3 && <RegularText>View all</RegularText>} */}
             </View>
-          </Pressable>
-          <RegularText style={styles.headerSubText}>Network</RegularText>
-          <Pressable
-            onPress={() => setNetworkModal(true)}
-            style={styles.textInputContainer}>
-            <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
-              {networkToBuy ? (
-                <View style={styles.networkToBuySelected}>
-                  {networkToBuy &&
-                    (isNigeria ? (
-                      networkProvidersIcon(networkToBuy.network)
-                    ) : (
-                      <Image
-                        source={{ uri: networkToBuy.icon }}
-                        style={styles.networkIcon}
-                      />
-                    ))}
-                  <BoldText style={styles.networkToBuySelected}>
-                    {networkToBuy.network}
-                    {isNigeria ? ` - ${networkToBuy.locale}` : ''}
-                  </BoldText>
-                </View>
-              ) : (
-                <RegularText style={styles.networkToBuy}>
-                  Choose Network
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              style={styles.beneficiaries}>
+              {beneficiaries.map(beneficiary => (
+                <Beneficiary
+                  key={beneficiary.phoneNo}
+                  beneficiary={beneficiary}
+                  networkProvidersIcon={networkProvidersIcon}
+                  onPress={() => handleAutoFill(beneficiary.phoneNo)}
+                  setBeneficiaries={setBeneficiaries}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        )}
+        <BoldText style={styles.headerText}>Buy Airtime</BoldText>
+        <View style={styles.label}>
+          <Text style={styles.label}>Pay With</Text>
+        </View>
+        <Pressable
+          onPress={() => setPaymentModal(true)}
+          style={styles.textInputContainer}>
+          <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
+            <View style={styles.currencyIcon}>
+              <FlagSelect country={selected.currency} />
+              <View>
+                <RegularText style={styles.currencyName}>
+                  {selected.currency} Balance
                 </RegularText>
-              )}
-              <ChevronDown />
-            </View>
-          </Pressable>
-          <Modal
-            visible={networkModal}
-            animationType="slide"
-            transparent
-            onRequestClose={handleModal}>
-            <Pressable style={styles.overlay} onPress={handleModal} />
-            <View style={styles.modalContainer}>
-              <View style={styles.networkModal}>
-                <View style={styles.modalBorder} />
-                <ScrollView style={{ width: 100 + '%' }}>
-                  <View style={styles.modalLists}>
-                    {networkProviders.length ? (
-                      networkProviders.map(provider => (
-                        <Pressable
-                          key={provider.network}
-                          style={{
-                            ...styles.modalList,
-                            backgroundColor:
-                              networkToBuy?.network === provider.network
-                                ? '#e4e2e2'
-                                : 'transparent',
-                          }}
-                          onPress={() => handleNetworkSelect(provider)}>
-                          <View>
-                            {isNigeria ? (
-                              networkProvidersIcon(provider.network)
-                            ) : (
-                              <Image
-                                source={{ uri: provider.icon }}
-                                style={styles.networkIcon}
-                              />
-                            )}
-                          </View>
-                          <BoldText style={styles.networkToBuySelected}>
-                            {`${provider.network}${
-                              isNigeria ? ` - ${provider.locale}` : ''
-                            }`}
-                          </BoldText>
-                        </Pressable>
-                      ))
-                    ) : (
-                      <ActivityIndicator
-                        color={'#1e1e1e'}
-                        style={styles.activity}
-                        size="large"
-                      />
-                    )}
-                  </View>
-                </ScrollView>
               </View>
             </View>
-          </Modal>
-          <Text style={styles.label}>Phone Number</Text>
+            <ChevronDown />
+          </View>
+        </Pressable>
+        <RegularText style={styles.headerSubText}>Network</RegularText>
+        <Pressable
+          onPress={() => setNetworkModal(true)}
+          style={styles.textInputContainer}>
+          <View style={{ ...styles.textInput, height: 60, paddingLeft: 5 }}>
+            {networkToBuy ? (
+              <View style={styles.networkToBuySelected}>
+                {networkToBuy &&
+                  (isNigeria ? (
+                    networkProvidersIcon(networkToBuy.network)
+                  ) : (
+                    <Image
+                      source={{ uri: networkToBuy.icon }}
+                      style={styles.networkIcon}
+                    />
+                  ))}
+                <BoldText style={styles.networkToBuySelected}>
+                  {networkToBuy.network}
+                  {isNigeria ? ` - ${networkToBuy.locale}` : ''}
+                </BoldText>
+              </View>
+            ) : (
+              <RegularText style={styles.networkToBuy}>
+                Choose Network
+              </RegularText>
+            )}
+            <ChevronDown />
+          </View>
+        </Pressable>
+        <Modal
+          visible={networkModal}
+          animationType="slide"
+          transparent
+          onRequestClose={handleModal}>
+          <Pressable style={styles.overlay} onPress={handleModal} />
+          <View style={styles.modalContainer}>
+            <View style={styles.networkModal}>
+              <View style={styles.modalBorder} />
+              <ScrollView style={{ width: 100 + '%' }}>
+                <View style={styles.modalLists}>
+                  {networkProviders.length ? (
+                    networkProviders.map(provider => (
+                      <Pressable
+                        key={provider.network}
+                        style={{
+                          ...styles.modalList,
+                          backgroundColor:
+                            networkToBuy?.network === provider.network
+                              ? '#e4e2e2'
+                              : 'transparent',
+                        }}
+                        onPress={() => handleNetworkSelect(provider)}>
+                        <View>
+                          {isNigeria ? (
+                            networkProvidersIcon(provider.network)
+                          ) : (
+                            <Image
+                              source={{ uri: provider.icon }}
+                              style={styles.networkIcon}
+                            />
+                          )}
+                        </View>
+                        <BoldText style={styles.networkToBuySelected}>
+                          {`${provider.network}${
+                            isNigeria ? ` - ${provider.locale}` : ''
+                          }`}
+                        </BoldText>
+                      </Pressable>
+                    ))
+                  ) : (
+                    <ActivityIndicator
+                      color={'#1e1e1e'}
+                      style={styles.activity}
+                      size="large"
+                    />
+                  )}
+                </View>
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
+        <Text style={styles.label}>Phone Number</Text>
+        <View style={styles.textInputContainer}>
+          <TextInput
+            style={{
+              ...styles.textInput,
+              ...styles.textInputStyles,
+              borderColor: errorKey === 'phoneInput' ? 'red' : '#ccc',
+            }}
+            inputMode="tel"
+            onChangeText={text => handlePhoneInput(text)}
+            onBlur={!isNigeria && formData.phoneNo ? checkOperator : undefined}
+            maxLength={isNigeria ? 11 : undefined}
+            value={formData.phoneNo}
+          />
+        </View>
+        <ErrorMessage errorMessage={errorMessage2} />
+        <View style={styles.topUpContainer}>
+          <Text style={styles.label}>Amount to be credited</Text>
+          <Pressable onPress={handleShow}>
+            <Text style={styles.label}>
+              Balance:{' '}
+              {showAmount
+                ? selected.symbol +
+                  addingDecimal(`${balance?.toLocaleString()}`)
+                : '***'}
+            </Text>
+          </Pressable>
+        </View>
+        <View style={styles.textInputContainer}>
           <View style={styles.textInputContainer}>
             <TextInput
               style={{
                 ...styles.textInput,
                 ...styles.textInputStyles,
-                borderColor: errorKey === 'phoneInput' ? 'red' : '#ccc',
+                borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
               }}
-              inputMode="tel"
-              onChangeText={text => handlePhoneInput(text)}
-              onBlur={
-                !isNigeria && formData.phoneNo ? checkOperator : undefined
-              }
-              maxLength={isNigeria ? 11 : undefined}
-              value={formData.phoneNo}
+              inputMode="decimal"
+              onChangeText={text => handleAmountInput(text)}
+              onBlur={handleBlur}
+              value={amountInput}
             />
           </View>
-          <ErrorMessage errorMessage={errorMessage2} />
-          <View style={styles.topUpContainer}>
-            <Text style={styles.label}>Amount to be credited</Text>
-            <Pressable onPress={handleShow}>
-              <Text style={styles.label}>
-                Balance:{' '}
-                {showAmount
-                  ? selected.symbol +
-                    addingDecimal(`${balance?.toLocaleString()}`)
-                  : '***'}
-              </Text>
-            </Pressable>
-          </View>
-          <View style={styles.textInputContainer}>
-            <View style={styles.textInputContainer}>
-              <TextInput
-                style={{
-                  ...styles.textInput,
-                  ...styles.textInputStyles,
-                  borderColor: errorKey === 'amountInput' ? 'red' : '#ccc',
-                }}
-                inputMode="decimal"
-                onChangeText={text => handleAmountInput(text)}
-                onBlur={handleBlur}
-                value={amountInput}
-              />
-            </View>
-            <RecurringSwitch
+          <RecurringSwitch
+            isRecurring={isRecurring}
+            setIsRecurring={setIsRecurring}
+            scheduleData={scheduleData}
+            setScheduleData={setScheduleData}
+            setHasAskedPin={setHasAskedPin}
+          />
+          {scheduleData && !hasAskedPin && (
+            <SchedulePayment
+              type="airtime"
               isRecurring={isRecurring}
               setIsRecurring={setIsRecurring}
               scheduleData={scheduleData}
               setScheduleData={setScheduleData}
-              setHasAskedPin={setHasAskedPin}
             />
-            {scheduleData && !hasAskedPin && (
-              <SchedulePayment
-                type="airtime"
-                isRecurring={isRecurring}
-                setIsRecurring={setIsRecurring}
-                scheduleData={scheduleData}
-                setScheduleData={setScheduleData}
-              />
-            )}
-            {errorMessage && (
-              <View style={{ marginTop: 15 }}>
-                <ErrorMessage errorMessage={errorMessage} />
-              </View>
-            )}
-          </View>
+          )}
+          {errorMessage && (
+            <View style={{ marginTop: 15 }}>
+              <ErrorMessage errorMessage={errorMessage} />
+            </View>
+          )}
+        </View>
+        <View style={styles.button}>
           <Button text={'Buy Airtime'} onPress={handleInputPin} />
-        </ScrollView>
+        </View>
       </PageContainer>
       <Modal
         visible={paymentModal}
@@ -468,9 +485,11 @@ const BuyAirtime = ({ route, navigation }) => {
 };
 const styles = StyleSheet.create({
   body: {
-    gap: 15,
-    flex: 1,
-    paddingHorizontal: 2 + '%',
+    paddingHorizontal: 5 + '%',
+    marginBottom: 30,
+  },
+  beneficiaryContainer: {
+    marginBottom: 30,
   },
   header: {
     flexDirection: 'row',
@@ -483,14 +502,15 @@ const styles = StyleSheet.create({
   },
   beneficiary: {
     alignItems: 'center',
-    gap: 15,
-    marginRight: 15,
+    gap: 10,
+    marginRight: 30,
+    position: 'relative',
   },
   phoneNo: {
     fontSize: 10,
   },
   headerText: {
-    marginVertical: 30,
+    marginBottom: 30,
     fontSize: 20,
   },
   headerSubText: { color: '#868585' },
@@ -630,14 +650,45 @@ const styles = StyleSheet.create({
     fontSize: 22,
     paddingRight: 10,
   },
+  button: {
+    paddingBottom: 50,
+  },
+  deleteButton: {
+    position: 'absolute',
+    left: '90%',
+    backgroundColor: '#ddd',
+    borderRadius: 30,
+    padding: 2,
+  },
 });
 export default BuyAirtime;
 
-const Beneficiary = ({ beneficiary, networkProvidersIcon }) => {
+const Beneficiary = ({
+  beneficiary,
+  networkProvidersIcon,
+  onPress,
+  setBeneficiaries,
+}) => {
+  const { deleteFetchData } = useFetchData();
+  const handleDelete = async () => {
+    setBeneficiaries(prev =>
+      prev.filter(index => index._id !== beneficiary._id),
+    );
+    await deleteFetchData('user/beneficiary/airtime', beneficiary);
+  };
+
   return (
-    <Pressable style={styles.beneficiary}>
+    <Pressable style={styles.beneficiary} onPress={onPress}>
       {networkProvidersIcon(beneficiary.network)}
       <RegularText style={styles.phoneNo}>{beneficiary.phoneNo}</RegularText>
+      <Pressable style={styles.deleteButton} onPress={handleDelete}>
+        <Ionicons
+          name="close"
+          onPress={handleDelete}
+          size={18}
+          color={'#fff'}
+        />
+      </Pressable>
     </Pressable>
   );
 };

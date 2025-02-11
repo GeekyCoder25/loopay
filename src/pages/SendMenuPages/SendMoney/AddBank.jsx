@@ -12,65 +12,6 @@ import BoldText from '../../../components/fonts/BoldText';
 import RegularText from '../../../components/fonts/RegularText';
 import Back from '../../../components/Back';
 
-const styles = StyleSheet.create({
-  header: {
-    textAlign: 'center',
-  },
-  password: {
-    flex: 1,
-  },
-  logo: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  form: {
-    paddingVertical: 30,
-    minHeight: 150,
-    paddingHorizontal: 2 + '%',
-  },
-  textInputContainer: {
-    marginTop: 5,
-    marginBottom: 30,
-  },
-  textInput: {
-    width: 100 + '%',
-    height: 55,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    justifyContent: 'center',
-    borderRadius: 8,
-    fontFamily: 'OpenSans-600',
-    color: '#000',
-  },
-
-  modalContainer: {
-    backgroundColor: '#fff',
-    width: 100 + '%',
-    height: 100 + '%',
-    paddingHorizontal: 5 + '%',
-    flex: 1,
-  },
-  modal: {
-    paddingBottom: 30,
-    gap: 30,
-  },
-  bankTitle: {
-    paddingBottom: 20,
-    textAlign: 'center',
-  },
-  searchInput: {
-    width: 100 + '%',
-    height: 35,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    alignItems: 'flex-start',
-    borderRadius: 4,
-    fontFamily: 'OpenSans-600',
-    marginBottom: 25,
-    borderColor: '#b1b1b1',
-  },
-});
-
 export const AddBankFields = ({
   field,
   errorKey,
@@ -196,3 +137,67 @@ export const BanksModal = ({
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  header: {
+    textAlign: 'center',
+  },
+  password: {
+    flex: 1,
+  },
+  logo: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  form: {
+    paddingVertical: 30,
+    minHeight: 150,
+    paddingHorizontal: 2 + '%',
+  },
+  textInputContainer: {
+    marginTop: 5,
+    marginBottom: 30,
+  },
+  textInput: {
+    width: 100 + '%',
+    height: 55,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    justifyContent: 'center',
+    borderRadius: 8,
+    fontFamily: 'OpenSans-600',
+    color: '#000',
+  },
+
+  modalContainer: {
+    backgroundColor: '#fff',
+    width: 100 + '%',
+    height: 100 + '%',
+    paddingHorizontal: 5 + '%',
+    flex: 1,
+  },
+  modal: {
+    paddingBottom: 30,
+    gap: 30,
+  },
+  bankTitle: {
+    paddingBottom: 20,
+    textAlign: 'center',
+  },
+  searchInput: {
+    width: 100 + '%',
+    height: 35,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    alignItems: 'flex-start',
+    borderRadius: 4,
+    fontFamily: 'OpenSans-600',
+    marginBottom: 25,
+    borderColor: '#b1b1b1',
+  },
+  bank: {
+    borderBottomWidth: 1,
+    borderColor: '#DCDCDC',
+    paddingBottom: 20,
+  },
+});

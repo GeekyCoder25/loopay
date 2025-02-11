@@ -11,7 +11,6 @@ import Button from '../../components/Button';
 import SuccessMessage from '../../components/SuccessMessage';
 import RegularText from '../../components/fonts/RegularText';
 import InputPinPage, { PINInputFields } from '../../components/InputPinPage';
-import { useWalletContext } from '../../context/WalletContext';
 import useFetchData from '../../../utils/fetchAPI';
 
 const TransactionPin = ({ navigation, route }) => {
@@ -21,8 +20,11 @@ const TransactionPin = ({ navigation, route }) => {
   const [canEditPin, setCanEditPin] = useState(false);
   const [remembersPassword, setRemembersPassword] = useState(true);
   const [inputOldPin, setInputOldPin] = useState(
-    JSON.parse(appData.pin) ?? !route.params?.forgotPin,
+    route.params?.forgotPin
+      ? !route.params?.forgotPin
+      : JSON.parse(appData.pin || false),
   );
+
   const [reload, setReload] = useState(false);
   const [hasSetPin] = useState(JSON.parse(appData.pin));
 
@@ -134,7 +136,6 @@ export default TransactionPin;
 const ChangePin = ({ navigation, setReload }) => {
   const { postFetchData } = useFetchData();
   const { appData, setAppData, setIsLoading } = useContext(AppContext);
-  const walletContext = useWalletContext();
   const [pinCode, setPinCode] = useState('');
   const [pinCode2, setPinCode2] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -199,7 +200,7 @@ const ChangePin = ({ navigation, setReload }) => {
           !isVerified
             ? navigation.replace('FirstTimeVerifications')
             : setTimeout(() => {
-                navigation.goBack();
+                navigation.canGoBack() && navigation.goBack();
               }, 1000);
         } else {
           setErrorMessage(result.data);

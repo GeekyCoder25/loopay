@@ -1,19 +1,20 @@
-import { Modal, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import React, { useContext } from 'react';
 import RegularText from './fonts/RegularText';
 import Button from './Button';
 import * as Updates from 'expo-updates';
 import { AppContext } from './AppContext';
 
-const AppUpdateModal = ({ visible }) => {
+const AppUpdateModal = () => {
   const { setIsUpdateAvailable } = useContext(AppContext);
 
   const handlePress = async () => {
     Updates.reloadAsync();
     setIsUpdateAvailable(false);
   };
+
   return (
-    <Modal visible={visible} transparent>
+    <View style={styles.modalBg}>
       <View style={styles.overlay} />
       <View style={styles.modalContainer}>
         <View style={styles.modal}>
@@ -22,15 +23,27 @@ const AppUpdateModal = ({ visible }) => {
             experience now
           </RegularText>
           <Button text={'Restart App'} onPress={handlePress} />
+          <Pressable onPress={() => setIsUpdateAvailable(false)}>
+            <RegularText style={styles.later}>Update Later</RegularText>
+          </Pressable>
         </View>
       </View>
-    </Modal>
+    </View>
   );
 };
 
 export default AppUpdateModal;
 
 const styles = StyleSheet.create({
+  modalBg: {
+    position: 'absolute',
+    flex: 1,
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 99,
+  },
   overlay: {
     backgroundColor: '#000',
     opacity: 0.7,
@@ -61,5 +74,9 @@ const styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
+  },
+  later: {
+    textDecorationLine: 'underline',
+    marginTop: 10,
   },
 });

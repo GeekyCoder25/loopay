@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useEffect, useState } from 'react';
 import PageContainer from '../../components/PageContainer';
-import { Dimensions, Pressable, StyleSheet, View } from 'react-native';
+import { Dimensions, Modal, Pressable, StyleSheet, View } from 'react-native';
 import BoldText from '../../components/fonts/BoldText';
 import RegularText from '../../components/fonts/RegularText';
 import FaIcon from '@expo/vector-icons/FontAwesome';
@@ -20,10 +20,12 @@ import ToastMessage from '../../components/ToastMessage';
 import useFetchData from '../../../utils/fetchAPI';
 import { printToFileAsync } from 'expo-print';
 import LoadingModal from '../../components/LoadingModal';
-import { useNavigation } from '@react-navigation/native';
 
-const TransactionHistoryParams = ({ route }) => {
-  const navigation = useNavigation();
+const TransactionHistoryParams = ({
+  route,
+  navigation,
+  isFromNotification,
+}) => {
   const { postFetchData } = useFetchData();
   const { vh, setRefetchTransactions, showAmount, setShowAmount, isAdmin } =
     useContext(AppContext);
@@ -275,20 +277,38 @@ const TransactionHistoryParams = ({ route }) => {
     );
 
   const emailFieldRow = isAdmin && (
-    <View style={styles.cardLine}>
-      <RegularText style={styles.cardKey}>Email</RegularText>
-      <Pressable
-        style={styles.cardValue}
-        onPress={() => navigation.navigate('UserDetails', { email })}>
-        <BoldText style={styles.cardValue}>{email}</BoldText>
-      </Pressable>
-    </View>
+    <>
+      <View style={styles.cardLine}>
+        <RegularText style={styles.cardKey}>Email</RegularText>
+        <Pressable
+          style={styles.cardValue}
+          onPress={() => navigation.navigate('UserDetails', { email })}>
+          <BoldText style={styles.cardValue}>{email}</BoldText>
+        </Pressable>
+      </View>
+      <View style={styles.cardLine}>
+        <RegularText style={styles.cardKey}>From Balance</RegularText>
+        <BoldText style={styles.cardValue}>
+          {currencySymbol +
+            addingDecimal(Number(fromBalance / 100).toLocaleString())}
+        </BoldText>
+      </View>
+      <View style={styles.cardLine}>
+        <RegularText style={styles.cardKey}>To Balance</RegularText>
+        <BoldText style={styles.cardValue}>
+          {currencySymbol +
+            addingDecimal(Number(toBalance / 100).toLocaleString())}
+        </BoldText>
+      </View>
+    </>
   );
 
   return (
     <>
-      <LoadingModal isLoading={isLocalLoading} />
-      <PageContainer justify={true} scroll avoidBounce>
+      <Modal visible={isLocalLoading} transparent>
+        <LoadingModal isLoading={isLocalLoading} />
+      </Modal>
+      <PageContainer justify={true} scroll>
         <BoldText style={styles.historyHeader}>Transaction history</BoldText>
         <View style={{ ...styles.body, minHeight: vh * 0.5 }}>
           {transactionType?.toLowerCase() === 'credit' && (
@@ -350,52 +370,52 @@ const TransactionHistoryParams = ({ route }) => {
                         : '***'}
                     </BoldText>
                   </View>
-                  {isAdmin && (
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>
-                        From Balance
-                      </RegularText>
-                      <BoldText style={styles.cardValue}>
-                        {currencySymbol +
-                          addingDecimal(
-                            Number(fromBalance / 100).toLocaleString(),
-                          )}
-                      </BoldText>
-                    </View>
+                  {method === 'card' ? (
+                    <>
+                      <View style={styles.cardLine}>
+                        <RegularText style={styles.cardKey}>Card</RegularText>
+                        <BoldText style={styles.cardValue}>
+                          {senderName}
+                        </BoldText>
+                      </View>
+                      <View style={styles.cardLine}>
+                        <RegularText style={styles.cardKey}>
+                          Source Bank
+                        </RegularText>
+                        <BoldText style={styles.cardValue}>
+                          {sourceBank}
+                        </BoldText>
+                      </View>
+                    </>
+                  ) : (
+                    <>
+                      <View style={styles.cardLine}>
+                        <RegularText style={styles.cardKey}>
+                          Sender Name
+                        </RegularText>
+                        <BoldText style={styles.cardValue}>
+                          {senderName}
+                        </BoldText>
+                      </View>
+                      <View style={styles.cardLine}>
+                        <RegularText style={styles.cardKey}>
+                          Sender Bank
+                        </RegularText>
+                        <BoldText style={styles.cardValue}>
+                          {sourceBank}
+                        </BoldText>
+                      </View>
+                      <View style={styles.cardLine}>
+                        <RegularText style={styles.cardKey}>
+                          Sender Account
+                        </RegularText>
+                        <BoldText style={styles.cardValue}>
+                          {senderAccount}
+                        </BoldText>
+                      </View>
+                    </>
                   )}
-                  {isAdmin && (
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>
-                        To Balance
-                      </RegularText>
-                      <BoldText style={styles.cardValue}>
-                        {currencySymbol +
-                          addingDecimal(
-                            Number(toBalance / 100).toLocaleString(),
-                          )}
-                      </BoldText>
-                    </View>
-                  )}
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Sender Name
-                    </RegularText>
-                    <BoldText style={styles.cardValue}>{senderName}</BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Sender Bank
-                    </RegularText>
-                    <BoldText style={styles.cardValue}>{sourceBank}</BoldText>
-                  </View>
-                  <View style={styles.cardLine}>
-                    <RegularText style={styles.cardKey}>
-                      Sender Account
-                    </RegularText>
-                    <BoldText style={styles.cardValue}>
-                      {senderAccount}
-                    </BoldText>
-                  </View>
+
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
                       Description
@@ -480,32 +500,6 @@ const TransactionHistoryParams = ({ route }) => {
                         : '***'}
                     </BoldText>
                   </View>
-                  {isAdmin && (
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>
-                        From Balance
-                      </RegularText>
-                      <BoldText style={styles.cardValue}>
-                        {currencySymbol +
-                          addingDecimal(
-                            Number(fromBalance / 100).toLocaleString(),
-                          )}
-                      </BoldText>
-                    </View>
-                  )}
-                  {isAdmin && (
-                    <View style={styles.cardLine}>
-                      <RegularText style={styles.cardKey}>
-                        To Balance
-                      </RegularText>
-                      <BoldText style={styles.cardValue}>
-                        {currencySymbol +
-                          addingDecimal(
-                            Number(toBalance / 100).toLocaleString(),
-                          )}
-                      </BoldText>
-                    </View>
-                  )}
                   <View style={styles.cardLine}>
                     <RegularText style={styles.cardKey}>
                       Receiver Name
@@ -965,7 +959,7 @@ const TransactionHistoryParams = ({ route }) => {
       </PageContainer>
 
       <View style={styles.buttons}>
-        {isAdmin ? (
+        {isAdmin && !isFromNotification ? (
           <View style={styles.button}>
             <Button
               text={`${statusState === 'reversed' || statusState === 'refunded' ? 'Undo Reverse' : 'Reverse'} Transaction`}
@@ -973,9 +967,11 @@ const TransactionHistoryParams = ({ route }) => {
             />
           </View>
         ) : (
-          <View style={styles.button}>
-            <Button text={'Report Transaction'} onPress={handleReport} />
-          </View>
+          !isFromNotification && (
+            <View style={styles.button}>
+              <Button text={'Report Transaction'} onPress={handleReport} />
+            </View>
+          )
         )}
         <View style={styles.button}>
           <Button text={'Share Receipt'} onPress={handleShare} />

@@ -3,20 +3,15 @@ import BoldText from '../../components/fonts/BoldText';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import Profile from '../HomePages/Profile';
 import RegularText from '../../components/fonts/RegularText';
-import { getSessionID } from '../../../utils/storage';
 import useFetchData from '../../../utils/fetchAPI';
 
 const DevicesAndSessions = ({ navigation }) => {
-  const { getFetchData, putFetchData } = useFetchData();
+  const { getFetchData } = useFetchData();
   const [activeSessions, setActiveSessions] = useState(null);
   const [isLocalLoading, setIsLocalLoading] = useState(true);
 
   useEffect(() => {
     const getSessions = async () => {
-      const sessionID = await getSessionID();
-      await putFetchData(`user/session/${sessionID}`, {
-        lastSeen: new Date(),
-      });
       const fetchedResult = await getFetchData('user/session');
       const data = fetchedResult.data;
       fetchedResult.status === 200 && setActiveSessions(data.sessions);
@@ -71,21 +66,19 @@ const styles = StyleSheet.create({
     marginTop: 15 + '%',
   },
   session: {
-    height: 100,
+    // height: 100,
     justifyContent: 'center',
     paddingHorizontal: 20,
     gap: 5,
     borderBottomWidth: 1,
-    paddingTop: 25,
-    paddingBottom: 25,
+    paddingVertical: 20,
   },
   sessionLast: {
-    height: 100,
+    // height: 100,
     justifyContent: 'center',
     paddingHorizontal: 20,
     gap: 5,
-    paddingTop: 25,
-    paddingBottom: 25,
+    paddingVertical: 20,
   },
   lastSeen: {
     color: '#868585',
@@ -129,6 +122,7 @@ export const Session = ({ session, activeSessions }) => {
         );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <View
       style={
@@ -139,6 +133,7 @@ export const Session = ({ session, activeSessions }) => {
       <BoldText>
         {session.deviceManufacturer} - {session.deviceName}
       </BoldText>
+      <RegularText>{session.deviceModel}</RegularText>
       <RegularText>
         {session.osName} {session.osVersion}
       </RegularText>
