@@ -221,7 +221,13 @@ const FaceDetection = () => {
                   ref={camera}
                   mode="video"
                 />
-                <View onLayout={() => handleRecord()} />
+                <View
+                  onLayout={() =>
+                    setTimeout(() => {
+                      handleRecord();
+                    }, 300)
+                  }
+                />
               </>
             )}
           </AnimatedCircularProgress>
