@@ -16,10 +16,11 @@ import { AppContext } from '../../components/AppContext';
 import { getEmail, loginUser } from '../../../utils/storage';
 import ErrorMessage from '../../components/ErrorMessage';
 import SuccessMessage from '../../components/SuccessMessage';
-import saveSessionOptions from '../../services/saveSession.js';
-import { EmailVerify } from './SignUp.jsx';
+import { EmailVerify } from './Signup.jsx';
 import { timeForInactivityInSecond } from '../../config/config.js';
 import useFetchData from '../../../utils/fetchAPI.js';
+import * as Device from 'expo-device';
+import { randomUUID } from 'expo-crypto';
 
 const SignIn = ({ navigation }) => {
   const { getFetchData, postFetchData } = useFetchData();
@@ -61,6 +62,19 @@ const SignIn = ({ navigation }) => {
     } else {
       setIsLoading(true);
       try {
+        const saveSessionOptions = () => {
+          return {
+            deviceManufacturer: Device.manufacturer,
+            deviceName: Device.deviceName,
+            deviceModel: Device.modelName,
+            deviceID: randomUUID(),
+            osName: Device.osName,
+            osVersion: Device.osVersion,
+            firstSignIn: new Date(),
+            lastSeen: new Date(),
+          };
+        };
+
         const sessionData = saveSessionOptions();
         const response = await postFetchData('auth/login', formData);
         const result = response.data;

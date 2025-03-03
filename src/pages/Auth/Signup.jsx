@@ -29,13 +29,15 @@ import useFetchData from '../../../utils/fetchAPI.js';
 import { loginUser } from '../../../utils/storage.js';
 import ErrorMessage from '../../components/ErrorMessage.jsx';
 import SuccessMessage from '../../components/SuccessMessage.jsx';
-import saveSessionOptions from '../../services/saveSession.js';
+// import saveSessionOptions from '../../services/saveSession.js';
 import FaIcon from '@expo/vector-icons/FontAwesome';
 import { CountryPicker } from 'react-native-country-codes-picker';
 import * as Haptics from 'expo-haptics';
 import ToastMessage from '../../components/ToastMessage.jsx';
 import { CurrencyFullDetails } from '../../../utils/allCountries.js';
 import Toast from 'react-native-toast-message';
+import * as Device from 'expo-device';
+import { randomUUID } from 'expo-crypto';
 
 const SignUp = ({ navigation }) => {
   const { postFetchData } = useFetchData();
@@ -591,6 +593,18 @@ export const EmailVerify = ({
 
     if (inputCode.length + 1 >= codeLength.length) {
       try {
+        const saveSessionOptions = () => {
+          return {
+            deviceManufacturer: Device.manufacturer,
+            deviceName: Device.deviceName,
+            deviceModel: Device.modelName,
+            deviceID: randomUUID(),
+            osName: Device.osName,
+            osVersion: Device.osVersion,
+            firstSignIn: new Date(),
+            lastSeen: new Date(),
+          };
+        };
         setIsLoading(true);
         const session = saveSessionOptions();
         const response = await putFetchData('auth/register', {
@@ -629,7 +643,6 @@ export const EmailVerify = ({
         }
       } catch (err) {
         ToastMessage(err.message);
-        console.log(err);
       } finally {
         setIsLoading(false);
       }

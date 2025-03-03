@@ -12,7 +12,7 @@ import BoldText from '../../components/fonts/BoldText';
 import { AppContext } from '../../components/AppContext';
 import { getEmail, loginUser } from '../../../utils/storage';
 import ErrorMessage from '../../components/ErrorMessage';
-import saveSessionOptions from '../../services/saveSession';
+// import saveSessionOptions from '../../services/saveSession';
 import { PINInputFields } from '../../components/InputPinPage';
 import useFetchData from '../../../utils/fetchAPI';
 

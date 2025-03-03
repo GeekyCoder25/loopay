@@ -1,8 +1,8 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Splash from '../../src/components/Splash';
-import SignUp from '../pages/Auth/SignUp';
-import SignIn from '../pages/Auth/SignIn';
+import SignUp from '../pages/Auth/Signup';
+import SignIn from '../pages/Auth/Signin';
 import AccountType from '../../src/pages/Auth/AccountType';
 import ForgotPassword from '../../src/pages/Auth/ForgotPassword';
 import { useContext, useState } from 'react';
