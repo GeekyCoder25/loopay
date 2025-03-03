@@ -136,7 +136,7 @@ const MyInfo = () => {
       </View>
       <View style={styles.tagContainer}>
         <View>
-          <RegularText style={styles.label}>Full Name</RegularText>
+          <RegularText style={styles.label}>Account Name</RegularText>
           <BoldText style={styles.tagName}>{fullName}</BoldText>
         </View>
         <Pressable
