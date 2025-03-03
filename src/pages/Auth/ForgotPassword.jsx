@@ -12,9 +12,10 @@ import BoldText from '../../components/fonts/BoldText';
 import { AppContext } from '../../components/AppContext';
 import { getEmail, loginUser } from '../../../utils/storage';
 import ErrorMessage from '../../components/ErrorMessage';
-// import saveSessionOptions from '../../services/saveSession';
 import { PINInputFields } from '../../components/InputPinPage';
 import useFetchData from '../../../utils/fetchAPI';
+import * as Device from 'expo-device';
+import { randomUUID } from 'expo-crypto';
 
 const ForgotPassword = ({ navigation, setCanChange }) => {
   const { postFetchData } = useFetchData();
@@ -106,6 +107,19 @@ const ForgotPassword = ({ navigation, setCanChange }) => {
         }, 1500);
         return setErrorMessage(result.error);
       }
+      const saveSessionOptions = () => {
+        return {
+          deviceManufacturer: Device.manufacturer,
+          deviceName: Device.deviceName,
+          deviceModel: Device.modelName,
+          deviceID: randomUUID(),
+          osName: Device.osName,
+          osVersion: Device.osVersion,
+          firstSignIn: new Date(),
+          lastSeen: new Date(),
+        };
+      };
+
       const sessionData = saveSessionOptions();
       await postFetchData('user/session', sessionData, result.data.token);
       await loginUser(result.data, sessionData.deviceID);
