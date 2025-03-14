@@ -18,8 +18,15 @@ import { ResizeMode, Video } from 'expo-av';
 const Popup = () => {
   const { deleteFetchData } = useFetchData();
 
-  const { showPopUp, setShowPopUp, appData, setAppData, setPopUpClosed, vw } =
-    useContext(AppContext);
+  const {
+    showPopUp,
+    setShowPopUp,
+    appData,
+    setAppData,
+    setPopUpClosed,
+    vw,
+    vh,
+  } = useContext(AppContext);
   const [popUps, setPopUps] = useState(appData.popUps);
 
   const handleClose = async popUpID => {
@@ -35,8 +42,8 @@ const Popup = () => {
     await deleteFetchData(`user/popup/${popUpID}`);
   };
   const height = {
-    width: vw * 0.7,
-    height: vw * 0.7,
+    width: vw * 0.9,
+    height: vh * 0.5,
     maxHeight: 800,
   };
 
@@ -105,8 +112,8 @@ const styles = StyleSheet.create({
   },
   modal: {
     backgroundColor: '#fff',
-    width: 80 + '%',
-    height: 50 + '%',
+    width: 85 + '%',
+    maxHeight: 70 + '%',
     elevation: 10,
     alignItems: 'center',
     borderRadius: 8,
