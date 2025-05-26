@@ -853,6 +853,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   textInput: {
+    color: '#000000',
     flex: 1,
     height: 55,
     fontFamily: 'OpenSans-600',

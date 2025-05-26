@@ -244,6 +244,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 3 + '%',
   },
   textInput: {
+    color: '#000000',
     borderWidth: 1,
     borderColor: '#BBBBBB',
     marginTop: 20,

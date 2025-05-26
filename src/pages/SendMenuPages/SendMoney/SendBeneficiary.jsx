@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#bbb',
   },
   textInput: {
+    color: '#000000',
     borderRadius: 10,
     height: 55,
     flexDirection: 'row',

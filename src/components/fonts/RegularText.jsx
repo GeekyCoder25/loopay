@@ -6,6 +6,7 @@ const RegularText = ({ children, style }) => {
 const styles = StyleSheet.create({
   text: {
     fontFamily: 'OpenSans-500',
+    color: '#000',
   },
 });
 export default RegularText;

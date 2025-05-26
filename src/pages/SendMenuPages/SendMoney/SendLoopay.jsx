@@ -228,6 +228,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   textInput: {
+    color: '#000000',
     borderRadius: 10,
     height: 55,
     flexDirection: 'row',

@@ -543,6 +543,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   textInput: {
+    color: '#000000',
     borderWidth: 1,
     borderColor: '#bbb',
     marginTop: 20,

@@ -6,6 +6,7 @@ const BoldText = ({ children, style }) => {
 const styles = StyleSheet.create({
   text: {
     fontFamily: 'OpenSans-700',
+    color: '#000',
   },
 });
 export default BoldText;

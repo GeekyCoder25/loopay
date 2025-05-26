@@ -426,6 +426,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   textInput: {
+    color: '#000000',
     borderWidth: 1,
     borderColor: '#bbb',
     marginTop: 20,

@@ -24,9 +24,9 @@ const RecurringSwitch = ({
 
       <TouchableOpacity onPress={handlePress}>
         {isRecurring ? (
-          <FaIcon name="toggle-on" size={30} />
+          <FaIcon name="toggle-on" size={30} color={'#000'} />
         ) : (
-          <FaIcon name="toggle-off" size={30} />
+          <FaIcon name="toggle-off" size={30} color={'#000'} />
         )}
       </TouchableOpacity>
     </View>

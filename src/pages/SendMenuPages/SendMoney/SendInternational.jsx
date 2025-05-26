@@ -317,7 +317,11 @@ const SendInternational = ({ navigation }) => {
                     }}
                   />
                   <View>
-                    <FaIcon name="arrow-circle-o-down" size={18} />
+                    <FaIcon
+                      name="arrow-circle-o-down"
+                      size={18}
+                      color={'#000'}
+                    />
                   </View>
                   <View
                     style={{
@@ -327,7 +331,7 @@ const SendInternational = ({ navigation }) => {
                     }}
                   />
                   <View style={{ marginTop: -2 }}>
-                    <IonIcon name="time-outline" size={18} />
+                    <IonIcon name="time-outline" size={18} color={'#000'} />
                     {/* <ActivityIndicator color={'#1e1e1e'} /> */}
                   </View>
                   <View
@@ -338,7 +342,11 @@ const SendInternational = ({ navigation }) => {
                     }}
                   />
                   <View>
-                    <FaIcon name="arrow-circle-o-right" size={18} />
+                    <FaIcon
+                      name="arrow-circle-o-right"
+                      size={18}
+                      color={'#000'}
+                    />
                   </View>
                 </View>
                 <View>
@@ -649,6 +657,7 @@ const styles = StyleSheet.create({
   },
   flag: { width: 20, height: 20 },
   textInput: {
+    color: '#000000',
     borderRadius: 10,
     height: 55,
     flexDirection: 'row',

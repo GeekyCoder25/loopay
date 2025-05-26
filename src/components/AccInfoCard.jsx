@@ -92,7 +92,7 @@ const AccInfoCard = ({ disableSwitchCurrency }) => {
           <View style={styles.cardDetails}>
             <RegularText style={styles.currencyType}>
               Book Balance:{' '}
-              <BoldText>
+              <BoldText style={styles.currencyType}>
                 {showAmount && pendingBalance
                   ? selectedCurrency.symbol + pendingBalance
                   : '***'}
@@ -140,6 +140,7 @@ const styles = StyleSheet.create({
   symbol: {
     fontSize: 22,
     fontFamily: 'AlfaSlabOne-Regular',
+    color: '#000',
   },
   amount: {
     color: '#ccc',

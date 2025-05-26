@@ -159,6 +159,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   textInput: {
+    color: '#000000',
     width: 100 + '%',
     height: 55,
     paddingHorizontal: 10,
@@ -166,7 +167,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 8,
     fontFamily: 'OpenSans-600',
-    color: '#000',
   },
 
   modalContainer: {

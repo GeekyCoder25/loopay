@@ -301,6 +301,7 @@ const styles = StyleSheet.create({
   },
   code: { width: 85, paddingLeft: 45, textAlign: 'center' },
   textInput: {
+    color: '#000000',
     width: 100 + '%',
     height: 45,
     backgroundColor: '#fff',

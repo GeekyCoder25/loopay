@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   textInput: {
+    color: '#000000',
     borderRadius: 15,
     backgroundColor: '#f9f9f9',
     height: 55,

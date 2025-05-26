@@ -113,7 +113,7 @@ const Home = ({ navigation }) => {
     {
       routeName: 'Buy data',
       routeDetails: 'Convert your USD to another currency',
-      routeIcon: <FaIcon name="wifi" size={20} />,
+      routeIcon: <FaIcon name="wifi" size={20} color={'#000'} />,
       routeNavigate: 'BuyData',
     },
     {
@@ -415,6 +415,7 @@ const styles = StyleSheet.create({
   symbol: {
     fontSize: 22,
     fontFamily: 'AlfaSlabOne-Regular',
+    color: '#000',
   },
   flagContainer: {
     flexDirection: 'row',
@@ -606,7 +607,9 @@ const History = ({ history, index, navigation }) => {
   useEffect(() => {
     switch (transactionType?.toLowerCase()) {
       case 'credit':
-        setTransactionTypeIcon(<FaIcon name="download" size={18} />);
+        setTransactionTypeIcon(
+          <FaIcon name="download" size={18} color={'#000'} />,
+        );
         setTransactionTypeTitle(() => {
           switch (method) {
             case 'card':
@@ -628,12 +631,14 @@ const History = ({ history, index, navigation }) => {
         );
         break;
       case 'debit':
-        setTransactionTypeIcon(<FaIcon name="send" size={18} />);
+        setTransactionTypeIcon(<FaIcon name="send" size={18} color={'#000'} />);
         setTransactionTypeTitle('Debit');
         setTransactionAccount(receiverName);
         break;
       case 'swap':
-        setTransactionTypeIcon(<SwapIcon width={26} height={26} />);
+        setTransactionTypeIcon(
+          <SwapIcon width={26} height={26} fill={'#000'} />,
+        );
         setTransactionTypeTitle('Swap');
         setTransactionAccount(appData.userProfile.fullName);
         break;
@@ -669,13 +674,13 @@ const History = ({ history, index, navigation }) => {
   const billIcon = key => {
     switch (key) {
       case 'electricity':
-        return <FaIcon name="bolt" size={18} />;
+        return <FaIcon name="bolt" size={18} color={'#000'} />;
       case 'school':
-        return <FaIcon name="graduation-cap" size={18} />;
+        return <FaIcon name="graduation-cap" size={18} color={'#000'} />;
       case 'tv':
-        return <FaIcon name="tv" size={18} />;
+        return <FaIcon name="tv" size={18} color={'#000'} />;
       default:
-        return <FaIcon name="send" size={18} />;
+        return <FaIcon name="send" size={18} color={'#000'} />;
     }
   };
 
@@ -751,6 +756,7 @@ const History = ({ history, index, navigation }) => {
                 width={25}
                 height={25}
                 style={vw > 360 ? styles.swap : styles.swapIcon}
+                fill={'#000'}
               />
               <BoldText
                 style={{

@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'OpenSans-600',
     fontSize: 18,
+    color: '#000',
   },
 });
 export default Back;

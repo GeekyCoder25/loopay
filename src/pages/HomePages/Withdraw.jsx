@@ -498,6 +498,7 @@ const styles = StyleSheet.create({
   },
   flag: { width: 20, height: 20 },
   textInput: {
+    color: '#000000',
     borderRadius: 10,
     height: 55,
     flexDirection: 'row',

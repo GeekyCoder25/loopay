@@ -23,7 +23,7 @@
       "icon": "./assets/ios-icon.png"
     },
     "android": {
-      "package": "com.loopay",
+      "package": "com.hmg.loopay",
       "versionCode": 16,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -35,7 +35,8 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA"
       ],
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "edgeToEdgeEnabled": false
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -61,7 +62,7 @@
             "newArchEnabled": true
           },
           "android": {
-            "newArchEnabled": true
+            "newArchEnabled": false
           }
         }
       ],
@@ -73,7 +74,8 @@
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
           "recordAudioAndroid": true
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "extra": {
       "eas": {
