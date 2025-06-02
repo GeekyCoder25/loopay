@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Splash from '../../src/components/Splash';
 import SignUp from '../pages/Auth/Signup';
@@ -28,11 +28,8 @@ const AppPagesNavigator = () => {
   const isVerified = verified === 'verified' || verified === 'pending';
   return (
     <NavigationContainer
-      theme={{
-        colors: {
-          background: '#fff',
-        },
-      }}>
+      navigationInChildEnabled
+      theme={{ ...DefaultTheme, colors: { background: '#fff', text: '#000' } }}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Splash" component={Splash} />
         {!isVerified && (

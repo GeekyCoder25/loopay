@@ -8,7 +8,7 @@ import * as Updates from 'expo-updates';
 import { AppContext } from './AppContext';
 import { View } from 'react-native';
 import LockScreen from '../pages/GlobalPages/LockScreen';
-import AppUpdateModal from './AppUpdateModal';
+// import AppUpdateModal from './AppUpdateModal';
 import Toast from 'react-native-toast-message';
 import PushNotificationNavigator from '../navigators/PushNotificationNavigator';
 import * as Notifications from 'expo-notifications';
@@ -19,7 +19,7 @@ const AppStart = () => {
     setInternetStatus,
     isLoggedIn,
     isSessionTimedOut,
-    isUpdateAvailable,
+    // isUpdateAvailable,
     setIsUpdateAvailable,
   } = useContext(AppContext);
   const [showLockScreen, setShowLockScreen] = useState(false);
@@ -119,7 +119,7 @@ const AppStart = () => {
       ) : (
         <>
           {showLockScreen && <LockScreen />}
-          {isUpdateAvailable && <AppUpdateModal />}
+          {/* {isUpdateAvailable && <AppUpdateModal />} */}
           <NoInternet modalOpen={!internetStatus} />
         </>
       )}

@@ -20,7 +20,6 @@ import ToastMessage from '../../../components/ToastMessage';
 import ErrorMessage from '../../../components/ErrorMessage';
 import * as Linking from 'expo-linking';
 import Back from '../../../components/Back';
-import LoadingModal from '../../../components/LoadingModal';
 
 const Verification = ({ route, setModalOpen }) => {
   const { getFetchData, putFetchData } = useFetchData();
@@ -35,7 +34,7 @@ const Verification = ({ route, setModalOpen }) => {
     _id,
     faceVideo,
   } = route;
-  const { isLoading, setIsLoading, vw } = useContext(AppContext);
+  const { setIsLoading, vw } = useContext(AppContext);
   const [userData, setUserData] = useState(null);
   const [openMessageModal, setOpenMessageModal] = useState(false);
 
@@ -252,7 +251,6 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   textInput: {
-    color: '#000000',
     borderRadius: 5,
     backgroundColor: '#f9f9f9',
     height: 50,

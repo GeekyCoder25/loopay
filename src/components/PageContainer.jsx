@@ -46,13 +46,13 @@ const PageContainer = ({
       }}
       automaticallyAdjustKeyboardInsets={!avoidKeyboardPushup}
       refreshControl={
-        isLoggedIn && (
+        isLoggedIn ? (
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
             enabled={!noReload}
           />
-        )
+        ) : undefined
       }
       bounces={!avoidBounce}>
       {children}

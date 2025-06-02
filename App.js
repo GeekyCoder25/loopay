@@ -3,7 +3,6 @@ import { StatusBar } from 'expo-status-bar';
 import {
   Dimensions,
   Keyboard,
-  KeyboardAvoidingView,
   PanResponder,
   Platform,
   SafeAreaView,
@@ -237,7 +236,7 @@ export default function App() {
               style={styles.appContainer}
               behavior={'padding'}
               keyboardVerticalOffset={0}> */}
-            <>
+            <View style={styles.appContainer}>
               {showConnected && (
                 <View style={styles.connected}>
                   <FaIcon name="wifi" color="#fff" size={20} />
@@ -245,7 +244,7 @@ export default function App() {
                 </View>
               )}
               <AppStart />
-            </>
+            </View>
             {/* </Container> */}
           </TouchableWithoutFeedback>
           <LoadingModal isLoading={isLoading} />
