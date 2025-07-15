@@ -5,10 +5,11 @@ import { allCurrencies } from '../src/database/data';
 import ToastMessage from '../src/components/ToastMessage';
 
 // export const apiUrl = 'http://10.0.2.2:8000/api';
-// export const apiUrl = 'http://172.20.10.2:8000/api';
+// export const apiUrl = 'http://172.20.10.3:8000/api';
 // export const apiUrl = 'http://192.168.19.247:8000/api';
 // export const apiUrl = 'http://192.168.188.101:8000/api';
-export const apiUrl = 'https://loopay-api.koyeb.app/api';
+// export const apiUrl = 'https://loopay-api.koyeb.app/api';
+export const apiUrl = 'https://remote-charis-otb-14a0d3cc.koyeb.app/api';
 
 const timeoutSeconds = 30;
 

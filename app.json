@@ -2,7 +2,7 @@
   "expo": {
     "name": "Loopay",
     "slug": "Loopay",
-    "version": "1.0.12",
+    "version": "1.0.13",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,12 +16,12 @@
         "ITSAppUsesNonExemptEncryption": false
       },
       "bundleIdentifier": "com.loopay",
-      "buildNumber": "17",
+      "buildNumber": "18",
       "icon": "./assets/ios-icon.png"
     },
     "android": {
       "package": "com.hmg.loopay",
-      "versionCode": 16,
+      "versionCode": 18,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
