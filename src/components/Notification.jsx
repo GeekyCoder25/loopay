@@ -16,6 +16,16 @@ export const usePushNotification = () => {
   // const responseListener = useRef();
   const navigation = useNavigation();
 
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+
   useEffect(() => {
     const registerForPushNotificationsAsync = async () => {
       try {
@@ -46,16 +56,6 @@ export const usePushNotification = () => {
           }
           const token = await Notifications.getExpoPushTokenAsync({
             projectId: Constants.expoConfig.extra.eas.projectId,
-          });
-
-          Notifications.setNotificationHandler({
-            handleNotification: async () => ({
-              shouldShowAlert: true,
-              shouldPlaySound: true,
-              shouldSetBadge: true,
-              shouldShowBanner: true,
-              shouldShowList: true,
-            }),
           });
 
           return token.data;

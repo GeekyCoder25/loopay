@@ -7,9 +7,7 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "env": {
-        "EXPO_PUBLIC_API_URL": "http://10.0.2.2:8000/api"
-      }
+      "env": {}
     },
     "preview": {
       "distribution": "internal",
@@ -20,9 +18,7 @@
     },
     "production": {
       "channel": "production",
-      "env": {
-        "EXPO_PUBLIC_API_URL": "https://loopay-api.koyeb.app/api"
-      },
+      "env": {},
       "android": {
         "buildType": "apk"
       }

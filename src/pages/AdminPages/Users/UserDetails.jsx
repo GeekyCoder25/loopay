@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Dimensions,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -69,7 +70,7 @@ const UserDetails = ({ navigation, route }) => {
           <BoldText style={styles.headerText}>User Details</BoldText>
         </Pressable>
       </View>
-      <PageContainer style={styles.body} padding scroll>
+      <ScrollView style={styles.body}>
         {isLoading ? (
           <View style={styles.loading}>
             <ActivityIndicator size={'large'} color={'#1e1e1e'} />
@@ -249,7 +250,7 @@ const UserDetails = ({ navigation, route }) => {
             <BoldText>Can&apos;t fetch user</BoldText>
           </View>
         )}
-      </PageContainer>
+      </ScrollView>
       <MessageModal
         showModal={blockModal}
         setShowModal={setBlockModal}
@@ -272,6 +273,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 20,
+  },
+  body: {
+    paddingHorizontal: '5%',
   },
   loading: {
     flex: 1,
